@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Adisource - BS Applied AI & Data Science Resources
 
-## Getting Started
+> A premium, ultra-fluid learning platform built exclusively for BS Applied AI & Data Science students to seamlessly access course transcripts, notes, and AI overviews all in one place.
 
-First, run the development server:
+Built by a team of **1 person only**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📖 Vision & What We're Doing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The existing platforms for accessing lecture content are disjointed. The vision behind **Adisource** is to consolidate hundreds of HTML lecture transcripts into a single, beautifully organized, low-latency interface. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Why Adisource?
+- **Ultra-Fluid Navigation**: Built with advanced GSAP animations and Lenis smooth scrolling for a native, app-like feel.
+- **Glassmorphic Aesthetic**: A distraction-free, modern interface customized with sleek gradient themes per subject.
+- **Dynamic Content Injection**: We don't hardcode course files. Simply drop new `.html` documents into the source folder, and the automated pipeline constructs the whole UI.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ How It Works (The Data Pipeline)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We rely on a robust ingestion script to minimize maintenance time:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Source Folder**: Add `.html` lecture files into `public/materials/`.
+2. **Naming Convention**: A strict naming standard is followed (e.g., `FAIW4L1.html` = Foundations of AI, Week 4, Lecture 1).
+3. **Automated Generator**: `npm run build-data` (or explicitly `node scripts/generate_courses.js`) runs a parser that organizes all files into accurate Semester trees, assigns correct Subjects/Weeks, and programmatically estimates the reading time by parsing file size byte counts!
+4. **Resulting Model**: The exact JSON architecture is exported directly to `src/data/courses.ts` which populates the Next.js frontend dynamically.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📅 Roadmap (What's Next)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is **Version 1** of Adisource. Future updates will focus on:
+
+- [ ] **Real AI Overview Integration**: Swapping local mockup summaries with a connected LLM architecture to automatically translate/summarize loaded transcripts.
+- [ ] **Account System & Cloud Notes**: Evolving from `localStorage` sync to a cloud DB so students can carry their highlighted notes across different devices.
+- [ ] **Continued Semesters**: Expanding the script's dictionaries to process and display Semester 3 subjects and beyond. 
+
+---
+
+## 💻 Tech Stack
+
+- **Framework:** Next.js (App Router, React 19)
+- **Styling:** Tailwind CSS V4
+- **Animation Engine:** GSAP (ScrollTrigger) & Lenis Smooth Scroll
+- **Icons:** Lucide React
+- **Language:** TypeScript
+
+---
+
+## 🚀 Deployment & Installation
+
+### Local Development
+
+1. Clone the repository: `git clone https://github.com/adityarajIITj/adisource.git`
+2. Enter the directory: `cd adisource`
+3. Install dependencies: `npm install`
+4. If you have added new course files offline, rebuild the static paths: `node scripts/generate_courses.js`
+5. Run the dev server: `npm run dev`
+6. View at `http://localhost:3000`
+
+### Production Deployment (Vercel)
+
+The codebase is fully optimized for immediate edge deployment via Vercel.
+
+1. Connect your GitHub account to [Vercel](https://vercel.com).
+2. Select the `adisource` repository in your dashboard.
+3. Keep default build settings (`npm run build`).
+4. Click **Deploy**. The platform will be globally available in seconds.
+
+*Note: Ensure that your `public/materials` logic respects Vercel's output bundle limits. Extraneous media files (like heavy PDFs and software executables) have been natively ignored via `.gitignore`.*
