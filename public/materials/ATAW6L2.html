@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/ata/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lecture 6: Types, Variables, and Assignment in Python</title>
+
+    <!-- MathJax for mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <style>
+      :root {
+        /* color tokens */
+        --bg: #f8f9fa;
+        --fg: #333333;
+        --muted: #6c757d;
+        --card: #ffffff;
+        --primary: #3498db;
+        --primary-600: #2980b9;
+        --primary-700: #2c3e50;
+        --accent-red: #e74c3c;
+        --accent-red-bg: #fef2f2;
+        --note-bg: #fff3cd;
+        --note-border: #ffc107;
+        --note-fg: #856404;
+        --hinglish-bg: #e8f5e8;
+        --hinglish-border: #4caf50;
+        --hinglish-fg: #2e7d32;
+        --practice-bg: #f0f8ff;
+        --practice-border: #2196f3;
+        --takeaway-bg: #f8f0ff;
+        --takeaway-border: #9c27b0;
+        --table-border: #e5e7eb;
+        --table-stripe: #f6f8fa;
+        --code-bg: #282c34;
+        --code-fg: #abb2bf;
+        --diagram-bg: #e9ecef;
+        --diagram-border: #6c757d;
+        --mind-gradient-start: #667eea;
+        --mind-gradient-end: #764ba2;
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 10px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+        --focus-ring: 2px;
+        --focus-color: #2563eb;
+        --container-pad: clamp(20px, 3vw, 32px);
+        --content-gap: 16px;
+        color-scheme: light;
+      } /* base */
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.65;
+        margin: 0;
+        padding: 20px;
+        background-color: var(--bg);
+        color: var(--fg);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      } /* selection and scrollbar */
+      ::selection {
+        background: rgba(52, 152, 219, 0.25);
+        color: inherit;
+      } /* Firefox scrollbar */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #b6c6d6 transparent;
+      } /* WebKit scrollbar */
+      *::-webkit-scrollbar {
+        height: 10px;
+        width: 10px;
+      }
+      *::-webkit-scrollbar-thumb {
+        background: #c7d6e5;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      *::-webkit-scrollbar-thumb:hover {
+        background: #b2c3d4;
+        background-clip: content-box;
+      }
+      *::-webkit-scrollbar-track {
+        background: transparent;
+      } /* reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        html:focus-within {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      } /* links and focus */
+      a {
+        color: var(--primary-600);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 3px;
+        transition: color 0.15s ease;
+      }
+      a:hover {
+        color: var(--primary);
+      }
+      :where(a, button, input, textarea, select, summary, [tabindex]) {
+        outline: none;
+      }
+      :where(
+          a,
+          button,
+          input,
+          textarea,
+          select,
+          summary,
+          [tabindex]
+        ):focus-visible {
+        outline: var(--focus-ring) solid var(--focus-color);
+        outline-offset: 2px;
+        border-radius: 4px;
+      } /* container */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: var(--card);
+        padding: var(--container-pad);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+      } /* headings */
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+        margin-top: 0;
+      }
+      h1 {
+        color: var(--primary-700);
+        text-align: center;
+        border-bottom: 3px solid var(--primary);
+        padding-bottom: 12px;
+        margin-bottom: 28px;
+        letter-spacing: 0.2px;
+      }
+      h2 {
+        color: var(--primary-600);
+        border-left: 4px solid var(--primary);
+        padding-left: 14px;
+        margin-top: 32px;
+        margin-bottom: 12px;
+      }
+      h3 {
+        color: #34495e;
+        margin-top: 24px;
+        margin-bottom: 8px;
+      } /* spacing rhythm */
+      p,
+      ul,
+      ol,
+      pre,
+      .code-example,
+      table,
+      .toc,
+      .professor-note,
+      .hinglish-summary,
+      .practice-questions,
+      .key-takeaways,
+      .diagram-placeholder,
+      .mind-map {
+        margin-top: 12px;
+        margin-bottom: 12px;
+      } /* toc */
+      .toc {
+        background: #ecf0f1;
+        padding: 16px;
+        border-radius: var(--radius-md);
+        margin: 20px 0;
+        box-shadow: var(--shadow-sm);
+      }
+      .toc ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .toc li {
+        margin: 0;
+        padding: 0;
+      }
+      .toc a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: var(--primary-600);
+        font-weight: 600;
+        padding: 6px 8px;
+        border-radius: 6px;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+      .toc a:hover {
+        background: rgba(52, 152, 219, 0.08);
+        color: var(--primary);
+      } /* key term */
+      .key-term {
+        font-weight: 700;
+        color: var(--accent-red);
+        background: var(--accent-red-bg);
+        padding: 2px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+      } /* professor note */
+      .professor-note {
+        background: var(--note-bg);
+        border-left: 4px solid var(--note-border);
+        padding: 14px 16px;
+        margin: 16px 0;
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-sm);
+      }
+      .professor-note::before {
+        content: "👨‍🏫 Professor mentioned in class: ";
+        font-weight: 700;
+        color: var(--note-fg);
+        display: block;
+        margin-bottom: 6px;
+      } /* hinglish summary */
+      .hinglish-summary {
+        background: var(--hinglish-bg);
+        border: 2px solid var(--hinglish-border);
+        padding: 14px 16px;
+        margin: 20px 0;
+        border-radius: var(--radius-md);
+      }
+      .hinglish-summary::before {
+        content: "📝 Hinglish Summary: ";
+        font-weight: 700;
+        color: var(--hinglish-fg);
+        display: block;
+        margin-bottom: 6px;
+      } /* practice questions */
+      .practice-questions {
+        background: var(--practice-bg);
+        border: 2px solid var(--practice-border);
+        padding: 18px;
+        margin: 20px 0;
+        border-radius: var(--radius-md);
+      }
+      .practice-questions ul {
+        margin: 10px 0 0 0;
+        padding-left: 18px;
+      } /* key takeaways */
+      .key-takeaways {
+        background: var(--takeaway-bg);
+        border: 2px solid var(--takeaway-border);
+        padding: 18px;
+        margin: 20px 0;
+        border-radius: var(--radius-md);
+      }
+      .key-takeaways ul {
+        margin: 10px 0 0 0;
+        padding-left: 18px;
+      } /* table */
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 20px 0;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+      }
+      th,
+      td {
+        border: 1px solid var(--table-border);
+        padding: 12px 14px;
+        text-align: left;
+        background: #ffffff;
+      }
+      th {
+        background-color: var(--primary);
+        color: white;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      tr:nth-child(even) td {
+        background-color: var(--table-stripe);
+      }
+      thead th:first-child {
+        border-top-left-radius: var(--radius-md);
+      }
+      thead th:last-child {
+        border-top-right-radius: var(--radius-md);
+      }
+      tbody tr:last-child td:first-child {
+        border-bottom-left-radius: var(--radius-md);
+      }
+      tbody tr:last-child td:last-child {
+        border-bottom-right-radius: var(--radius-md);
+      } /* code example */
+      .code-example {
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        margin: 12px 0;
+        overflow-x: auto;
+        line-height: 1.5;
+        position: relative;
+      }
+      .code-example::-webkit-scrollbar-thumb {
+        background: #4b5563;
+      }
+      .code-example code,
+      .code-example pre {
+        color: inherit;
+        background: transparent;
+        margin: 0;
+      } /* diagram placeholder */
+      .diagram-placeholder {
+        background: var(--diagram-bg);
+        border: 2px dashed var(--diagram-border);
+        padding: clamp(28px, 6vw, 48px);
+        text-align: center;
+        margin: 20px 0;
+        border-radius: var(--radius-md);
+        color: var(--diagram-border);
+        font-style: italic;
+      } /* mind map */
+      .mind-map {
+        margin: 30px 0;
+        padding: 18px;
+        background: linear-gradient(
+          135deg,
+          var(--mind-gradient-start) 0%,
+          var(--mind-gradient-end) 100%
+        );
+        border-radius: var(--radius-lg);
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+      .mind-map-node {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 10px;
+        display: inline-block;
+        backdrop-filter: saturate(120%) blur(2px);
+        -webkit-backdrop-filter: saturate(120%) blur(2px);
+        transition: transform 0.15s ease, background-color 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .mind-map-node:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.4);
+      } /* responsive tweaks */
+      @media (max-width: 768px) {
+        body {
+          padding: 16px;
+        }
+        .container {
+          padding: clamp(16px, 4vw, 24px);
+          border-radius: 12px;
+        }
+        h1 {
+          font-size: 1.6rem;
+        }
+        h2 {
+          font-size: 1.25rem;
+        }
+        h3 {
+          font-size: 1.1rem;
+        }
+        th,
+        td {
+          padding: 10px;
+        }
+        .toc {
+          padding: 14px;
+        }
+      } /* print */
+      @media print {
+        body {
+          background: white;
+          color: black;
+          padding: 0;
+        }
+        .container {
+          box-shadow: none;
+          max-width: none;
+          border-radius: 0;
+          padding: 0;
+        }
+        a {
+          text-decoration: underline;
+          color: black;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- ========== TITLE SECTION ========== -->
+      <h1>Lecture 6: Types, Variables, and Assignment in Python</h1>
+      <p style="text-align: center; font-style: italic; color: #7f8c8d">
+        
+      </p>
+
+      <!-- ========== TABLE OF CONTENTS ========== -->
+      <div class="toc">
+        <h2>📚 Table of Contents</h2>
+        <ul>
+          <li><a href="#section1">1. Review of Python Types</a></li>
+          <li><a href="#section2">2. Importance of Types in Programming</a></li>
+          <li><a href="#section3">3. Type Conversions (Casting)</a></li>
+          <li><a href="#section4">4. Widening and Narrowing Conversions</a></li>
+          <li><a href="#section5">5. Operator Precedence</a></li>
+          <li><a href="#section6">6. Variables and Assignment</a></li>
+          <li>
+            <a href="#section7">7. Visualizing Variables with State Diagrams</a>
+          </li>
+          <li><a href="#section8">8. Dynamic Typing in Python</a></li>
+          <li><a href="#section9">9. Testing Types</a></li>
+          <li><a href="#section10">10. Mind Map</a></li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 1: REVIEW OF PYTHON TYPES ========== -->
+      <h2 id="section1">1. Review of Python Types</h2>
+
+      <p>
+        A <span class="key-term">type</span> in Python is defined as a set of
+        values and the operations that can be performed on them. Understanding
+        the different types available in Python is essential for effective
+        programming because each type determines what values can be stored and
+        what operations are valid. Python provides several built-in
+        <span class="key-term">primitive data types</span>, which are data types
+        implemented directly by the programming language and ready to use
+        without requiring custom implementation.
+      </p>
+
+      <div class="professor-note">
+        Primitive data types are those that are given to you by the programming
+        language itself. You don't need to implement them. However, if you have
+        special kinds of data like images or music files, they can be built as
+        combinations of primitive types like floats, integers, and strings.
+        These custom types are called user-defined data types, which you'll
+        learn about towards the end of the course.
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Values</th>
+            <th>Operations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>int</strong></td>
+            <td>Integer type</td>
+            <td>Whole numbers (e.g., -2, 0, 42)</td>
+            <td>\(+, -, *, /, //, \%, **\)</td>
+          </tr>
+          <tr>
+            <td><strong>float</strong></td>
+            <td>Floating-point type</td>
+            <td>Real numbers with decimals (e.g., 3.14, -0.5)</td>
+            <td>\(+, -, *, /, //, \%, **\)</td>
+          </tr>
+          <tr>
+            <td><strong>bool</strong></td>
+            <td>Boolean type</td>
+            <td>True, False</td>
+            <td>not, and, or</td>
+          </tr>
+          <tr>
+            <td><strong>str</strong></td>
+            <td>String type</td>
+            <td>Sequences of characters (e.g., "abc", 'hello')</td>
+            <td>\(+\) (concatenation)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Understanding Each Type</h3>
+
+      <p>
+        The <span class="key-term">int</span> type represents integers or whole
+        numbers. These are numbers without decimal points and can be positive,
+        negative, or zero. Operations like addition, subtraction,
+        multiplication, division, floor division, modulus, and exponentiation
+        can all be performed on integers.
+      </p>
+
+      <p>
+        The <span class="key-term">float</span> type represents real numbers
+        that include a decimal point. Floats are used when precision beyond
+        whole numbers is required. The same arithmetic operations available for
+        integers are also available for floats, though the results may differ
+        based on the precision requirements.
+      </p>
+
+      <p>
+        The <span class="key-term">bool</span> type represents Boolean values,
+        which can only be <code>True</code> or <code>False</code>. Boolean
+        values are fundamental in decision-making and logical operations in
+        programming. The primary operations on Boolean values include logical
+        negation (not), conjunction (and), and disjunction (or).
+      </p>
+
+      <p>
+        The <span class="key-term">str</span> type represents strings, which are
+        sequences of characters enclosed in either single quotes ('abc') or
+        double quotes ("abc"). Strings can be concatenated using the \(+\)
+        operator, allowing multiple strings to be combined into one.
+      </p>
+
+      <div class="hinglish-summary">
+        Python mein char basic primitive types hain: int (poore numbers ke
+        liye), float (decimal numbers ke liye), bool (True ya False values ke
+        liye), aur str (text/characters ke liye). Har type ke apne specific
+        operations hote hain jo us type ke data pe perform kiye ja sakte hain.
+        Yeh types programming language dwara already diye gaye hain aur hume
+        inhe implement karne ki zarurat nahi hoti.
+      </div>
+
+      <!-- Practice Questions for Section 1 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> What is the result of <code>5 + 3.2</code> and
+            what type is it?<br />
+            <strong>A:</strong> The result is <code>8.2</code> and it is of type
+            <code>float</code>.
+          </li>
+
+          <li>
+            <strong>Q:</strong> Which operation is valid:
+            <code>"Hello" + "World"</code> or
+            <code>"Hello" - "World"</code>?<br />
+            <strong>A:</strong> <code>"Hello" + "World"</code> is valid and
+            produces <code>"HelloWorld"</code>. The subtraction operator is not
+            defined for strings.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What are the values that a bool type can
+            take?<br />
+            <strong>A:</strong> A bool type can only take two values:
+            <code>True</code> or <code>False</code>.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 1 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            A type is a set of values and operations that can be performed on
+            them
+          </li>
+          <li>
+            Python has four main primitive types: int, float, bool, and str
+          </li>
+          <li>
+            Primitive data types are provided by the programming language and
+            don't need to be implemented
+          </li>
+          <li>
+            Each type supports specific operations appropriate to its nature
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 2: IMPORTANCE OF TYPES ========== -->
+      <h2 id="section2">2. Importance of Types in Programming</h2>
+
+      <p>
+        As a programmer, one of the critical decisions you must make is choosing
+        the <span class="key-term">appropriate data type</span> for your data.
+        This decision impacts not only how data is stored in memory but also
+        what operations can be performed on it and how the program behaves
+        overall. Selecting the wrong type can lead to unexpected errors,
+        incorrect results, or inefficient code.
+      </p>
+
+      <h3>Making Type Decisions</h3>
+
+      <p>Consider these important questions when deciding on data types:</p>
+
+      <ul>
+        <li>
+          <strong>Should a ZIP code be stored as an int?</strong> While ZIP
+          codes consist of digits, treating them as integers can be problematic.
+          For instance, leading zeros would be lost (e.g., 02134 would become
+          2134), and arithmetic operations on ZIP codes don't make logical
+          sense.
+        </li>
+
+        <li>
+          <strong>Should grades be stored as int or float?</strong> This depends
+          on your grading system. If grades are whole numbers (e.g., 0-100), an
+          int might suffice. However, if fractional grades are allowed (e.g.,
+          85.5), a float is necessary.
+        </li>
+
+        <li>
+          <strong
+            >Should interest level be represented as bool or float?</strong
+          >
+          A bool is appropriate if interest is binary (interested/not
+          interested). A float allows for nuanced representation (e.g., interest
+          on a scale of 0.0 to 1.0).
+        </li>
+      </ul>
+
+      <div class="professor-note">
+        Types are extremely important. As a programmer, you need to be very sure
+        about what is the right type for your data. You need to understand what
+        data type will be associated with every operation, whether the operation
+        is valid for that kind of data or not. If you have a combination of
+        different types in an expression, you need to know what the resultant
+        data type will be. For example, if an integer is operated with a float,
+        what will be the result? If a float is operated with a string, it may
+        generate an error.
+      </div>
+
+      <h3>Type Compatibility in Operations</h3>
+
+      <p>
+        When combining different types in a single expression (known as
+        <span class="key-term">heterogeneous operations</span>), Python follows
+        specific rules to determine the result type. Understanding these rules
+        prevents unexpected errors and ensures predictable program behavior.
+      </p>
+
+      <pre><div class="code-example">
+>>> 5 + 3.2          # int + float → float
+8.2
+>>> "Hello" + " World"   # str + str → str
+'Hello World'
+>>> 2 + "3"          # int + str → TypeError
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+        </div></pre>
+
+      <div class="hinglish-summary">
+        Programmer ko hamesha yeh decide karna padta hai ki unke data ke liye
+        sahi type kya hai. Galat type choose karne se errors aa sakte hain ya
+        program galat results de sakta hai. Jab different types ke saath
+        operations karte hain (jaise int aur float ko combine karna), to Python
+        specific rules follow karta hai result decide karne ke liye. Lekin kuch
+        operations invalid hote hain, jaise int aur string ko add karna, jo
+        TypeError produce karta hai.
+      </div>
+
+      <!-- Practice Questions for Section 2 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Why should phone numbers not be stored as
+            integers?<br />
+            <strong>A:</strong> Phone numbers should not be stored as integers
+            because: (1) Leading zeros would be lost, (2) Arithmetic operations
+            on phone numbers don't make sense, and (3) Phone numbers may contain
+            special characters like +, -, or ().
+          </li>
+
+          <li>
+            <strong>Q:</strong> What happens when you try to add an integer to a
+            string in Python?<br />
+            <strong>A:</strong> Python raises a <code>TypeError</code> because
+            the <code>+</code> operator is not defined for combining int and str
+            types.
+          </li>
+
+          <li>
+            <strong>Q:</strong> When would you use a bool vs. a float to
+            represent a rating?<br />
+            <strong>A:</strong> Use bool for binary ratings (like/dislike,
+            yes/no). Use float for continuous scales (e.g., 4.5 stars out of 5).
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 2 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            Choosing the correct data type is a critical programming decision
+          </li>
+          <li>
+            Not all numeric data should be stored as numbers (e.g., ZIP codes,
+            phone numbers)
+          </li>
+          <li>
+            Type compatibility matters when performing operations on mixed types
+          </li>
+          <li>Some type combinations result in errors (e.g., int + str)</li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 3: TYPE CONVERSIONS (CASTING) ========== -->
+      <h2 id="section3">3. Type Conversions (Casting)</h2>
+
+      <p>
+        <span class="key-term">Type conversion</span>, also known as
+        <span class="key-term">type casting</span>, is the process of converting
+        a value from one data type to another. This is essential when you need
+        to perform operations that require specific types or when you need to
+        change how data is represented. Python provides built-in functions for
+        explicit type conversion, and in some cases, performs automatic
+        (implicit) conversions.
+      </p>
+
+      <h3>Understanding type() vs. Type Conversion Functions</h3>
+
+      <p>
+        It's important to distinguish between checking a type and converting a
+        type:
+      </p>
+
+      <ul>
+        <li>
+          <strong><code>type(value)</code></strong> - Returns the type of a
+          value without changing it
+        </li>
+        <li>
+          <strong><code>float(value)</code></strong> - Converts the value to
+          type float
+        </li>
+        <li>
+          <strong><code>int(value)</code></strong> - Converts the value to type
+          int
+        </li>
+        <li>
+          <strong><code>str(value)</code></strong> - Converts the value to type
+          str
+        </li>
+      </ul>
+
+      <pre><div class="code-example">
+>>> type(2)           # Check the type
+&lt;class 'int'&gt;
+>>> float(2)          # Convert to float
+2.0
+>>> int(2.6)          # Convert to int (truncates decimal)
+2
+>>> str(42)           # Convert to string
+'42'
+        </div></pre>
+
+      <div class="professor-note">
+        When you use the int() function on a float like 2.6, it completely
+        truncates the decimal part. The 0.6 part is completely chopped off, and
+        you only get the integer portion. This changes the magnitude
+        significantly, so you have to be very careful when doing conversions
+        like this. Many programming books use the word "casting" or "typecast"
+        to refer to these conversions.
+      </div>
+
+      <h3>Important Considerations for Type Conversion</h3>
+
+      <p>
+        When converting from float to int using <code>int()</code>, the decimal
+        portion is <span class="key-term">truncated</span> (not rounded). This
+        means <code>int(2.9)</code> returns <code>2</code>, not <code>3</code>.
+        This truncation can lead to significant loss of information and should
+        be done carefully.
+      </p>
+
+      <pre><div class="code-example">
+>>> int(2.9)
+2
+>>> int(-2.9)
+-2
+>>> int(9.999)
+9
+        </div></pre>
+
+      <h3>Interactive Exercise: Predict the Result</h3>
+
+      <p>
+        Consider the expression <code>1/2.6</code>. What does Python do? Let's
+        analyze the options:
+      </p>
+
+      <ul>
+        <li>
+          <strong>(A)</strong> Turn 2.6 into integer 2, then calculate \(1/2
+          \rightarrow 0.5\)
+        </li>
+        <li>
+          <strong>(B)</strong> Turn 2.6 into integer 2, then calculate \(1//2
+          \rightarrow 0\)
+        </li>
+        <li>
+          <strong>(C)</strong> Turn 1 into float 1.0, then calculate \(1.0/2.6
+          \rightarrow 0.3846...\)
+        </li>
+        <li><strong>(D)</strong> Produce a TypeError</li>
+        <li><strong>(E)</strong> Crash your computer</li>
+      </ul>
+
+      <p>
+        The correct answer is <strong>(C)</strong>. Python automatically
+        converts 1 to 1.0 (a widening conversion) to match the float type of
+        2.6, then performs the division, resulting in approximately 0.3846.
+      </p>
+
+      <div class="professor-note">
+        In programming, memorization is rarely what's important. Knowing how to
+        solve the problem is what's important. Here that means knowing how to
+        check types and convert types if needed. You should understand the
+        mechanisms to figure out what conversions are needed and whether
+        conversions have happened implicitly as a result of operations.
+      </div>
+
+      <div class="hinglish-summary">
+        Type conversion ya casting ek type se doosre type mein value ko convert
+        karne ka process hai. Python mein float(), int(), str() jaise functions
+        use karke hum explicitly conversion kar sakte hain. Dhyan rakho ki int()
+        function decimal part ko truncate (cut) kar deta hai, round nahi karta.
+        Jaise int(2.9) ka result 2 hoga, 3 nahi. Yeh bahut careful operation hai
+        kyunki isse information loss ho sakti hai.
+      </div>
+
+      <!-- Practice Questions for Section 3 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> What is the result of
+            <code>int(7.8)</code>?<br />
+            <strong>A:</strong> The result is <code>7</code>. The decimal
+            portion (0.8) is truncated, not rounded.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What is the difference between
+            <code>type(5)</code> and <code>float(5)</code>?<br />
+            <strong>A:</strong> <code>type(5)</code> returns
+            <code>&lt;class 'int'&gt;</code> (tells you the type), while
+            <code>float(5)</code> returns <code>5.0</code> (converts to float).
+          </li>
+
+          <li>
+            <strong>Q:</strong> Can you convert a string to an integer? Give an
+            example.<br />
+            <strong>A:</strong> Yes, if the string contains a valid integer:
+            <code>int("42")</code> returns <code>42</code>. However,
+            <code>int("42.5")</code> would raise a ValueError.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 3 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            Type conversion (casting) changes a value from one type to another
+          </li>
+          <li>type() checks the type; float(), int(), str() convert types</li>
+          <li>int() truncates decimals rather than rounding them</li>
+          <li>
+            Understanding type conversion is more important than memorizing
+            rules
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 4: WIDENING AND NARROWING CONVERSIONS ========== -->
+      <h2 id="section4">4. Widening and Narrowing Conversions</h2>
+
+      <p>
+        Type conversions in Python can be classified into two categories based
+        on information capacity:
+        <span class="key-term">widening conversions</span> and
+        <span class="key-term">narrowing conversions</span>. Understanding the
+        difference helps predict when Python performs automatic conversions and
+        when manual conversion is required.
+      </p>
+
+      <h3>Widening Conversions (Automatic)</h3>
+
+      <p>
+        A <span class="key-term">widening conversion</span> occurs when
+        converting from a narrower type to a wider type, where "width" refers to
+        information capacity. Converting from int to float is a widening
+        conversion because floats can represent all integer values plus
+        additional fractional values.
+      </p>
+
+      <div class="professor-note">
+        Python does widening conversions automatically if needed. For example,
+        in the expression 1/2.0, Python automatically converts 1 to 1.0 before
+        performing the division, resulting in 0.5. Integers are typically 4
+        bytes by default, while floats are 8 bytes by default in modern Python
+        (though some older systems used 4 bytes for both). When a smaller data
+        type like integer is converted to float, Python handles this
+        automatically.
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Conversion Type</th>
+            <th>Direction</th>
+            <th>Example</th>
+            <th>Result</th>
+            <th>Automatic?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Widening</td>
+            <td>int → float</td>
+            <td><code>1/2.0</code></td>
+            <td>0.5 (float)</td>
+            <td>Yes ✓</td>
+          </tr>
+          <tr>
+            <td>Widening</td>
+            <td>int → float</td>
+            <td><code>1 + 2.6</code></td>
+            <td>3.6 (float)</td>
+            <td>Yes ✓</td>
+          </tr>
+          <tr>
+            <td>N/A</td>
+            <td>int/float → str</td>
+            <td><code>2 + "ab"</code></td>
+            <td>TypeError</td>
+            <td>No ✗</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        <strong>Important Note:</strong> Widening conversion does
+        <strong>not</strong> work automatically for strings. Attempting to add a
+        number to a string (e.g., <code>2 + "ab"</code>) produces a
+        <code>TypeError</code> because Python doesn't automatically convert
+        numbers to strings or vice versa in arithmetic operations.
+      </p>
+
+      <pre><div class="code-example">
+>>> 1 + 2.0          # Automatic widening: int → float
+3.0
+>>> type(1 + 2.0)
+&lt;class 'float'&gt;
+>>> 2 + "ab"         # No automatic conversion
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+        </div></pre>
+
+      <h3>Narrowing Conversions (Manual Only)</h3>
+
+      <p>
+        A <span class="key-term">narrowing conversion</span> occurs when
+        converting from a wider type to a narrower type (float → int). This
+        conversion <strong>causes information to be lost</strong> because the
+        decimal portion is discarded. Python
+        <strong>never performs narrowing conversions automatically</strong> to
+        prevent unintended data loss.
+      </p>
+
+      <div class="professor-note">
+        When you have an operation like 1 + 2.6, the result can theoretically be
+        either a float (3.6) or an integer (3). Python always chooses float
+        because it's the larger size where the chance of information loss is
+        lower. If it had chosen integer, the result would have been 3, losing
+        the 0.6 portion—a dangerous thing because it leads to information loss.
+        However, for your programming purposes, you may sometimes need the
+        answer as an integer, so you can force an integer result by converting
+        the float to integer beforehand or converting the entire result
+        afterward.
+      </div>
+
+      <pre><div class="code-example">
+>>> 1 + 2.6                    # Automatic widening
+3.6
+>>> 1 + int(2.6)               # Manual narrowing before operation
+3
+>>> int(1 + 2.6)               # Manual narrowing after operation
+3
+        </div></pre>
+
+      <p>
+        In both manual narrowing examples above, we explicitly use
+        <code>int()</code> to force the conversion, accepting the information
+        loss. The first example converts 2.6 to 2 before adding, while the
+        second converts the result 3.6 to 3.
+      </p>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Widening vs. Narrowing Conversions showing int ⇄ float
+        with arrows indicating automatic vs. manual conversion]
+      </div>
+
+      <div class="hinglish-summary">
+        Widening conversion matlab narrow type se wide type mein convert karna
+        (int se float), jo Python automatically kar deta hai jab zarurat ho.
+        Isse information loss nahi hoti. Lekin narrowing conversion (float se
+        int) Python kabhi automatically nahi karta kyunki isse data loss hota
+        hai—decimal part cut ho jata hai. Agar hume narrowing conversion
+        chahiye, to hume explicitly int() function use karna padta hai. String
+        ke saath automatic conversion nahi hota, chahe widening ho ya narrowing.
+      </div>
+
+      <!-- Practice Questions for Section 4 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> What is the result of <code>5 * 2.0</code> and
+            what type of conversion occurs?<br />
+            <strong>A:</strong> The result is <code>10.0</code> (float). A
+            widening conversion from int to float occurs automatically.
+          </li>
+
+          <li>
+            <strong>Q:</strong> Why does <code>3.7 + 2</code> result in a float
+            rather than an int?<br />
+            <strong>A:</strong> Python automatically performs widening
+            conversion (int → float) to avoid information loss. Converting to
+            int would lose the 0.7 portion.
+          </li>
+
+          <li>
+            <strong>Q:</strong> How can you get an integer result from
+            <code>7.9 + 2.1</code>?<br />
+            <strong>A:</strong> Use <code>int(7.9 + 2.1)</code>, which evaluates
+            to <code>int(10.0)</code> = <code>10</code>.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 4 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            Widening conversion (int → float) happens automatically to preserve
+            information
+          </li>
+          <li>
+            Narrowing conversion (float → int) must be done manually using int()
+          </li>
+          <li>
+            Narrowing conversions cause information loss by truncating decimals
+          </li>
+          <li>
+            Automatic conversion does NOT work for strings combined with numbers
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 5: OPERATOR PRECEDENCE ========== -->
+      <h2 id="section5">5. Operator Precedence</h2>
+
+      <p>
+        <span class="key-term">Operator precedence</span> determines the order
+        in which operations are performed when an expression contains multiple
+        operators without explicit parentheses. This concept is similar to the
+        BODMAS/PEMDAS rules learned in mathematics. Understanding operator
+        precedence is crucial for writing correct expressions and debugging
+        unexpected results.
+      </p>
+
+      <div class="professor-note">
+        This is like the BODMAS rule that you learned in your school life. It's
+        the exact same kind of thing applied here. If there's an expression with
+        multiple different operators joined together, then in what order are
+        they evaluated? For example, if you have 2 * (1 + 3), the addition
+        happens first because of the bracket, followed by multiplication. But if
+        you write 2 * 1 + 3 without brackets, then multiplication comes first in
+        BODMAS, followed by addition.
+      </div>
+
+      <h3>Understanding the Difference</h3>
+
+      <p>Consider these two expressions:</p>
+
+      <pre><div class="code-example">
+>>> 2 * (1 + 3)      # Parentheses force addition first
+8
+>>> 2 * 1 + 3        # Precedence rules: multiply first, then add
+5
+        </div></pre>
+
+      <p>
+        The first expression explicitly uses parentheses to dictate that
+        addition occurs before multiplication: \(2 \times (1 + 3) = 2 \times 4 =
+        8\). The second expression relies on operator precedence, where
+        multiplication has higher precedence than addition: \((2 \times 1) + 3 =
+        2 + 3 = 5\).
+      </p>
+
+      <h3>Python Operator Precedence Table</h3>
+
+      <p>
+        The following table shows Python's operator precedence from highest to
+        lowest. Operators on the same line have equal precedence and are
+        evaluated left to right (except for exponentiation, which is right to
+        left).
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Precedence Level</th>
+            <th>Operators</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Highest</td>
+            <td><code>( ... )</code></td>
+            <td>Parentheses</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>**</code></td>
+            <td>Exponentiation</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>-</code> (unary)</td>
+            <td>Negation</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>* / // %</code></td>
+            <td>Multiplication, Division, Floor Division, Modulus</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>+ -</code></td>
+            <td>Addition, Subtraction</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>&lt; &gt; &lt;= &gt;=</code></td>
+            <td>Comparisons</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>== !=</code></td>
+            <td>Equality relations</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>not</code></td>
+            <td>Logical NOT</td>
+          </tr>
+          <tr>
+            <td>↓</td>
+            <td><code>and</code></td>
+            <td>Logical AND</td>
+          </tr>
+          <tr>
+            <td>Lowest</td>
+            <td><code>or</code></td>
+            <td>Logical OR</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Resolving Ties: Left to Right Evaluation</h3>
+
+      <p>
+        When operators have the same precedence (appear on the same line in the
+        table), they are evaluated from
+        <span class="key-term">left to right</span>, with one important
+        exception: exponentiation (<code>**</code>) is evaluated from right to
+        left.
+      </p>
+
+      <pre><div class="code-example">
+>>> 1 / 2 * 3        # Left to right: (1/2) * 3
+1.5
+>>> 2 ** 3 ** 2      # Right to left: 2 ** (3**2) = 2 ** 9
+512
+>>> 10 - 5 - 2       # Left to right: (10-5) - 2
+3
+        </div></pre>
+
+      <p>
+        In the expression <code>1 / 2 * 3</code>, both division and
+        multiplication have equal precedence, so evaluation proceeds left to
+        right: first \(1/2 = 0.5\), then \(0.5 \times 3 = 1.5\). For
+        exponentiation, <code>2 ** 3 ** 2</code> evaluates right to left: first
+        \(3^2 = 9\), then \(2^9 = 512\).
+      </p>
+
+      <h3>Finding Documentation</h3>
+
+      <p>
+        Rather than memorizing the entire precedence table, it's more important
+        to know where to find this information. Python's official documentation
+        provides comprehensive details on operator precedence:
+      </p>
+
+      <p>
+        <a
+          href="https://docs.python.org/3.12/reference/expressions.html#operator-precedence"
+          target="_blank"
+          style="color: #2980b9"
+          >https://docs.python.org/3.12/reference/expressions.html#operator-precedence</a
+        >
+      </p>
+
+      <div class="professor-note">
+        Memorization is rarely what's important. Knowing how to solve the
+        problem is what's important. Here that means knowing how to find and
+        understand documentation about operators. You can always search for
+        "operator precedence in Python" to find the official Python
+        documentation.
+      </div>
+
+      <div class="hinglish-summary">
+        Operator precedence batata hai ki expression mein multiple operators
+        hone par kis order mein evaluation hogi. Jaise school mein BODMAS rule
+        tha, waise hi Python mein bhi ek fixed order hai. Sabse pehle brackets
+        evaluate hote hain, phir exponentiation, phir multiplication/division,
+        phir addition/subtraction. Agar same precedence ke operators hain (jaise
+        * aur /), to left se right evaluate hota hai—sirf ** (exponentiation)
+        right se left evaluate hota hai. Sabse important yeh hai ki
+        documentation kaise dhundhe, sab kuch yaad rakhna zaroori nahi.
+      </div>
+
+      <!-- Practice Questions for Section 5 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> What is the result of
+            <code>2 + 3 * 4</code>?<br />
+            <strong>A:</strong> The result is <code>14</code>. Multiplication
+            has higher precedence, so \(3 \times 4 = 12\) is evaluated first,
+            then \(2 + 12 = 14\).
+          </li>
+
+          <li>
+            <strong>Q:</strong> How does <code>10 / 2 / 5</code> evaluate?<br />
+            <strong>A:</strong> It evaluates left to right: \((10 / 2) / 5 = 5 /
+            5 = 1.0\).
+          </li>
+
+          <li>
+            <strong>Q:</strong> What is the result of
+            <code>2 ** 2 ** 3</code>?<br />
+            <strong>A:</strong> The result is <code>256</code>. Exponentiation
+            is right to left: \(2^{(2^3)} = 2^8 = 256\).
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 5 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            Operator precedence determines evaluation order in expressions
+          </li>
+          <li>
+            Parentheses have the highest precedence and override all other rules
+          </li>
+          <li>Most operators with equal precedence evaluate left to right</li>
+          <li>
+            Exponentiation (**) is the exception—it evaluates right to left
+          </li>
+          <li>
+            Knowing where to find documentation is more important than
+            memorization
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 6: VARIABLES AND ASSIGNMENT ========== -->
+      <h2 id="section6">6. Variables and Assignment</h2>
+
+      <p>
+        Just like calculators have memory buttons to store intermediate results,
+        computers use <span class="key-term">variables</span> to store data in
+        memory. Variables are fundamental to programming because they allow us
+        to break complex problems into manageable steps, store intermediate
+        results, and reuse values throughout a program.
+      </p>
+
+      <h3>What is a Variable?</h3>
+
+      <p>
+        A <span class="key-term">variable</span> is a named memory location
+        (often visualized as a "box") that contains a value. The variable name
+        serves as a label or tag that allows us to reference the stored value.
+        Importantly, the
+        <span class="key-term">type is a property of the value</span>, not the
+        variable itself—a variable can hold values of different types at
+        different times.
+      </p>
+
+      <div class="professor-note">
+        If you have complex expressions or a set of computational steps that you
+        need to go through to solve a problem, you have to use memory. You
+        cannot store all expressions in one single step. You have to think about
+        how to break it up into multiple steps and use memory in the most
+        efficient manner. Those "boxes" for storing values are your variables.
+      </div>
+
+      <h3>Assignment Statements</h3>
+
+      <p>
+        An <span class="key-term">assignment statement</span> has three
+        components:
+      </p>
+
+      <ol>
+        <li>
+          An <strong>expression</strong> on the right side that gets evaluated
+        </li>
+        <li>
+          An <strong>equals sign</strong> (<code>=</code>) that performs the
+          assignment
+        </li>
+        <li>
+          A <strong>variable name</strong> on the left side that receives the
+          value
+        </li>
+      </ol>
+
+      <pre><div class="code-example">
+x = 4 + 1
+# ↑   ↑
+# │   └─ Expression (evaluates to 5)
+# └───── Variable name
+        </div></pre>
+
+      <p>
+        The assignment statement <code>x = 4 + 1</code> works as follows: First,
+        the expression <code>4 + 1</code> is evaluated, producing the value
+        <code>5</code>. Then, this value is stored in the variable
+        <code>x</code>. The variable <code>x</code> now "points to" or
+        "contains" the value <code>5</code>.
+      </p>
+
+      <h3>How to Pronounce Assignment Statements</h3>
+
+      <p>
+        In programming, the equals sign (<code>=</code>) does
+        <strong>NOT</strong> mean mathematical equality. Instead, it means
+        <strong>assignment</strong>. Therefore, we should NOT read
+        <code>x = 4 + 1</code> as "x equals 4 plus 1." Instead, use one of these
+        pronunciations:
+      </p>
+
+      <ul>
+        <li>"x <strong>gets</strong> 4 + 1"</li>
+        <li>"x <strong>becomes</strong> 4 + 1"</li>
+        <li>"x <strong>is assigned</strong> 4 + 1"</li>
+        <li>"x <strong>is set to be</strong> 4 + 1"</li>
+      </ul>
+
+      <div class="professor-note">
+        When you're talking about coding or programming, if you write x = 4 + 1,
+        you should NOT call it "x equals 4 + 1"—that's how you're trained in
+        mathematics. But in programming, the equals sign means something
+        completely different. It means you have a box tagged with X, you're
+        doing the evaluation 4 + 1, and whatever value is generated (5), you put
+        it into this box. This is what assignment means. Don't confuse it with
+        equality checking, which uses == (double equals).
+      </div>
+
+      <h3>Assignment in Interactive Mode</h3>
+
+      <p>
+        When you execute an assignment statement in Python's interactive mode
+        (the <code>>>></code> prompt), nothing appears to be displayed. This is
+        because assignment is a <span class="key-term">statement</span>, not an
+        <span class="key-term">expression</span>. Statements perform actions
+        rather than evaluate to values.
+      </p>
+
+      <pre><div class="code-example">
+>>> x = 5
+>>>                  # No output—but assignment happened!
+>>> x                # Typing the variable name evaluates it
+5
+>>> print(x)         # Or use print() to display the value
+5
+        </div></pre>
+
+      <p>
+        Internally, when you execute <code>x = 5</code>, Python creates a memory
+        location, stores the value <code>5</code> there, and associates the name
+        <code>x</code> with that location. You can verify the assignment worked
+        by typing just the variable name (<code>x</code>), which evaluates to
+        its stored value, or by using the <code>print()</code> function.
+      </p>
+
+      <h3>Variable Naming Rules</h3>
+
+      <p>Variable names in Python:</p>
+
+      <ul>
+        <li>Must start with a letter (a-z, A-Z) or underscore (_)</li>
+        <li>Can contain letters, digits (0-9), and underscores</li>
+        <li>
+          Are case-sensitive (<code>x</code> and <code>X</code> are different
+          variables)
+        </li>
+        <li>
+          Cannot be Python keywords (like <code>if</code>, <code>for</code>,
+          <code>while</code>)
+        </li>
+      </ul>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Variable Memory Model showing a box labeled "x"
+        containing the value "5"]
+      </div>
+
+      <div class="hinglish-summary">
+        Variables computer ki memory mein named locations hain jo values store
+        karte hain—inhe box ki tarah visualize kar sakte hain. Assignment
+        statement (jaise x = 5) ka matlab hai ki right side ki expression
+        evaluate karke uski value ko left side ke variable mein store karna.
+        Dhyan rakho: programming mein = ka matlab "equals" nahi hai, balki
+        "gets" ya "is assigned" hai. Type variable ka property nahi, value ka
+        property hai. Interactive mode mein assignment statement koi output nahi
+        dikhata, lekin kaam ho jata hai—value check karne ke liye variable name
+        type karo ya print() use karo.
+      </div>
+
+      <!-- Practice Questions for Section 6 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> After executing <code>y = 10</code> and then
+            <code>y = y + 5</code>, what is the value of y?<br />
+            <strong>A:</strong> The value of y is <code>15</code>. First y is
+            set to 10, then the expression y + 5 (which is 10 + 5 = 15) is
+            evaluated and stored back in y.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What's wrong with saying "x equals 5" for the
+            statement <code>x = 5</code>?<br />
+            <strong>A:</strong> In programming, = is assignment, not equality.
+            It should be read as "x gets 5" or "x is assigned 5" to avoid
+            confusion with the equality operator ==.
+          </li>
+
+          <li>
+            <strong>Q:</strong> Is the type associated with the variable or the
+            value?<br />
+            <strong>A:</strong> The type is associated with the value, not the
+            variable. A variable can hold values of different types at different
+            times.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 6 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>Variables are named memory locations that store values</li>
+          <li>
+            Assignment statements evaluate the right side and store the result
+            in the left side variable
+          </li>
+          <li>Use "gets" or "is assigned" terminology, not "equals"</li>
+          <li>Assignment statements produce no output but perform an action</li>
+          <li>Type belongs to the value, not the variable</li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 7: VISUALIZING VARIABLES ========== -->
+      <h2 id="section7">7. Visualizing Variables with State Diagrams</h2>
+
+      <p>
+        Understanding how variables change during program execution is crucial
+        for debugging and writing correct code.
+        <span class="key-term">State diagrams</span> provide a visual
+        representation of variables and their values at each step of execution.
+        These diagrams help us track how data flows through a program and ensure
+        our mental model matches what the computer actually does.
+      </p>
+
+      <h3>Introduction to Python Tutor</h3>
+
+      <p>
+        <span class="key-term">Python Tutor</span> (<a
+          href="https://pythontutor.com/"
+          target="_blank"
+          style="color: #2980b9"
+          >https://pythontutor.com/</a
+        >) is an excellent online tool for visualizing Python program execution.
+        It shows step-by-step how variables are created, updated, and used,
+        making it invaluable for learning and debugging.
+      </p>
+
+      <div class="professor-note">
+        Go to your browser and search for "Python Tutor". You'll see a very
+        useful tool to visualize your Python executions. You can write code like
+        x = 5, y = 6, z = x + y, and then click "Visualize Execution". A red
+        arrow shows which line is ready to execute. When you click "Next",
+        you'll see boxes getting created for each variable. We'll use this tool
+        multiple times through the examples in this course. You should try it
+        with your own code!
+      </div>
+
+      <h3>Example: Basic Variable Assignment</h3>
+
+      <pre><div class="code-example">
+x = 5
+y = 6
+x = 7
+        </div></pre>
+
+      <p>Let's trace through this code step by step:</p>
+
+      <ol>
+        <li>
+          <strong>Step 1:</strong> <code>x = 5</code> - Create a box labeled "x"
+          and store 5 in it
+        </li>
+        <li>
+          <strong>Step 2:</strong> <code>y = 6</code> - Create a new box labeled
+          "y" and store 6 in it
+        </li>
+        <li>
+          <strong>Step 3:</strong> <code>x = 7</code> - Update the existing x
+          box: cross out 5 and write 7
+        </li>
+      </ol>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: State diagram showing three steps with boxes for
+        variables x and y]
+      </div>
+
+      <h3>Drawing State Diagrams on Paper</h3>
+
+      <p>
+        When solving problems on exams or working through code manually, follow
+        these conventions for drawing state diagrams:
+      </p>
+
+      <ul>
+        <li>
+          <strong>New variable declared?</strong> Draw a new box with the
+          variable name
+        </li>
+        <li>
+          <strong>Variable updated?</strong> Cross out the old value and write
+          the new value in the same box
+        </li>
+        <li>Write values inside boxes, variable names outside/above boxes</li>
+        <li>Show each step clearly to demonstrate your understanding</li>
+      </ul>
+
+      <div class="professor-note">
+        These visualizations are called state diagrams. It's a carefully
+        designed graphical notation that reflects the reality of hardware. We
+        use this notation on slides and you MUST use it on exams. Being able to
+        draw these diagrams means you understand how to read Python code, you
+        can explain code to yourself, and you can demonstrate your understanding
+        to others. The textbook and Python Tutor use slightly different
+        notations, but on exams you must use our slide notation.
+      </div>
+
+      <h3>Practice Example: x = x + 2</h3>
+
+      <p>Let's work through a more complex example:</p>
+
+      <pre><div class="code-example">
+x = 5
+x = x + 2
+        </div></pre>
+
+      <p>
+        <strong>Step-by-step execution:</strong>
+      </p>
+
+      <ol>
+        <li>
+          <strong>First statement:</strong> <code>x = 5</code>
+          <ul>
+            <li>Draw a box labeled "x"</li>
+            <li>Write 5 inside it</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Second statement:</strong> <code>x = x + 2</code>
+          <ul>
+            <li>
+              Evaluate the right-hand side (RHS) expression:
+              <code>x + 2</code> = <code>5 + 2</code> = <code>7</code>
+            </li>
+            <li>
+              Store the result in the variable on the left-hand side (LHS):
+              <code>x</code>
+            </li>
+            <li>Cross out the old value (5) in box x</li>
+            <li>Write the new value (7) in box x</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: State diagram showing x with 5 crossed out and 7
+        written]
+      </div>
+
+      <p>
+        This example demonstrates a crucial concept: the expression on the right
+        side is evaluated <strong>first</strong> using the current value of x
+        (5), then the result (7) replaces the old value. The statement
+        <code>x = x + 2</code> makes sense in programming (increase x by 2) but
+        would be nonsensical as a mathematical equation.
+      </p>
+
+      <h3>Why State Diagrams Matter</h3>
+
+      <p>State diagrams are not just an academic exercise. They help you:</p>
+
+      <ul>
+        <li>Understand the execution flow of code</li>
+        <li>Debug errors by tracking where values go wrong</li>
+        <li>Predict program behavior before running it</li>
+        <li>Communicate your understanding to others</li>
+        <li>Verify that your mental model matches the computer's execution</li>
+      </ul>
+
+      <div class="hinglish-summary">
+        State diagrams program execution ko visualize karne ka ek tarika hai jo
+        batata hai ki har step pe variables ki kya value hai. Python Tutor ek
+        online tool hai jo step-by-step execution dikhata hai—bahut helpful hai
+        learning aur debugging ke liye. Jab hum paper pe state diagram banate
+        hain, to new variable ke liye naya box draw karte hain, aur variable
+        update hone par purani value cross karke nayi value likhte hain. Yeh
+        diagrams exams mein bhi use karne padenge, isliye practice karo. State
+        diagrams se hum code ki flow samajh sakte hain aur errors dhund sakte
+        hain.
+      </div>
+
+      <!-- Practice Questions for Section 7 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Draw a state diagram for: <code>a = 10</code>,
+            <code>b = 20</code>, <code>a = b</code>. What are the final
+            values?<br />
+            <strong>A:</strong> Final state: a contains 20 (with 10 crossed
+            out), b contains 20. The statement <code>a = b</code> copies the
+            value from b into a.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What happens in the state diagram when you
+            execute <code>y = y * 2</code> if y currently holds 3?<br />
+            <strong>A:</strong> The value 3 is crossed out in box y, and 6 is
+            written. The RHS evaluates to 3 * 2 = 6, which replaces the old
+            value.
+          </li>
+
+          <li>
+            <strong>Q:</strong> Why are state diagrams important for exams and
+            learning?<br />
+            <strong>A:</strong> They demonstrate understanding of code
+            execution, help explain logic, and show you can trace how values
+            change through a program.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 7 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            State diagrams visually represent variables and their values during
+            execution
+          </li>
+          <li>
+            Python Tutor is a valuable tool for visualizing code execution
+            online
+          </li>
+          <li>
+            On paper: draw new boxes for new variables, cross out and update for
+            changed variables
+          </li>
+          <li>
+            State diagrams help understand, debug, and communicate code logic
+          </li>
+          <li>Proper state diagram notation must be used on exams</li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 8: DYNAMIC TYPING ========== -->
+      <h2 id="section8">8. Dynamic Typing in Python</h2>
+
+      <p>
+        One of Python's most distinctive features is
+        <span class="key-term">dynamic typing</span>, which sets it apart from
+        languages like Java, C, and C++. Understanding dynamic typing is
+        essential for writing flexible Python code and avoiding type-related
+        errors.
+      </p>
+
+      <h3>What is Dynamic Typing?</h3>
+
+      <p>
+        In a <span class="key-term">dynamically typed language</span> like
+        Python:
+      </p>
+
+      <ul>
+        <li>Any type of value can be stored in each variable</li>
+        <li>
+          Each variable can hold a value of a different type at different times
+        </li>
+        <li>
+          The type is determined automatically based on the value assigned
+        </li>
+        <li>No need to declare variable types before using them</li>
+      </ul>
+
+      <pre><div class="code-example">
+>>> x = 1              # x holds an int
+>>> type(x)
+&lt;class 'int'&gt;
+>>> x = x / 2.0        # Now x holds a float
+>>> type(x)
+&lt;class 'float'&gt;
+>>> x = "hello"        # Now x holds a string
+>>> type(x)
+&lt;class 'str'&gt;
+        </div></pre>
+
+      <p>
+        In the example above, the variable <code>x</code> first holds an integer
+        (1), then a float (0.5), and finally a string ("hello"). This
+        flexibility is possible because Python is dynamically typed—the type is
+        a property of the <strong>value</strong>, not the
+        <strong>variable</strong>.
+      </p>
+
+      <div class="professor-note">
+        Dynamic typing is something very special about Python which does not
+        require us to define the type associated with a particular variable at
+        any moment of time. Type is always determined on the basis of data. In
+        some other programming languages like C, C++, and Java, you have strong
+        typing (also called static typing). In strong typing, you have to define
+        the type of a variable beforehand, and you can only store data
+        pertaining to that kind of type in those variables.
+      </div>
+
+      <h3>Dynamic Typing vs. Static Typing</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Dynamic Typing (Python)</th>
+            <th>Static Typing (Java, C, C++)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Type Declaration</td>
+            <td>Not required</td>
+            <td>Must declare type before use</td>
+          </tr>
+          <tr>
+            <td>Type Changes</td>
+            <td>Variable can hold different types over time</td>
+            <td>Variable restricted to one type</td>
+          </tr>
+          <tr>
+            <td>Type Checking</td>
+            <td>At runtime (when code executes)</td>
+            <td>At compile time (before running)</td>
+          </tr>
+          <tr>
+            <td>Flexibility</td>
+            <td>High—easy to change types</td>
+            <td>Low—type is fixed</td>
+          </tr>
+          <tr>
+            <td>Example</td>
+            <td><code>x = 5</code> then <code>x = "hi"</code> ✓</td>
+            <td><code>int x = 5</code> then <code>x = "hi"</code> ✗</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Advantages of Dynamic Typing</h3>
+
+      <ul>
+        <li>
+          <strong>Flexibility:</strong> Write code faster without worrying about
+          type declarations
+        </li>
+        <li>
+          <strong>Simplicity:</strong> Less verbose code—no need to specify
+          types everywhere
+        </li>
+        <li>
+          <strong>Rapid prototyping:</strong> Easier to experiment and iterate
+          quickly
+        </li>
+        <li>
+          <strong>Polymorphism:</strong> Functions can work with multiple types
+          naturally
+        </li>
+      </ul>
+
+      <h3>Potential Pitfalls</h3>
+
+      <p>
+        While dynamic typing offers flexibility, it also requires careful
+        attention:
+      </p>
+
+      <ul>
+        <li>Type errors only appear at runtime, not during code writing</li>
+        <li>
+          Can lead to unexpected behavior if you lose track of variable types
+        </li>
+        <li>Requires good testing to catch type-related bugs</li>
+      </ul>
+
+      <pre><div class="code-example">
+>>> x = "10"           # x is a string
+>>> y = 5              # y is an int
+>>> result = x + y     # Error! Can't add string and int
+TypeError: can only concatenate str (not "int") to str
+        </div></pre>
+
+      <h3>Best Practices with Dynamic Typing</h3>
+
+      <ol>
+        <li>
+          <strong>Use descriptive variable names</strong> that hint at the
+          expected type
+        </li>
+        <li>
+          <strong>Check types when necessary</strong> using
+          <code>type()</code> or <code>isinstance()</code>
+        </li>
+        <li>
+          <strong>Be consistent</strong> with what types a variable holds in
+          different parts of code
+        </li>
+        <li><strong>Document expected types</strong> in complex functions</li>
+      </ol>
+
+      <div class="hinglish-summary">
+        Dynamic typing Python ki special feature hai jismein variable ka type
+        fix nahi hota—jo bhi value assign karo, variable us type ko hold kar
+        sakta hai. Aaj x integer hai, kal float ho sakta hai, parso string. Type
+        variable ka property nahi, value ka property hai. Iske opposite static
+        typing hai (Java, C++ mein), jahan type pehle declare karni padti hai
+        aur baad mein change nahi ho sakti. Dynamic typing se flexibility milti
+        hai aur code likhna aasaan hota hai, lekin errors runtime pe hi dikhte
+        hain, isliye testing zaroori hai.
+      </div>
+
+      <!-- Practice Questions for Section 8 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Is the following valid in Python?
+            <code>x = 100</code>, then <code>x = 3.14</code>, then
+            <code>x = True</code><br />
+            <strong>A:</strong> Yes, it's valid. Python's dynamic typing allows
+            x to hold an int, then a float, then a bool.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What's the difference between Python's dynamic
+            typing and Java's static typing?<br />
+            <strong>A:</strong> In Python, variables can hold any type and
+            change types. In Java, you must declare a variable's type, and it
+            can only hold that type throughout the program.
+          </li>
+
+          <li>
+            <strong>Q:</strong> Where does type information live: in the
+            variable or in the value?<br />
+            <strong>A:</strong> Type information lives in the value, not the
+            variable. Variables are just names/tags pointing to values.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 8 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>
+            Python uses dynamic typing—variables can hold any type of value
+          </li>
+          <li>Type is a property of the value, not the variable</li>
+          <li>Variables can change types during program execution</li>
+          <li>
+            Dynamic typing offers flexibility but requires careful type
+            management
+          </li>
+          <li>
+            Contrast with static typing (Java, C++) where types must be declared
+            and are fixed
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 9: TESTING TYPES ========== -->
+      <h2 id="section9">9. Testing Types</h2>
+
+      <p>
+        Given Python's dynamic typing, it's often necessary to check what type a
+        value has at runtime. Python provides several mechanisms for
+        <span class="key-term">type testing</span> to help ensure code
+        correctness and handle different types appropriately.
+      </p>
+
+      <h3>The type() Function</h3>
+
+      <p>
+        The <code>type()</code> function returns the type of a value or
+        variable. This is useful for debugging and for understanding what type a
+        particular expression evaluates to.
+      </p>
+
+      <pre><div class="code-example">
+>>> x = 5
+>>> type(x)
+&lt;class 'int'&gt;
+>>> type(3.14)
+&lt;class 'float'&gt;
+>>> type("hello")
+&lt;class 'str'&gt;
+>>> type(True)
+&lt;class 'bool'&gt;
+        </div></pre>
+
+      <h3>Comparing Types</h3>
+
+      <p>
+        You can compare the type of an expression with a type name to check if
+        they match. This is useful in conditional statements to handle different
+        types differently.
+      </p>
+
+      <pre><div class="code-example">
+>>> type(2) == int
+True
+>>> type(2.0) == int
+False
+>>> type(2.0) == float
+True
+>>> x = "hello"
+>>> type(x) == str
+True
+        </div></pre>
+
+      <h3>Using isinstance()</h3>
+
+      <p>
+        While not covered in detail in this lecture, Python also provides the
+        <code>isinstance()</code> function, which is often preferred for type
+        checking in production code:
+      </p>
+
+      <pre><div class="code-example">
+>>> isinstance(5, int)
+True
+>>> isinstance(5.0, float)
+True
+>>> isinstance("hello", str)
+True
+        </div></pre>
+
+      <h3>Practical Example: Type Checking in Code</h3>
+
+      <pre><div class="code-example">
+x = 22.0
+rate = 4
+
+# Check types before operation
+print(type(x))        # &lt;class 'float'&gt;
+print(type(rate))     # &lt;class 'int'&gt;
+
+rate = x / rate
+print(type(rate))     # &lt;class 'float'&gt; (widening conversion occurred)
+        </div></pre>
+
+      <p>
+        In this example, we can verify that <code>x</code> is a float and
+        <code>rate</code> starts as an int. After the division operation,
+        <code>rate</code> becomes a float due to automatic widening conversion.
+      </p>
+
+      <h3>When to Check Types</h3>
+
+      <p>Type checking is particularly useful when:</p>
+
+      <ul>
+        <li>Debugging unexpected behavior in your code</li>
+        <li>
+          Working with data from external sources (user input, files, APIs)
+        </li>
+        <li>
+          Writing functions that should behave differently based on input type
+        </li>
+        <li>Validating that conversions happened as expected</li>
+        <li>Learning and exploring how Python handles different operations</li>
+      </ul>
+
+      <div class="hinglish-summary">
+        Python mein type() function use karke hum kisi bhi value ya variable ka
+        type check kar sakte hain. Yeh debugging ke liye bahut useful hai. Hum
+        type() ka result == operator se compare bhi kar sakte hain to check
+        karne ke liye ki koi value specific type ki hai ya nahi. Jaise type(5)
+        == int True return karega. Type checking tab zaroori hoti hai jab hume
+        pata nahi ki variable mein kis type ki value hai, ya jab hum verify
+        karna chahte hain ki conversion sahi hua hai ya nahi.
+      </div>
+
+      <!-- Practice Questions for Section 9 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> What does
+            <code>type(10 / 2)</code> return?<br />
+            <strong>A:</strong> It returns
+            <code>&lt;class 'float'&gt;</code> because division always produces
+            a float in Python 3.
+          </li>
+
+          <li>
+            <strong>Q:</strong> How can you check if variable
+            <code>x</code> contains an integer?<br />
+            <strong>A:</strong> Use <code>type(x) == int</code> or
+            <code>isinstance(x, int)</code>.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What's the result of
+            <code>type(5 + 3.0) == float</code>?<br />
+            <strong>A:</strong> <code>True</code>, because 5 + 3.0 evaluates to
+            8.0 (float) due to widening conversion.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 9 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>type() function returns the type of a value or variable</li>
+          <li>
+            Types can be compared using == operator (e.g., type(x) == int)
+          </li>
+          <li>
+            Type checking is essential for debugging and handling dynamic typing
+          </li>
+          <li>isinstance() is another useful function for type checking</li>
+          <li>
+            Use type checking when working with uncertain or external data
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== SECTION 10: STATEMENTS VS EXPRESSIONS ========== -->
+      <h2 id="section10">10. Statements vs. Expressions</h2>
+
+      <p>
+        Understanding the distinction between
+        <span class="key-term">statements</span> and
+        <span class="key-term">expressions</span> is fundamental to Python
+        programming. While they may look similar, they serve different purposes
+        and behave differently.
+      </p>
+
+      <h3>What is an Expression?</h3>
+
+      <p>
+        An <span class="key-term">expression</span> is something that
+        <strong>represents</strong> a value. When Python evaluates an
+        expression, the end result is always a value. You can think of
+        expressions as "nouns" in programming—they denote things.
+      </p>
+
+      <p><strong>Examples of expressions:</strong></p>
+      <ul>
+        <li><code>2.3</code> - A literal value (evaluates to itself)</li>
+        <li><code>(3 + 5) / 4</code> - A calculation (evaluates to 2.0)</li>
+        <li><code>x == 5</code> - A comparison (evaluates to True or False)</li>
+        <li><code>x</code> - A variable (evaluates to its stored value)</li>
+      </ul>
+
+      <pre><div class="code-example">
+>>> 2.3                # Expression evaluates to 2.3
+2.3
+>>> (3 + 5) / 4        # Expression evaluates to 2.0
+2.0
+>>> x = 10
+>>> x == 5             # Expression evaluates to False
+False
+        </div></pre>
+
+      <h3>What is a Statement?</h3>
+
+      <p>
+        A <span class="key-term">statement</span> is something that
+        <strong>does</strong> something—it performs an action. When Python
+        executes a statement, the end result is an action, not a value. You can
+        think of statements as "verbs" in programming—they command actions.
+      </p>
+
+      <p><strong>Examples of statements:</strong></p>
+      <ul>
+        <li><code>x = 2 + 1</code> - Assigns a value to a variable</li>
+        <li><code>x = 5</code> - Stores 5 in variable x</li>
+        <li>
+          <code>print(x)</code> - Displays output (though print is technically a
+          function call)
+        </li>
+      </ul>
+
+      <pre><div class="code-example">
+>>> x = 5              # Statement: no output, but action performed
+>>>                    # (Nothing displayed because statements don't evaluate to values)
+>>> x                  # Expression: evaluates to and displays 5
+5
+        </div></pre>
+
+      <div class="professor-note">
+        A statement tells the computer to do something and the end result is an
+        action. An expression represents something—Python evaluates it and the
+        end result is a value. When you type a statement into the interactive
+        mode (>>>), it looks like nothing happened, but something did happen!
+        Python executed the statement. For example, x = 5 is a statement that
+        stores 5 in x, but doesn't display anything. To see the value, you type
+        x (an expression) or use print(x).
+      </div>
+
+      <h3>Key Differences</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Expression</th>
+            <th>Statement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Purpose</td>
+            <td>Represents something</td>
+            <td>Does something</td>
+          </tr>
+          <tr>
+            <td>Python's Action</td>
+            <td>Evaluates it</td>
+            <td>Executes it</td>
+          </tr>
+          <tr>
+            <td>End Result</td>
+            <td>A value</td>
+            <td>An action</td>
+          </tr>
+          <tr>
+            <td>Analogy</td>
+            <td>Nouns</td>
+            <td>Verbs</td>
+          </tr>
+          <tr>
+            <td>Interactive Mode Output</td>
+            <td>Displays the value</td>
+            <td>No output (but action occurs)</td>
+          </tr>
+          <tr>
+            <td>Examples</td>
+            <td><code>2.3</code>, <code>(3+5)/4</code>, <code>x == 5</code></td>
+            <td><code>x = 2 + 1</code>, <code>x = 5</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Important Note: They Look Similar!</h3>
+
+      <p>
+        One source of confusion is that statements and expressions can look very
+        similar:
+      </p>
+
+      <div class="code-example">
+        >>> x = 5 # Statement (assignment) >>> x == 5 # Expression (comparison,
+        evaluates to True/False) True
+      </div>
+
+      <p>
+        Notice the difference: <code>x = 5</code> uses a single equals sign and
+        is a statement that assigns 5 to x. <code>x == 5</code> uses a double
+        equals sign and is an expression that checks if x equals 5, evaluating
+        to a boolean value.
+      </p>
+
+      <div class="hinglish-summary">
+        Expression aur statement mein farak samajhna important hai. Expression
+        wo hai jo kisi value ko represent karta hai—jaise 2.3, (3+5)/4, ya x ==
+        5. Python ise evaluate karta hai aur ek value milti hai. Statement wo
+        hai jo kuch karta hai—jaise x = 5 jo assignment action perform karta
+        hai. Interactive mode mein expression type karne par value display hoti
+        hai, lekin statement type karne par koi output nahi aata (action ho jati
+        hai internally). Confusion ho sakti hai kyunki dono similar lagte hain:
+        x = 5 statement hai (assign), jabki x == 5 expression hai (compare karke
+        True/False milta hai).
+      </div>
+
+      <!-- Practice Questions for Section 10 -->
+      <div class="practice-questions">
+        <h3>Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Is <code>x + 5</code> a statement or an
+            expression?<br />
+            <strong>A:</strong> It's an expression. It evaluates to a value (the
+            sum of x and 5).
+          </li>
+
+          <li>
+            <strong>Q:</strong> Why doesn't <code>y = 10</code> produce output
+            in interactive mode?<br />
+            <strong>A:</strong> Because it's a statement, not an expression.
+            Statements perform actions but don't evaluate to values that can be
+            displayed.
+          </li>
+
+          <li>
+            <strong>Q:</strong> What's the difference between
+            <code>a = b</code> and <code>a == b</code>?<br />
+            <strong>A:</strong> <code>a = b</code> is a statement that assigns
+            b's value to a. <code>a == b</code> is an expression that evaluates
+            to True if a and b are equal, False otherwise.
+          </li>
+        </ol>
+      </div>
+
+      <!-- Key Takeaways for Section 10 -->
+      <div class="key-takeaways">
+        <h3>Key Takeaways</h3>
+        <ul>
+          <li>Expressions represent values; statements perform actions</li>
+          <li>Expressions are evaluated; statements are executed</li>
+          <li>
+            Expressions produce output in interactive mode; statements don't
+          </li>
+          <li>
+            Be careful: = (assignment) is a statement, == (comparison) is an
+            expression
+          </li>
+          <li>Think of expressions as nouns and statements as verbs</li>
+        </ul>
+      </div>
+
+      <!-- ========== COMPREHENSIVE MIND MAP ========== -->
+      <div class="mind-map" id="section10">
+        <h2 style="text-align: center; color: white">
+          📊 Comprehensive Mind Map
+        </h2>
+
+        <div style="text-align: center; margin-top: 20px">
+          <div
+            class="mind-map-node"
+            style="font-size: 1.2em; font-weight: bold"
+          >
+            Python Types, Variables & Assignment
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+          "
+        >
+          <!-- Branch 1: Types -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>1. Types</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">int (integers)</div>
+              <div class="mind-map-node">float (decimals)</div>
+              <div class="mind-map-node">bool (True/False)</div>
+              <div class="mind-map-node">str (strings)</div>
+              <div class="mind-map-node">Primitive types</div>
+            </div>
+          </div>
+
+          <!-- Branch 2: Type Conversions -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>2. Type Conversions</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">type() - check type</div>
+              <div class="mind-map-node">float() - to float</div>
+              <div class="mind-map-node">int() - to int (truncates)</div>
+              <div class="mind-map-node">str() - to string</div>
+              <div class="mind-map-node">Also called casting</div>
+            </div>
+          </div>
+
+          <!-- Branch 3: Widening/Narrowing -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>3. Conversion Types</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Widening: int → float</div>
+              <div class="mind-map-node">Automatic conversion</div>
+              <div class="mind-map-node">Narrowing: float → int</div>
+              <div class="mind-map-node">Manual only</div>
+              <div class="mind-map-node">Information loss</div>
+            </div>
+          </div>
+
+          <!-- Branch 4: Operator Precedence -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>4. Operator Precedence</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Parentheses (highest)</div>
+              <div class="mind-map-node">Exponentiation **</div>
+              <div class="mind-map-node">* / // %</div>
+              <div class="mind-map-node">+ -</div>
+              <div class="mind-map-node">Left to right (except **)</div>
+            </div>
+          </div>
+
+          <!-- Branch 5: Variables -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>5. Variables</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Named memory location</div>
+              <div class="mind-map-node">Assignment: x = value</div>
+              <div class="mind-map-node">Type belongs to value</div>
+              <div class="mind-map-node">Not to variable</div>
+              <div class="mind-map-node">Box metaphor</div>
+            </div>
+          </div>
+
+          <!-- Branch 6: State Diagrams -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>6. State Diagrams</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Visualize execution</div>
+              <div class="mind-map-node">Python Tutor tool</div>
+              <div class="mind-map-node">Draw boxes for variables</div>
+              <div class="mind-map-node">Cross out old values</div>
+              <div class="mind-map-node">Required on exams</div>
+            </div>
+          </div>
+
+          <!-- Branch 7: Dynamic Typing -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>7. Dynamic Typing</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Python feature</div>
+              <div class="mind-map-node">Variable holds any type</div>
+              <div class="mind-map-node">Can change types</div>
+              <div class="mind-map-node">vs. Static (Java, C)</div>
+              <div class="mind-map-node">Flexibility benefit</div>
+            </div>
+          </div>
+
+          <!-- Branch 8: Statements vs Expressions -->
+          <div style="margin: 15px; text-align: center">
+            <div
+              class="mind-map-node"
+              style="background: rgba(255, 255, 255, 0.2)"
+            >
+              <strong>8. Statements vs Expressions</strong>
+            </div>
+            <div style="margin-top: 10px">
+              <div class="mind-map-node">Statement: does (verb)</div>
+              <div class="mind-map-node">Expression: represents (noun)</div>
+              <div class="mind-map-node">= is statement</div>
+              <div class="mind-map-node">== is expression</div>
+              <div class="mind-map-node">Different behaviors</div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+          "
+        >
+          <h3 style="color: white; text-align: center">Connections & Flow</h3>
+          <ul style="color: white; line-height: 2">
+            <li>
+              <strong>Types → Conversions:</strong> Understanding types is
+              essential for knowing when and how to convert
+            </li>
+            <li>
+              <strong>Conversions → Operations:</strong> Type conversions affect
+              how operations evaluate
+            </li>
+            <li>
+              <strong>Operator Precedence → Expressions:</strong> Precedence
+              determines how complex expressions are evaluated
+            </li>
+            <li>
+              <strong>Variables → Dynamic Typing:</strong> Variables can hold
+              different types due to dynamic typing
+            </li>
+            <li>
+              <strong>State Diagrams → Understanding:</strong> Visual tools help
+              understand variable changes and execution flow
+            </li>
+            <li>
+              <strong>Everything connects:</strong> Types, variables, and
+              operations form the foundation of Python programming
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ========== FINAL COMPREHENSIVE PRACTICE ========== -->
+      <div class="practice-questions">
+        <h2>🎯 Comprehensive Practice Problems</h2>
+        <ol>
+          <li>
+            <strong>Q:</strong> Given the following code, draw a complete state
+            diagram and determine the final values:
+            <pre><div class="code-example">
+x = 22.0
+rate = 4
+rate = x / rate
+rat = x + rate
+                    </div></pre>
+            <strong>A:</strong>
+            <ul>
+              <li>After line 1: x = 22.0 (float)</li>
+              <li>After line 2: rate = 4 (int)</li>
+              <li>
+                After line 3: rate = 5.5 (float, since 22.0/4 = 5.5; old value 4
+                crossed out)
+              </li>
+              <li>After line 4: rat = 27.5 (float, since 22.0 + 5.5 = 27.5)</li>
+              <li>Final state: x=22.0, rate=5.5, rat=27.5</li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Q:</strong> Evaluate the following expression step by step
+            and identify the final type: <code>int(5.9) + 2.0 * 3</code><br />
+            <strong>A:</strong>
+            <ul>
+              <li>Step 1: int(5.9) = 5 (truncation)</li>
+              <li>
+                Step 2: 2.0 * 3 = 6.0 (widening conversion, multiplication has
+                higher precedence)
+              </li>
+              <li>Step 3: 5 + 6.0 = 11.0 (widening conversion)</li>
+              <li>Final result: 11.0, type: float</li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Q:</strong> Identify which of the following are statements
+            and which are expressions: <br />(a) <code>y = 10</code> <br />(b)
+            <code>y + 5</code> <br />(c) <code>y == 10</code> <br />(d)
+            <code>type(y)</code>
+            <br />
+            <strong>A:</strong>
+            <ul>
+              <li>(a) Statement - assigns value to y</li>
+              <li>(b) Expression - evaluates to y's value plus 5</li>
+              <li>(c) Expression - evaluates to True or False</li>
+              <li>(d) Expression - evaluates to y's type</li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Q:</strong> Explain why Python uses dynamic typing and give
+            one advantage and one disadvantage.<br />
+            <strong>A:</strong> Python uses dynamic typing to provide
+            flexibility and ease of use. <br />
+            <strong>Advantage:</strong> Faster development—no need to declare
+            types, write less code, easier experimentation.<br />
+            <strong>Disadvantage:</strong> Type errors only appear at runtime,
+            potentially causing bugs that would be caught at compile time in
+            statically typed languages.
+          </li>
+        </ol>
+      </div>
+
+      <!-- ========== CONCLUSION ========== -->
+      <div class="key-takeaways">
+        <h2>🎓 Overall Summary</h2>
+        <p>
+          This lecture covered the foundational concepts of Python programming:
+          types, type conversions, operator precedence, variables, and
+          assignment. We learned that Python has four primitive types (int,
+          float, bool, str) with specific operations for each. Type conversions
+          can be explicit (using functions like int(), float()) or automatic
+          (widening conversions), and understanding when each occurs is crucial.
+          Operator precedence follows rules similar to mathematical conventions,
+          with parentheses taking highest priority. Variables are named memory
+          locations that store values, and in Python, the type belongs to the
+          value, not the variable—a key aspect of dynamic typing. State diagrams
+          help visualize how variables change during execution, and
+          distinguishing between statements (which do things) and expressions
+          (which represent values) is essential for understanding Python code.
+        </p>
+      </div>
+
+      <!-- ========== CREDITS & ACKNOWLEDGMENTS ========== -->
+      <div
+        style="
+          margin-top: 40px;
+          padding: 20px;
+          background: #f8f9fa;
+          border-radius: 8px;
+        "
+      >
+        <h3>📚 Acknowledgments</h3>
+        <ul>
+          <li>Slide Credits: Cornell University</li>
+          <li>
+            CS 1110 slide development by E. Andersen, A. Bracy, M. Clarkson, D.
+            Gries, L. Lee, S. Marschner, W. White
+          </li>
+          <li>Images licensed from Microsoft 365 stock media library</li>
+          <li>
+            Python Tutor:
+            <a href="https://pythontutor.com/" target="_blank"
+              >https://pythontutor.com/</a
+            >
+          </li>
+          <li>
+            Python Documentation:
+            <a href="https://docs.python.org/3.12/" target="_blank"
+              >https://docs.python.org/3.12/</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- ========== FOOTER ========== -->
+      <div
+        style="
+          text-align: center;
+          margin-top: 40px;
+          padding: 20px;
+          border-top: 2px solid #3498db;
+        "
+      >
+        <p style="color: #7f8c8d">
+          <em>End of Lecture 6: Types, Variables, and Assignment in Python</em
+          ><br />
+          BS/BSc Applied AI and Data Science - Algorithmic Thinking & its
+          Applications
+        </p>
+      </div>
+    </div>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

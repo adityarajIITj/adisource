@@ -1,0 +1,2351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designing Data Stories in Tome - Comprehensive Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #4a90e2;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin: -40px -40px 40px -40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: #f8f9fa;
+            border-left: 5px solid #4a90e2;
+            padding: 25px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+        
+        .toc h2 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .toc li {
+            margin: 12px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            transform: translateX(5px);
+        }
+        
+        /* ==================== HEADING STYLES ==================== */
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h4 {
+            color: #4a90e2;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        /* ==================== TEXT STYLES ==================== */
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #e74c3c;
+            font-style: normal;
+            font-weight: 600;
+        }
+        
+        /* ==================== LIST STYLES ==================== */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* ==================== TABLE STYLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        /* ==================== SPECIAL BOXES ==================== */
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .example-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .example-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 2px dashed #667eea;
+        }
+        
+        .hinglish-summary h4 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-section {
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 35px 0;
+        }
+        
+        .practice-section h3 {
+            color: #667eea;
+            border-left: none;
+            padding-left: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .question h4 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        
+        .answer {
+            background: #e8f5e9;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .answer strong {
+            color: #2e7d32;
+        }
+        
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .key-takeaways h3 {
+            color: #d84315;
+            border-left: none;
+            padding-left: 0;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0 10px 35px;
+            position: relative;
+        }
+        
+        .key-takeaways li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #d84315;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        /* ==================== DIAGRAM PLACEHOLDER ==================== */
+        .diagram-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        /* ==================== MIND MAP ==================== */
+        .mindmap {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .mindmap-center {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 45px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            margin-bottom: 40px;
+        }
+        
+        .mindmap-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+        
+        .branch h4 {
+            color: #d84315;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #d84315;
+            padding-bottom: 10px;
+        }
+        
+        .branch ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .branch li {
+            padding: 8px 0 8px 25px;
+            position: relative;
+            color: #555;
+        }
+        
+        .branch li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #d84315;
+            font-weight: bold;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.6em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+            
+            .mindmap-branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .header {
+                background: #667eea;
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- ==================== HEADER SECTION ==================== -->
+        <div class="header">
+            <h1>📊 Designing Data Stories in Tome</h1>
+            <p>Created by Armaan kachhawa</p>
+            <p><em>Integrating Jasper & Tome for Impactful Data Narratives</em></p>
+        </div>
+        
+        <!-- ==================== TABLE OF CONTENTS ==================== -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Introduction to Tome</a>
+                    <ul>
+                        <li><a href="#section1-1">1.1 What is Tome?</a></li>
+                        <li><a href="#section1-2">1.2 Key Features of Tome</a></li>
+                        <li><a href="#section1-3">1.3 Example: Renewable Energy Presentation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section2">2. Visual Storytelling Principles</a>
+                    <ul>
+                        <li><a href="#section2-1">2.1 Design Hierarchy</a></li>
+                        <li><a href="#section2-2">2.2 The 3I Story Flow Model</a></li>
+                        <li><a href="#section2-3">2.3 Design Rules & Best Practices</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section3">3. Practical Examples of Tome</a>
+                    <ul>
+                        <li><a href="#section3-1">3.1 Customer Engagement Example</a></li>
+                        <li><a href="#section3-2">3.2 Work From Home Productivity Example</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section4">4. Building a Tome Deck</a></li>
+                <li><a href="#section5">5. Integrating Jasper + Tome</a>
+                    <ul>
+                        <li><a href="#section5-1">5.1 Case Study: GreenHarvest Analytics</a></li>
+                        <li><a href="#section5-2">5.2 Step 1: Creating Jasper Prompt</a></li>
+                        <li><a href="#section5-3">5.3 Step 2: Importing into Tome</a></li>
+                        <li><a href="#section5-4">5.4 Step 3: Integration Benefits</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section6">6. Summary & Takeaways</a></li>
+                <li><a href="#mindmap">7. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 1: INTRODUCTION TO TOME ==================== -->
+        <section id="section1">
+            <h2>1. Introduction to Tome</h2>
+            
+            <p>After exploring <strong>Jasper</strong> as a powerful AI tool for text generation, we now move to <strong>Tome</strong>, which focuses on the graphical and visual representation of data narratives. While Jasper excels at creating compelling text-based stories from data, Tome transforms these narratives into visually appealing presentations that engage audiences effectively.</p>
+            
+            <div class="professor-note">
+                The professor emphasized that while Jasper focuses on text generation, Tome is all about creating visual analytics and graphical representations based on narratives. They work together as complementary tools in the data storytelling workflow.
+            </div>
+            
+            <!-- SUBSECTION 1.1 -->
+            <h3 id="section1-1">1.1 What is Tome?</h3>
+            
+            <p><strong>Tome</strong> is an <em>AI-driven presentation platform</em> designed specifically for creating visual narratives from data stories. It automates the process of slide creation, allowing users to generate professional presentations quickly and efficiently.</p>
+            
+            <div class="highlight-box">
+                <h4>Core Definition:</h4>
+                <p><strong>Tome = AI-driven presentation platform for visual narratives</strong></p>
+                <p>It generates slides automatically from text prompts or outputs from tools like Jasper, transforming written narratives into engaging visual stories.</p>
+            </div>
+            
+            <p>The key distinction between Jasper and Tome can be understood as follows:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Primary Focus</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Jasper</strong></td>
+                        <td>Text Generation</td>
+                        <td>Data + Prompts</td>
+                        <td>Narrative Stories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tome</strong></td>
+                        <td>Visual/Graphical Representation</td>
+                        <td>Text Narratives + Prompts</td>
+                        <td>Presentation Slides with Visuals</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor mentioned that from previous lessons, we recall having input data for case studies that Jasper uses. This same input can be utilized with Jasper and then fed to Tome to generate high-quality visual narratives.
+            </div>
+            
+            <!-- SUBSECTION 1.2 -->
+            <h3 id="section1-2">1.2 Key Features of Tome</h3>
+            
+            <p>Tome offers several powerful features that make it an exceptional tool for visual data storytelling:</p>
+            
+            <ul>
+                <li><strong>AI-Generated Slides from Text Prompts:</strong> Users can input text descriptions or narratives, and Tome automatically generates appropriate slides with relevant visuals and layouts.</li>
+                
+                <li><strong>Integration with Multimedia Elements:</strong> Tome seamlessly integrates various media types into presentations, including:
+                    <ul>
+                        <li>Images and photographs</li>
+                        <li>Videos and animations</li>
+                        <li>Charts and data visualizations (pie charts, bar graphs, line charts, 3D visualizations)</li>
+                        <li>Interactive elements</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Interactive Story Flow:</strong> Tome creates presentations that follow a logical narrative structure, ensuring smooth transitions between concepts and maintaining audience engagement.</li>
+                
+                <li><strong>Smooth Transitions:</strong> The platform automatically handles transitions between slides, creating a professional and polished presentation experience.</li>
+                
+                <li><strong>Public Hosting:</strong> Once created, Tome presentations can be publicly hosted and shared easily with stakeholders, clients, or team members.</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained that Tome can integrate multimedia data like images, videos, and charts into existing datasets. These interactive stories clearly show the flow and smooth transition from data to insights.
+            </div>
+            
+            <!-- SUBSECTION 1.3 -->
+            <h3 id="section1-3">1.3 Example: Renewable Energy Presentation</h3>
+            
+            <p>To understand how Tome works in practice, let's explore a concrete example where we create a presentation about renewable energy adoption in India.</p>
+            
+            <div class="example-box">
+                <h4>📝 User Prompt to Tome:</h4>
+                <p><em>"Create a 6-slide presentation explaining how renewable energy adoption in India grew between 2018–2024."</em></p>
+                
+                <h4>🎯 Key Elements of the Prompt:</h4>
+                <ul>
+                    <li><strong>Specificity:</strong> Exact number of slides (6 slides)</li>
+                    <li><strong>Topic Clarity:</strong> Renewable energy adoption</li>
+                    <li><strong>Geographic Scope:</strong> India</li>
+                    <li><strong>Time Frame:</strong> 2018-2024 (6 years)</li>
+                    <li><strong>Focus:</strong> Growth and adoption trends</li>
+                </ul>
+            </div>
+            
+            <p>Based on this single prompt, Tome instantly generates a complete presentation with the following structure:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Slide Number</th>
+                        <th>Content</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Title Slide</strong></td>
+                        <td>"India's Renewable Energy Revolution"</td>
+                        <td>Creates an engaging title that captures the essence of the presentation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 1</strong></td>
+                        <td>Overview of adoption trends</td>
+                        <td>Provides a high-level summary of how renewable energy adoption has grown over the specified period</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 2</strong></td>
+                        <td>Growth by sector (solar, wind, hydro)</td>
+                        <td>Breaks down the growth by specific renewable energy sectors, showing which areas experienced the most significant development</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 3</strong></td>
+                        <td>Data visualization</td>
+                        <td>Presents visual representations like charts (pie charts, 3D donut charts, bar graphs, or 3D surface charts) to make data appealing and understandable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 4</strong></td>
+                        <td>Government policies</td>
+                        <td>Discusses relevant government policies and ensures content alignment with regulations and official positions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 5</strong></td>
+                        <td>Future projections</td>
+                        <td>Looks ahead to predict future trends and developments in renewable energy adoption</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor highlighted that when creating data visualizations in Slide 3, Tome automatically selects the most suitable chart type based on the data - whether it's a pie chart, 3D donut chart, 3D surface chart, or any other visualization that looks appealing and effectively communicates the information. You can further enhance these generated slides using Tome itself.
+            </div>
+            
+            <p>This example demonstrates Tome's ability to understand context, structure information logically, and create a coherent narrative flow from a simple text prompt. The AI interprets the user's requirements and automatically generates appropriate content for each slide.</p>
+            
+            <!-- HINGLISH SUMMARY FOR SECTION 1 -->
+            <div class="hinglish-summary">
+                <h4>📚 Hinglish Summary (Section 1)</h4>
+                <p><strong>Tome ek AI-powered presentation tool hai jo text narratives ko beautiful visual slides mein convert karta hai.</strong> Jasper text generation ke liye hai jabki Tome visual representation ke liye hai. Aap bas ek simple prompt dedo, jaise "renewable energy par 6 slides banao", aur Tome automatically title slide, overview, sector-wise growth, data visualization, government policies, aur future projections ke saath complete presentation ready kar deta hai. Ye multimedia elements jaise images, videos, charts ko bhi seamlessly integrate karta hai aur smooth transitions provide karta hai. <strong>Basically, Tome data stories ko engaging visual presentations mein transform kar deta hai with minimal effort!</strong></p>
+            </div>
+            
+            <!-- PRACTICE QUESTIONS FOR SECTION 1 -->
+            <div class="practice-section">
+                <h3>🎓 Practice Questions - Section 1</h3>
+                
+                <div class="question">
+                    <h4>Q1: What is the primary difference between Jasper and Tome?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Jasper focuses on text generation and creating narrative stories from data, while Tome focuses on visual representation and transforms these narratives into presentation slides with graphics and visualizations.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: What are three key multimedia elements that Tome can integrate into presentations?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Tome can integrate images, videos, and charts (including pie charts, bar graphs, 3D visualizations) into presentations, along with interactive elements and smooth transitions.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: In the renewable energy example, what was included in Slide 4 and why is it important?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Slide 4 included government policies related to renewable energy. This is important to ensure content validity and alignment with regulations, and to verify that the generated content doesn't contradict official government positions.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: How does being specific in prompts help when using Tome?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Being specific in prompts (mentioning exact number of slides, topic, geographic scope, and time frame) helps Tome generate more relevant and structured presentations that meet exact requirements, as demonstrated in the renewable energy example.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KEY TAKEAWAYS FOR SECTION 1 -->
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways - Section 1</h3>
+                <ul>
+                    <li>Tome is an AI-driven platform specializing in visual narrative creation, complementing Jasper's text generation capabilities</li>
+                    <li>The tool automatically generates professional slides from simple text prompts or Jasper outputs</li>
+                    <li>Tome integrates multimedia elements including images, videos, and various chart types seamlessly</li>
+                    <li>Specific prompts (with clear numbers, topics, scope, and timeframes) yield better, more structured results</li>
+                    <li>Generated presentations follow logical narrative flows with smooth transitions between concepts</li>
+                    <li>Presentations can be publicly hosted and shared easily for collaboration</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 2: VISUAL STORYTELLING PRINCIPLES ==================== -->
+        <section id="section2">
+            <h2>2. Visual Storytelling Principles</h2>
+            
+            <p>Creating effective visual stories requires more than just generating slides automatically. We need to follow certain <strong>philosophical principles</strong> and design guidelines to ensure our data narratives are compelling, clear, and professional. This section explores the fundamental principles that underpin effective visual storytelling with tools like Tome.</p>
+            
+            <div class="professor-note">
+                The professor emphasized that since we are creating visual stories using tools like Jasper and Tome, we need to care about a few philosophical principles for creating effective visual stories. These principles ensure consistency, clarity, and impact in our presentations.
+            </div>
+            
+            <!-- SUBSECTION 2.1 -->
+            <h3 id="section2-1">2.1 Design Hierarchy</h3>
+            
+            <p>Design hierarchy is the foundational principle that guides how information is organized and presented on each slide. It follows a top-down approach that helps viewers process information naturally and efficiently.</p>
+            
+            <h4>The Three-Level Hierarchy:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1</strong></td>
+                        <td>Headline</td>
+                        <td>Summarizes the key message of the slide</td>
+                        <td>"Sales Doubled After Loyalty Program Launch"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2</strong></td>
+                        <td>Key Insight</td>
+                        <td>Highlights the main finding or discovery</td>
+                        <td>"Customer retention improved by 18%"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3</strong></td>
+                        <td>Visual Proof</td>
+                        <td>Provides evidence through charts, images, or data</td>
+                        <td>Bar chart showing sales growth Q1-Q4</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4>🎯 Complete Example: Loyalty Program Impact</h4>
+                
+                <p><strong>Scenario:</strong> A company launched a loyalty program and wants to present its impact.</p>
+                
+                <p><strong>Slide Structure:</strong></p>
+                <ul>
+                    <li><strong>Headline (Top):</strong> "Sales Doubled After Loyalty Program Launch"</li>
+                    <li><strong>Visual Evidence (Center):</strong> A bar chart showing sales growth from Quarter 1 through Quarter 4, demonstrating the doubling effect</li>
+                    <li><strong>Supporting Caption (Bottom):</strong> "Customer retention improved 18% post-launch"</li>
+                </ul>
+                
+                <p><strong>Why this works:</strong> The title immediately tells the story, the visual provides proof, and minimal text supports without overwhelming the audience.</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor explained that when creating slides, you should start each slide with a headline summarizing the key message. Then support it with visual evidence like charts or images. Finally, add minimal supporting text - don't overwhelm the slide with too much text.
+            </div>
+            
+            <h4>Key Design Principles:</h4>
+            
+            <ul>
+                <li><strong>Consistency:</strong> Maintain uniform fonts, colors, and iconography throughout the presentation
+                    <ul>
+                        <li>Font size should remain consistent across similar elements</li>
+                        <li>Color schemes should align with the theme or organization (e.g., IIT Jodhpur's colors for an academic presentation, country flag colors for national topics)</li>
+                        <li>Icons should follow a consistent style and size</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Minimalism:</strong> Follow the "one insight per slide" rule
+                    <ul>
+                        <li>Avoid cramming multiple insights onto a single slide</li>
+                        <li>Distribute insights across different slides for better comprehension</li>
+                        <li>Each slide should have a single, clear purpose</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Storytelling Flow:</strong> Structure presentations following a logical narrative:
+                    <ul>
+                        <li><strong>Problem:</strong> Identify what challenge or question is being addressed</li>
+                        <li><strong>Evidence:</strong> Present data and analysis that illuminate the problem</li>
+                        <li><strong>Impact:</strong> Show the consequences or significance of findings</li>
+                        <li><strong>Next Steps:</strong> Provide recommendations or future directions</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor stressed that consistency is crucial - if font size varies from one element to another, it doesn't look professional. Colors should be themed appropriately based on context. For example, if discussing a country, use its flag colors; if presenting for IIT Jodhpur, align with its institutional colors or building aesthetics. This creates visual coherence.
+            </div>
+            
+            <!-- SUBSECTION 2.2 -->
+            <h3 id="section2-2">2.2 The 3I Story Flow Model</h3>
+            
+            <p>The <strong>3I Model</strong> is a powerful framework for structuring data stories that ensures clarity, meaning, and actionability. It transforms raw data into compelling narratives by progressing through three distinct stages.</p>
+            
+            <div class="highlight-box">
+                <h4>The 3I Model Framework:</h4>
+                <ul>
+                    <li><strong>I1 - Insight:</strong> Show what the data reveals (hidden information, patterns, trends)</li>
+                    <li><strong>I2 - Interpretation:</strong> Explain what it means (context, causes, relationships)</li>
+                    <li><strong>I3 - Impact:</strong> State why it matters or what should be done (consequences, recommendations, actions)</li>
+                </ul>
+            </div>
+            
+            <p>Let's understand each component in detail:</p>
+            
+            <h4>1. Insight (Discovery Phase)</h4>
+            <p><strong>Insight</strong> is about extracting meaningful findings from data that might not be immediately visible on the surface. It involves discovering hidden information, patterns, or trends that tell a story.</p>
+            
+            <p><em>Key Questions:</em> What does the data show? What patterns or trends are emerging? What is the key finding?</p>
+            
+            <h4>2. Interpretation (Understanding Phase)</h4>
+            <p><strong>Interpretation</strong> provides context and meaning to the insight. The same data point can have multiple interpretations depending on context, and it's crucial to explain which interpretation is most relevant and why.</p>
+            
+            <p><em>Key Questions:</em> What does this insight mean? What caused this pattern? How do we explain this finding?</p>
+            
+            <div class="professor-note">
+                The professor emphasized that interpretation is where AI tools like Tome show their intelligence. The same data can be interpreted in different ways. For example, if patient readmissions decrease, one interpretation could be that patients are going to other hospitals, while another interpretation could be that treatment quality has improved. Tome's AI capabilities help identify the most contextually appropriate interpretation.
+            </div>
+            
+            <h4>3. Impact (Action Phase)</h4>
+            <p><strong>Impact</strong> translates insights and interpretations into actionable consequences or recommendations. It answers the "so what?" question and provides direction for decision-making.</p>
+            
+            <p><em>Key Questions:</em> Why does this matter? What are the consequences? What should we do about it? What's the financial/social/operational impact?</p>
+            
+            <div class="example-box">
+                <h4>🏥 Healthcare Context Example: The 3I Model in Action</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Content</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Insight</strong></td>
+                            <td>"Patient readmissions fell by 25%"</td>
+                            <td>This is what the data reveals - a clear, measurable finding showing a significant decrease in patients returning to the hospital</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interpretation</strong></td>
+                            <td>"AI triage improved diagnosis accuracy"</td>
+                            <td>This explains <em>why</em> readmissions decreased - the implementation of AI-powered triage systems led to better initial diagnoses and treatment plans</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Impact</strong></td>
+                            <td>"Hospitals can save ₹10 crore annually"</td>
+                            <td>This quantifies the significance - the improvement translates to concrete financial savings, making the case for continued AI investment</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>The Story Flow:</strong> The presentation moves from observation (25% reduction) to understanding (AI triage effectiveness) to value proposition (₹10 crore savings), creating a complete and compelling narrative.</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor explained that impact can often be measured in numbers, which makes it more concrete and persuasive. In this healthcare example, because patient treatment improved and readmissions decreased, hospitals save significant costs annually - making the business case clear and quantifiable.
+            </div>
+            
+            <!-- SUBSECTION 2.3 -->
+            <h3 id="section2-3">2.3 Design Rules & Best Practices</h3>
+            
+            <p>Following established design rules ensures that your visual stories are not only beautiful but also effective in communicating your message. These rules have been proven through extensive use in professional presentations and data storytelling.</p>
+            
+            <h4>Core Design Rules:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>One Key Idea Per Slide</strong></td>
+                        <td>Each slide should communicate a single main concept or insight</td>
+                        <td>Prevents cognitive overload; ensures audience can focus and remember the key message</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Consistent Colors and Icons</strong></td>
+                        <td>Maintain the same color palette and icon style throughout</td>
+                        <td>Creates visual coherence and professional appearance; helps audience focus on content rather than being distracted by style changes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Avoid Overuse of Text</strong></td>
+                        <td>Minimize text; let visuals do the talking</td>
+                        <td>People process visuals faster than text; presentations should support speech, not replace it</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Leave White Space</strong></td>
+                        <td>Don't fill every inch of the slide; embrace empty space</td>
+                        <td>White space directs attention to key elements; makes slides less cluttered and easier to understand</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Always Include Data Source</strong></td>
+                        <td>Cite where your data comes from</td>
+                        <td>Establishes credibility; allows audience to verify information; demonstrates transparency</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor used this course's slides as a good example of following design rules - they consistently use the same template, maintain uniform color combinations and icons throughout all slides and visuals, avoid text overload by using bullet points and narratives balanced with visuals, and leave adequate white space so users can focus on what's being shown rather than being distracted by cluttered content.
+            </div>
+            
+            <h4>Detailed Explanation of Each Rule:</h4>
+            
+            <div class="highlight-box">
+                <h4>1. One Key Idea Per Slide</h4>
+                <p>This is perhaps the most critical rule in presentation design. When you try to communicate multiple insights on a single slide, you dilute the impact of each message and risk confusing your audience.</p>
+                
+                <p><strong>What NOT to do:</strong> Jumping all insights onto the same page or slide</p>
+                <p><strong>What TO do:</strong> Distribute insights among different slides, creating a logical progression</p>
+                
+                <p><strong>Example:</strong> Instead of one slide saying "Sales increased, costs decreased, and customer satisfaction improved," create three separate slides, each exploring one of these insights in depth.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>2. Leave White Space to Focus Attention</h4>
+                <p>White space (negative space) is not wasted space - it's a powerful design element that helps guide the viewer's attention.</p>
+                
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li>Reduces visual clutter and cognitive load</li>
+                    <li>Highlights important elements by isolating them</li>
+                    <li>Creates a sense of elegance and professionalism</li>
+                    <li>Improves readability and comprehension</li>
+                </ul>
+                
+                <p><strong>The professor's advice:</strong> If there is adequate white space, only then are you able to focus on what is being shown on the slides. It's okay to leave some white space so that users don't focus here and there - they focus on what you wish to show them.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>3. Always Include Data Source (For Credibility)</h4>
+                <p>Citing your data sources is crucial for establishing trust and credibility with your audience.</p>
+                
+                <p><strong>Why it matters:</strong></p>
+                <ul>
+                    <li><strong>Credibility increases:</strong> Audiences trust presentations backed by reputable sources</li>
+                    <li><strong>Transparency:</strong> Shows you're not hiding anything or manipulating data</li>
+                    <li><strong>Verifiability:</strong> Allows audience members to check data if needed</li>
+                    <li><strong>Academic/Professional integrity:</strong> Demonstrates proper research practices</li>
+                </ul>
+                
+                <p><strong>Important note:</strong> You can create slides based on synthetic data for demonstrations, but it's equally important to specify the data source. If using synthetic data, clearly label it as such to maintain transparency.</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor mentioned that while you can create slides based on some synthetic or generated data for examples and demonstrations, it's crucial to specify what the data source is. This maintains credibility and helps the audience understand the context and reliability of the information presented.
+            </div>
+            
+            <!-- HINGLISH SUMMARY FOR SECTION 2 -->
+            <div class="hinglish-summary">
+                <h4>📚 Hinglish Summary (Section 2)</h4>
+                <p><strong>Visual storytelling ke liye kuch important principles follow karne zaroori hain.</strong> Pehla hai Design Hierarchy - har slide mein Headline (main message), Key Insight (important finding), aur Visual Proof (chart/image) hona chahiye. <strong>3I Model</strong> bahut powerful hai - Insight (data kya dikhata hai), Interpretation (uska matlab kya hai), aur Impact (ye kyun important hai aur kya karna chahiye). Design rules mein yaad rakho: ek slide mein sirf ek key idea, consistent colors aur icons use karo, text ka overuse mat karo, white space chhodna important hai attention ke liye, aur hamesha data source mention karo credibility ke liye. Ye principles follow karoge toh tumhare presentations professional aur impactful honge!</p>
+            </div>
+            
+            <!-- PRACTICE QUESTIONS FOR SECTION 2 -->
+            <div class="practice-section">
+                <h3>🎓 Practice Questions - Section 2</h3>
+                
+                <div class="question">
+                    <h4>Q1: What are the three levels of design hierarchy in visual storytelling?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The three levels are: (1) Headline - summarizing the key message, (2) Key Insight - highlighting the main finding, and (3) Visual Proof - providing evidence through charts, images, or data visualizations.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: Explain the 3I Model with one example.</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The 3I Model consists of Insight (what data reveals), Interpretation (what it means), and Impact (why it matters). Example: Insight - "Patient readmissions fell 25%", Interpretation - "AI triage improved diagnosis accuracy", Impact - "Hospitals can save ₹10 crore annually".
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: Why is leaving white space important in slide design?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> White space directs attention to key elements, reduces clutter, improves readability, and ensures the audience focuses on what you want to show them rather than being distracted by overcrowded content.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: Why should you always include data sources in your presentations?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Including data sources increases credibility, demonstrates transparency, allows audience verification, and shows proper research practices. Even with synthetic data, specifying the source maintains trust and context for the audience.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q5: What does the "one insight per slide" rule prevent?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The "one insight per slide" rule prevents cognitive overload and dilution of message impact. It ensures the audience can focus on and remember each key message without confusion from multiple competing ideas.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KEY TAKEAWAYS FOR SECTION 2 -->
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways - Section 2</h3>
+                <ul>
+                    <li>Design hierarchy follows Headline → Key Insight → Visual Proof structure for maximum clarity</li>
+                    <li>The 3I Model (Insight, Interpretation, Impact) transforms raw data into actionable stories</li>
+                    <li>Consistency in fonts, colors, and iconography creates professional, cohesive presentations</li>
+                    <li>Minimalism principle: one key idea per slide prevents cognitive overload</li>
+                    <li>White space is a design tool that directs attention and improves comprehension</li>
+                    <li>Always cite data sources to establish credibility and maintain transparency</li>
+                    <li>Story flow should progress logically: Problem → Evidence → Impact → Next Steps</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 3: PRACTICAL EXAMPLES ==================== -->
+        <section id="section3">
+            <h2>3. Practical Examples of Tome</h2>
+            
+            <p>Understanding theory is important, but seeing Tome in action through practical examples helps solidify how these concepts work in real-world scenarios. This section explores two detailed examples that demonstrate how Tome automatically generates structured presentations from simple narrative inputs.</p>
+            
+            <!-- SUBSECTION 3.1 -->
+            <h3 id="section3-1">3.1 Customer Engagement Example</h3>
+            
+            <p>This example demonstrates how Tome transforms a single-sentence output from Jasper into a complete, multi-slide presentation with logical flow and visual elements.</p>
+            
+            <div class="example-box">
+                <h4>📊 Jasper Output (Input to Tome):</h4>
+                <p><em>"Customer engagement rose by 25% after personalized email campaigns."</em></p>
+            </div>
+            
+            <p>Even with this brief one-sentence input, Tome automatically creates a comprehensive presentation. Let's examine how Tome intelligently structures this information:</p>
+            
+            <h4>Tome's Automatic Slide Generation:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Slide</th>
+                        <th>Content</th>
+                        <th>Purpose & Design Elements</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Slide 1</strong></td>
+                        <td>Title: "Boosting Customer Engagement through Personalization"</td>
+                        <td><strong>Purpose:</strong> Creates an engaging, abstract title that captures the core theme<br><strong>AI Process:</strong> Tome analyzes the input to identify the abstract topic and generates an appropriate title that frames the story</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 2</strong></td>
+                        <td>Graph showing email campaign results and engagement improvement</td>
+                        <td><strong>Purpose:</strong> Provides visual evidence of the results<br><strong>Visual Elements:</strong> Charts showing campaign metrics, engagement rates over time, before/after comparisons<br><strong>Focus:</strong> Demonstrates HOW engagement improved</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 3</strong></td>
+                        <td>Quotes from marketing lead</td>
+                        <td><strong>Purpose:</strong> Adds human perspective and credibility<br><strong>Content:</strong> Testimonials or insights from team members about the campaign's success<br><strong>Impact:</strong> Makes the data relatable through real voices</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide 4</strong></td>
+                        <td>Recommendations and next steps</td>
+                        <td><strong>Purpose:</strong> Provides actionable conclusions<br><strong>Content:</strong> What should be done now; future way forward<br><strong>Value:</strong> Transforms insights into actionable strategy</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor explained that when you give this output to Tome, it automatically creates these slides. The first slide is generated after Tome refreshes and figures out what abstract topic the slide should have as a title. It intelligently determines "Boosting Customer Engagement through Personalization" captures the essence of the narrative. Slide 2 shows graphs about email campaign results and how engagement improved. Slide 3 includes quotes from the marketing lead, and Slide 4 ends with recommendations about what should be done next - the future way forward.
+            </div>
+            
+            <h4>The Logical Flow Pattern:</h4>
+            <p>Notice how Tome follows a natural storytelling progression:</p>
+            <ol>
+                <li><strong>Introduction:</strong> Set the context with an engaging title</li>
+                <li><strong>Results:</strong> Show what happened (the data and evidence)</li>
+                <li><strong>Context:</strong> Explain what the results mean (insights from stakeholders)</li>
+                <li><strong>Improvement:</strong> Show how things have improved over time</li>
+                <li><strong>Next Steps:</strong> Guide what to do with these findings</li>
+            </ol>
+            
+            <p>This structure follows the design principles we discussed earlier: Problem (implicit in title) → Evidence (graphs) → Impact (quotes and context) → Next Steps (recommendations).</p>
+            
+            <!-- SUBSECTION 3.2 -->
+            <h3 id="section3-2">3.2 Work From Home Productivity Example</h3>
+            
+            <p>This example showcases a different narrative approach where Tome uses a <strong>question-based hook</strong> rather than a direct statement. This demonstrates Tome's versatility in creating engaging presentations with varied storytelling techniques.</p>
+            
+            <div class="example-box">
+                <h4>🏠 Scenario: Work From Home Productivity Analysis</h4>
+                <p><strong>Context:</strong> Comparing productivity between work-from-home and office environments</p>
+                <p><strong>Goal:</strong> Determine which work model is more effective</p>
+            </div>
+            
+            <h4>Tome's Slide-by-Slide Breakdown:</h4>
+            
+            <div class="highlight-box">
+                <h4>Slide 1: The Hook</h4>
+                <p><strong>Content:</strong> "Are we really more productive from home?"</p>
+                <p><strong>Approach:</strong> Uses a provocative question rather than a statement</p>
+                <p><strong>Purpose:</strong> Engages the audience immediately by addressing a relevant, debatable question they're curious about</p>
+                <p><strong>Difference from previous example:</strong> Instead of presenting a topic as a declarative title, this poses a question that the presentation will answer, creating narrative tension and interest</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor highlighted that in this example, Slide 1 has a different flavor - it's not just a topic statement, it's a question that we are asking and looking for an answer to. This is about the work-from-home scenario, comparing whether working from home is better or going to the office is better.
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Slide 2: The Data</h4>
+                <p><strong>Content:</strong> Productivity trend graphs</p>
+                <p><strong>Purpose:</strong> Presents objective data related to productivity in different scenarios</p>
+                <p><strong>Visual Elements:</strong></p>
+                <ul>
+                    <li>Graphs showing productivity metrics over time</li>
+                    <li>Comparisons between work-from-home and office settings</li>
+                    <li>Quantitative evidence to ground the discussion</li>
+                </ul>
+                <p><strong>Narrative Function:</strong> Moves from question (Slide 1) to evidence (Slide 2), beginning to answer the posed question with facts</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Slide 3: The Insight (Deep Dive)</h4>
+                <p><strong>Content:</strong> "Collaboration tools offset isolation costs"</p>
+                <p><strong>Purpose:</strong> Goes deeper into the data to find meaningful insights</p>
+                <p><strong>Analysis:</strong></p>
+                <ul>
+                    <li><strong>Context Evolution:</strong> Topic started as work-from-home productivity → moved to data examination → now reveals hidden insights</li>
+                    <li><strong>The Insight:</strong> Working in isolation has costs (reduced collaboration, coordination challenges)</li>
+                    <li><strong>The Solution:</strong> Collaboration tools can effectively offset these isolation costs</li>
+                    <li><strong>Implication:</strong> If teams work from home AND use collaboration tools effectively, they can maintain or improve productivity</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                The professor explained that in Slide 3, we go deeper to find insights. Notice how things are changing - the topic was work-from-home productivity, we went to the data, and now we're looking for insights. The insight is: when you work in isolation, that will cost you something because you have to coordinate better. But if you use collaboration tools, then you can deal with this isolated manner of working. So if your team is working from home AND effectively using collaboration tools, it can be as effective (or more) than office work, offsetting whatever costs would have been incurred working in isolation.
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Slide 4: The Implication</h4>
+                <p><strong>Content:</strong> "Hybrid work boosts creativity"</p>
+                <p><strong>Purpose:</strong> Discusses broader implications of the findings</p>
+                <p><strong>Key Message:</strong> The solution isn't purely work-from-home OR purely work-from-office, but rather a hybrid approach that:</p>
+                <ul>
+                    <li>Combines the benefits of both environments</li>
+                    <li>Utilizes collaboration tools effectively</li>
+                    <li>Actually enhances creativity beyond either single approach</li>
+                    <li>Leads to improved productivity overall</li>
+                </ul>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Slide 5: Call to Action</h4>
+                <p><strong>Content:</strong> "Invest in flexible team policies"</p>
+                <p><strong>Purpose:</strong> Provides clear, actionable next steps</p>
+                <p><strong>Action Items:</strong></p>
+                <ul>
+                    <li>Implement flexible team policies</li>
+                    <li>Allow teams to choose between work-from-home and work-from-office</li>
+                    <li>Ensure collaboration tools are available and teams are trained to use them</li>
+                    <li>Support teams to work in a flexible manner</li>
+                </ul>
+                <p><strong>Strategic Value:</strong> Translates all previous insights into a concrete business decision and policy recommendation</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized that Slide 5 talks about the action - what is the next way forward. The action is to invest in flexible team policies. The team should be able to pick whether to work from home or work from office, and using collaboration tools, work in a flexible manner. That should be the next way forward based on all the evidence and insights presented.
+            </div>
+            
+            <h4>Comparing the Two Examples:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Customer Engagement Example</th>
+                        <th>Work From Home Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Opening Approach</strong></td>
+                        <td>Declarative statement title</td>
+                        <td>Provocative question hook</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slide Count</strong></td>
+                        <td>4 slides</td>
+                        <td>5 slides</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Presentation</strong></td>
+                        <td>Graphs showing results</td>
+                        <td>Productivity trend graphs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Human Element</strong></td>
+                        <td>Quotes from marketing lead</td>
+                        <td>Focus on team collaboration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conclusion Type</strong></td>
+                        <td>Recommendations</td>
+                        <td>Call to action with policy guidance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Narrative Style</strong></td>
+                        <td>Success story documentation</td>
+                        <td>Problem-solving investigation</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>Both examples demonstrate Tome's intelligence in:</p>
+            <ul>
+                <li>Understanding context and extracting key themes</li>
+                <li>Structuring information logically for maximum impact</li>
+                <li>Creating visual elements that support the narrative</li>
+                <li>Providing actionable conclusions</li>
+                <li>Adapting presentation style to suit the content type</li>
+            </ul>
+            
+            <!-- HINGLISH SUMMARY FOR SECTION 3 -->
+            <div class="hinglish-summary">
+                <h4>📚 Hinglish Summary (Section 3)</h4>
+                <p><strong>Tome ke practical examples se hum dekh sakte hain ki kaise ek simple sentence se complete presentation ban jata hai.</strong> Customer engagement example mein, Jasper ka ek sentence "25% engagement badhi" Tome mein dalne par automatically 4 slides bante hain - title, graphs, marketing lead ke quotes, aur recommendations. <strong>Work from home example thoda different hai</strong> - ye question se shuru hota hai "Are we really more productive from home?" aur phir data dikhata hai, insights nikalta hai (collaboration tools help karte hain), implications batata hai (hybrid work best hai), aur end mein action item deta hai (flexible policies invest karo). Dono examples mein Tome ka intelligence dikhta hai - wo context samajhta hai, logical structure banata hai, aur actionable conclusions deta hai. Isse ye clear hota hai ki Tome sirf slides nahi banata, balki complete stories create karta hai!</p>
+            </div>
+            
+            <!-- PRACTICE QUESTIONS FOR SECTION 3 -->
+            <div class="practice-section">
+                <h3>🎓 Practice Questions - Section 3</h3>
+                
+                <div class="question">
+                    <h4>Q1: In the Customer Engagement example, what four slides does Tome automatically generate?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Tome generates: (1) Title slide - "Boosting Customer Engagement through Personalization", (2) Graph showing email campaign results, (3) Quotes from marketing lead, and (4) Recommendations for next steps.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: How does the Work From Home example differ in its opening approach compared to the Customer Engagement example?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The Work From Home example uses a provocative question as a hook ("Are we really more productive from home?") instead of a declarative statement, creating narrative tension and engaging the audience differently by posing a question the presentation will answer.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: What insight does Slide 3 reveal in the Work From Home example?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The insight is that "Collaboration tools offset isolation costs" - meaning that while working in isolation has coordination costs, using effective collaboration tools can compensate for these challenges and maintain productivity.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: What is the final call to action in the Work From Home example?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The call to action is "Invest in flexible team policies" - recommending that organizations allow teams to choose between work-from-home and office work while providing collaboration tools and flexible working arrangements.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q5: What does Slide 4 in the Work From Home example contribute to the overall narrative?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Slide 4 discusses implications, specifically that "Hybrid work boosts creativity." It shows that the solution isn't purely remote or office work but a combination that enhances creativity and productivity beyond either single approach.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KEY TAKEAWAYS FOR SECTION 3 -->
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways - Section 3</h3>
+                <ul>
+                    <li>Tome can generate complete presentations from single-sentence inputs, demonstrating powerful AI interpretation</li>
+                    <li>The Customer Engagement example shows how Tome structures success stories: title → results → stakeholder perspectives → recommendations</li>
+                    <li>The Work From Home example demonstrates alternative narrative approaches using question-based hooks to engage audiences</li>
+                    <li>Tome's intelligence extends beyond slide creation to logical structuring, context understanding, and actionable conclusions</li>
+                    <li>Different narrative styles (declarative vs. investigative) can be automatically adapted based on content type</li>
+                    <li>Both examples follow the Problem → Evidence → Impact → Next Steps framework in different ways</li>
+                    <li>Tome seamlessly integrates data visualization, human perspectives, insights, and action items into cohesive stories</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 4: BUILDING A TOME DECK ==================== -->
+        <section id="section4">
+            <h2>4. Building a Tome Deck</h2>
+            
+            <p>Now that we understand Tome's capabilities and principles, let's explore the practical process of creating a Tome deck from start to finish. This hands-on walkthrough will guide you through the steps of building professional presentations.</p>
+            
+            <h4>Step-by-Step Process:</h4>
+            
+            <div class="highlight-box">
+                <h4>Step 1: Open Tome and Start with a Story</h4>
+                <p><strong>Action:</strong> Navigate to the Tome platform and select the "Start with a story" option</p>
+                <p><strong>What this does:</strong> This feature is specifically designed for narrative-driven presentations where you input a story or text that Tome will transform into slides.</p>
+                <p><strong>Interface:</strong> You'll be presented with a text input area where you can either type your narrative directly or paste content from other sources (like Jasper outputs).</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Step 2: Input Narrative Text</h4>
+                <p><strong>Source Options:</strong></p>
+                <ul>
+                    <li><strong>Your own narrative:</strong> Write your story directly in Tome's interface</li>
+                    <li><strong>Generated from Jasper:</strong> Paste the narrative that Jasper created from your data</li>
+                    <li><strong>Hybrid approach:</strong> Start with Jasper output and modify it according to your needs</li>
+                </ul>
+                <p><strong>Best Practice:</strong> Ensure your narrative has a clear structure with beginning, middle, and end. Include key data points, insights, and the message you want to convey.</p>
+            </div>
+            
+            <div class="professor-note">
+                The professor explained that you can open Tome in your browser and start with the story option. You enter input narrative text - this input narrative might be yours (written by you) or it might be generated from Jasper. Then Tome will automatically create the slides with some visuals.
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Step 3: Automatic Slide Creation with Visuals</h4>
+                <p><strong>What happens:</strong> Once you input the narrative, Tome's AI automatically:</p>
+                <ul>
+                    <li>Analyzes the content structure and themes</li>
+                    <li>Determines the optimal number of slides</li>
+                    <li>Creates appropriate titles for each slide</li>
+                    <li>Generates or suggests relevant visuals (charts, images, icons)</li>
+                    <li>Distributes content logically across slides</li>
+                    <li>Applies a cohesive design theme</li>
+                </ul>
+                <p><strong>Timeline:</strong> This process typically takes a few seconds to a minute, depending on the length and complexity of your narrative.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Step 4: Customize and Adjust</h4>
+                <p><strong>Once Tome generates the automated deck, you have full control to customize:</strong></p>
+                
+                <h4>Layout Options:</h4>
+                <ul>
+                    <li>Change slide templates (full-screen image, split screen, text-focused, etc.)</li>
+                    <li>Rearrange elements within slides</li>
+                    <li>Add or remove sections</li>
+                    <li>Modify text positioning and sizing</li>
+                </ul>
+                
+                <h4>Color Customization:</h4>
+                <ul>
+                    <li>Select from pre-designed color palettes</li>
+                    <li>Create custom color schemes matching your brand</li>
+                    <li>Adjust individual element colors</li>
+                    <li>Maintain consistency across all slides</li>
+                </ul>
+                
+                <h4>Flow Adjustment:</h4>
+                <ul>
+                    <li>Reorder slides for better narrative progression</li>
+                    <li>Add transition slides between major sections</li>
+                    <li>Remove slides that don't serve the narrative</li>
+                    <li>Duplicate and modify slides for variations</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                The professor mentioned that once Tome gives you the automated slides, you have various options to pick layout, colors, and flow. You can adjust these elements to better match your needs and preferences.
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Step 5: Add Data Visuals</h4>
+                <p><strong>Enhancement Options:</strong></p>
+                <ul>
+                    <li><strong>Charts:</strong> Import or create bar charts, line graphs, pie charts, scatter plots, etc.</li>
+                    <li><strong>Screenshots:</strong> Add relevant screenshots from applications, dashboards, or reports</li>
+                    <li><strong>Custom Images:</strong> Upload photos, illustrations, or infographics</li>
+                    <li><strong>Data Tables:</strong> Present structured data in clean, readable table formats</li>
+                    <li><strong>Icons and Illustrations:</strong> Use visual metaphors to represent concepts</li>
+                </ul>
+                
+                <p><strong>Integration Process:</strong> Simply drag and drop visuals into slides, or use Tome's built-in tools to create charts directly from your data.</p>
+            </div>
+            
+            <h4>Interactive Features During Building:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Real-time Preview</strong></td>
+                        <td>See changes instantly as you edit</td>
+                        <td>Quickly iterate on design decisions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AI Suggestions</strong></td>
+                        <td>Tome suggests improvements to layout and visuals</td>
+                        <td>Enhance slides with AI-recommended optimizations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Template Library</strong></td>
+                        <td>Access pre-designed slide templates</td>
+                        <td>Start with professional designs and customize</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Collaboration Tools</strong></td>
+                        <td>Share with team members for feedback</td>
+                        <td>Collaborative editing and review processes</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4>🎨 Practical Tips for Building Effective Tome Decks:</h4>
+                <ol>
+                    <li><strong>Start Simple:</strong> Begin with the automated output and make incremental improvements rather than rebuilding from scratch</li>
+                    <li><strong>Test Your Flow:</strong> Present to a colleague or run through the slides yourself to ensure logical progression</li>
+                    <li><strong>Balance Automation and Customization:</strong> Trust Tome's AI for structure, but customize for your specific audience and branding</li>
+                    <li><strong>Iterate:</strong> Review and refine - the first automated output is a starting point, not the final product</li>
+                    <li><strong>Maintain Consistency:</strong> Even when adding custom elements, stick to the design principles established by the initial generation</li>
+                </ol>
+            </div>
+            
+            <div class="professor-note">
+                The professor encouraged students to try opening Tome in their browser and start typing their story. They'll see that various options come up as Tome generates the presentation. It's a hands-on tool that's best learned through experimentation.
+            </div>
+            
+            <h4>The Building Process Summary:</h4>
+            <p>Building a Tome deck is an iterative process that balances AI automation with human creativity. The platform handles the heavy lifting of structure and design, while you focus on refining the message, customizing visuals, and ensuring the presentation meets your specific goals. The result is a professional, visually appealing presentation created in a fraction of the time traditional methods would require.</p>
+            
+            <!-- HINGLISH SUMMARY FOR SECTION 4 -->
+            <div class="hinglish-summary">
+                <h4>📚 Hinglish Summary (Section 4)</h4>
+                <p><strong>Tome deck banana bahut simple process hai!</strong> Pehle Tome open karo aur "Start with a story" option select karo. Phir apna narrative input karo - ye tumhara khud ka likh sakta hai ya Jasper se generated ho sakta hai. Tome automatically slides create kar dega visuals ke saath - ye content analyze karke appropriate titles, visuals, aur logical distribution khud kar leta hai. <strong>Automation ke baad customization ka time aata hai</strong> - tum layout change kar sakte ho, colors adjust kar sakte ho, flow modify kar sakte ho, aur data visuals add kar sakte ho jaise charts, screenshots, images wagera. Tome real-time preview deta hai, AI suggestions bhi deta hai, aur collaboration tools bhi provide karta hai. Best approach ye hai ki automated output se shuru karo aur gradually improvements karo. Isse professional presentation minutes mein ready ho jati hai!</p>
+            </div>
+            
+            <!-- PRACTICE QUESTIONS FOR SECTION 4 -->
+            <div class="practice-section">
+                <h3>🎓 Practice Questions - Section 4</h3>
+                
+                <div class="question">
+                    <h4>Q1: What is the first step when building a Tome deck?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The first step is to open Tome and select the "Start with a story" option, which is specifically designed for narrative-driven presentations where you input text that Tome transforms into slides.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: What are two sources from which you can input narrative text into Tome?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> You can either write your own narrative directly in Tome's interface, or paste narrative text generated from Jasper (or use a hybrid approach by modifying Jasper's output).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: What three main customization options are available after Tome generates automated slides?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The three main customization options are: (1) Layout adjustments (changing templates, rearranging elements), (2) Color customization (selecting palettes, creating custom schemes), and (3) Flow adjustment (reordering slides, adding/removing sections).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: What types of data visuals can you add to enhance Tome slides?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> You can add various data visuals including charts (bar, line, pie, scatter plots), screenshots, custom images, data tables, and icons/illustrations to enhance the presentation.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q5: What is the recommended approach when building Tome decks?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Start simple with the automated output and make incremental improvements rather than rebuilding from scratch. Trust Tome's AI for structure but customize for specific audience and branding needs through iteration.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KEY TAKEAWAYS FOR SECTION 4 -->
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways - Section 4</h3>
+                <ul>
+                    <li>Building a Tome deck starts with the "Start with a story" feature for narrative-driven presentations</li>
+                    <li>Input narratives can come from your own writing or from AI tools like Jasper</li>
+                    <li>Tome automatically analyzes content, creates appropriate structure, and generates visuals in seconds</li>
+                    <li>Extensive customization options include layout, colors, flow, and visual elements</li>
+                    <li>The process balances AI automation (for structure and design) with human creativity (for refinement and customization)</li>
+                    <li>Interactive features like real-time preview and AI suggestions enhance the building experience</li>
+                    <li>Professional presentations can be created in minutes rather than hours using this workflow</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 5: INTEGRATING JASPER + TOME ==================== -->
+        <section id="section5">
+            <h2>5. Integrating Jasper + Tome</h2>
+            
+            <p>The true power of modern data storytelling emerges when we combine the strengths of multiple AI tools. <strong>Jasper</strong> excels at creating compelling narratives from raw data, while <strong>Tome</strong> transforms these narratives into visually stunning presentations. When integrated effectively, these tools create a seamless workflow that dramatically reduces creation time while maintaining high quality and narrative consistency.</p>
+            
+            <div class="professor-note">
+                The professor emphasized that although you can use these tools independently, integration gives you more benefits. The best approach is to integrate Jasper with Tome rather than using them separately. This integration creates a powerful workflow for data storytelling.
+            </div>
+            
+            <!-- SUBSECTION 5.1 -->
+            <h3 id="section5-1">5.1 Case Study: GreenHarvest Analytics</h3>
+            
+            <p>To demonstrate the complete integration workflow, let's work through a detailed case study involving an AgriTech startup called <strong>GreenHarvest Analytics</strong> that implemented AI-based irrigation systems for Indian farmers.</p>
+            
+            <h4>Case Study Context:</h4>
+            <div class="highlight-box">
+                <h4>🌾 GreenHarvest Analytics - AgriTech Startup</h4>
+                <p><strong>Industry:</strong> Agricultural Technology</p>
+                <p><strong>Focus:</strong> AI-based irrigation systems for improved farming outcomes</p>
+                <p><strong>Timeline:</strong> 2021-2023 (3 years of data)</p>
+                <p><strong>Geography:</strong> India (focus on small farmers)</p>
+            </div>
+            
+            <h4>Input Data Summary:</h4>
+            <p>This is the raw data that will be given to Jasper as input for generating the narrative:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Average Crop Yield (tons/acre)</th>
+                        <th>Rainfall Dependency</th>
+                        <th>Farmer Income Growth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2021</strong></td>
+                        <td>2.8</td>
+                        <td>80%</td>
+                        <td>5%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2022</strong></td>
+                        <td>3.2</td>
+                        <td>70%</td>
+                        <td>8%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2023</strong></td>
+                        <td>3.8</td>
+                        <td>55%</td>
+                        <td>15%</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Data Analysis:</h4>
+            <p>Let's analyze the trends visible in this data:</p>
+            <ul>
+                <li><strong>Crop Yield:</strong> Increasing from 2.8 to 3.8 tons/acre (35.7% increase over 3 years)</li>
+                <li><strong>Rainfall Dependency:</strong> Decreasing from 80% to 55% (31.25% reduction - this is positive as it indicates less vulnerability to weather)</li>
+                <li><strong>Farmer Income Growth:</strong> Increasing from 5% to 15% (tripling of growth rate)</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor highlighted that year by year, we have better crop yield, lesser dependency on rainfall (which is good), and increased farmer income. This data shows clear positive trends that we'll use with Jasper and Tome to create a compelling story.
+            </div>
+            
+            <p><strong>Key Insight:</strong> All three metrics show positive trends, indicating that the AI-based irrigation intervention was successful in improving agricultural outcomes for farmers.</p>
+            
+            <!-- SUBSECTION 5.2 -->
+            <h3 id="section5-2">5.2 Step 1: Creating Jasper Prompt</h3>
+            
+            <p>The first step in the integration workflow is crafting an effective prompt for Jasper. A well-structured prompt ensures that Jasper generates a narrative that is not only factually accurate but also emotionally engaging and suitable for transformation into visual slides.</p>
+            
+            <h4>Components of an Effective Jasper Prompt:</h4>
+            
+            <div class="example-box">
+                <h4>📝 The Jasper Prompt for GreenHarvest Case Study:</h4>
+                <p><em>"Write a 200-word story about how AI-based irrigation improved yields and income for Indian farmers between 2021 and 2023. Use a hopeful and informative tone."</em></p>
+            </div>
+            
+            <h4>Prompt Breakdown and Analysis:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prompt Element</th>
+                        <th>Value</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Length Specification</strong></td>
+                        <td>"200-word story"</td>
+                        <td>Ensures concise, focused narrative suitable for presentation slides</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Topic/Focus</strong></td>
+                        <td>"AI-based irrigation"</td>
+                        <td>Clearly defines the technological intervention being discussed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outcomes</strong></td>
+                        <td>"improved yields and income"</td>
+                        <td>Specifies what positive impacts to highlight</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Geography</strong></td>
+                        <td>"Indian farmers"</td>
+                        <td>Provides cultural and geographic context</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time Frame</strong></td>
+                        <td>"between 2021 and 2023"</td>
+                        <td>Defines the period covered by the data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tone Direction</strong></td>
+                        <td>"hopeful and informative"</td>
+                        <td>Sets emotional context; ensures balanced optimism with facts</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor explained that in this prompt, we're giving direction to Jasper about HOW AI-based irrigation has improved yield and income. We also provide the data as input along with this prompt. Notice that we never explicitly mentioned "traditional farming" in the prompt, but Jasper's intelligence will connect these dots to create a coherent story.
+            </div>
+            
+            <h4>Jasper's Output (Illustrative):</h4>
+            
+            <div class="highlight-box">
+                <p><em>"Over three years, GreenHarvest transformed traditional farming through AI-powered irrigation. Crop yields climbed from 2.8 to 3.8 tons per acre, while farmer incomes rose 15%. The secret lay in precision water management—using predictive rainfall models that reduced dependency on monsoons by nearly half. For thousands of small farmers, the technology meant not just better harvests, but renewed hope."</em></p>
+            </div>
+            
+            <h4>Analysis of Jasper's Intelligence:</h4>
+            
+            <p>Let's examine how Jasper demonstrated AI intelligence in generating this narrative:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jasper's Addition</th>
+                        <th>Not in Prompt/Data</th>
+                        <th>Intelligence Demonstrated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"transformed traditional farming"</td>
+                        <td>✓</td>
+                        <td>Jasper understood the context and added the baseline comparison (traditional farming vs. AI-enhanced farming)</td>
+                    </tr>
+                    <tr>
+                        <td>"The secret lay in precision water management"</td>
+                        <td>✓</td>
+                        <td>Jasper explained the mechanism behind AI irrigation's success</td>
+                    </tr>
+                    <tr>
+                        <td>"using predictive rainfall models"</td>
+                        <td>✓</td>
+                        <td>Connected the data point (reduced rainfall dependency) to a specific technology</td>
+                    </tr>
+                    <tr>
+                        <td>"reduced dependency on monsoons by nearly half"</td>
+                        <td>Calculated from data</td>
+                        <td>Jasper correctly interpreted 80% → 55% as "nearly half" reduction</td>
+                    </tr>
+                    <tr>
+                        <td>"not just better harvests, but renewed hope"</td>
+                        <td>✓</td>
+                        <td>Jasper incorporated the "hopeful" tone instruction effectively with emotional language</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor specifically highlighted that we never mentioned "traditional farming" in the prompt, but Jasper's intelligence allowed it to connect the dots so the story feels coherent. This is where Jasper's AI capabilities shine - it doesn't just repeat what you tell it, but adds contextual intelligence to create a complete, flowing narrative.
+            </div>
+            
+            <p><strong>Key Observation:</strong> Jasper successfully integrated:</p>
+            <ul>
+                <li>All three data points from the table (yields, rainfall dependency, income)</li>
+                <li>Contextual understanding (traditional vs. AI-enhanced farming)</li>
+                <li>Technical explanation (precision water management, predictive models)</li>
+                <li>Emotional resonance (hope, transformation, thousands of farmers)</li>
+                <li>Proper tone (hopeful yet informative)</li>
+            </ul>
+            
+            <!-- SUBSECTION 5.3 -->
+            <h3 id="section5-3">5.3 Step 2: Importing into Tome</h3>
+            
+            <p>After Jasper generates the narrative, the next step is to import it into Tome for visual transformation. This is where the textual story becomes a visually compelling presentation.</p>
+            
+            <h4>The Import Process:</h4>
+            
+            <div class="highlight-box">
+                <h4>Action: Paste Jasper Story → Tome Generates Presentation</h4>
+                <p><strong>Input:</strong> The 200-word narrative from Jasper (see above)</p>
+                <p><strong>Process:</strong> Tome's AI analyzes the narrative structure, identifies key themes, and automatically generates appropriate slides</p>
+                <p><strong>Output:</strong> A complete presentation deck with title and 5 content slides</p>
+            </div>
+            
+            <h4>Tome's Generated Presentation Structure:</h4>
+            
+            <div class="example-box">
+                <h4>📊 Automatic Slide Generation for GreenHarvest Case Study:</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Slide</th>
+                            <th>Content</th>
+                            <th>Purpose & Design Elements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Title Slide</strong></td>
+                            <td>"AI-Driven Farming Transformation in India"</td>
+                            <td><strong>Purpose:</strong> Creates an engaging, high-level title<br><strong>Design:</strong> Bold typography, possibly with agricultural imagery<br><strong>AI Decision:</strong> Extracted "transformation" theme from narrative</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slide 1</strong></td>
+                            <td>The Challenge — Rain-dependent agriculture</td>
+                            <td><strong>Purpose:</strong> Establishes the problem/baseline<br><strong>Content:</strong> Discusses traditional farming's vulnerability to monsoons<br><strong>Visuals:</strong> Might include images of rain-dependent fields, statistics on rainfall dependency</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slide 2</strong></td>
+                            <td>The Solution — AI-based irrigation</td>
+                            <td><strong>Purpose:</strong> Introduces the intervention<br><strong>Content:</strong> Explains precision water management and predictive models<br><strong>Visuals:</strong> Diagrams of AI irrigation systems, technology illustrations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slide 3</strong></td>
+                            <td>The Results — Improved yields and incomes</td>
+                            <td><strong>Purpose:</strong> Presents quantitative outcomes<br><strong>Content:</strong> Shows data: 2.8→3.8 tons/acre, 15% income growth, 55% rainfall dependency<br><strong>Visuals:</strong> Charts, graphs showing trends over 2021-2023</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slide 4</strong></td>
+                            <td>The Human Impact — Farmer testimonies</td>
+                            <td><strong>Purpose:</strong> Adds emotional dimension and real-world validation<br><strong>Content:</strong> Quotes or stories from farmers about renewed hope<br><strong>Visuals:</strong> Farmer photos, testimonial quotes, impact stories</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slide 5</strong></td>
+                            <td>Call to Action — Scaling innovation nationwide</td>
+                            <td><strong>Purpose:</strong> Provides forward-looking recommendations<br><strong>Content:</strong> Discusses expanding AI irrigation across India<br><strong>Visuals:</strong> Maps, growth projections, policy recommendations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized that we should look carefully at these slides created by Tome - many things are very related to the narrative but not directly mentioned in Jasper's story. Even "nationwide innovation scaling" was not mentioned anywhere in Jasper's narrative, but Tome applied its own AI logic to end with a slide about appropriate action for this story - suggesting to scale the innovation throughout the nation.
+            </div>
+            
+            <h4>Tome's AI Intelligence in Slide Generation:</h4>
+            
+            <p>Notice how Tome demonstrated sophisticated understanding:</p>
+            
+            <ul>
+                <li><strong>Problem-Solution Framework:</strong> Tome automatically structured the narrative using the challenge-solution-results-impact-action framework, even though this structure wasn't explicitly stated in Jasper's output</li>
+                
+                <li><strong>Slide 4 - Testimonies:</strong> Tome created a placeholder for farmer testimonies, recognizing the need for human validation even though specific testimonies weren't in the narrative</li>
+                
+                <li><strong>Slide 5 - Scaling:</strong> Tome added a forward-looking call to action about nationwide scaling, which wasn't mentioned in Jasper's story but logically follows from the success narrative</li>
+                
+                <li><strong>Visual Allocation:</strong> Tome knew which content needed data visualization (Slide 3), which needed human elements (Slide 4), and which needed strategic visuals (Slide 5)</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h4>🎯 The Intelligence of Auto-Generation</h4>
+                <p>Both Jasper and Tome add value beyond simple text processing:</p>
+                <ul>
+                    <li><strong>Jasper adds:</strong> Context, technical explanations, emotional language, narrative coherence</li>
+                    <li><strong>Tome adds:</strong> Structural frameworks, appropriate slide types, placeholder content, actionable conclusions</li>
+                </ul>
+                <p>This demonstrates how AI tools don't just format your content—they enhance it with contextual intelligence.</p>
+            </div>
+            
+            <!-- SUBSECTION 5.4 -->
+            <h3 id="section5-4">5.4 Step 3: Integration Benefits</h3>
+            
+            <p>Now that we've seen the complete workflow from data to final presentation, let's examine the specific benefits that integration provides compared to using these tools independently or working manually.</p>
+            
+            <h4>Core Integration Benefits:</h4>
+            
+            <div class="highlight-box">
+                <h4>1. Jasper Provides Structured, Emotional Narrative</h4>
+                <p><strong>What Jasper contributes:</strong></p>
+                <ul>
+                    <li>Transforms raw data into compelling stories with clear narrative arcs</li>
+                    <li>Adds emotional resonance while maintaining factual accuracy</li>
+                    <li>Structures information in a way that's easy to understand and remember</li>
+                    <li>Incorporates appropriate tone (hopeful, urgent, celebratory, etc.)</li>
+                    <li>Creates contextual connections that aren't explicitly in the data</li>
+                </ul>
+                <p><strong>Value:</strong> Without Jasper, you'd need to manually craft narratives from data, which is time-consuming and requires strong writing skills. Jasper ensures consistency in quality and tone.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>2. Tome Transforms Story into Visual Storytelling</h4>
+                <p><strong>What Tome contributes:</strong></p>
+                <ul>
+                    <li>Automatically structures narratives into logical slide sequences</li>
+                    <li>Generates appropriate visual elements for each content type</li>
+                    <li>Applies professional design principles without manual effort</li>
+                    <li>Creates visual hierarchy that guides audience attention</li>
+                    <li>Adds structural elements (problem-solution-impact) that strengthen the story</li>
+                </ul>
+                <p><strong>Value:</strong> Without Tome, creating visually appealing presentations requires design expertise and significant time. Tome democratizes professional presentation design.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>3. Together, They Reduce Creation Time</h4>
+                <p><strong>Time Comparison:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Approach</th>
+                            <th>Typical Time Required</th>
+                            <th>Quality Consistency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Manual (traditional)</strong></td>
+                            <td>2-4 hours for 5-slide deck</td>
+                            <td>Variable (depends on skill)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Using only Jasper</strong></td>
+                            <td>1-2 hours (story + manual slides)</td>
+                            <td>Good narrative, variable visuals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Using only Tome</strong></td>
+                            <td>45-90 minutes (requires well-written input)</td>
+                            <td>Good visuals, variable narrative</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jasper + Tome Integration</strong></td>
+                            <td>5-15 minutes + customization time</td>
+                            <td>Consistently high quality</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><strong>The professor's insight:</strong> If you look at the previous case study, if we have data with us, maybe in less than 10 minutes or 5 minutes, we can come up with the first set of slides. This is a dramatic time savings!</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>4. Maintain Narrative Consistency</h4>
+                <p><strong>The Consistency Problem:</strong></p>
+                <p>Without integrated tools, a common challenge occurs:</p>
+                <ul>
+                    <li>Data says one thing</li>
+                    <li>Your interpretation might say something different</li>
+                    <li>Your visuals might create yet another impression</li>
+                    <li>The overall message becomes muddled or contradictory</li>
+                </ul>
+                
+                <p><strong>How Integration Solves This:</strong></p>
+                <ul>
+                    <li>Jasper ensures the narrative accurately reflects the data</li>
+                    <li>Tome ensures visuals accurately reflect the narrative</li>
+                    <li>The entire flow from data → story → slides maintains coherence</li>
+                    <li>Automated tools reduce human error in interpretation</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized that many times it happens that the data is actually saying something, but our interpretation is something different, and then when we start preparing our visuals, those visuals may create different meanings. But with the help of these automated tools like Jasper and Tome, we can create those narratives in a consistent manner from the story flow to visual representation, and overall time will get reduced significantly.
+            </div>
+            
+            <h4>Summary of Integration Benefits:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Benefit Category</th>
+                        <th>Specific Advantages</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Speed</strong></td>
+                        <td>First draft in 5-10 minutes vs. 2-4 hours manually</td>
+                        <td>80-90% time reduction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quality</strong></td>
+                        <td>Professional narrative + design without expertise</td>
+                        <td>Democratizes high-quality storytelling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Data → Story → Visuals maintain coherence</td>
+                        <td>Reduces misinterpretation errors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intelligence</strong></td>
+                        <td>AI adds contextual understanding and structure</td>
+                        <td>Enhanced beyond simple formatting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>Can process multiple datasets quickly</td>
+                        <td>Enables more frequent, data-driven communication</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- HINGLISH SUMMARY FOR SECTION 5 -->
+            <div class="hinglish-summary">
+                <h4>📚 Hinglish Summary (Section 5)</h4>
+                <p><strong>Jasper aur Tome ka integration sabse powerful approach hai data storytelling ke liye!</strong> GreenHarvest case study mein humne dekha kaise 2021-2023 ka agricultural data (crop yield badha, rainfall dependency kam hui, farmer income increase hui) pehle Jasper ko diya. Jasper ne 200-word hopeful story create ki jisme traditional farming transformation, precision water management, aur renewed hope jaise contextual elements add kiye jo directly data mein nahi the - ye Jasper ki intelligence hai! Phir ye story Tome mein paste karne par automatically 6 slides ban gaye: title, challenge (rain dependency), solution (AI irrigation), results (data charts), human impact (farmer testimonies), aur call to action (nationwide scaling). <strong>Integration ke benefits bahut clear hain</strong> - time 5-10 minutes mein first draft ready (manually 2-4 hours lagta), narrative aur visuals dono consistent rahte hain (data se story se slides tak coherence maintain hota hai), aur quality consistently high rahti hai bina expertise ke. Ye workflow clarity (Jasper se) aur creativity (Tome se) ko combine karke impactful storytelling create karta hai!</p>
+            </div>
+            
+            <!-- PRACTICE QUESTIONS FOR SECTION 5 -->
+            <div class="practice-section">
+                <h3>🎓 Practice Questions - Section 5</h3>
+                
+                <div class="question">
+                    <h4>Q1: What were the three key metrics tracked in the GreenHarvest Analytics case study?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The three metrics were: (1) Average crop yield (tons/acre) - which increased from 2.8 to 3.8, (2) Rainfall dependency percentage - which decreased from 80% to 55%, and (3) Farmer income growth percentage - which increased from 5% to 15%.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: What six components should an effective Jasper prompt include?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> An effective prompt should include: length specification (e.g., 200 words), topic/focus, desired outcomes to highlight, geography/context, time frame, and tone direction (e.g., hopeful and informative).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: Give one example of how Jasper demonstrated AI intelligence in the GreenHarvest narrative.</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Jasper added "transformed traditional farming" context without it being explicitly mentioned in the prompt, demonstrating contextual intelligence by understanding the baseline comparison (traditional vs. AI-enhanced farming) was needed for coherent storytelling.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: What was included in Slide 5 of Tome's generated presentation, and why is it significant?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Slide 5 included "Scaling innovation nationwide" as a call to action. This is significant because it wasn't mentioned in Jasper's narrative but Tome's AI logically concluded this was an appropriate action recommendation, demonstrating autonomous intelligence.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q5: What are two main benefits of integrating Jasper with Tome compared to using them separately?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Two main benefits are: (1) Dramatic time reduction - first draft ready in 5-10 minutes versus 2-4 hours manually, and (2) Narrative consistency - maintains coherence from data to story to visuals, reducing misinterpretation errors.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q6: Why is narrative consistency important in data storytelling?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Narrative consistency ensures that the data, interpretation, and visuals all convey the same message without contradiction. Without it, data might say one thing, interpretation another, and visuals create a third impression, leading to muddled or confusing presentations.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KEY TAKEAWAYS FOR SECTION 5 -->
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways - Section 5</h3>
+                <ul>
+                    <li>Integration of Jasper and Tome provides greater value than using tools independently</li>
+                    <li>Effective Jasper prompts should specify length, topic, outcomes, geography, timeframe, and tone</li>
+                    <li>Jasper's AI adds contextual intelligence beyond simple data formatting (e.g., "traditional farming" context)</li>
+                    <li>Tome's AI creates structured presentations with problem-solution-impact frameworks automatically</li>
+                    <li>Both tools demonstrate autonomous intelligence by adding relevant content not explicitly provided</li>
+                    <li>Integration reduces creation time by 80-90% (5-10 minutes vs. 2-4 hours for first draft)</li>
+                    <li>The workflow maintains narrative consistency from data through story to final visual presentation</li>
+                    <li>Combining Jasper's clarity with Tome's creativity results in impactful, professional storytelling</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 6: SUMMARY & TAKEAWAYS ==================== -->
+        <section id="section6">
+            <h2>6. Summary & Takeaways</h2>
+            
+            <p>Throughout this lecture, we've explored how modern AI tools transform the landscape of data storytelling. Let's consolidate our understanding by examining the complete picture of how Jasper, Tome, and their integration work together to create impactful narratives.</p>
+            
+            <h4>Comprehensive Tool Comparison:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                        <th>Key Strength</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Jasper</strong></td>
+                        <td>Generates compelling narratives from data</td>
+                        <td>Raw data + prompts + context</td>
+                        <td>Story text (structured narratives with emotional resonance)</td>
+                        <td>Clarity - transforms complex data into understandable stories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tome</strong></td>
+                        <td>Transforms story into dynamic visuals</td>
+                        <td>Text narratives (from Jasper or manual input)</td>
+                        <td>Presentation deck (slides with visuals, charts, structure)</td>
+                        <td>Creativity - converts narratives into engaging visual experiences</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integration</strong></td>
+                        <td>Combines clarity + creativity</td>
+                        <td>Data + prompts → automated workflow</td>
+                        <td>Impactful storytelling (complete data-to-presentation pipeline)</td>
+                        <td>Efficiency - maintains consistency while dramatically reducing time</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>The Complete Workflow:</h4>
+            
+            <div class="highlight-box">
+                <h4>📊 From Data to Impactful Presentation:</h4>
+                <ol>
+                    <li><strong>Start with Data:</strong> Raw datasets with metrics, trends, and patterns</li>
+                    <li><strong>Create Jasper Prompt:</strong> Specify length, topic, tone, and context</li>
+                    <li><strong>Jasper Generates Narrative:</strong> AI creates structured, emotional story (adds contextual intelligence)</li>
+                    <li><strong>Import to Tome:</strong> Paste Jasper's output into Tome's "Start with a story" feature</li>
+                    <li><strong>Tome Creates Slides:</strong> AI generates structured presentation with appropriate visuals</li>
+                    <li><strong>Customize and Refine:</strong> Adjust layout, colors, flow, and visuals as needed</li>
+                    <li><strong>Final Review:</strong> Ensure narrative consistency from data through visuals</li>
+                    <li><strong>Present or Share:</strong> Deliver impactful data story to stakeholders</li>
+                </ol>
+            </div>
+            
+            <h4>Key Principles Revisited:</h4>
+            
+            <div class="example-box">
+                <h4>🎯 Design Principles for Effective Data Stories:</h4>
+                <ul>
+                    <li><strong>Design Hierarchy:</strong> Headline → Key Insight → Visual Proof</li>
+                    <li><strong>3I Model:</strong> Insight (what data reveals) → Interpretation (what it means) → Impact (why it matters)</li>
+                    <li><strong>One Insight Per Slide:</strong> Prevents cognitive overload and maintains focus</li>
+                    <li><strong>Consistency:</strong> Uniform fonts, colors, and iconography create professional appearance</li>
+                    <li><strong>Minimalism:</strong> Let visuals speak; minimize text overload</li>
+                    <li><strong>White Space:</strong> Directs attention and improves comprehension</li>
+                    <li><strong>Cite Sources:</strong> Establishes credibility and transparency</li>
+                    <li><strong>Story Flow:</strong> Problem → Evidence → Impact → Next Steps</li>
+                </ul>
+            </div>
+            
+            <h4>Why This Matters:</h4>
+            
+            <p>In today's data-driven world, the ability to communicate insights effectively is as important as finding those insights in the first place. The integration of AI tools like Jasper and Tome represents a fundamental shift in how we approach data storytelling:</p>
+            
+            <ul>
+                <li><strong>Democratization:</strong> Professional-quality storytelling is no longer limited to those with design or writing expertise</li>
+                <li><strong>Speed:</strong> What once took hours or days can now be accomplished in minutes</li>
+                <li><strong>Consistency:</strong> Automated workflows reduce human error and maintain narrative coherence</li>
+                <li><strong>Scalability:</strong> Organizations can create more frequent, data-driven communications</li>
+                <li><strong>Focus on Insights:</strong> Less time on mechanics means more time analyzing and interpreting data</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor concluded by emphasizing that Jasper is for generating compelling narratives from data, Tome is for transforming stories into dynamic visuals, and when combined, we are combining clarity with creativity. The result is using story and presentation to communicate in a very impactful manner. This workflow represents the future of data storytelling.
+            </div>
+            
+            <h4>Final Recommendations:</h4>
+            
+            <div class="highlight-box">
+                <h4>🚀 Best Practices for Success:</h4>
+                <ol>
+                    <li><strong>Start with Clean Data:</strong> Ensure your input data is accurate and well-organized</li>
+                    <li><strong>Craft Clear Prompts:</strong> Invest time in creating specific, well-structured Jasper prompts</li>
+                    <li><strong>Trust the AI:</strong> Let the tools do what they're designed for; don't micromanage every detail</li>
+                    <li><strong>Iterate:</strong> First automated output is a strong starting point, not necessarily the final product</li>
+                    <li><strong>Maintain Context:</strong> Ensure your story considers the audience, purpose, and setting</li>
+                    <li><strong>Review for Accuracy:</strong> AI is powerful but not infallible; verify factual claims</li>
+                    <li><strong>Practice:</strong> Experiment with different prompts, styles, and data types to build proficiency</li>
+                    <li><strong>Stay Updated:</strong> AI tools evolve rapidly; keep learning about new features and capabilities</li>
+                </ol>
+            </div>
+            
+            <h4>Looking Forward:</h4>
+            
+            <p>The field of AI-assisted data storytelling continues to evolve. As these tools become more sophisticated, we can expect:</p>
+            <ul>
+                <li>Better understanding of nuanced data relationships</li>
+                <li>More sophisticated visual recommendations based on content type</li>
+                <li>Improved integration between various AI tools in the workflow</li>
+                <li>Greater customization options while maintaining automation benefits</li>
+                <li>Enhanced ability to handle complex, multi-dimensional datasets</li>
+            </ul>
+            
+            <p>The key is to view these tools not as replacements for human creativity and judgment, but as powerful assistants that augment our capabilities and free us to focus on higher-level thinking and strategic decision-making.</p>
+            
+            <!-- FINAL HINGLISH SUMMARY -->
+            <div class="hinglish-summary">
+                <h4>📚 Final Hinglish Summary (Complete Lecture)</h4>
+                <p><strong>Is lecture mein humne seekha ki modern data storytelling kaise AI tools ke saath transform ho rahi hai.</strong> Jasper raw data se compelling narratives create karta hai - wo clarity provide karta hai. Tome in narratives ko visually stunning presentations mein convert karta hai - wo creativity laata hai. <strong>Dono ka integration sabse powerful hai</strong> kyunki ye clarity aur creativity dono ko combine kar deta hai. Design principles include karte hain hierarchy (headline → insight → visual proof), 3I Model (Insight → Interpretation → Impact), consistency, minimalism, white space, aur source citation. Practical examples se humne dekha ki ek simple sentence se bhi complete multi-slide presentations ban jaate hain. GreenHarvest case study ne demonstrate kiya ki kaise data → Jasper prompt → narrative → Tome import → final presentation ka complete workflow 5-10 minutes mein first draft ready kar deta hai (versus 2-4 hours manually). <strong>Ye sirf time saving nahi hai</strong> - ye narrative consistency maintain karta hai, quality consistently high rakhta hai, aur professional storytelling ko democratize karta hai. Future mein ye tools aur bhi sophisticated honge, par remember karo - ye human creativity ko replace nahi karte, balki augment karte hain. Practice karo, iterate karo, aur trust the AI while maintaining your strategic oversight!</p>
+            </div>
+            
+            <!-- COMPREHENSIVE FINAL PRACTICE QUESTIONS -->
+            <div class="practice-section">
+                <h3>🎓 Comprehensive Review Questions</h3>
+                
+                <div class="question">
+                    <h4>Q1: Explain the complete workflow from data to final presentation using Jasper and Tome integration.</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The workflow starts with raw data, then creates a detailed Jasper prompt specifying length, topic, tone, and context. Jasper generates a narrative story with contextual intelligence. This story is imported into Tome's "Start with a story" feature, which automatically creates structured slides with visuals. Finally, customize layout, colors, and flow, then review for narrative consistency before presenting.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q2: Compare and contrast Jasper and Tome in terms of purpose, input, and output.</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Jasper's purpose is generating narratives from data; it takes raw data and prompts as input and produces story text as output, providing clarity. Tome's purpose is transforming stories into visuals; it takes text narratives as input and produces presentation decks as output, providing creativity. Together they combine clarity and creativity for impactful storytelling.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q3: What is the 3I Model and why is it effective for data storytelling?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> The 3I Model consists of Insight (showing what data reveals), Interpretation (explaining what it means), and Impact (stating why it matters or what should be done). It's effective because it transforms raw data into actionable narratives by moving from observation to understanding to value proposition, creating complete and compelling stories.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q4: List at least four design rules for effective visual storytelling and explain one in detail.</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Four rules are: one key idea per slide, use consistent colors/icons, avoid text overuse, leave white space, and cite sources. White space is crucial because it directs attention to key elements, reduces clutter, improves readability, and ensures audiences focus on intended content rather than being distracted by overcrowded slides.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h4>Q5: What are three specific benefits of integrating Jasper with Tome versus using them independently?</h4>
+                    <div class="answer">
+                        <strong>Answer:</strong> Three benefits are: (1) Dramatic time savings - first draft ready in 5-10 minutes versus 2-4 hours manually, (2) Narrative consistency maintained from data through story to visuals reducing misinterpretation, and (3) Consistently high quality without requiring design or writing expertise, democratizing professional storytelling.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OVERALL KEY TAKEAWAYS -->
+            <div class="key-takeaways">
+                <h3>🔑 Overall Key Takeaways - Complete Lecture</h3>
+                <ul>
+                    <li>Jasper and Tome are complementary AI tools - Jasper for narrative clarity, Tome for visual creativity</li>
+                    <li>Integration of both tools provides maximum value through speed, consistency, and quality</li>
+                    <li>Design hierarchy (Headline → Insight → Visual Proof) structures effective slides</li>
+                    <li>The 3I Model (Insight → Interpretation → Impact) transforms data into actionable stories</li>
+                    <li>Core design principles: one idea per slide, consistency, minimalism, white space, source citation</li>
+                    <li>Tome can generate complete presentations from single-sentence inputs with contextual intelligence</li>
+                    <li>Effective Jasper prompts specify length, topic, outcomes, geography, timeframe, and tone</li>
+                    <li>Both tools demonstrate autonomous intelligence by adding relevant context not explicitly provided</li>
+                    <li>Time reduction of 80-90% compared to manual creation (5-10 minutes vs. 2-4 hours)</li>
+                    <li>Narrative consistency from data to presentation reduces misinterpretation errors</li>
+                    <li>Tools democratize professional storytelling, making it accessible without specialized expertise</li>
+                    <li>Best practice: trust AI automation for structure, customize for specific audience and branding needs</li>
+                    <li>The workflow represents the future of data storytelling - augmenting human creativity rather than replacing it</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 7: COMPREHENSIVE MIND MAP ==================== -->
+        <section id="mindmap">
+            <div class="mindmap">
+                <h2>7. 🧠 Comprehensive Mind Map: Designing Data Stories in Tome</h2>
+                
+                <div class="mindmap-container">
+                    <div class="mindmap-center">
+                        Designing Data Stories in Tome
+                    </div>
+                    
+                    <div class="mindmap-branches">
+                        <!-- BRANCH 1: INTRODUCTION TO TOME -->
+                        <div class="branch">
+                            <h4>1. Introduction to Tome</h4>
+                            <ul>
+                                <li>AI-driven presentation platform</li>
+                                <li>Focuses on visual narratives</li>
+                                <li>Generates slides from text/Jasper</li>
+                                <li>Integrates multimedia (images, videos, charts)</li>
+                                <li>Interactive story flow</li>
+                                <li>Complements Jasper (text generation)</li>
+                                <li>Example: Renewable energy 6-slide presentation</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 2: VISUAL STORYTELLING PRINCIPLES -->
+                        <div class="branch">
+                            <h4>2. Visual Storytelling Principles</h4>
+                            <ul>
+                                <li><strong>Design Hierarchy:</strong> Headline → Insight → Visual Proof</li>
+                                <li><strong>3I Model:</strong> Insight → Interpretation → Impact</li>
+                                <li><strong>Consistency:</strong> Fonts, colors, icons</li>
+                                <li><strong>Minimalism:</strong> One insight per slide</li>
+                                <li><strong>White Space:</strong> Focus attention</li>
+                                <li><strong>Cite Sources:</strong> Establish credibility</li>
+                                <li><strong>Story Flow:</strong> Problem → Evidence → Impact → Next Steps</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 3: PRACTICAL EXAMPLES -->
+                        <div class="branch">
+                            <h4>3. Practical Examples</h4>
+                            <ul>
+                                <li><strong>Customer Engagement:</strong> 25% increase → 4 slides</li>
+                                <li>Title, graphs, quotes, recommendations</li>
+                                <li><strong>Work From Home:</strong> Question-based hook</li>
+                                <li>Hook → Data → Insight → Implication → Action</li>
+                                <li>Collaboration tools offset isolation costs</li>
+                                <li>Hybrid work boosts creativity</li>
+                                <li>Call to action: Flexible policies</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 4: BUILDING A TOME DECK -->
+                        <div class="branch">
+                            <h4>4. Building a Tome Deck</h4>
+                            <ul>
+                                <li>Open Tome → "Start with a story"</li>
+                                <li>Input narrative (own or Jasper)</li>
+                                <li>Automatic slide creation with visuals</li>
+                                <li>Customize: layout, colors, flow</li>
+                                <li>Add data visuals (charts, screenshots)</li>
+                                <li>Real-time preview</li>
+                                <li>AI suggestions for improvements</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 5: JASPER + TOME INTEGRATION -->
+                        <div class="branch">
+                            <h4>5. Jasper + Tome Integration</h4>
+                            <ul>
+                                <li><strong>Case Study:</strong> GreenHarvest Analytics</li>
+                                <li>Data: Crop yield ↑, Rainfall dependency ↓, Income ↑</li>
+                                <li><strong>Step 1:</strong> Create Jasper prompt (200 words, hopeful tone)</li>
+                                <li><strong>Step 2:</strong> Import narrative into Tome</li>
+                                <li><strong>Step 3:</strong> Auto-generates 6 slides</li>
+                                <li>Challenge → Solution → Results → Impact → Action</li>
+                                <li>AI adds contextual intelligence</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 6: INTEGRATION BENEFITS -->
+                        <div class="branch">
+                            <h4>6. Integration Benefits</h4>
+                            <ul>
+                                <li><strong>Time Savings:</strong> 5-10 min vs. 2-4 hours</li>
+                                <li><strong>Consistency:</strong> Data → Story → Visuals coherence</li>
+                                <li><strong>Quality:</strong> Professional without expertise</li>
+                                <li><strong>Clarity + Creativity:</strong> Best of both tools</li>
+                                <li><strong>Scalability:</strong> Multiple datasets quickly</li>
+                                <li>Democratizes professional storytelling</li>
+                                <li>Reduces misinterpretation errors</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 7: KEY CONCEPTS -->
+                        <div class="branch">
+                            <h4>7. Key Concepts</h4>
+                            <ul>
+                                <li><strong>Jasper:</strong> Text generation, narrative clarity</li>
+                                <li><strong>Tome:</strong> Visual transformation, creative design</li>
+                                <li><strong>Input:</strong> Data + Prompts</li>
+                                <li><strong>Output:</strong> Impactful presentations</li>
+                                <li>Contextual AI intelligence</li>
+                                <li>Autonomous content generation</li>
+                                <li>Professional design principles</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- BRANCH 8: BEST PRACTICES -->
+                        <div class="branch">
+                            <h4>8. Best Practices</h4>
+                            <ul>
+                                <li>Start with clean, organized data</li>
+                                <li>Craft specific, detailed prompts</li>
+                                <li>Trust AI automation for structure</li>
+                                <li>Iterate and refine outputs</li>
+                                <li>Maintain narrative consistency</li>
+                                <li>Review for factual accuracy</li>
+                                <li>Customize for audience/branding</li>
+                                <li>Practice with varied data types</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="diagram-placeholder" style="margin-top: 40px;">
+                    [Visual Connection: All branches connect back to central concept of "Designing Data Stories in Tome" showing the interconnected nature of principles, tools, and practices]
+                </div>
+            </div>
+        </section>
+        
+        <!-- ==================== FOOTER ==================== -->
+        <footer>
+
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+        </footer>
+        
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain-Specific Data Visualisation - Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        /* ========== GENERAL STYLING ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* ========== HEADER STYLING ========== */
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        
+        /* ========== TABLE OF CONTENTS ========== */
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .toc ul li:hover {
+            background: #3498db;
+            transform: translateX(10px);
+        }
+        
+        .toc ul li a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+        }
+        
+        .toc ul li:hover a {
+            color: white;
+        }
+        
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        /* ========== SECTION STYLING ========== */
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 6px solid #3498db;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #f39c12;
+        }
+        
+        /* ========== TEXT FORMATTING ========== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #16a085;
+            font-style: italic;
+        }
+        
+        /* ========== LISTS ========== */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* ========== TABLES ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e8f4f8;
+            transition: all 0.3s;
+        }
+        
+        /* ========== SPECIAL BOXES ========== */
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            font-weight: bold;
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .hinglish-summary h4 {
+            color: #fff;
+            border-left: 4px solid #fff;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .key-takeaways h4 {
+            color: #155724;
+            border-left: 4px solid #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-placeholder {
+            background: #e3f2fd;
+            border: 2px dashed #2196f3;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #1976d2;
+            font-style: italic;
+        }
+        
+        /* ========== PRACTICE QUESTIONS ========== */
+        .practice-questions {
+            background: #f0f8ff;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .practice-questions h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .question strong {
+            color: #c0392b;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .answer {
+            background: #e8f5e9;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        /* ========== MIND MAP ========== */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .branch {
+            flex: 1;
+            margin: 15px;
+            min-width: 250px;
+        }
+        
+        .branch-title {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .sub-nodes {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .sub-node {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #e74c3c;
+            font-size: 0.95em;
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+            
+            .branches {
+                flex-direction: column;
+            }
+        }
+        
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========== HEADER SECTION ========== -->
+        <div class="header">
+            <h1>📊 Domain-Specific Data Visualisation</h1>
+            <p class="subtitle">Storytelling and Data Visualization</p>
+            <p class="subtitle">Created by Armaan Kachhawa</p>
+        </div>
+
+        <!-- ========== TABLE OF CONTENTS ========== -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Visualisation in Journalism & Public Policy</a>
+                    <ul>
+                        <li><a href="#section1-1">1.1 What Makes These Domains Unique?</a></li>
+                        <li><a href="#section1-2">1.2 Storytelling with Data</a></li>
+                        <li><a href="#section1-3">1.3 Techniques Commonly Used</a></li>
+                        <li><a href="#section1-4">1.4 Case Studies</a></li>
+                        <li><a href="#section1-5">1.5 Activity: Fix the Bad Chart</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section2">2. Scientific & Research Visualisations</a>
+                    <ul>
+                        <li><a href="#section2-1">2.1 Nature of Scientific Data</a></li>
+                        <li><a href="#section2-2">2.2 Visualisation Types Across Sciences</a></li>
+                        <li><a href="#section2-3">2.3 Tools & Platforms</a></li>
+                        <li><a href="#section2-4">2.4 Integrity and Reproducibility</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section3">3. Business Intelligence (BI) & Industry Dashboards</a>
+                    <ul>
+                        <li><a href="#section3-1">3.1 Role of BI Visualisation</a></li>
+                        <li><a href="#section3-2">3.2 Types of Business Dashboards</a></li>
+                        <li><a href="#section3-3">3.3 Design Principles for Dashboards</a></li>
+                        <li><a href="#section3-4">3.4 BI Tools</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mindmap">4. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- ========== INTRODUCTION ========== -->
+        <div class="section">
+            <h2>🎯 Course Introduction</h2>
+            <p>
+                Welcome to the final module of our course on <strong>Storytelling and Data Visualization</strong>. This lecture focuses on <strong>domain-specific data visualization</strong>, bringing together all the principles we've learned throughout the course and applying them to real-world scenarios across different fields.
+            </p>
+            <p>
+                We will explore how visualization techniques and storytelling principles vary across three major domains:
+            </p>
+            <ul>
+                <li><strong>Journalism and Public Policy</strong> - Communicating with the general public</li>
+                <li><strong>Scientific Research</strong> - Presenting complex, high-dimensional data to domain experts</li>
+                <li><strong>Business Intelligence</strong> - Supporting decision-making for managers and executives</li>
+            </ul>
+        </div>
+
+        <!-- ========== SECTION 1: JOURNALISM & PUBLIC POLICY ========== -->
+        <div id="section1" class="section">
+            <h2>1️⃣ Visualisation in Journalism & Public Policy</h2>
+            
+            <!-- Section 1.1: What Makes These Domains Unique -->
+            <div id="section1-1">
+                <h3>1.1 What Makes These Domains Unique?</h3>
+                
+                <h4>Audience Characteristics</h4>
+                <p>
+                    When creating visualizations for journalism and public policy, we must consider a diverse audience that includes:
+                </p>
+                <ul>
+                    <li><strong>General Public</strong> - People without specialized domain knowledge</li>
+                    <li><strong>Policymakers</strong> - Decision-makers who need clear, actionable insights</li>
+                    <li><strong>Non-expert Readers</strong> - Individuals seeking to understand complex issues</li>
+                </ul>
+                
+                <div class="professor-note">
+                    The general public may not be domain experts, but we need to communicate information effectively to them. If data comes from a specialized domain, we must simplify it so that the general public can grasp the key messages easily.
+                </div>
+                
+                <h4>Primary Goals</h4>
+                <table>
+                    <tr>
+                        <th>Goal</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Simplify Complex Data</strong></td>
+                        <td>Transform technical or complicated datasets into accessible visual stories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reveal Trends</strong></td>
+                        <td>Make patterns and changes over time immediately visible</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ensure Transparency</strong></td>
+                        <td>Maintain clarity about data sources and methodology</td>
+                    </tr>
+                </table>
+                
+                <h4>Critical Constraints</h4>
+                <p>
+                    When designing visualizations for journalism and public policy, we must adhere to strict constraints:
+                </p>
+                
+                <table>
+                    <tr>
+                        <th>Constraint</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Avoid Misinformation</strong></td>
+                        <td>Any slight shift in perspective can turn information into misinformation. We must present facts accurately without distortion.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Scale Manipulation</strong></td>
+                        <td>Manipulating axes or scales can mislead viewers about the magnitude of changes or differences.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mobile-Friendly Design</strong></td>
+                        <td>Most of the general public accesses content on mobile devices with varying screen sizes.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accessibility</strong></td>
+                        <td>Visualizations must work across different bandwidths, devices, and accessibility needs (24/7 global access).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Narrative Structure</strong></td>
+                        <td>Must tell a coherent story with connected parts, not just present disconnected charts.</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Sometimes when we try to fit data into visualization, we might use factual data, but the visualization can give a different impression to the audience. We need to be very careful about these constraints. When presenting data on small screens, we cannot expect our audience to always use large displays, so mobile-friendly and accessible design is crucial.
+                </div>
+            </div>
+            
+            <!-- Section 1.2: Storytelling with Data -->
+            <div id="section1-2">
+                <h3>1.2 Storytelling with Data</h3>
+                
+                <h4>Narrative Visualisation Frameworks</h4>
+                
+                <h4>The Martini Glass Structure</h4>
+                <p>
+                    The <strong>Martini Glass Structure</strong> is a powerful framework for organizing narrative visualizations. When you tilt a martini glass horizontally, its shape represents the flow of data through a visualization system:
+                </p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Martini Glass Structure showing data flow from input (wide end) through transformation (narrow stem) to output (wide end)]
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Wide End (Input)</strong></td>
+                        <td>Multiple data sources and inputs converge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Narrow Stem</strong></td>
+                        <td>Data is filtered, processed, and transformed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wide End (Output)</strong></td>
+                        <td>Insights expand into multiple visualizations and explorations</td>
+                    </tr>
+                </table>
+                
+                <p>
+                    This structure should include <strong>annotations</strong> and <strong>proper labeling</strong> at each stage to guide the viewer through the data journey.
+                </p>
+                
+                <h4>Scrollytelling: Step-by-Step Narrative</h4>
+                <p>
+                    <strong>Scrollytelling</strong> combines two concepts:
+                </p>
+                <ul>
+                    <li><strong>Scroll</strong> - The physical action of scrolling on a device</li>
+                    <li><strong>Storytelling</strong> - A narrative that unfolds progressively</li>
+                </ul>
+                
+                <p>
+                    In scrollytelling, as users scroll through content on their devices, they navigate through a story. The visualization changes dynamically based on scroll position, creating an <em>interactive narrative experience</em>. This technique is particularly effective for mobile and small-screen devices.
+                </p>
+                
+                <div class="professor-note">
+                    This technique became very popular because when people scroll on their devices, they're progressing through a story in a very interactive manner. The visualization updates automatically as you scroll, making the experience intuitive and engaging.
+                </div>
+                
+                <h4>Real-World Examples</h4>
+                
+                <h4>Example 1: New York Times - Classroom Ventilation During COVID-19</h4>
+                <p>
+                    The New York Times created an interactive article titled <em>"How Classroom Design Should Have Open Windows or Air Flow"</em> during the COVID-19 pandemic. This is an excellent example of scrollytelling in journalism.
+                </p>
+                
+                <p><strong>Key Features of the Visualization:</strong></p>
+                
+                <p><strong>Initial Setup:</strong></p>
+                <ul>
+                    <li>Shows a classroom with an instructor and students</li>
+                    <li>Each desk is 6 feet apart (social distancing)</li>
+                    <li>Students are wearing masks</li>
+                    <li>Visualization demonstrates airflow patterns without requiring text reading</li>
+                </ul>
+                
+                <p><strong>Scenario 1 - Closed Windows:</strong></p>
+                <ul>
+                    <li>Airflow visualization shows circulation within the closed room</li>
+                    <li>Each person's breathing creates localized airflow centers (visible near mouths)</li>
+                    <li>One infected student is introduced (first row, first column)</li>
+                    <li>Legend appears: "Concentration of Contaminants" (yellow = less, red = more)</li>
+                    <li>Animation shows contamination spreading throughout the classroom over time</li>
+                    <li>Initially low concentration becomes uniformly high across the entire room</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Notice how just by scrolling, without reading any text, you can understand the story. The visualization itself communicates the danger of poor ventilation. You can see how one infected person can contaminate the entire classroom when windows are closed.
+                </div>
+                
+                <p><strong>Scenario 2 - Window Open:</strong></p>
+                <ul>
+                    <li>Right-side window opens</li>
+                    <li>Airflow pattern changes dramatically</li>
+                    <li>Fresh air enters and circulates differently</li>
+                    <li>Contamination spread is significantly reduced</li>
+                    <li>High concentration limited to specific areas</li>
+                </ul>
+                
+                <p><strong>Scenario 3 - Exhaust Fan + Air Cleaner:</strong></p>
+                <ul>
+                    <li>Exhaust fan installed at back of room</li>
+                    <li>Air cleaner added to the setup</li>
+                    <li>Fan pushes room air outside (unlike Scenario 2 where it brought fresh air in)</li>
+                    <li>Air cleaner continuously filters surrounding air</li>
+                    <li>Most of classroom remains at moderate or low contamination levels</li>
+                    <li>Instructor area shows reduced exposure compared to Scenario 1</li>
+                </ul>
+                
+                <p><strong>Cross-Sectional View:</strong></p>
+                <p>
+                    The visualization also provides cross-sectional views showing contamination density at different heights in the room:
+                </p>
+                <ul>
+                    <li><strong>Scenario 1 (Closed):</strong> Instructor most vulnerable; corner students have higher concentration due to airflow obstruction</li>
+                    <li><strong>Scenario 2 (Window Open):</strong> Front area only shows high density; concentration restricted from infected student to instructor level</li>
+                    <li><strong>Scenario 3 (Fan + Cleaner):</strong> Most balanced distribution with lowest overall contamination</li>
+                </ul>
+                
+                <div class="professor-note">
+                    This visualization is a brilliant example of how simulation combined with interactive scrollytelling can help people understand complex scenarios like ventilation and filtration working with social distancing and masking. It creates a closed-room crowd scenario using a school design as an example.
+                </div>
+                
+                <h4>Example 2: New York Times - Weather Visualization</h4>
+                <p>
+                    Another New York Times interactive piece focuses on weather data, specifically explaining why <strong>Chicago experienced cold waves as extreme as the Arctic</strong>.
+                </p>
+                
+                <p><strong>Visualization Elements:</strong></p>
+                <ul>
+                    <li><strong>Global Wind Patterns:</strong> Shows airflow at equatorial and polar regions</li>
+                    <li><strong>Wind Speed Coding:</strong> Red/pink = slower wind speed; Green = faster wind speed</li>
+                    <li><strong>Local Airflows:</strong> Three distinct local air flows with varying speeds</li>
+                    <li><strong>Cold Wave Direction:</strong> Animated arrows showing cold air movement</li>
+                    <li><strong>Temperature Gradient:</strong> Warmer air below navigation line, cold air above</li>
+                    <li><strong>Jet Streams:</strong> Fast-moving air currents shown with speed indicators</li>
+                </ul>
+                
+                <p>
+                    The visualization demonstrates how changing airflow directions and jet stream patterns caused Chicago to experience Arctic-level cold temperatures. The interactive scrolling format makes complex meteorological concepts accessible to general readers.
+                </p>
+                
+                <div class="professor-note">
+                    These two examples briefly explain how important it is to have good visualization in the journalism domain. Scrollytelling allows the story to progress in a very interactive manner while scrolling, making complex information digestible for everyone.
+                </div>
+            </div>
+            
+            <!-- Section 1.3: Techniques Commonly Used -->
+            <div id="section1-3">
+                <h3>1.3 Techniques Commonly Used</h3>
+                
+                <h4>Visual Forms</h4>
+                <table>
+                    <tr>
+                        <th>Technique</th>
+                        <th>Use Case</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Line Charts</strong></td>
+                        <td>Trends over time</td>
+                        <td>Show how values change across continuous periods</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Heat Maps</strong></td>
+                        <td>Density and intensity</td>
+                        <td>Use color gradients to represent data values across dimensions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Choropleth Maps</strong></td>
+                        <td>Geographic distributions</td>
+                        <td>Color-coded geographical regions showing data variations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sankey Diagrams</strong></td>
+                        <td>Budget flow and resource allocation</td>
+                        <td>Show how quantities flow from one category to another</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dot Density Maps</strong></td>
+                        <td>Population distribution</td>
+                        <td>Each dot represents a specific quantity, showing spatial patterns</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timelines</strong></td>
+                        <td>Historical sequences</td>
+                        <td>Display events chronologically with context</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proportional Symbols</strong></td>
+                        <td>Comparative magnitudes</td>
+                        <td>Size of symbols represents quantity or value</td>
+                    </tr>
+                </table>
+                
+                <h4>Recommended Tools</h4>
+                <table>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Datawrapper</strong></td>
+                        <td>GUI-based</td>
+                        <td>Quick, simple charts for journalism; no coding required</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flourish</strong></td>
+                        <td>GUI-based</td>
+                        <td>Animated and interactive visualizations with templates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tableau Public</strong></td>
+                        <td>GUI-based</td>
+                        <td>Comprehensive dashboards and interactive stories</td>
+                    </tr>
+                    <tr>
+                        <td><strong>D3.js</strong></td>
+                        <td>Programming library</td>
+                        <td>Custom, highly interactive visualizations (requires JavaScript coding)</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    D3.js is a JavaScript-based library where you need to write scripts to create very interactive visualizations. The first three tools (Datawrapper, Flourish, and Tableau) are more user-friendly - you can use mouse and keyboard to create visualizations by simply uploading data, without any programming knowledge.
+                </div>
+            </div>
+            
+            <!-- Section 1.4: Case Studies -->
+            <div id="section1-4">
+                <h3>1.4 Case Studies</h3>
+                
+                <h4>Case Study 1: COVID-19 "Flattening the Curve" Graphics</h4>
+                <p>
+                    The <strong>"Flattening the Curve"</strong> visualization became iconic during the COVID-19 pandemic. It effectively communicated complex epidemiological concepts to the general public.
+                </p>
+                
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li><strong>Time-based progression:</strong> Shows how the curve changes over time</li>
+                    <li><strong>Typical pattern:</strong> Starts with lower values → reaches a peak → decreases again</li>
+                    <li><strong>Historical precedent:</strong> Similar patterns appeared in 1918 Spanish Flu and 1999 influenza pandemics</li>
+                    <li><strong>Multiple peaks:</strong> Often shows initial large peak, then smaller subsequent peaks</li>
+                </ul>
+                
+                <p><strong>How the Curve Informs Different Stakeholders:</strong></p>
+                <table>
+                    <tr>
+                        <th>Curve Phase</th>
+                        <th>Action Taken</th>
+                        <th>By Whom</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Rising Phase</strong></td>
+                        <td>Policy decisions and restrictions</td>
+                        <td>Government and policymakers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Peak Phase</strong></td>
+                        <td>Individual behavioral changes (masking, distancing)</td>
+                        <td>General public</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Declining Phase</strong></td>
+                        <td>Health system adjustments and facility management</td>
+                        <td>Healthcare administrators</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    The curve helped in various sections of society. When the curve is increasing, lots of policy decisions are being made by governments. But they can only contribute up to a certain extent. At the end, when individuals start taking things seriously and take action, things start going down. Health system decisions and facilities also come into play and help in making this curve more flat and controlled.
+                </div>
+                
+                <h4>Case Study 2: Election Maps – Misleading vs. Balanced Visualization</h4>
+                <p>
+                    Election maps are commonly used in journalism, but they can be highly misleading if not designed correctly.
+                </p>
+                
+                <p><strong>The Problem with Traditional Election Maps:</strong></p>
+                <p>
+                    A typical 2016 U.S. election map shows geographical areas colored red or blue based on which party won:
+                </p>
+                
+                <p><strong>Limitations of Basic Electoral Maps:</strong></p>
+                <ul>
+                    <li><strong>Ignores population density:</strong> Shows only which party received more votes in each area</li>
+                    <li><strong>Binary representation:</strong> Entire state appears to belong to one party, but not 100% of people vote for the same party</li>
+                    <li><strong>No vote share information:</strong> Doesn't show what percentage of votes went to each party</li>
+                    <li><strong>Geographic distortion:</strong> Large but sparsely populated areas appear more significant</li>
+                </ul>
+                
+                <p><strong>Improved Approach:</strong></p>
+                <ul>
+                    <li><strong>Gradient coloring:</strong> Use color gradients to show vote share variations</li>
+                    <li><strong>Population-adjusted:</strong> Consider state population in the visualization</li>
+                    <li><strong>Vote share visualization:</strong> Show how votes are distributed from blue to red spectrum</li>
+                    <li><strong>Nuanced representation:</strong> Display the actual distribution rather than winner-takes-all approach</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Each of these visualizations tells a different story. The improved version doesn't just show which party won which state, but shows how the share of votes is distributed. This gives a much more accurate picture of public opinion rather than the misleading impression that entire states are uniformly red or blue.
+                </div>
+                
+                <h4>Case Study 3: Budget Visualizations using Sankey Diagrams</h4>
+                <p>
+                    <strong>Sankey diagrams</strong> are particularly effective for visualizing budget flows and resource allocation.
+                </p>
+                
+                <p><strong>Example: Personal Budget Flow</strong></p>
+                <p>
+                    A Sankey diagram can show how $1,500 in wages flows through different categories:
+                </p>
+                <ul>
+                    <li><strong>Tax:</strong> ~$450 (approximately 30%)</li>
+                    <li><strong>Housing:</strong> ~$420 (approximately 28%)</li>
+                    <li><strong>Food:</strong> More than transportation (exact percentage varies)</li>
+                    <li><strong>Transportation:</strong> ~20%</li>
+                    <li><strong>Other Necessities:</strong> ~3%</li>
+                    <li><strong>Savings:</strong> Remaining amount</li>
+                </ul>
+                
+                <p><strong>Example: Company Revenue Flow</strong></p>
+                <p>
+                    Shows how total revenue from Division A and Division B flows through:
+                </p>
+                <ul>
+                    <li>Total Revenue → Cost of Sales → Operating Expenses → Operating Profit</li>
+                    <li>Width of flow indicates proportion</li>
+                    <li>Easy to see where money is going at each stage</li>
+                </ul>
+                
+                <p><strong>Example: Job Application Process</strong></p>
+                <p>
+                    17 total applications flowing through different outcomes:
+                </p>
+                <ul>
+                    <li>1 accepted</li>
+                    <li>2 offered</li>
+                    <li>4 interviewed → 2 rejected post-interview</li>
+                    <li>9 no response</li>
+                    <li>Rejected at various stages</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Sankey diagrams show how budget flows from one end to another, with different partitions clearly visible. The width of each flow represents the quantity, making it easy to see proportions at a glance.
+                </div>
+                
+                <h4>Case Study 4: Air Quality and Climate Risk Journalism</h4>
+                <p>
+                    Climate and environmental data visualization helps communicate critical health and policy information.
+                </p>
+                
+                <p><strong>Example: Particulate Matter and Life Expectancy</strong></p>
+                <ul>
+                    <li>Shows relationship between PM2.5 (fine particulate matter) and life expectancy</li>
+                    <li>Particle density determines pollution levels</li>
+                    <li>High-resolution derived data creates meaningful visualizations</li>
+                    <li>Darker colors indicate higher particle density</li>
+                    <li>Example: New York shows high-density areas with darker coloring</li>
+                </ul>
+                
+                <p><strong>Interactive Weather Data Tools:</strong></p>
+                <ul>
+                    <li>Allow users to explore different metrics and time periods</li>
+                    <li>Provide context for climate change impacts</li>
+                    <li>Make abstract concepts like "air quality" tangible through visualization</li>
+                </ul>
+            </div>
+            
+            <!-- Section 1.5: Activity Fix the Bad Chart -->
+            <div id="section1-5">
+                <h3>1.5 Activity: Fix the Bad Chart</h3>
+                
+                <p>
+                    This activity demonstrates how the <strong>same visualization technique with different data presentations</strong> can lead to completely opposite conclusions.
+                </p>
+                
+                <h4>The Problem: Poverty Maps</h4>
+                
+                <p><strong>Bad Chart - Absolute Numbers:</strong></p>
+                <ul>
+                    <li>Shows <strong>total count</strong> of people in poverty for each state</li>
+                    <li>Large, populous states like California, Texas, Florida, and New York appear darkest</li>
+                    <li>Creates impression that these states have the most severe poverty issues</li>
+                    <li>Small states with high poverty rates appear lighter and seem less problematic</li>
+                </ul>
+                
+                <p><strong>Why This Is Misleading:</strong></p>
+                <ul>
+                    <li>States with larger populations naturally have higher absolute poverty counts</li>
+                    <li>Doesn't account for state population differences</li>
+                    <li>Fails to show poverty <em>intensity</em> or <em>rate</em></li>
+                    <li>Small states with serious poverty problems appear better off</li>
+                </ul>
+                
+                <div class="professor-note">
+                    The visualization problem here is that row counts are being used for the coloring. The effect is that large and populous states are colored with the darkest colors. They have higher populations, so they might have higher absolute numbers of people in poverty. But percentage-wise, it might not be the same at all.
+                </div>
+                
+                <p><strong>Good Chart - Poverty Rate (Percentage):</strong></p>
+                <ul>
+                    <li>Shows <strong>percentage of population</strong> in poverty</li>
+                    <li>Previously "worst" states now show moderate poverty rates</li>
+                    <li>Some small states now appear as having higher poverty intensity</li>
+                    <li>Provides accurate comparison of poverty severity across states</li>
+                </ul>
+                
+                <p><strong>Key Insight:</strong></p>
+                <ul>
+                    <li>States with less population but high poverty percentage were hidden in absolute count visualization</li>
+                    <li>Large states may have high absolute numbers but lower poverty rates</li>
+                    <li>Using relative data (percentages) reveals the true geographic distribution of poverty intensity</li>
+                </ul>
+                
+                <div class="professor-note">
+                    When we start showing the percentage poverty, it makes much more sense. Otherwise, states with less population will have high percentages of poverty but won't be highlighted in absolute count visualizations. The same visualization technique produces completely different messages depending on whether we use absolute or relative data. This is why choosing the right data representation is critical.
+                </div>
+                
+                <h4>Lessons Learned:</h4>
+                <table>
+                    <tr>
+                        <th>Principle</th>
+                        <th>Application</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Relative Metrics</strong></td>
+                        <td>When comparing across different population sizes, use rates/percentages instead of absolute counts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consider Context</strong></td>
+                        <td>Population size, geographic area, and other contextual factors matter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Question Your Data</strong></td>
+                        <td>Always ask: "Is this the right way to present this information?"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Avoid Misleading Patterns</strong></td>
+                        <td>The same technique with different data representations can mislead audiences</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Hinglish Summary for Section 1 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary - Journalism & Public Policy Visualization</h4>
+                <p>
+                    Journalism aur public policy mein data visualization ka main goal hai complex information ko general public ke liye simple banana. Humein martini glass structure aur scrollytelling jaise techniques use karte hain jisse mobile-friendly aur interactive stories ban sakein. COVID-19 ke "flattening the curve" graphics ne successfully dikhaya ki kaise visualization policy decisions aur individual actions ko guide kar sakta hai. Election maps aur poverty visualizations se humne seekha ki absolute numbers se relative percentages zyada accurate picture dete hain. Sankey diagrams budget flow dikhane mein bahut effective hain. Sabse important baat - misinformation se bachna aur data ko accurately present karna journalism visualization ki foundation hai.
+                </p>
+            </div>
+            
+            <!-- Key Takeaways for Section 1 -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Journalism visualizations must be accessible to non-experts while maintaining accuracy</li>
+                    <li>Scrollytelling creates engaging mobile-friendly narratives that update as users scroll</li>
+                    <li>The Martini Glass Structure effectively shows data flow from input through transformation to insights</li>
+                    <li>Always use relative metrics (percentages/rates) when comparing across different population sizes</li>
+                    <li>Sankey diagrams are ideal for showing budget flows and resource allocation</li>
+                    <li>Election maps should show vote share gradients, not just winner-takes-all binary colors</li>
+                    <li>Tools like Datawrapper, Flourish, and Tableau allow non-programmers to create professional visualizations</li>
+                    <li>D3.js provides maximum customization for those comfortable with JavaScript programming</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Section 1 -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What is scrollytelling and why is it particularly effective for journalism?</strong>
+                    <div class="answer">
+                        Scrollytelling combines scrolling action with storytelling, creating an interactive narrative where visualizations update automatically as users scroll. It's effective for journalism because it works well on mobile devices, keeps audiences engaged, and allows complex stories to unfold progressively without overwhelming viewers.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why should election maps show gradient colors instead of binary red/blue coloring?</strong>
+                    <div class="answer">
+                        Gradient colors show vote share distribution more accurately. Binary coloring suggests 100% of a state voted one way, which is never true. Gradients reveal that votes are distributed across parties, providing a nuanced and honest representation of public opinion rather than winner-takes-all simplification.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What's the difference between absolute numbers and relative metrics in poverty visualization?</strong>
+                    <div class="answer">
+                        Absolute numbers show total count of people in poverty, which makes large-population states appear worse. Relative metrics (poverty rate/percentage) show the proportion of population in poverty, revealing true poverty intensity regardless of state size. Relative metrics are more meaningful for comparison.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: Explain the Martini Glass Structure in data visualization.</strong>
+                    <div class="answer">
+                        The Martini Glass Structure represents data flow: wide end (input) shows multiple data sources converging, narrow stem represents data filtering and transformation, and the output end shows insights expanding into visualizations. It provides a framework for organizing how data moves through the visualization process.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5: What are Sankey diagrams best used for?</strong>
+                    <div class="answer">
+                        Sankey diagrams excel at showing flow and resource allocation, particularly for budgets. The width of flows represents quantity, making it easy to see proportions and how resources move from one category to another. They're ideal for visualizing budget breakdowns, revenue flows, and application processes.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== SECTION 2: SCIENTIFIC & RESEARCH VISUALISATIONS ========== -->
+        <div id="section2" class="section">
+            <h2>2️⃣ Scientific & Research Visualisations</h2>
+            
+            <!-- Section 2.1: Nature of Scientific Data -->
+            <div id="section2-1">
+                <h3>2.1 Nature of Scientific Data</h3>
+                
+                <p>
+                    Scientific visualization differs significantly from journalism visualization because of the unique characteristics of scientific data and its expert audience.
+                </p>
+                
+                <h4>Key Characteristics of Scientific Data</h4>
+                
+                <table>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th>Description</th>
+                        <th>Implication</th>
+                    </tr>
+                    <tr>
+                        <td><strong>High-Dimensional</strong></td>
+                        <td>Contains many attributes (typically 6-7 or more)</td>
+                        <td>Requires specialized visualization techniques to represent multiple dimensions simultaneously</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complex & Multivariate</strong></td>
+                        <td>Multiple variables interact with each other</td>
+                        <td>Need to show relationships between variables, not just individual data points</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Requires Precision</strong></td>
+                        <td>Sub-decimal points, scientific notation for very large/small numbers</td>
+                        <td>Visualizations must maintain accuracy and not round inappropriately</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reproducible</strong></td>
+                        <td>Same experiment should yield same data following same steps</td>
+                        <td>Visualization methodology must be documented and replicable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Expert Audience</strong></td>
+                        <td>Both creators and readers are domain experts</td>
+                        <td>Can use technical terminology and specialized visual forms</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Generally, anything having more than 6-7 attributes is considered high dimensional. Scientific data is not just high dimensional for each variable, but we can have multiple variables, making it complex and multivariate. The readers are assumed to be domain experts, so both the creator and readers understand the specialized language and visual conventions of their field.
+                </div>
+                
+                <h4>Comparison: Journalism vs. Scientific Visualization</h4>
+                
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Journalism</th>
+                        <th>Scientific Research</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Audience</strong></td>
+                        <td>General public</td>
+                        <td>Domain experts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Complexity</strong></td>
+                        <td>Simplified, 1-3 variables</td>
+                        <td>High-dimensional, multivariate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision Required</strong></td>
+                        <td>Approximate, rounded</td>
+                        <td>Exact, with scientific notation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visual Style</strong></td>
+                        <td>Engaging, storytelling-focused</td>
+                        <td>Technical, information-dense</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Goal</strong></td>
+                        <td>Communicate insights to non-experts</td>
+                        <td>Enable detailed analysis and peer review</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Section 2.2: Visualisation Types Across Sciences -->
+            <div id="section2-2">
+                <h3>2.2 Visualisation Types Across Sciences</h3>
+                
+                <h4>Bioinformatics Visualizations</h4>
+                
+                <p>
+                    Bioinformatics deals with <strong>large-scale genome data</strong> and biological information that requires specialized visualization techniques.
+                </p>
+                
+                <p><strong>1. Genome Browsers (UCSC, Ensembl)</strong></p>
+                <ul>
+                    <li><strong>Purpose:</strong> Navigate and explore genetic data</li>
+                    <li><strong>Features:</strong> Shows genes in relation to each other across different species</li>
+                    <li><strong>Example:</strong> Comparing human genes with Chimpanzee, Gorilla, and other species</li>
+                    <li><strong>Interactive elements:</strong> Select specific species to see genetic relationships</li>
+                    <li><strong>Visual structure:</strong> Hierarchical, tree-like organization</li>
+                </ul>
+                
+                <div class="professor-note">
+                    In the genome browser example, you can see genes on the left side being shown in relation to each other. Different species have some gene expressions that are common and others that are unique. This shows what genetic material we as humans share with Chimpanzees, Gorillas, and other species. You can select a particular species and see how they're related - it looks like a hierarchical organogram.
+                </div>
+                
+                <p><strong>2. Multiple Alignment Visualization</strong></p>
+                <ul>
+                    <li>Compares DNA/protein sequences across multiple organisms</li>
+                    <li>Highlights conserved regions and mutations</li>
+                    <li>Uses color coding to indicate similarity/difference</li>
+                </ul>
+                
+                <p><strong>3. Protein Structures (PyMOL, Chimera)</strong></p>
+                <ul>
+                    <li><strong>3D molecular visualization:</strong> Shows spatial arrangement of atoms</li>
+                    <li><strong>Binding sites:</strong> Visualizes how molecules bind to receptors</li>
+                    <li><strong>Interactive rotation:</strong> View structures from different angles</li>
+                    <li><strong>Color coding:</strong> Different molecular components shown in distinct colors</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Tools like PyMOL and Chimera allow you to specify parameters and get visualizations. These visualizations capture the way molecules and internal structures are organized. You can see how DNA or receptors get bound to molecules - showing receptor-molecule binding interactions.
+                </div>
+                
+                <p><strong>4. Phylogenetic Trees</strong></p>
+                <ul>
+                    <li><strong>Purpose:</strong> Show evolutionary relationships between species</li>
+                    <li><strong>Types:</strong> Can be rooted (single origin) or unrooted (network)</li>
+                    <li><strong>Super families:</strong> May show cross-connections between lineages</li>
+                    <li><strong>Additional information:</strong> Molecular arrangements shown with color coding at nodes</li>
+                </ul>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Phylogenetic tree showing evolutionary relationships with molecular arrangements at nodes]
+                </div>
+                
+                <p><strong>5. Heatmaps of Gene Expression</strong></p>
+                <ul>
+                    <li><strong>Purpose:</strong> Identify which genes respond to diseases or drugs</li>
+                    <li><strong>Structure:</strong> Genes as rows, samples as columns</li>
+                    <li><strong>Color intensity:</strong> Shows expression level (high/low)</li>
+                    <li><strong>Application:</strong> Pinpoint genes responsible for particular symptoms</li>
+                    <li><strong>Clustering:</strong> Groups similar expression patterns together</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Heatmaps show how many active genes are there which are responding or responsible (or not responding) to a particular disease and drugs. It shows how these genes are being used across multiple samples to pinpoint which genes are responsible for particular expressions or symptoms.
+                </div>
+                
+                <h4>Climate & Environmental Data Visualizations</h4>
+                
+                <p><strong>1. Time Series of Temperature Anomalies</strong></p>
+                <ul>
+                    <li><strong>Historical range:</strong> Starting from 1850 to present</li>
+                    <li><strong>Baseline comparison:</strong> Shows deviation from average temperature</li>
+                    <li><strong>Key observations:</strong>
+                        <ul>
+                            <li>1850-1930s: Average temperature below 0° (baseline)</li>
+                            <li>1930s onward: Temperature starts rising</li>
+                            <li>Present day: +1.3°C above baseline (highest recorded)</li>
+                            <li>Mid-period: Positive and negative fluctuations due to global warming dynamics</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="professor-note">
+                    In the past, till the 1930s, average temperature was below zero. After that, temperature started getting higher peaks. Today the average temperature change is 1.3 degrees, which is the highest. In between you can see positive and negative variations because during this period global warming was increasing but there was some pushback. But after that, when global warming went out of control, you can see a clear peak in temperature. Without looking at actual data, just by viewing this visualization, we can infer how average temperature is changing over time.
+                </div>
+                
+                <p><strong>2. Choropleth Climate Maps</strong></p>
+                <ul>
+                    <li><strong>Geographic visualization:</strong> Climate data overlaid on world maps</li>
+                    <li><strong>Interactive features:</strong> Select land-only or ocean-only data</li>
+                    <li><strong>Time animation:</strong> Shows changes year by year</li>
+                    <li><strong>Historical comparison:</strong> Reference point at 10,000 BC</li>
+                    <li><strong>Color coding:</strong> Temperature variations shown through color gradients</li>
+                    <li><strong>Key insight:</strong> Sudden increase in "hot red areas" after 1930</li>
+                </ul>
+                
+                <div class="professor-note">
+                    You can interact by selecting the data you want - only land-related data or only ocean data - and the corresponding data will be plotted. There are different interactions you can perform. If you look at the animation over centuries, you'll find that suddenly after 1930, lots of hot red areas start appearing, showing rapid warming.
+                </div>
+                
+                <p><strong>3. Ocean Temperature Gradients</strong></p>
+                <ul>
+                    <li><strong>Surface temperature visualization:</strong> Shows sea level temperature variations</li>
+                    <li><strong>Polar regions:</strong> Very low ocean temperatures at North and South Poles</li>
+                    <li><strong>Equatorial regions:</strong> Significantly higher temperatures</li>
+                    <li><strong>Contour charts:</strong> Show temperature gradients across latitudes</li>
+                    <li><strong>Interactive zoom:</strong> Explore specific regions in detail</li>
+                </ul>
+                
+                <p><strong>4. Satellite Imagery Visualization (MODIS)</strong></p>
+                <ul>
+                    <li><strong>Multiple image stitching:</strong> Combines data from multiple satellite passes</li>
+                    <li><strong>Global coverage:</strong> Creates complete Earth view from partial captures</li>
+                    <li><strong>Coverage gaps:</strong> Curved lines show areas satellites couldn't capture</li>
+                    <li><strong>Layer composition:</strong> Different images layered to show complete picture</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Satellite images need to be stitched together. You can see this curve in the image - it's coming because the satellite is unable to capture certain smaller areas. But there are different areas which can be captured by the satellite to show the bigger overall image. Different images from single or multiple satellites are stitched together to show a complete global image.
+                </div>
+                
+                <h4>Physics & Engineering Visualizations</h4>
+                
+                <p><strong>1. Signal Plots (Waveforms)</strong></p>
+                <ul>
+                    <li>Most commonly used in physics</li>
+                    <li>Show time domain and frequency domain representations</li>
+                    <li>Visualize oscillations, signals, and wave patterns</li>
+                </ul>
+                
+                <p><strong>2. 3D Simulation Views</strong></p>
+                <ul>
+                    <li><strong>Example tool:</strong> Unity 3D for visualization</li>
+                    <li><strong>Comprehensive modeling:</strong> Complete 3D object creation (e.g., a car)</li>
+                    <li><strong>Light simulation:</strong> Shows how light sources affect the object</li>
+                    <li><strong>Shadow calculation:</strong> Automatically computes shadows</li>
+                    <li><strong>Depth representation:</strong> Unlike 2D, shows depth and perspective</li>
+                    <li><strong>Ray tracing:</strong> Simulates how light rays interact with surfaces</li>
+                </ul>
+                
+                <div class="professor-note">
+                    In 2D visualization, you have a single image. But 3D shows depth. In 3D, we also see how rays are changing with shadows and their different effects. Everything is calculated - light sources, shadows, reflections - to create realistic visualizations.
+                </div>
+                
+                <p><strong>3. Particle Trajectories</strong></p>
+                <ul>
+                    <li>Shows paths of particles through space/fluid</li>
+                    <li>Lines indicate flow from inlet to outlet</li>
+                    <li>Popular in physics and engineering simulations</li>
+                    <li>Used for fluid dynamics, aerodynamics, and particle physics</li>
+                </ul>
+                
+                <p><strong>4. CAD-Linked Visualization (Computer-Aided Design)</strong></p>
+                <ul>
+                    <li><strong>Detailed technical drawings:</strong> Every component shown precisely</li>
+                    <li><strong>Example:</strong> Detailed ship design showing all apparatus placements</li>
+                    <li><strong>Multiple views:</strong> Different angles and cross-sections</li>
+                    <li><strong>Component hierarchy:</strong> How different parts fit together</li>
+                    <li><strong>Precise measurements:</strong> Exact dimensions and specifications</li>
+                </ul>
+                
+                <h4>Healthcare/Medical Science Visualizations</h4>
+                
+                <p><strong>1. Epidemiology Maps</strong></p>
+                <ul>
+                    <li>Show disease spread across geographic regions</li>
+                    <li>Different orientations provide different information types</li>
+                    <li>Each map serves specific analytical purposes</li>
+                    <li>Used for outbreak tracking and public health planning</li>
+                </ul>
+                
+                <p><strong>2. Survival Curves (Kaplan-Meier Plots)</strong></p>
+                <ul>
+                    <li><strong>Purpose:</strong> Show patient survival rates over time</li>
+                    <li><strong>Threshold lines:</strong> Indicate critical survival points</li>
+                    <li><strong>Drop-offs:</strong> Show when survival rate declines</li>
+                    <li><strong>Comparison groups:</strong> Can compare different treatment approaches</li>
+                </ul>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Kaplan-Meier survival plot showing survival probability over time with threshold line]
+                </div>
+                
+                <p><strong>3. Radiology & Medical Imaging Visualization</strong></p>
+                <ul>
+                    <li><strong>Types:</strong> X-ray, CT scans, MRI scans</li>
+                    <li><strong>Cross-sectional views:</strong> Show different brain/body sections</li>
+                    <li><strong>Functional information:</strong> Which brain parts are active</li>
+                    <li><strong>Density mapping:</strong> Where fluid or cells accumulate</li>
+                    <li><strong>Multi-domain applications:</strong> Different domains show different information types</li>
+                    <li><strong>Advanced tools:</strong> Smart visualization for interactive medical image analysis</li>
+                </ul>
+                
+                <div class="professor-note">
+                    For a human skull, we can see different sections. With that skull data, we can use different visualizations to show different information - which part of the brain is more active, where there's more liquid, or where particular cells are accumulating. Different domains can show different information. There are many ways to convert MRI or CT scans into more meaningful, more interactive visualizations.
+                </div>
+            </div>
+            
+            <!-- Section 2.3: Tools & Platforms -->
+            <div id="section2-3">
+                <h3>2.3 Tools & Platforms</h3>
+                
+                <h4>Python-Based Tools</h4>
+                <table>
+                    <tr>
+                        <th>Library</th>
+                        <th>Strengths</th>
+                        <th>Best Use Cases</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Matplotlib</strong></td>
+                        <td>Versatile, publication-quality plots</td>
+                        <td>Static scientific plots, customizable charts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seaborn</strong></td>
+                        <td>Statistical visualization, attractive defaults</td>
+                        <td>Statistical relationships, heatmaps, distributions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Plotly</strong></td>
+                        <td>Interactive web-based visualizations</td>
+                        <td>Interactive scientific dashboards, 3D plots</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bokeh</strong></td>
+                        <td>Large dataset handling, interactivity</td>
+                        <td>Real-time data streams, interactive exploration</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Python is heavily used in this course and in scientific visualization. Matplotlib, Seaborn, Plotly, and Bokeh are the main libraries we utilize for creating various types of scientific visualizations.
+                </div>
+                
+                <h4>R Language Tools</h4>
+                <table>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                        <th>Key Features</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ggplot2</strong></td>
+                        <td>Grammar of graphics implementation</td>
+                        <td>Layer-based plotting, elegant syntax, publication-ready</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shiny Dashboards</strong></td>
+                        <td>Interactive web applications</td>
+                        <td>R-based dashboards, reactive programming, data exploration</td>
+                    </tr>
+                </table>
+                
+                <h4>Specialized Scientific Visualization Tools</h4>
+                
+                <p><strong>ParaView - For 3D/Large-Scale Data</strong></p>
+                <ul>
+                    <li>Designed specifically for scientific visualization</li>
+                    <li>Handles extremely large datasets</li>
+                    <li>3D rendering capabilities</li>
+                    <li>Parallel processing support</li>
+                    <li>Used in physics, engineering, and computational sciences</li>
+                </ul>
+                
+                <h4>Geographic Information System (GIS) Tools</h4>
+                
+                <p><strong>QGIS (Open Source)</strong></p>
+                <ul>
+                    <li><strong>Purpose:</strong> Show spatial information geographically</li>
+                    <li><strong>Layer system:</strong> Add multiple data layers on base map</li>
+                    <li><strong>Map types:</strong> Different map styles available</li>
+                    <li><strong>Interactive editing:</strong> Add, remove, and modify layers in real-time</li>
+                    <li><strong>Free and open-source</strong></li>
+                </ul>
+                
+                <p><strong>ArcGIS (Commercial)</strong></p>
+                <ul>
+                    <li><strong>Professional GIS platform</strong></li>
+                    <li><strong>Layer examples:</strong>
+                        <ul>
+                            <li>Base map (geographical boundaries)</li>
+                            <li>Satellite imagery overlay</li>
+                            <li>Weather data (e.g., USA storm reports)</li>
+                            <li>Custom data layers</li>
+                        </ul>
+                    </li>
+                    <li><strong>Interactive features:</strong> Zoom to specific regions, toggle layers on/off</li>
+                </ul>
+                
+                <div class="professor-note">
+                    The idea with GIS tools is that you can have a basic map, and then on top of that, you can include more data and more layers showing additional information. For example, you start with a raw map, then add a satellite layer to see actual imagery, then add a storm reports layer for the USA. Each layer adds new information while maintaining the geographic context. Both are spatial information shown in geographical shape.
+                </div>
+            </div>
+            
+            <!-- Section 2.4: Integrity and Reproducibility -->
+            <div id="section2-4">
+                <h3>2.4 Integrity and Reproducibility</h3>
+                
+                <p>
+                    Scientific visualizations must maintain the highest standards of integrity and be fully reproducible by other researchers.
+                </p>
+                
+                <h4>Key Requirements for Scientific Integrity</h4>
+                
+                <table>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>Description</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Clear Axes and Units</strong></td>
+                        <td>Every axis must be labeled with precise units (e.g., mg/L, °C, meters)</td>
+                        <td>Prevents misinterpretation and allows accurate comparison across studies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Documentation of Preprocessing</strong></td>
+                        <td>Document all data cleaning, filtering, and transformation steps</td>
+                        <td>Enables others to replicate the analysis and verify results</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Avoiding Cherry-Picking</strong></td>
+                        <td>Present all relevant data, not just results that support hypothesis</td>
+                        <td>Prevents bias and maintains scientific honesty</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Open Data Policies</strong></td>
+                        <td>Make raw data available for peer review and validation</td>
+                        <td>Supports transparency and allows independent verification</td>
+                    </tr>
+                </table>
+                
+                <h4>Cherry-Picking: A Critical Issue</h4>
+                <p>
+                    <strong>Cherry-picking</strong> refers to selectively using only part of the data to highlight something that may not be generally true when looking at the complete dataset.
+                </p>
+                
+                <p><strong>Example Scenario:</strong></p>
+                <ul>
+                    <li>A drug trial shows positive results in weeks 2-4</li>
+                    <li>But weeks 1, 5, and 6 show negative or neutral results</li>
+                    <li>Publishing only weeks 2-4 data is cherry-picking</li>
+                    <li>Complete data must be shown for honest scientific communication</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Cherry-picking is when we use a part of data to highlight something which may not be generally true if you look at all the data. This is a serious integrity issue in scientific visualization. We discussed this earlier in the course - you must present the complete picture, not just the parts that support your conclusion.
+                </div>
+                
+                <h4>Best Practices Checklist</h4>
+                <ul>
+                    <li>✓ Include scale bars and legends for all visual elements</li>
+                    <li>✓ Specify statistical methods used</li>
+                    <li>✓ Indicate error bars and confidence intervals</li>
+                    <li>✓ Provide data source citations</li>
+                    <li>✓ Document software versions and parameters</li>
+                    <li>✓ Include negative results, not just positive findings</li>
+                    <li>✓ Make raw data accessible through repositories</li>
+                    <li>✓ Follow domain-specific visualization standards</li>
+                </ul>
+            </div>
+            
+            <!-- Hinglish Summary for Section 2 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary - Scientific & Research Visualization</h4>
+                <p>
+                    Scientific data visualization journalism se bahut different hai kyunki yahan data high-dimensional aur complex hota hai, aur audience domain experts hain. Bioinformatics mein genome browsers aur protein structure visualizations use hote hain jo molecular interactions dikhate hain. Climate science mein time series graphs aur choropleth maps se temperature changes track karte hain - jaise 1930 ke baad global warming ka sudden increase dikhayi deta hai. Physics aur engineering mein 3D simulations, particle trajectories, aur CAD designs common hain. Medical science mein MRI scans, CT scans, aur Kaplan-Meier survival curves patient care mein help karte hain. Scientific visualization ke liye Python (Matplotlib, Seaborn, Plotly), R (ggplot2, Shiny), aur GIS tools (QGIS, ArcGIS) popular hain. Sabse important baat - scientific integrity maintain karna: clear axes, proper documentation, cherry-picking avoid karna, aur open data policies follow karna zaroori hai.
+                </p>
+            </div>
+            
+            <!-- Key Takeaways for Section 2 -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Scientific data is high-dimensional (6-7+ attributes), complex, and requires precision</li>
+                    <li>Scientific visualizations target domain experts, allowing technical terminology and specialized forms</li>
+                    <li>Bioinformatics uses genome browsers, protein structure tools, phylogenetic trees, and gene expression heatmaps</li>
+                    <li>Climate visualization shows temperature anomalies, with clear warming trend post-1930</li>
+                    <li>3D simulations in physics/engineering show depth, lighting, and shadow calculations</li>
+                    <li>Medical imaging converts raw scans (MRI/CT) into interactive, meaningful visualizations</li>
+                    <li>GIS tools allow layering multiple spatial data types on geographic maps</li>
+                    <li>Scientific integrity requires clear axes, documented preprocessing, avoiding cherry-picking, and open data policies</li>
+                    <li>Python (Matplotlib, Seaborn, Plotly, Bokeh) and R (ggplot2, Shiny) are primary scientific visualization tools</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Section 2 -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What makes scientific data "high-dimensional" and why does this matter?</strong>
+                    <div class="answer">
+                        High-dimensional data has 6-7 or more attributes/variables. This matters because it requires specialized visualization techniques to represent multiple dimensions simultaneously while maintaining clarity and allowing experts to see complex relationships between variables.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: How do genome browsers help researchers understand genetic relationships?</strong>
+                    <div class="answer">
+                        Genome browsers visualize genes in relation to each other across different species, showing which genetic expressions are common and which are unique. Researchers can select specific species to see evolutionary relationships and shared genetic material in a hierarchical, interactive format.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What information can you infer from temperature anomaly time series since 1850?</strong>
+                    <div class="answer">
+                        The time series shows temperatures below baseline until 1930s, then rising with some fluctuations due to global warming dynamics, and finally a clear upward trend after global warming accelerated, reaching +1.3°C above baseline today - the highest ever recorded.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: Explain what "cherry-picking" means in scientific visualization and why it's problematic.</strong>
+                    <div class="answer">
+                        Cherry-picking is selectively using only part of the data to highlight results that support a hypothesis, ignoring contradictory data. It's problematic because it creates bias, misrepresents reality, and violates scientific integrity by preventing others from seeing the complete picture.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5: How do GIS tools like QGIS and ArcGIS work with layers?</strong>
+                    <div class="answer">
+                        GIS tools start with a base geographic map, then allow users to add multiple data layers (satellite imagery, weather data, custom datasets) on top. Each layer adds new information while maintaining geographic context, creating rich, multi-dimensional spatial visualizations.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== SECTION 3: BUSINESS INTELLIGENCE & DASHBOARDS ========== -->
+        <div id="section3" class="section">
+            <h2>3️⃣ Business Intelligence (BI) & Industry Dashboards</h2>
+            
+            <!-- Section 3.1: Role of BI Visualisation -->
+            <div id="section3-1">
+                <h3>3.1 Role of BI Visualisation in Industry</h3>
+                
+                <h4>Target Users</h4>
+                <p>
+                    Business Intelligence visualizations serve distinct user groups with different needs:
+                </p>
+                
+                <table>
+                    <tr>
+                        <th>User Group</th>
+                        <th>Primary Focus</th>
+                        <th>Information Needs</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Managers</strong></td>
+                        <td>Decision-making</td>
+                        <td>High-level trends, comparisons, and actionable insights (not minute details)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Executives</strong></td>
+                        <td>Performance monitoring</td>
+                        <td>Strategic KPIs, quarterly/annual performance against goals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Operations Teams</strong></td>
+                        <td>Forecasting and optimization</td>
+                        <td>Real-time metrics, operational efficiency, bottleneck identification</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Look at these different types of audiences. Managers may not be interested in very minute details at the first go. The kind of visualization we prepare for managers and executives might be different. For managers, it's generally about decision-making; for executives, performance monitoring; and for operation teams, it might be forecasting. Different uses exist for different types of audiences.
+                </div>
+                
+                <h4>Key Concepts in BI Visualization</h4>
+                
+                <h4>KPIs (Key Performance Indicators)</h4>
+                <p>
+                    <strong>KPIs</strong> are quantifiable metrics that indicate how effectively an organization is achieving key business objectives.
+                </p>
+                
+                <ul>
+                    <li><strong>Focus:</strong> Show only the most critical metrics, not every data point</li>
+                    <li><strong>Examples:</strong> Average turnover, quarterly revenue, customer acquisition cost, retention rate</li>
+                    <li><strong>Purpose:</strong> Enable quick assessment of business health</li>
+                    <li><strong>Presentation:</strong> Often displayed prominently with sparklines or gauges</li>
+                </ul>
+                
+                <div class="professor-note">
+                    We should focus on key performance indicators in our visualization. We don't need to pay attention to each individual data point. What are the key performance indicators? It might be average turnover, quarterly turnover - these are metrics we should keep in our visualizations.
+                </div>
+                
+                <h4>Metrics vs. Insights</h4>
+                <table>
+                    <tr>
+                        <th>Metrics</th>
+                        <th>Insights</th>
+                    </tr>
+                    <tr>
+                        <td>Raw numbers and measurements</td>
+                        <td>Interpretation of what metrics mean</td>
+                    </tr>
+                    <tr>
+                        <td>Example: "Revenue is $5M"</td>
+                        <td>Example: "Revenue decreased 15% due to seasonal trends"</td>
+                    </tr>
+                    <tr>
+                        <td>What happened?</td>
+                        <td>Why it happened and what to do?</td>
+                    </tr>
+                </table>
+                
+                <p>
+                    <strong>Important:</strong> Showing data without metrics can be misleading. Metrics provide context and meaning to raw numbers.
+                </p>
+                
+                <h4>Real-Time Dashboards</h4>
+                <p>
+                    Many modern businesses operate 24/7 with continuous data streams:
+                </p>
+                <ul>
+                    <li><strong>OTT platforms:</strong> Streaming service analytics</li>
+                    <li><strong>E-commerce:</strong> Sales, inventory, customer behavior</li>
+                    <li><strong>Financial services:</strong> Transaction monitoring, fraud detection</li>
+                    <li><strong>Manufacturing:</strong> Equipment status, production rates</li>
+                </ul>
+                
+                <p><strong>Benefits of Real-Time Dashboards:</strong></p>
+                <ul>
+                    <li>Immediate visibility into operations</li>
+                    <li>Quick response to anomalies or opportunities</li>
+                    <li>Dynamic decision-making based on current data</li>
+                    <li>Proactive issue resolution</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Generally, data is coming in real-time streams if you talk about OTT data or e-commerce platforms. These are 24×7 systems, so we are getting real-time data. There are real-time dashboards for managers, executives, and operation teams which they can use to see how visualization is changing, so they can adjust their decisions or come up with new policies.
+                </div>
+            </div>
+            
+            <!-- Section 3.2: Types of Business Dashboards -->
+            <div id="section3-2">
+                <h3>3.2 Types of Business Dashboards</h3>
+                
+                <h4>1. Operational Dashboards</h4>
+                <p>
+                    <strong>Purpose:</strong> Monitor ongoing operations and respond to immediate issues
+                </p>
+                
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li><strong>Live Metrics:</strong> Real-time data updates (e.g., every second/minute)</li>
+                    <li><strong>Alerts:</strong> Automatic notifications when metrics exceed thresholds</li>
+                    <li><strong>Anomaly Detection:</strong> Highlights unusual patterns or outliers</li>
+                    <li><strong>Quick Response:</strong> Enables immediate action on critical issues</li>
+                </ul>
+                
+                <p><strong>Examples:</strong></p>
+                <table>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Metrics Monitored</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Server Uptime Dashboard</strong></td>
+                        <td>Server status, response time, error rates, CPU/memory usage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Call Center Performance</strong></td>
+                        <td>Average wait time, call resolution rate, agent availability, customer satisfaction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Manufacturing Floor</strong></td>
+                        <td>Production rate, equipment status, quality control, downtime</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Operational dashboards show live metrics with alerts and anomaly detection. Examples include looking at server uptime - data keeps coming in continuously. Another example is call center performance dashboards where you monitor real-time call handling metrics.
+                </div>
+                
+                <h4>2. Analytical Dashboards</h4>
+                <p>
+                    <strong>Purpose:</strong> Deep dive into data to understand patterns and root causes
+                </p>
+                
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li><strong>Deep Analysis:</strong> Goes beyond surface metrics to find underlying patterns</li>
+                    <li><strong>Dimensional Breakdown:</strong> Analyze by category, region, product, time period</li>
+                    <li><strong>Comparison Tools:</strong> Compare across different segments or time periods</li>
+                    <li><strong>Hidden Pattern Discovery:</strong> Reveals unexpected trends and correlations</li>
+                </ul>
+                
+                <p><strong>Analytical Capabilities:</strong></p>
+                <ul>
+                    <li>Drill-down from summary to detailed data</li>
+                    <li>Filter and segment by multiple dimensions</li>
+                    <li>Identify correlations between variables</li>
+                    <li>Discover hidden opportunities or risks</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Analytical dashboards generally go deeper into the analysis and provide certain patterns from the data which might be hidden or unexpected. Here we can actually break down our dashboard data based on categories, regions, or maybe products.
+                </div>
+                
+                <h4>3. Strategic Dashboards</h4>
+                <p>
+                    <strong>Purpose:</strong> Monitor long-term organizational goals and strategic initiatives
+                </p>
+                
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li><strong>High-Level Performance:</strong> Focus on strategic objectives, not operational details</li>
+                    <li><strong>Long-Term Trends:</strong> Show performance against goals over quarters/years</li>
+                    <li><strong>Forecasting:</strong> Project future performance using historical patterns</li>
+                    <li><strong>Balanced Scorecard Approach:</strong> Combines financial and non-financial metrics</li>
+                </ul>
+                
+                <p><strong>Balanced Scorecard Components:</strong></p>
+                <table>
+                    <tr>
+                        <th>Perspective</th>
+                        <th>Example Metrics</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Financial</strong></td>
+                        <td>Revenue growth, profit margins, ROI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Customer</strong></td>
+                        <td>Satisfaction scores, retention rate, market share</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Internal Processes</strong></td>
+                        <td>Efficiency metrics, quality measures, cycle time</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Learning & Growth</strong></td>
+                        <td>Employee training, innovation rate, technology adoption</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Strategic dashboards focus on high-level performance against long-term goals. The trend changes based on maybe some forecasting methods. They also deploy a balanced scorecard approach, combining forecasting with constraints and other factors to show comprehensive forecasting so that strategy can be made.
+                </div>
+                
+                <h4>Comparison: Dashboard Types</h4>
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Operational</th>
+                        <th>Analytical</th>
+                        <th>Strategic</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Time Horizon</strong></td>
+                        <td>Real-time to daily</td>
+                        <td>Weekly to monthly</td>
+                        <td>Quarterly to yearly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Update Frequency</strong></td>
+                        <td>Continuous/seconds</td>
+                        <td>Daily/weekly</td>
+                        <td>Monthly/quarterly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detail Level</strong></td>
+                        <td>Granular details</td>
+                        <td>Segmented analysis</td>
+                        <td>High-level summaries</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Primary Users</strong></td>
+                        <td>Operations staff</td>
+                        <td>Analysts, managers</td>
+                        <td>Executives, C-suite</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Action Type</strong></td>
+                        <td>Immediate response</td>
+                        <td>Tactical adjustments</td>
+                        <td>Strategic decisions</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Section 3.3: Design Principles for Dashboards -->
+            <div id="section3-3">
+                <h3>3.3 Design Principles for Dashboards</h3>
+                
+                <h4>1. Minimalism: Less is More</h4>
+                <p>
+                    Show only the <strong>required data</strong> to avoid distracting from the actual objective.
+                </p>
+                <ul>
+                    <li>Remove non-essential information</li>
+                    <li>Focus on key metrics that drive decisions</li>
+                    <li>Avoid chart junk and decorative elements</li>
+                    <li>Every element should serve a purpose</li>
+                </ul>
+                
+                <h4>2. Proper Layout: Z-Pattern or F-Pattern</h4>
+                <p>
+                    Human eye movement follows predictable patterns when scanning screens:
+                </p>
+                
+                <p><strong>Z-Pattern (for sparse layouts):</strong></p>
+                <ul>
+                    <li>Eyes move from top-left → top-right → diagonal → bottom-left → bottom-right</li>
+                    <li>Place most important information at top-left and bottom-right</li>
+                    <li>Good for executive dashboards with few key metrics</li>
+                </ul>
+                
+                <p><strong>F-Pattern (for dense layouts):</strong></p>
+                <ul>
+                    <li>Eyes move across top, then down left side, with shorter horizontal movements</li>
+                    <li>Place critical information along left edge and top</li>
+                    <li>Good for analytical dashboards with multiple sections</li>
+                </ul>
+                
+                <div class="professor-note">
+                    We should have proper layout - either follow Z-pattern or F-pattern for layouting these dashboards. This follows natural eye movement patterns and helps users find information quickly.
+                </div>
+                
+                <h4>3. Strategic Use of Color</h4>
+                
+                <p><strong>Color Guidelines:</strong></p>
+                <table>
+                    <tr>
+                        <th>Principle</th>
+                        <th>Recommendation</th>
+                        <th>Reason</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Avoid Rainbow Colors</strong></td>
+                        <td>Use limited, purposeful color palette</td>
+                        <td>Too many colors create visual noise and confusion</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reserve Red for Alerts</strong></td>
+                        <td>Use red only for warnings, errors, critical issues</td>
+                        <td>Maintains urgency association; overuse desensitizes users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cultural Considerations</strong></td>
+                        <td>Consider cultural color associations</td>
+                        <td>Colors have different meanings in different cultures</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Professional Appearance</strong></td>
+                        <td>Use corporate colors or neutral palettes</td>
+                        <td>Maintains professional look and brand consistency</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Avoid rainbow colors or maybe informal collections of colors which may not give you professional look and feel. Follow some cultural factors which we discussed in earlier lectures for designing color schemes. Use red only for alerts - this is very important.
+                </div>
+                
+                <h4>4. Choosing Correct Charts</h4>
+                
+                <p><strong>Chart Selection Guide:</strong></p>
+                <table>
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Best Chart</th>
+                        <th>Why</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Categorical Comparison</strong></td>
+                        <td>Bar charts > Pie charts</td>
+                        <td>Clear height comparison vs. difficult angle estimation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trends Over Time</strong></td>
+                        <td>Line charts</td>
+                        <td>Shows continuous change and direction clearly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Part-to-Whole</strong></td>
+                        <td>Pie charts (max 5-6 slices)</td>
+                        <td>Shows percentage distribution at a glance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>KPIs (Trends)</strong></td>
+                        <td>Sparklines</td>
+                        <td>Compact trend visualization within table cells</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Correlations</strong></td>
+                        <td>Scatter plots</td>
+                        <td>Shows relationship between two variables</td>
+                    </tr>
+                </table>
+                
+                <p><strong>Sparklines for KPIs:</strong></p>
+                <ul>
+                    <li>Small, inline charts without axes</li>
+                    <li>Show trend within table cells or next to numbers</li>
+                    <li>Excellent for showing multiple KPI trends compactly</li>
+                    <li>Example: Show revenue trend next to revenue number</li>
+                </ul>
+                
+                <div class="professor-note">
+                    If we want to compare two categories, bar charts are better compared to pie charts. Pie charts give you percentage distribution, then the rest is left on users how they perceive. But in bar charts, the clear height shows which one is low and which one is high. For trends, use line charts. For KPIs, we can use sparklines - you remember sparklines we showed in Excel? In a particular row you have some data, then in a particular cell you show the trend of that data.
+                </div>
+                
+                <h4>5. Avoiding Clutter</h4>
+                <ul>
+                    <li><strong>Limit number of widgets:</strong> Don't overcrowd the canvas</li>
+                    <li><strong>Group related information:</strong> Use sections and containers</li>
+                    <li><strong>Progressive disclosure:</strong> Show summary first, details on click</li>
+                    <li><strong>White space:</strong> Use empty space to separate sections</li>
+                </ul>
+                
+                <h4>6. Adding Interactivity</h4>
+                
+                <p><strong>Essential Interactive Features:</strong></p>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Purpose</th>
+                        <th>User Benefit</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtering</strong></td>
+                        <td>Select specific data subsets</td>
+                        <td>View only relevant information (e.g., specific time period, region)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Drill-Down</strong></td>
+                        <td>Navigate from summary to details</td>
+                        <td>Explore root causes and detailed breakdowns</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tooltips</strong></td>
+                        <td>Show additional context on hover</td>
+                        <td>Access detailed information without cluttering main view</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cross-Filtering</strong></td>
+                        <td>Selecting in one chart filters others</td>
+                        <td>Understand relationships across multiple dimensions</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    Provide filtering widgets so that you can only select the data in which you are interested as a viewer. You can also provide drill-down widgets for more interactivity, going deeper. Provide tooltips so that you can show the required information on the visible canvas itself without cluttering it.
+                </div>
+                
+                <h4>Design Principles Summary</h4>
+                <ul>
+                    <li>✓ <strong>Minimalism:</strong> Show only essential information</li>
+                    <li>✓ <strong>Layout:</strong> Follow Z or F pattern for natural eye flow</li>
+                    <li>✓ <strong>Color:</strong> Limited palette, red for alerts only</li>
+                    <li>✓ <strong>Charts:</strong> Match chart type to data type (bar > pie for comparison)</li>
+                    <li>✓ <strong>Clutter:</strong> Limit widgets, use white space</li>
+                    <li>✓ <strong>Interactivity:</strong> Enable filtering, drill-down, tooltips</li>
+                </ul>
+            </div>
+            
+            <!-- Section 3.4: BI Tools -->
+            <div id="section3-4">
+                <h3>3.4 BI Tools</h3>
+                
+                <h4>Popular Business Intelligence Platforms</h4>
+                
+                <table>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                        <th>Strengths</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Microsoft Power BI</strong></td>
+                        <td>Commercial (Microsoft ecosystem)</td>
+                        <td>Excel integration, Azure connectivity, enterprise features</td>
+                        <td>Organizations using Microsoft tools, large enterprises</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tableau</strong></td>
+                        <td>Commercial (Salesforce)</td>
+                        <td>Powerful visualizations, intuitive drag-and-drop, large community</td>
+                        <td>Data analysts, organizations needing advanced visuals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Looker Studio</strong></td>
+                        <td>Free (Google)</td>
+                        <td>Google Analytics integration, web-based, free tier</td>
+                        <td>Small businesses, marketing teams, Google workspace users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Qlik</strong></td>
+                        <td>Commercial</td>
+                        <td>Associative data model, in-memory processing, fast</td>
+                        <td>Complex data relationships, enterprise analytics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apache Superset</strong></td>
+                        <td>Open Source</td>
+                        <td>Free, customizable, Python-based, SQL interface</td>
+                        <td>Organizations wanting open-source solution, developers</td>
+                    </tr>
+                </table>
+                
+                <h4>Industry-Specific Integrations</h4>
+                
+                <p><strong>ERP Dashboards (Enterprise Resource Planning):</strong></p>
+                <ul>
+                    <li>Integrated with SAP, Oracle, Microsoft Dynamics</li>
+                    <li>Shows end-to-end business processes</li>
+                    <li>Financial, supply chain, HR, and operations data</li>
+                    <li>Real-time operational visibility</li>
+                </ul>
+                
+                <p><strong>CRM Visual Reports (Customer Relationship Management):</strong></p>
+                <ul>
+                    <li><strong>Salesforce integration:</strong> Sales pipeline, lead conversion, customer lifetime value</li>
+                    <li>Customer interaction history visualization</li>
+                    <li>Sales team performance dashboards</li>
+                    <li>Forecast accuracy and quota attainment</li>
+                </ul>
+                
+                <p><strong>And Many More:</strong></p>
+                <ul>
+                    <li>Marketing automation dashboards (HubSpot, Marketo)</li>
+                    <li>E-commerce analytics (Shopify, WooCommerce)</li>
+                    <li>Financial systems (QuickBooks, NetSuite)</li>
+                    <li>HR analytics (Workday, BambooHR)</li>
+                </ul>
+                
+                <h4>Choosing the Right BI Tool</h4>
+                
+                <p><strong>Considerations:</strong></p>
+                <ul>
+                    <li><strong>Budget:</strong> Open source (Superset) vs. commercial (Tableau, Power BI)</li>
+                    <li><strong>Existing ecosystem:</strong> Microsoft → Power BI; Google → Looker Studio</li>
+                    <li><strong>Technical expertise:</strong> No-code (Looker) vs. requires coding (Superset)</li>
+                    <li><strong>Scale:</strong> Small team vs. enterprise-wide deployment</li>
+                    <li><strong>Data sources:</strong> Compatibility with your databases and systems</li>
+                </ul>
+            </div>
+            
+            <!-- Hinglish Summary for Section 3 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary - Business Intelligence & Dashboards</h4>
+                <p>
+                    Business Intelligence visualization mein teen main dashboard types hain: Operational (real-time monitoring jaise server uptime), Analytical (deep analysis karke patterns dhoondhna), aur Strategic (long-term goals ke against performance track karna). Dashboard design ke important principles hain - minimalism (sirf zaroori data dikhana), proper layout (Z ya F pattern), limited colors (red sirf alerts ke liye), sahi chart selection (bar charts > pie charts for comparison), aur interactivity (filtering, drill-down, tooltips). KPIs (Key Performance Indicators) pe focus karna chahiye, har individual data point pe nahi. Real-time dashboards 24×7 systems ke liye zaroori hain jaise e-commerce aur OTT platforms. Popular BI tools hain Power BI (Microsoft ecosystem ke liye), Tableau (advanced visualizations), Looker Studio (Google integration), aur Apache Superset (open source). Industry-specific integrations bhi available hain jaise ERP dashboards aur CRM visual reports.
+                </p>
+            </div>
+            
+            <!-- Key Takeaways for Section 3 -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>BI visualizations serve three distinct audiences: managers (decision-making), executives (monitoring), operations (forecasting)</li>
+                    <li>Three dashboard types: Operational (real-time), Analytical (deep patterns), Strategic (long-term goals)</li>
+                    <li>Focus on KPIs (Key Performance Indicators) rather than every data point</li>
+                    <li>Design principles: minimalism, Z/F-pattern layout, limited colors, red only for alerts</li>
+                    <li>Bar charts better than pie charts for categorical comparisons; use line charts for trends</li>
+                    <li>Sparklines effectively show KPI trends compactly within tables</li>
+                    <li>Essential interactive features: filtering, drill-down, tooltips, cross-filtering</li>
+                    <li>Popular tools: Power BI (Microsoft), Tableau (advanced visuals), Looker Studio (Google, free), Superset (open source)</li>
+                    <li>Real-time dashboards critical for 24/7 operations like e-commerce and OTT platforms</li>
+                    <li>Strategic dashboards use balanced scorecard approach combining multiple performance perspectives</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Section 3 -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What's the difference between operational, analytical, and strategic dashboards?</strong>
+                    <div class="answer">
+                        Operational dashboards monitor real-time operations with live metrics and alerts. Analytical dashboards perform deep analysis to discover patterns and breakdowns by categories. Strategic dashboards focus on high-level long-term performance against organizational goals using forecasting and balanced scorecards.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why should red color be used sparingly in dashboards?</strong>
+                    <div class="answer">
+                        Red should be reserved only for alerts, warnings, and critical issues to maintain its urgency association. Overusing red desensitizes users and reduces its effectiveness as an attention-grabbing signal when something truly requires immediate action.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: Why are bar charts preferred over pie charts for categorical comparisons?</strong>
+                    <div class="answer">
+                        Bar charts have clear heights that make it immediately obvious which category is higher or lower. Pie charts require users to estimate angles and percentages, which is harder and less accurate. Bar charts provide clearer visual comparison at a glance.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: What is a balanced scorecard approach in strategic dashboards?</strong>
+                    <div class="answer">
+                        Balanced scorecard combines forecasting with constraints and multiple perspectives - financial, customer, internal processes, and learning/growth. It provides comprehensive view of organizational performance rather than focusing only on financial metrics, enabling better strategic decision-making.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5: What are sparklines and when should they be used?</strong>
+                    <div class="answer">
+                        Sparklines are small, inline charts without axes that show trends compactly within table cells or next to KPI numbers. They're ideal for showing multiple KPI trends simultaneously in limited space, like displaying revenue trends next to revenue figures in a summary table.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== COMPREHENSIVE MIND MAP ========== -->
+        <div id="mindmap" class="mind-map">
+            <h2>🧠 Comprehensive Course Mind Map</h2>
+            
+            <div class="mind-map-container">
+                <div class="central-node">
+                    Domain-Specific<br>Data Visualization
+                </div>
+                
+                <div class="branches">
+                    <!-- Branch 1: Journalism & Public Policy -->
+                    <div class="branch">
+                        <div class="branch-title">
+                            📰 Journalism &<br>Public Policy
+                        </div>
+                        <div class="sub-nodes">
+                            <div class="sub-node"><strong>Audience:</strong> General public, policymakers, non-experts</div>
+                            <div class="sub-node"><strong>Goals:</strong> Simplify complex data, reveal trends, ensure transparency</div>
+                            <div class="sub-node"><strong>Constraints:</strong> Avoid misinformation, mobile-friendly, accessible</div>
+                            <div class="sub-node"><strong>Frameworks:</strong> Martini Glass, Scrollytelling</div>
+                            <div class="sub-node"><strong>Techniques:</strong> Line charts, choropleth maps, Sankey diagrams</div>
+                            <div class="sub-node"><strong>Tools:</strong> Datawrapper, Flourish, Tableau, D3.js</div>
+                            <div class="sub-node"><strong>Case Studies:</strong> COVID-19 curves, Election maps, Budget flows</div>
+                            <div class="sub-node"><strong>Key Lesson:</strong> Use relative metrics, not absolute numbers</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 2: Scientific Research -->
+                    <div class="branch">
+                        <div class="branch-title">
+                            🔬 Scientific &<br>Research
+                        </div>
+                        <div class="sub-nodes">
+                            <div class="sub-node"><strong>Data Nature:</strong> High-dimensional, complex, multivariate</div>
+                            <div class="sub-node"><strong>Audience:</strong> Domain experts (creators & readers)</div>
+                            <div class="sub-node"><strong>Bioinformatics:</strong> Genome browsers, protein structures, phylogenetic trees</div>
+                            <div class="sub-node"><strong>Climate Science:</strong> Temperature time series, choropleth maps, satellite imagery</div>
+                            <div class="sub-node"><strong>Physics/Engineering:</strong> Waveforms, 3D simulations, particle trajectories, CAD</div>
+                            <div class="sub-node"><strong>Healthcare:</strong> Epidemiology maps, Kaplan-Meier plots, medical imaging</div>
+                            <div class="sub-node"><strong>Tools:</strong> Python (Matplotlib, Seaborn, Plotly), R (ggplot2), ParaView, GIS</div>
+                            <div class="sub-node"><strong>Integrity:</strong> Clear axes, documentation, avoid cherry-picking</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 3: Business Intelligence -->
+                    <div class="branch">
+                        <div class="branch-title">
+                            💼 Business Intelligence<br>& Dashboards
+                        </div>
+                        <div class="sub-nodes">
+                            <div class="sub-node"><strong>Users:</strong> Managers, executives, operations teams</div>
+                            <div class="sub-node"><strong>Dashboard Types:</strong> Operational, Analytical, Strategic</div>
+                            <div class="sub-node"><strong>Focus:</strong> KPIs (Key Performance Indicators)</div>
+                            <div class="sub-node"><strong>Design:</strong> Minimalism, Z/F-pattern, limited colors</div>
+                            <div class="sub-node"><strong>Charts:</strong> Bar > pie for comparison, line for trends, sparklines for KPIs</div>
+                            <div class="sub-node"><strong>Interactivity:</strong> Filtering, drill-down, tooltips</div>
+                            <div class="sub-node"><strong>Tools:</strong> Power BI, Tableau, Looker Studio, Qlik, Superset</div>
+                            <div class="sub-node"><strong>Integration:</strong> ERP dashboards, CRM visual reports</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Connections Section -->
+                <div style="margin-top: 40px; padding: 20px; background: #e8f4f8; border-radius: 10px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">🔗 Key Connections Across Domains</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Storytelling:</strong> Used in journalism (scrollytelling) and BI (dashboard narratives)</li>
+                        <li><strong>Interactive Elements:</strong> Present in all three domains but with different complexity levels</li>
+                        <li><strong>Audience Adaptation:</strong> Simplification for journalism → Technical precision for science → Decision focus for business</li>
+                        <li><strong>Tool Overlap:</strong> Tableau and Python used across journalism, science, and business</li>
+                        <li><strong>Data Integrity:</strong> Critical in science but also applies to journalism and business ethics</li>
+                        <li><strong>Real-time Capability:</strong> Important for journalism (breaking news) and business (operational dashboards)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== COURSE CONCLUSION ========== -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white; border-bottom: 3px solid white;">🎓 Course Conclusion</h2>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                This lecture has brought together all the principles of <strong>storytelling and data visualization</strong> we've learned throughout this course, applying them to three distinct domains: <strong>journalism and public policy</strong>, <strong>scientific research</strong>, and <strong>business intelligence</strong>.
+            </p>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Each domain has unique requirements, audiences, and constraints, but they all share the fundamental goal of communicating data effectively. Whether you're creating an interactive scrollytelling article for the public, a gene expression heatmap for researchers, or a real-time operational dashboard for managers, the principles remain consistent: <em>know your audience</em>, <em>choose appropriate visualizations</em>, <em>maintain integrity</em>, and <em>tell a compelling story</em>.
+            </p>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Thank you for completing this course. We hope these skills and knowledge will serve you well in your future data visualization endeavors!
+            </p>
+        </div>
+
+<footer>
+
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

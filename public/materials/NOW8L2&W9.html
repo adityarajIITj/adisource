@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Optimization - Lecture Notes (Week 8 & 9)</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ========== CSS STYLING ========== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* Header Styling */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #3498db;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #2980b9;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h3 {
+            color: #16a085;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #8e44ad;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            padding: 8px 0;
+        }
+        
+        .toc ul ul {
+            padding-left: 25px;
+        }
+        
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #e74c3c;
+        }
+        
+        /* Content Styling */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #8e44ad;
+            font-style: italic;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Special Boxes */
+        .note-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #0c5460;
+        }
+        
+        .hinglish-summary {
+            background: #f8d7da;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary::before {
+            content: "📝 Hinglish Summary: ";
+            font-weight: bold;
+            color: #721c24;
+            font-size: 1.1em;
+        }
+        
+        .key-takeaways {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        
+        .practice-questions {
+            background: #e7e9fc;
+            border-left: 5px solid #5a67d8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .practice-questions h4 {
+            color: #434190;
+            margin-top: 0;
+        }
+        
+        .answer {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #666;
+        }
+        
+        .answer::before {
+            content: "✅ Answer: ";
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        
+        /* Math Equations */
+        .mjx-chtml {
+            font-size: 110% !important;
+        }
+        
+        /* Mind Map */
+        .mindmap {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .mindmap-node {
+            background: #3498db;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+        }
+        
+        .mindmap-subnode {
+            background: #e8f4f8;
+            color: #2980b9;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px;
+            border: 2px solid #3498db;
+        }
+        
+        /* Code Blocks */
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ========== HEADER SECTION ========== -->
+    <h1>📚 Numerical Optimization</h1>
+    <p style="text-align: center; font-size: 1.2em; color: #7f8c8d; margin-bottom: 30px;">
+        Comprehensive Lecture Notes: Week 8 Lecture 2 & Week 9 (Complete)<br>
+        <em>KKT Conditions, Constrained Optimization & Support Vector Machines</em>
+    </p>
+
+    <!-- ========== TABLE OF CONTENTS ========== -->
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#lecture8">Lecture 8: KKT Point and Optimality Conditions</a>
+                <ul>
+                    <li><a href="#review">Review of Constrained Optimization</a></li>
+                    <li><a href="#fritz-john">Fritz-John Conditions and Limitations</a></li>
+                    <li><a href="#kkt-condition">Karush-Kuhn-Tucker (KKT) Conditions</a></li>
+                    <li><a href="#licq">Linear Independence Constraint Qualification (LICQ)</a></li>
+                    <li><a href="#examples">Examples and Verification</a></li>
+                    <li><a href="#svm">Support Vector Machine (SVM)</a></li>
+                </ul>
+            </li>
+            <li><a href="#lecture9">Lecture 9: Equality and Inequality Constraints</a>
+                <ul>
+                    <li><a href="#both-constraints">Problems with Both Constraint Types</a></li>
+                    <li><a href="#fj-both">Fritz-John for Mixed Constraints</a></li>
+                    <li><a href="#kkt-both">KKT for Mixed Constraints</a></li>
+                    <li><a href="#linear-programming">Linear Programming Problems</a></li>
+                    <li><a href="#transportation">Transportation Problem Example</a></li>
+                    <li><a href="#binary-classification">Binary Classification & SVM Details</a></li>
+                </ul>
+            </li>
+            <li><a href="#mindmap">Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+
+    <!-- ========== LECTURE 8 SECTION ========== -->
+    <h2 id="lecture8">🎓 Lecture 8: KKT Point and Optimality Conditions</h2>
+
+    <!-- Review Section -->
+    <h3 id="review">1. Review of Constrained Optimization</h3>
+    
+    <p>
+        In constrained optimization, we deal with problems that are fundamentally different from unconstrained optimization. The key difference is that we must <strong>minimize (or maximize) an objective function while remaining within a feasible region</strong> defined by constraints.
+    </p>
+
+    <h4>Key Concepts Reviewed:</h4>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Concept</th>
+                <th>Description</th>
+                <th>Importance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Descent Direction</strong></td>
+                <td>Direction along which function value decreases</td>
+                <td>Helps identify potential improvement directions</td>
+            </tr>
+            <tr>
+                <td><strong>Feasible Direction</strong></td>
+                <td>Direction along which we remain in feasible region</td>
+                <td>Ensures constraints are not violated</td>
+            </tr>
+            <tr>
+                <td><strong>Active Constraints</strong></td>
+                <td>Constraints that are exactly satisfied at a point</td>
+                <td>Only active constraints affect local optimality</td>
+            </tr>
+            <tr>
+                <td><strong>Separation Theorem</strong></td>
+                <td>Two disjoint convex sets can be separated by hyperplane</td>
+                <td>Foundation for optimality conditions</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>Problem Formulation:</h4>
+    
+    <p>We consider problems of the form:</p>
+
+    
+    $$\begin{align}
+    \text{minimize} \quad & f(x) \\
+    \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, 2, \ldots, m
+    \end{align}$$
+
+    <div class="professor-note">
+        The professor emphasized that in unconstrained optimization, every direction is feasible at every point. However, with constraints, the concept of <strong>feasible direction</strong> becomes crucial because we must ensure that moving in a direction keeps us within the constraint set.
+    </div>
+
+    <h4>Geometric Optimality Criterion:</h4>
+    
+    <p>
+        A point \( x^* \) is optimal if and only if <strong>no descent direction is a feasible direction</strong> at that point. In other words, the set of descent directions and the set of feasible directions must have an <strong>empty intersection</strong>.
+    </p>
+
+    <div class="note-box">
+        <strong>Important Theorems Used:</strong>
+        <ul>
+            <li><strong>Separation Theorem:</strong> Two disjoint convex sets can be separated by a hyperplane</li>
+            <li><strong>Farkas Lemma:</strong> Provides conditions for linear system solvability</li>
+            <li><strong>Gordan's Alternative Theorem:</strong> Either one system has a solution or an alternative system does</li>
+        </ul>
+    </div>
+
+    <div class="hinglish-summary">
+        Constrained optimization mein hum function ko minimize karte hain lekin constraints ke andar rehke. Yahan pe do important concepts hain: descent direction (jahan function value kam ho) aur feasible direction (jahan constraints violate na ho). Agar kisi point pe koi bhi direction descent aur feasible dono nahi hai, toh woh point optimal hai.
+    </div>
+
+    <!-- Fritz-John Conditions -->
+    <h3 id="fritz-john">2. Fritz-John Conditions and Their Limitations</h3>
+
+    <h4>The Fritz-John (FJ) Necessary Condition:</h4>
+    
+    <p>For the problem:</p>
+
+    
+    $$\begin{align}
+    \text{minimize} \quad & f(x) \\
+    \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \ldots, m
+    \end{align}$$
+
+    <p>If \( x^* \) is a local minimizer and the functions are differentiable, then there exist multipliers \( \lambda_0, \lambda_1, \ldots, \lambda_m \geq 0 \), <strong>not all zero</strong>, such that:</p>
+
+
+    $$\begin{align}
+    & \lambda_0 \nabla f(x^*) + \sum_{i=1}^{m} \lambda_i \nabla g_i(x^*) = 0 \\
+    & \lambda_i g_i(x^*) = 0, \quad \forall i = 1, \ldots, m \quad \text{(Complementary Slackness)}
+    \end{align}$$
+
+    <h4>Critical Limitation of Fritz-John Condition:</h4>
+
+    <div class="note-box">
+        <strong>⚠️ Major Problem:</strong> The Fritz-John condition can be satisfied with \( \lambda_0 = 0 \), which means the condition <strong>does not depend on the objective function</strong> \( f(x) \)! This is highly undesirable because:
+        <ul>
+            <li>The optimality condition should depend on what we're trying to optimize</li>
+            <li>With \( \lambda_0 = 0 \), any objective function would give the same FJ point</li>
+            <li>In extreme cases, all feasible points can become FJ points</li>
+        </ul>
+    </div>
+
+    <h4>Example: When FJ is Uninformative</h4>
+
+    <p><strong>Problem Statement:</strong></p>
+
+    
+    $$\begin{align}
+    \text{minimize} \quad & -x_1 \\
+    \text{subject to} \quad & x_2 - (1-x_1)^3 \leq 0 \\
+    & -x_2 - (1-x_1)^3 \leq 0
+    \end{align}$$
+
+    <p>The global minimizer is \( x^* = (1, 0) \).</p>
+
+    <div class="professor-note">
+        The professor used Desmos software to visualize this problem. The feasible region looks like an inverted "K" (without the vertical line), starting from the point (1,0) and extending to the left. When minimizing \( -x_1 \) (equivalently, maximizing \( x_1 \)), the optimal point is clearly (1, 0) as it's the rightmost feasible point.
+    </div>
+
+    <p><strong>Computing Gradients at \( x^* = (1,0) \):</strong></p>
+
+
+    $$\begin{align}
+    \nabla f(1,0) &= \begin{pmatrix} -1 \\ 0 \end{pmatrix} \\
+    \nabla g_1(1,0) &= \begin{pmatrix} 0 \\ 1 \end{pmatrix} \\
+    \nabla g_2(1,0) &= \begin{pmatrix} 0 \\ -1 \end{pmatrix}
+    \end{align}$$
+
+    <p><strong>Fritz-John Conditions:</strong></p>
+
+    
+    $$\lambda_0 \begin{pmatrix} -1 \\ 0 \end{pmatrix} + \lambda_1 \begin{pmatrix} 0 \\ 1 \end{pmatrix} + \lambda_2 \begin{pmatrix} 0 \\ -1 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+
+    <p>This is satisfied by \( \lambda_0 = 0 \) and \( \lambda_1 = \lambda_2 > 0 \) (any positive value works, e.g., 2, 3, 0.5, etc.).</p>
+
+    <div class="note-box">
+        <strong>Why is this problematic?</strong> Because \( \lambda_0 = 0 \) means the term \( \nabla f \) doesn't contribute! If we change the objective function to minimize \( x_1 \) instead of \( -x_1 \), the problem fundamentally changes (the minimum would be \( -\infty \)), but (1,0) would still be a Fritz-John point with the same multipliers!
+    </div>
+
+    <div class="hinglish-summary">
+        Fritz-John condition ek necessary condition hai, lekin iska bada drawback hai ki kabhi-kabhi \( \lambda_0 = 0 \) ho sakta hai. Iska matlab hai ki optimality condition objective function pe depend hi nahi kar raha! Toh koi bhi function minimize karo, same point FJ point rahega. Yeh bahut buri baat hai kyunki optimization problem ka solution toh objective function pe depend karna chahiye!
+    </div>
+
+    <!-- KKT Condition -->
+    <h3 id="kkt-condition">3. Karush-Kuhn-Tucker (KKT) Conditions</h3>
+
+    <p>
+        To overcome the limitations of Fritz-John conditions, we introduce the <strong>Karush-Kuhn-Tucker (KKT) conditions</strong>, which are necessary conditions under certain <strong>constraint qualifications</strong>.
+    </p>
+
+    <h4>KKT Theorem (for Inequality Constraints):</h4>
+
+    <div class="note-box">
+        <strong>Theorem:</strong> Consider the problem:
+
+        $$\begin{align}
+        \text{minimize} \quad & f(x) \\
+        \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \ldots, m
+        \end{align}$$
+        
+        Let \( x^* \) be a feasible point and a local minimizer. If the gradients \( \{\nabla g_i(x^*) : i \in \mathcal{I}(x^*)\} \) are <strong>linearly independent</strong> (LICQ), then there exist multipliers \( \lambda_1, \ldots, \lambda_m \) such that:
+
+        
+        $$\begin{align}
+        & \lambda_i \geq 0, \quad \forall i = 1, \ldots, m \\
+        & \nabla f(x^*) + \sum_{i=1}^{m} \lambda_i \nabla g_i(x^*) = 0 \\
+        & \lambda_i g_i(x^*) = 0, \quad \forall i = 1, \ldots, m
+        \end{align}$$
+    </div>
+
+    <h4>Key Differences from Fritz-John:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Aspect</th>
+                <th>Fritz-John</th>
+                <th>KKT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Coefficient on \( \nabla f \)</strong></td>
+                <td>\( \lambda_0 \geq 0 \) (can be 0)</td>
+                <td>Always 1 (normalized)</td>
+            </tr>
+            <tr>
+                <td><strong>Applies to</strong></td>
+                <td>All differentiable problems</td>
+                <td>Problems satisfying constraint qualification</td>
+            </tr>
+            <tr>
+                <td><strong>Objective function role</strong></td>
+                <td>May be absent (\( \lambda_0 = 0 \))</td>
+                <td>Always present in condition</td>
+            </tr>
+            <tr>
+                <td><strong>"Not all zero" clause</strong></td>
+                <td>Explicitly stated</td>
+                <td>Not needed (since coefficient is 1)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="professor-note">
+        The KKT condition is essentially the Fritz-John condition with \( \lambda_0 = 1 \). This ensures that the objective function always contributes to the optimality condition. However, KKT is only a necessary condition when certain "niceness" properties (constraint qualifications) hold.
+    </div>
+
+    <div class="hinglish-summary">
+        KKT condition Fritz-John se better hai kyunki isme objective function ka contribution hamesha rahta hai. Yahan \( \lambda_0 \) ko by default 1 set kar dete hain, isliye objective function kabhi missing nahi ho sakta. Lekin yeh condition tabhi necessary hai jab constraints "nice" hon, yaani constraint qualification satisfy karte hon.
+    </div>
+
+    <!-- LICQ Section -->
+    <h3 id="licq">4. Linear Independence Constraint Qualification (LICQ)</h3>
+
+    <p>
+        <strong>Constraint Qualification</strong> refers to conditions on the constraints that ensure the optimality conditions have desirable properties. The most common constraint qualification is LICQ.
+    </p>
+
+    <h4>Definition of LICQ:</h4>
+
+    <div class="note-box">
+        <strong>Linear Independence Constraint Qualification (LICQ):</strong><br>
+        At a point \( x^* \), LICQ holds if the gradients of the <strong>active constraints</strong> are linearly independent:
+
+        
+        $$\{\nabla g_i(x^*) : i \in \mathcal{I}(x^*)\} \text{ are linearly independent}$$
+        
+        where \( \mathcal{I}(x^*) = \{i : g_i(x^*) = 0\} \) is the set of active indices.
+    </div>
+
+    <h4>Other Constraint Qualifications:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Constraint Qualification</th>
+                <th>Description</th>
+                <th>When to Use</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LICQ</strong></td>
+                <td>Active constraint gradients are linearly independent</td>
+                <td>Most commonly used, strongest condition</td>
+            </tr>
+            <tr>
+                <td><strong>MFCQ</strong></td>
+                <td>Mangasarian-Fromovitz Constraint Qualification</td>
+                <td>Weaker than LICQ, more general</td>
+            </tr>
+            <tr>
+                <td><strong>Slater Condition</strong></td>
+                <td>Exists a point strictly satisfying all inequalities</td>
+                <td>For convex problems, very practical</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>Slater Condition (Explained):</h4>
+
+    <p>For the problem:</p>
+
+    
+    $$\begin{align}
+    \text{minimize} \quad & f(x) \\
+    \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \ldots, m
+    \end{align}$$
+
+    <p>
+        Slater condition holds if there exists a point \( \bar{x} \) such that:
+    </p>
+
+    
+    $$g_i(\bar{x}) < 0 \quad \forall i = 1, \ldots, m$$
+
+    <p>
+        This means at least one point satisfies <strong>all inequalities strictly</strong>. This is a very simple and practical condition, especially for convex optimization problems.
+    </p>
+
+    <div class="hinglish-summary">
+        Constraint Qualification matlab constraints pe kuch special conditions jo ensure karte hain ki KKT condition proper kaam kare. LICQ sabse common hai - isme active constraints ke gradients linearly independent hone chahiye. Slater condition bahut simple hai - bas ek aisa point chahiye jo saare inequalities ko strictly satisfy kare (equality nahi, strictly less than).
+    </div>
+
+    <!-- Examples Section -->
+    <h3 id="examples">5. Examples and Verification of KKT Points</h3>
+
+    <h4>Example 1: Verifying KKT Point</h4>
+
+    <p><strong>Problem:</strong></p>
+
+    
+    $$\begin{align}
+    \text{minimize} \quad & -x \\
+    \text{subject to} \quad & x^2 + y^2 \leq 1 \\
+    & (x-1)^3 - y \leq 0
+    \end{align}$$
+
+    <p><strong>Question:</strong> Verify whether \( (x,y) = (1,0) \) is a KKT point.</p>
+
+    <p><strong>Solution Steps:</strong></p>
+
+    <p><strong>Step 1:</strong> Define the functions:</p>
+
+    
+    $$\begin{align}
+    f(x,y) &= -x \\
+    g_1(x,y) &= x^2 + y^2 - 1 \\
+    g_2(x,y) &= (x-1)^3 - y
+    \end{align}$$
+
+    <p><strong>Step 2:</strong> Compute gradients:</p>
+
+    
+    $$\begin{align}
+    \nabla f(x,y) &= \begin{pmatrix} -1 \\ 0 \end{pmatrix} \\
+    \nabla g_1(x,y) &= \begin{pmatrix} 2x \\ 2y \end{pmatrix} \\
+    \nabla g_2(x,y) &= \begin{pmatrix} 3(x-1)^2 \\ -1 \end{pmatrix}
+    \end{align}$$
+
+    <p><strong>Step 3:</strong> Evaluate at \( (1,0) \):</p>
+
+    
+    $$\begin{align}
+    \nabla f(1,0) &= \begin{pmatrix} -1 \\ 0 \end{pmatrix} \\
+    \nabla g_1(1,0) &= \begin{pmatrix} 2 \\ 0 \end{pmatrix} \\
+    \nabla g_2(1,0) &= \begin{pmatrix} 0 \\ -1 \end{pmatrix}
+    \end{align}$$
+
+    <p><strong>Step 4:</strong> Apply KKT conditions:</p>
+
+    
+    $$\nabla f(1,0) + \lambda_1 \nabla g_1(1,0) + \lambda_2 \nabla g_2(1,0) = 0$$
+
+    
+    $$\begin{pmatrix} -1 \\ 0 \end{pmatrix} + \lambda_1 \begin{pmatrix} 2 \\ 0 \end{pmatrix} + \lambda_2 \begin{pmatrix} 0 \\ -1 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+
+    <p><strong>Step 5:</strong> Solve for multipliers:</p>
+    
+    <p>From the first component: \( -1 + 2\lambda_1 = 0 \Rightarrow \lambda_1 = \frac{1}{2} \)</p>
+    <p>From the second component: \( -\lambda_2 = 0 \Rightarrow \lambda_2 = 0 \)</p>
+
+    <p><strong>Step 6:</strong> Verify non-negativity: \( \lambda_1 = \frac{1}{2} \geq 0 \) ✓ and \( \lambda_2 = 0 \geq 0 \) ✓</p>
+
+    <div class="note-box">
+        <strong>Conclusion:</strong> Yes, \( (1,0) \) is a KKT point with multipliers \( \lambda_1 = \frac{1}{2} \) and \( \lambda_2 = 0 \).
+    </div>
+
+    <div class="practice-questions">
+        <h4>Practice Questions</h4>
+        
+        <p><strong>Q1:</strong> Why is it important that LICQ holds for KKT conditions to be necessary?</p>
+        <div class="answer">
+            LICQ ensures that the active constraint gradients span a proper subspace, preventing degeneracy. Without LICQ, we might have \( \lambda_0 = 0 \) in Fritz-John conditions, making the optimality condition independent of the objective function.
+        </div>
+
+        <p><strong>Q2:</strong> What is the complementary slackness condition and why is it important?</p>
+        <div class="answer">
+            Complementary slackness states that \( \lambda_i g_i(x^*) = 0 \) for all \( i \). This means: if constraint \( i \) is inactive (\( g_i(x^*) < 0 \)), then \( \lambda_i = 0 \); if \( \lambda_i > 0 \), then constraint \( i \) is active (\( g_i(x^*) = 0 \)). It's important because it tells us which constraints are "binding" at the optimal solution.
+        </div>
+
+        <p><strong>Q3:</strong> Can a point be a Fritz-John point but not a KKT point?</p>
+        <div class="answer">
+            Yes! Every KKT point is a Fritz-John point, but not vice versa. A point can be FJ with \( \lambda_0 = 0 \), but to be a KKT point, it must satisfy the conditions with \( \lambda_0 = 1 \) (equivalently, the objective function gradient must be in the cone generated by active constraint gradients).
+        </div>
+    </div>
+
+    <div class="key-takeaways">
+        <h4>🎯 Key Takeaways - Sections 1-5</h4>
+        <ul>
+            <li>Constrained optimization requires balancing descent directions with feasible directions</li>
+            <li>Fritz-John conditions are always necessary but can be uninformative when \( \lambda_0 = 0 \)</li>
+            <li>KKT conditions overcome FJ limitations by requiring constraint qualifications like LICQ</li>
+            <li>LICQ requires active constraint gradients to be linearly independent</li>
+            <li>Slater condition is a simple, practical constraint qualification for convex problems</li>
+            <li>Verifying KKT points involves computing gradients and solving linear systems</li>
+        </ul>
+    </div>
+
+    <!-- Support Vector Machine Section -->
+    <h3 id="svm">6. Support Vector Machine (SVM) - Binary Classification</h3>
+
+    <h4>The Binary Classification Problem:</h4>
+
+    <p>
+        Suppose we have two classes of data points that we want to separate. For example:
+    </p>
+
+    <ul>
+        <li><strong>Class 1 (Red points):</strong> \( \{x_1, x_2, \ldots, x_m\} \) - could represent images of dogs</li>
+        <li><strong>Class 2 (Green points):</strong> \( \{x_{m+1}, x_{m+2}, \ldots, x_{m+p}\} \) - could represent images of cats</li>
+    </ul>
+
+    <div class="professor-note">
+        Machine learning, at its core, is about teaching machines to recognize patterns. For classification, the machine learns by finding a hyperplane (in 2D, it's a line) that separates the two classes. When a new point arrives, the machine checks which side of the hyperplane it falls on to determine its class.
+    </div>
+
+    <h4>The Separation Problem:</h4>
+
+    <p>
+        Find vectors \( w \in \mathbb{R}^n \) and scalar \( b \in \mathbb{R} \) such that:
+    </p>
+
+
+    $$\begin{align}
+    w^T x_i &\leq b, \quad \forall i = 1, 2, \ldots, m \quad \text{(Class 1)} \\
+    w^T x_i &\geq b, \quad \forall i = m+1, m+2, \ldots, m+p \quad \text{(Class 2)}
+    \end{align}$$
+
+    <p>
+        This defines a hyperplane \( w^T x = b \) that separates the two classes.
+    </p>
+
+    <h4>Why Do We Need Optimization?</h4>
+
+    <div class="note-box">
+        <strong>Problem:</strong> If the data is linearly separable, there are usually <strong>infinitely many</strong> separating hyperplanes. Which one should we choose?
+        
+        <br><br>
+        
+        <strong>Answer:</strong> Choose the hyperplane with the <strong>maximum margin</strong> - the one that is farthest from both classes. This gives the best generalization to new data.
+    </div>
+
+    <div class="diagram-placeholder">
+        [Insert diagram: Multiple separating hyperplanes vs. Maximum margin hyperplane]
+        <br>Shows several possible separating lines and highlights the one with maximum distance from both classes
+    </div>
+
+    <h4>Understanding Margin:</h4>
+
+    <p>
+        The <strong>margin</strong> is the minimum distance from the hyperplane to any data point. A larger margin means:
+    </p>
+
+    <ul>
+        <li>Better <strong>safety buffer</strong> - small perturbations in new data won't cause misclassification</li>
+        <li>Better <strong>generalization</strong> - works well on unseen data</li>
+        <li>More <strong>robust</strong> classification boundary</li>
+    </ul>
+
+    <div class="professor-note">
+        The professor used a pen analogy: If you draw a line very close to the green points (small margin), even a slight shift in a new green point might land it on the wrong side, causing misclassification. But if the line has a large margin from both classes, small variations won't matter.
+    </div>
+
+    <h4>Mathematical Formulation:</h4>
+
+    <h5>Distance from Point to Hyperplane:</h5>
+
+    <p>For a hyperplane \( S = \{z : a^T z = p\} \) and a point \( y \), the distance is:</p>
+
+
+    $$d_S(y) = \frac{|a^T y - p|}{\|a\|}$$
+
+    <p>This is the formula you learned in 12th standard for distance from a point to a line!</p>
+
+    <h5>Projection Concept:</h5>
+
+    <div class="note-box">
+        <strong>Projection:</strong> For a closed convex set \( S \) and point \( y \), the projection \( x^* \) is the closest point in \( S \) to \( y \):
+
+        
+        $$x^* = \arg\min_{x \in S} \|y - x\|$$
+        
+        For closed convex sets, this projection always exists and is unique.
+    </div>
+
+    <h4>SVM Optimization Problem - Development:</h4>
+
+    <p><strong>Step 1:</strong> Initial formulation - maximize the minimum distance:</p>
+
+
+    $$\begin{align}
+    \text{maximize} \quad & \min_{i=1,\ldots,m+p} \frac{|w^T x_i - b|}{\|w\|} \\
+    \text{subject to} \quad & w^T x_i \leq b, \quad i = 1, \ldots, m \\
+    & w^T x_i \geq b, \quad i = m+1, \ldots, m+p
+    \end{align}$$
+
+    <p><strong>Step 2:</strong> Note that if \( (w, b) \) is a solution, so is \( (\alpha w, \alpha b) \) for any \( \alpha > 0 \). We can use this scaling freedom to normalize:</p>
+
+
+    $$\min_{i=1,\ldots,m+p} |w^T x_i - b| = 1$$
+
+    <p><strong>Step 3:</strong> With this normalization, the problem becomes:</p>
+
+
+    $$\begin{align}
+    \text{maximize} \quad & \frac{1}{\|w\|} \\
+    \text{subject to} \quad & \min_{i=1,\ldots,m+p} |w^T x_i - b| = 1 \\
+    & w^T x_i \leq b, \quad i = 1, \ldots, m \\
+    & w^T x_i \geq b, \quad i = m+1, \ldots, m+p
+    \end{align}$$
+
+    <p><strong>Step 4:</strong> Maximizing \( \frac{1}{\|w\|} \) is equivalent to minimizing \( \|w\|^2 \). The final formulation:</p>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & \|w\|^2 \\
+    \text{subject to} \quad & w^T x_i \leq b - 1, \quad i = 1, \ldots, m \\
+    & w^T x_i \geq b + 1, \quad i = m+1, \ldots, m+p
+    \end{align}$$
+
+    <h5>Alternative Compact Form:</h5>
+
+    <p>Define \( y_i = +1 \) for Class 1 and \( y_i = -1 \) for Class 2. Then:</p>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & \|w\|^2 \\
+    \text{subject to} \quad & y_i(w^T x_i + b) \geq 1, \quad \forall i
+    \end{align}$$
+
+    <div class="note-box">
+        <strong>Why This is Special:</strong> This is a <strong>quadratic programming problem</strong> - the objective is quadratic (convex), and constraints are linear! Such problems have:
+        <ul>
+            <li>Unique global minimum</li>
+            <li>Efficient numerical solvers available</li>
+            <li>Strong theoretical guarantees</li>
+        </ul>
+    </div>
+
+    <h4>Numerical Example:</h4>
+
+    <p>Consider a 2D dataset:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>\( x_i = (x_{i1}, x_{i2}) \)</th>
+                <th>\( y_i \)</th>
+                <th>Class</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>(3, 3)</td>
+                <td>+1</td>
+                <td>Positive</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>(4, 3)</td>
+                <td>+1</td>
+                <td>Positive</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>(1, 1)</td>
+                <td>-1</td>
+                <td>Negative</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>(2, 0)</td>
+                <td>-1</td>
+                <td>Negative</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="professor-note">
+        A visual separator like the line \( x_1 + x_2 = 4 \) separates these classes (points with \( x_1 + x_2 > 4 \) are positive class). This gives us an intuitive separation, but SVM will find the optimal separator with maximum margin.
+    </div>
+
+    <div class="diagram-placeholder">
+        [Insert diagram: 2D plot showing 4 data points and separating line \( x_1 + x_2 = 4 \)]
+    </div>
+
+    <p><strong>SVM Formulation for this Dataset:</strong></p>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & w_1^2 + w_2^2 \\
+    \text{subject to} \quad & 3w_1 + 3w_2 + b \geq 1 \\
+    & 4w_1 + 3w_2 + b \geq 1 \\
+    & w_1 + w_2 + b \leq -1 \\
+    & 2w_1 + 0w_2 + b \leq -1
+    \end{align}$$
+
+    <div class="hinglish-summary">
+        Support Vector Machine ek classification algorithm hai jo do classes ko separate karne ke liye best hyperplane dhoondhta hai. "Best" ka matlab hai maximum margin wala hyperplane - jo dono classes se sabse zyada door hai. Yeh ek quadratic programming problem ban jata hai: minimize \( \|w\|^2 \) with linear constraints. Large margin ensure karta hai ki naye points bhi correctly classify hon, kyunki safety buffer zyada hai.
+    </div>
+
+    <div class="key-takeaways">
+        <h4>🎯 Key Takeaways - SVM Section</h4>
+        <ul>
+            <li>SVM finds the hyperplane that separates two classes with maximum margin</li>
+            <li>Maximum margin provides better generalization to new, unseen data</li>
+            <li>The problem is formulated as quadratic programming: minimize \( \|w\|^2 \) with linear constraints</li>
+            <li>Distance from point to hyperplane: \( d = \frac{|a^T y - p|}{\|a\|} \)</li>
+            <li>Normalization trick: scale so minimum distance equals 1</li>
+            <li>Final form: \( y_i(w^T x_i + b) \geq 1 \) captures both class constraints</li>
+        </ul>
+    </div>
+
+    <!-- ========== LECTURE 9 SECTION ========== -->
+    <h2 id="lecture9">🎓 Lecture 9: Equality and Inequality Constraints Together</h2>
+
+    <h3 id="both-constraints">1. Problems with Both Equality and Inequality Constraints</h3>
+
+    <p>
+        So far, we've primarily discussed optimization problems with only inequality constraints. Now we extend the theory to handle <strong>both types of constraints simultaneously</strong>.
+    </p>
+
+    <h4>General Problem Formulation:</h4>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & f(x) \\
+    \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, 2, \ldots, m \\
+    & h_j(x) = 0, \quad j = 1, 2, \ldots, p
+    \end{align}$$
+
+    <div class="professor-note">
+        <strong>Historical Note:</strong> The professor mentioned that equality constraints were actually explored first by Lagrange around the 1600-1700s, hence the name "Lagrange multipliers." Inequality constraints came into optimization theory only around the 1940s-1950s (about 200+ years later!). Interestingly, inequality constraints revolutionized optimization by introducing <strong>one-sided theory</strong>, which dramatically expanded applications.
+    </div>
+
+    <h4>Why Equality Constraints are Different:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Aspect</th>
+                <th>Inequality Constraints</th>
+                <th>Equality Constraints</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Feasible Region</strong></td>
+                <td>Interior region (has volume)</td>
+                <td>Surface/manifold (lower dimension)</td>
+            </tr>
+            <tr>
+                <td><strong>Feasible Directions</strong></td>
+                <td>Easy to visualize (cone)</td>
+                <td>Tangent to surface, harder to visualize</td>
+            </tr>
+            <tr>
+                <td><strong>Can be Inactive</strong></td>
+                <td>Yes (if \( g_i(x) < 0 \))</td>
+                <td>No (always active)</td>
+            </tr>
+            <tr>
+                <td><strong>Multiplier Sign</strong></td>
+                <td>Restricted: \( \lambda_i \geq 0 \)</td>
+                <td>Unrestricted: \( \mu_j \) can be any sign</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="professor-note">
+        The professor explained that with equality constraints like \( x^2 + y^2 = 1 \) (a circle), there may be <strong>no feasible direction at all</strong> in the sense of straight-line movements. You must move along a curve to stay on the circle. At point (1,0) on the circle, you cannot move in a straight line and remain on the circle - you'd immediately leave it!
+    </div>
+
+    <h4>Simple Examples:</h4>
+
+    <h5>Example 1: Perimeter-Fixed Rectangle</h5>
+
+    <p><strong>Problem:</strong> Maximize the area of a rectangle with perimeter 12.</p>
+
+
+    $$\begin{align}
+    \text{maximize} \quad & xy \\
+    \text{subject to} \quad & 2(x + y) = 12
+    \end{align}$$
+
+    <p>Equivalently:</p>
+
+
+    $$\begin{align}
+    \text{maximize} \quad & xy \\
+    \text{subject to} \quad & x + y = 6
+    \end{align}$$
+
+    <div class="professor-note">
+        The professor mentioned this is like setting up a rectangular garden. You have a fixed amount of fencing (perimeter = 12), and you want to maximize the area to plant more trees. Different shapes (long thin vs. square) give different areas with the same perimeter.
+    </div>
+
+    <h5>Example 2: Constrained Sum of Variables</h5>
+
+    <p><strong>Problem:</strong></p>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & x + y \\
+    \text{subject to} \quad & x^2 + y^2 = 2
+    \end{align}$$
+
+    <p>
+        Here, you're minimizing \( x + y \) while constrained to lie on a circle of radius \( \sqrt{2} \).
+    </p>
+
+    <div class="note-box">
+        <strong>Substitution Method:</strong> For simple equality constraints, you can sometimes eliminate variables. For example, from \( x + y = 6 \), we get \( x = 6 - y \). Substituting:
+
+        
+        $$\text{maximize} \quad y(6 - y) = 6y - y^2$$
+        
+        This becomes an unconstrained problem! However, this doesn't always work well, especially with nonlinear equalities or multiple constraints.
+    </div>
+
+    <div class="hinglish-summary">
+        Jab problem mein equality aur inequality dono constraints hon, toh approach thoda different hota hai. Equality constraints hamesha active rehte hain (kabhi inactive nahi hote), aur inke corresponding multipliers ka koi sign restriction nahi hota. Inequality ke liye multipliers non-negative chahiye, lekin equality ke liye positive ya negative kuch bhi ho sakte hain. Equality constraints feasible region ko ek surface pe restrict kar dete hain, isliye feasible directions tangent directions hote hain.
+    </div>
+
+    <!-- Fritz-John for Both -->
+    <h3 id="fj-both">2. Fritz-John Conditions for Mixed Constraints</h3>
+
+    <h4>Theorem Statement:</h4>
+
+    <div class="note-box">
+        <strong>Fritz-John Theorem (Mixed Constraints):</strong><br>
+        Consider:
+
+        $$\begin{align}
+        \text{minimize} \quad & f(x) \\
+        \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \ldots, m \\
+        & h_j(x) = 0, \quad j = 1, \ldots, p
+        \end{align}$$
+        
+        Suppose \( f, g_i \) are differentiable and \( h_j \) are continuously differentiable. If \( x^* \) is a feasible point and a local minimizer, then there exist \( \lambda_0, \lambda_1, \ldots, \lambda_m \) and \( \mu_1, \ldots, \mu_p \) such that:
+
+        
+        $$\begin{align}
+        & \lambda_i \geq 0, \quad \forall i = 0, 1, \ldots, m \\
+        & \{\lambda_i, \mu_j : i = 0, \ldots, m, j = 1, \ldots, p\} \text{ not all zero} \\
+        & \lambda_0 \nabla f(x^*) + \sum_{i=1}^{m} \lambda_i \nabla g_i(x^*) + \sum_{j=1}^{p} \mu_j \nabla h_j(x^*) = 0 \\
+        & \lambda_i g_i(x^*) = 0, \quad \forall i = 1, \ldots, m \quad \text{(Complementary Slackness)}
+        \end{align}$$
+    </div>
+
+    <h4>Key Observations:</h4>
+
+    <ul>
+        <li><strong>Sign restrictions:</strong> Only \( \lambda_i \) (for inequalities) must be \( \geq 0 \). The \( \mu_j \) (for equalities) are unrestricted.</li>
+        <li><strong>No complementary slackness for equalities:</strong> Since \( h_j(x^*) = 0 \) always, we don't need a condition like \( \mu_j h_j(x^*) = 0 \).</li>
+        <li><strong>Still suffers from \( \lambda_0 = 0 \) issue:</strong> Same problem as inequality-only case.</li>
+    </ul>
+
+    <div class="professor-note">
+        The professor emphasized that we can't prove this using the feasible direction approach for equality constraints (as explained earlier). The proof requires using analytical techniques directly, building on separation theorems in a more general form.
+    </div>
+
+    <!-- KKT for Both -->
+    <h3 id="kkt-both">3. KKT Conditions for Mixed Constraints</h3>
+
+    <h4>Theorem Statement:</h4>
+
+    <div class="note-box">
+        <strong>KKT Theorem (Mixed Constraints):</strong><br>
+        Consider:
+
+        $$\begin{align}
+        \text{minimize} \quad & f(x) \\
+        \text{subject to} \quad & g_i(x) \leq 0, \quad i = 1, \ldots, m \\
+        & h_j(x) = 0, \quad j = 1, \ldots, p
+        \end{align}$$
+        
+        Suppose \( f, g_i \) are differentiable and \( h_j \) are continuously differentiable. Let \( x^* \) be a feasible point and a local minimizer. If the gradients:
+
+        
+        $$\{\nabla g_i(x^*) : i \in \mathcal{I}(x^*)\} \cup \{\nabla h_j(x^*) : j = 1, \ldots, p\}$$
+        
+        are <strong>linearly independent</strong> (LICQ for mixed constraints), then there exist \( \lambda_1, \ldots, \lambda_m \) and \( \mu_1, \ldots, \mu_p \) such that:
+
+        
+        $$\begin{align}
+        & \lambda_i \geq 0, \quad \forall i = 1, \ldots, m \\
+        & \nabla f(x^*) + \sum_{i=1}^{m} \lambda_i \nabla g_i(x^*) + \sum_{j=1}^{p} \mu_j \nabla h_j(x^*) = 0 \\
+        & \lambda_i g_i(x^*) = 0, \quad \forall i = 1, \ldots, m
+        \end{align}$$
+    </div>
+
+    <h4>Comparison with Inequality-Only KKT:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Inequality Only</th>
+                <th>Mixed Constraints</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Stationarity</strong></td>
+                <td>\( \nabla f + \sum \lambda_i \nabla g_i = 0 \)</td>
+                <td>\( \nabla f + \sum \lambda_i \nabla g_i + \sum \mu_j \nabla h_j = 0 \)</td>
+            </tr>
+            <tr>
+                <td><strong>Inequality Multipliers</strong></td>
+                <td>\( \lambda_i \geq 0 \)</td>
+                <td>\( \lambda_i \geq 0 \)</td>
+            </tr>
+            <tr>
+                <td><strong>Equality Multipliers</strong></td>
+                <td>N/A</td>
+                <td>\( \mu_j \) unrestricted</td>
+            </tr>
+            <tr>
+                <td><strong>Complementary Slackness</strong></td>
+                <td>\( \lambda_i g_i = 0 \)</td>
+                <td>\( \lambda_i g_i = 0 \) (only for inequalities)</td>
+            </tr>
+            <tr>
+                <td><strong>LICQ</strong></td>
+                <td>Active \( \nabla g_i \) independent</td>
+                <td>Active \( \nabla g_i \) and all \( \nabla h_j \) independent</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note-box">
+        <strong>Important:</strong> The KKT condition is essentially Fritz-John with \( \lambda_0 = 1 \). The same benefits apply:
+        <ul>
+            <li>Objective function always contributes to the optimality condition</li>
+            <li>More informative than Fritz-John</li>
+            <li>Requires constraint qualification (LICQ or others)</li>
+        </ul>
+    </div>
+
+    <div class="hinglish-summary">
+        Mixed constraints ke liye KKT condition bas thoda extend ho jata hai. Active inequalities ke gradients aur saari equalities ke gradients ko milake linearly independent hona chahiye (LICQ). Stationarity condition mein ab \( \mu_j \nabla h_j \) terms bhi add ho jayenge. Important point: inequality multipliers (\( \lambda_i \)) non-negative, lekin equality multipliers (\( \mu_j \)) kuch bhi ho sakte hain. Complementary slackness sirf inequalities ke liye applicable hai.
+    </div>
+
+    <div class="practice-questions">
+        <h4>Practice Questions</h4>
+        
+        <p><strong>Q1:</strong> Why don't equality constraint multipliers \( \mu_j \) have sign restrictions?</p>
+        <div class="answer">
+            Inequality constraints are one-sided (\( g_i \leq 0 \)), so their gradients point in a specific direction that must be "balanced" by non-negative multipliers. Equality constraints (\( h_j = 0 \)) are two-sided - you can deviate in either direction to violate them. Therefore, the multipliers can be positive or negative depending on which direction the gradient needs to push.
+        </div>
+
+        <p><strong>Q2:</strong> If all constraints in a problem are equalities, do we still need LICQ?</p>
+        <div class="answer">
+            Yes! Even with only equality constraints, LICQ is needed to ensure the KKT conditions are necessary. LICQ requires all equality constraint gradients \( \nabla h_j(x^*) \) to be linearly independent. Without this, we might have \( \lambda_0 = 0 \) in Fritz-John conditions.
+        </div>
+
+        <p><strong>Q3:</strong> Can you have a situation where unconstrained and constrained solutions coincide?</p>
+        <div class="answer">
+            Yes! Example: minimize \( x^2 + y^2 \) subject to \( x^2 + y^2 \leq 1 \). The unconstrained minimizer is (0,0), which lies inside the feasible region. So (0,0) is also the constrained minimizer. In this case, all \( \lambda_i = 0 \) (no active inequality constraints), and the KKT condition reduces to \( \nabla f = 0 \).
+        </div>
+    </div>
+
+    <div class="key-takeaways">
+        <h4>🎯 Key Takeaways - Mixed Constraints</h4>
+        <ul>
+            <li>Equality constraints are always active; inequality constraints can be active or inactive</li>
+            <li>Multipliers for inequalities must be \( \geq 0 \); multipliers for equalities are unrestricted</li>
+            <li>LICQ for mixed constraints: active inequality gradients + all equality gradients must be linearly independent</li>
+            <li>Complementary slackness applies only to inequality constraints</li>
+            <li>Equality constraints reduce the feasible region to a lower-dimensional surface</li>
+        </ul>
+    </div>
+
+    <!-- Linear Programming -->
+    <h3 id="linear-programming">4. Linear Programming Problems</h3>
+
+    <h4>What is Linear Programming?</h4>
+
+    <p>
+        <strong>Linear Programming (LP)</strong> refers to optimization problems where both the objective function and all constraints are <strong>linear</strong>.
+    </p>
+
+    <h4>Standard Form:</h4>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & c^T x \\
+    \text{subject to} \quad & Ax = b \\
+    & x \geq 0
+    \end{align}$$
+
+    <p>Where:</p>
+    <ul>
+        <li>\( c \in \mathbb{R}^n \) is the cost vector</li>
+        <li>\( A \in \mathbb{R}^{m \times n} \) is the constraint matrix</li>
+        <li>\( b \in \mathbb{R}^m \) is the right-hand side vector</li>
+        <li>\( x \geq 0 \) means \( x_i \geq 0 \) for all \( i \)</li>
+    </ul>
+
+    <h4>General Form:</h4>
+
+    <p>Linear programs can have various forms, but they can all be converted to standard form by introducing slack/surplus variables:</p>
+
+
+    $$\begin{align}
+    \text{minimize/maximize} \quad & c^T x \\
+    \text{subject to} \quad & a_i^T x \leq b_i \quad \text{(or } \geq, =\text{)} \\
+    & x_j \geq 0 \quad \text{(some or all variables)}
+    \end{align}$$
+
+    <div class="professor-note">
+        Linear programming is heavily used in business and management decisions. Companies use LP for resource allocation, production planning, transportation optimization, portfolio management, and many other applications. Despite being developed decades ago, LP remains one of the most practically useful optimization techniques.
+    </div>
+
+    <h4>Key Properties of Linear Programs:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Description</th>
+                <th>Implication</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Feasible Region</strong></td>
+                <td>Polyhedral set (intersection of half-spaces)</td>
+                <td>Always convex</td>
+            </tr>
+            <tr>
+                <td><strong>Extreme Points</strong></td>
+                <td>Corners/vertices of the polyhedron</td>
+                <td>Optimal solution is always at an extreme point (if exists)</td>
+            </tr>
+            <tr>
+                <td><strong>Uniqueness</strong></td>
+                <td>May have unique or infinitely many optimal solutions</td>
+                <td>If infinite, all lie on an edge/face</td>
+            </tr>
+            <tr>
+                <td><strong>Algorithms</strong></td>
+                <td>Simplex method, Interior point methods</td>
+                <td>Very efficient solvers available</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>Polyhedral Sets:</h4>
+
+    <div class="note-box">
+        <strong>Definition:</strong> A <strong>polyhedral set</strong> is a set defined by finitely many linear inequalities and equalities:
+
+        
+        $$P = \{x : Ax \leq b, Cx = d\}$$
+        
+        <strong>Properties:</strong>
+        <ul>
+            <li>Always convex</li>
+            <li>Has finitely many extreme points (vertices)</li>
+            <li>If LP has a solution, at least one optimal solution is at an extreme point</li>
+        </ul>
+    </div>
+
+    <h4>Simplex Algorithm (Brief Mention):</h4>
+
+    <p>
+        The <strong>Simplex algorithm</strong> is the most famous algorithm for solving linear programs. It works by:
+    </p>
+
+    <ol>
+        <li>Starting at an extreme point of the feasible region</li>
+        <li>Moving along edges to adjacent extreme points</li>
+        <li>Each move improves (or maintains) the objective value</li>
+        <li>Stops when no improving neighbor exists</li>
+    </ol>
+
+    <div class="professor-note">
+        While linear programming is important, this course focuses more on <strong>nonlinear optimization</strong>, which has more direct applications in data science, machine learning, and modern AI problems. However, understanding LP provides important foundational concepts.
+    </div>
+
+    <div class="hinglish-summary">
+        Linear Programming ek special class hai jahan objective function aur constraints dono linear hote hain. Iska feasible region polyhedral set hota hai jo hamesha convex hota hai aur iske corners ko extreme points kehte hain. Important fact: agar solution exists, toh woh kisi na kisi extreme point pe hoga. Simplex algorithm in extreme points ko smartly traverse karke optimal solution dhundhta hai. Management aur business decisions mein LP ka bahut use hota hai.
+    </div>
+
+    <!-- Transportation Problem -->
+    <h3 id="transportation">5. Transportation Problem - A Practical Example</h3>
+
+    <h4>Problem Description:</h4>
+
+    <p>
+        A company (like Amazon or Tata Motors) has:
+    </p>
+
+    <ul>
+        <li><strong>Supply points:</strong> \( S_1, S_2, \ldots, S_n \) (warehouses, manufacturing hubs)</li>
+        <li><strong>Demand points:</strong> \( D_1, D_2, \ldots, D_m \) (stores, showrooms)</li>
+    </ul>
+
+    <p>Each supply point \( S_i \) can produce \( s_i \) units, and each demand point \( D_j \) requires \( d_j \) units.</p>
+
+    <div class="diagram-placeholder">
+        [Insert diagram: Network with 4 supply nodes on left (S₁, S₂, S₃, S₄) and 3 demand nodes on right (D₁, D₂, D₃), with arrows showing possible routes and costs c_ij labeled on edges]
+    </div>
+
+    <h4>Decision Variables:</h4>
+
+    <p>
+        Let \( x_{ij} \) = amount transported from supply point \( i \) to demand point \( j \).
+    </p>
+
+    <h4>Cost Structure:</h4>
+
+    <p>
+        \( c_{ij} \) = unit transportation cost from \( S_i \) to \( D_j \)
+    </p>
+
+    <p>
+        <strong>Total transportation cost:</strong>
+    </p>
+
+
+    $$\text{Total Cost} = \sum_{i=1}^{n} \sum_{j=1}^{m} c_{ij} x_{ij}$$
+
+    <h4>Constraints:</h4>
+
+    <p><strong>1. Supply Constraints:</strong> Cannot ship more than what's available</p>
+
+
+    $$\sum_{j=1}^{m} x_{ij} \leq s_i, \quad \forall i = 1, \ldots, n$$
+
+    <p><strong>2. Demand Constraints:</strong> Must satisfy all demands</p>
+
+
+    $$\sum_{i=1}^{n} x_{ij} \geq d_j, \quad \forall j = 1, \ldots, m$$
+
+    <p><strong>3. Non-negativity:</strong> Cannot transport negative amounts</p>
+
+
+    $$x_{ij} \geq 0, \quad \forall i, j$$
+
+    <h4>Balanced Transportation Problem:</h4>
+
+    <p>If total supply equals total demand:</p>
+
+
+    $$\sum_{i=1}^{n} s_i = \sum_{j=1}^{m} d_j$$
+
+    <p>Then supply constraints become equalities:</p>
+
+
+    $$\sum_{j=1}^{m} x_{ij} = s_i, \quad \forall i$$
+
+    <h4>Complete LP Formulation:</h4>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & \sum_{i=1}^{n} \sum_{j=1}^{m} c_{ij} x_{ij} \\
+    \text{subject to} \quad & \sum_{j=1}^{m} x_{ij} \leq s_i, \quad \forall i \\
+    & \sum_{i=1}^{n} x_{ij} \geq d_j, \quad \forall j \\
+    & x_{ij} \geq 0, \quad \forall i, j
+    \end{align}$$
+
+    <h4>Concrete Example:</h4>
+
+    <p>Suppose we have 4 supply points with supplies [100, 150, 200, 120] units and 3 demand points with demands [180, 200, 190] units.</p>
+
+    <p>Transportation costs (per unit):</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>From \ To</th>
+                <th>\( D_1 \)</th>
+                <th>\( D_2 \)</th>
+                <th>\( D_3 \)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>\( S_1 \)</td>
+                <td>10</td>
+                <td>15</td>
+                <td>20</td>
+            </tr>
+            <tr>
+                <td>\( S_2 \)</td>
+                <td>12</td>
+                <td>10</td>
+                <td>18</td>
+            </tr>
+            <tr>
+                <td>\( S_3 \)</td>
+                <td>8</td>
+                <td>14</td>
+                <td>12</td>
+            </tr>
+            <tr>
+                <td>\( S_4 \)</td>
+                <td>15</td>
+                <td>11</td>
+                <td>16</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        The goal is to determine \( x_{ij} \) values that minimize total cost while satisfying all constraints.
+    </p>
+
+    <div class="professor-note">
+        Real-world transportation networks (like Amazon's logistics) are far more complex with thousands of supply and demand points, time windows, vehicle capacity constraints, multiple transportation modes, and dynamic factors. But the basic mathematical structure remains a linear programming problem!
+    </div>
+
+    <div class="hinglish-summary">
+        Transportation problem ek practical LP example hai jahan multiple supply points se multiple demand points tak goods transport karna hai minimum cost mein. Decision variable \( x_{ij} \) represent karta hai ki supply \( i \) se demand \( j \) tak kitna transport karna hai. Constraints ensure karte hain ki supply limit exceed na ho aur saari demands meet ho jayein. Amazon, Tata Motors jaise companies aise problems solve karti hain apne logistics optimize karne ke liye.
+    </div>
+
+    <div class="key-takeaways">
+        <h4>🎯 Key Takeaways - LP & Transportation</h4>
+        <ul>
+            <li>Linear Programming: objective and constraints are all linear functions</li>
+            <li>Feasible region is a polyhedral set with extreme points (vertices)</li>
+            <li>Optimal solution (if exists) is always at an extreme point</li>
+            <li>Transportation problem: minimize cost of shipping from supplies to demands</li>
+            <li>Decision variables: \( x_{ij} \) = amount from supply \( i \) to demand \( j \)</li>
+            <li>Constraints: supply limits, demand requirements, non-negativity</li>
+        </ul>
+    </div>
+
+    <!-- Binary Classification Details -->
+    <h3 id="binary-classification">6. Binary Classification and SVM - Detailed Derivation</h3>
+
+    <h4>The Classification Challenge:</h4>
+
+    <p>
+        Given labeled data points from two classes, we want to train a model that can predict the class of new, unseen points.
+    </p>
+
+    <div class="note-box">
+        <strong>Example Applications:</strong>
+        <ul>
+            <li><strong>Medical diagnosis:</strong> Classify patients as healthy or diseased based on test results</li>
+            <li><strong>Spam detection:</strong> Classify emails as spam or legitimate</li>
+            <li><strong>Image recognition:</strong> Classify images as containing cats vs. dogs</li>
+            <li><strong>Credit scoring:</strong> Classify loan applicants as low-risk or high-risk</li>
+        </ul>
+    </div>
+
+    <h4>Linear Separability:</h4>
+
+    <p>
+        We say data is <strong>linearly separable</strong> if there exists a hyperplane that perfectly separates the two classes:
+    </p>
+
+
+    $$w^T x = b$$
+
+    <p>Such that:</p>
+    <ul>
+        <li>All points of Class 1 satisfy: \( w^T x < b \)</li>
+        <li>All points of Class 2 satisfy: \( w^T x > b \)</li>
+    </ul>
+
+    <div class="diagram-placeholder">
+        [Insert diagram: 2D scatter plot showing two clusters of points (different colors) with a line separating them, and margin bands on either side of the line]
+    </div>
+
+    <h4>Why Maximum Margin?</h4>
+
+    <p><strong>Intuition:</strong> Consider three scenarios:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Scenario</th>
+                <th>Margin Size</th>
+                <th>Consequence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Separator very close to green class</td>
+                <td>Small margin on green side</td>
+                <td>New green point slightly shifted → likely misclassified</td>
+            </tr>
+            <tr>
+                <td>Separator very close to red class</td>
+                <td>Small margin on red side</td>
+                <td>New red point slightly shifted → likely misclassified</td>
+            </tr>
+            <tr>
+                <td>Separator with maximum margin</td>
+                <td>Large margin on both sides</td>
+                <td>Small perturbations in new points → still correctly classified</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <strong>Conclusion:</strong> Maximum margin gives the most <strong>robust</strong> classifier with best <strong>generalization</strong> to new data.
+    </p>
+
+    <h4>Mathematical Development:</h4>
+
+    <h5>Step 1: Define Margin</h5>
+
+    <p>The <strong>margin</strong> is the minimum distance from the hyperplane to any data point:</p>
+
+
+    $$\text{Margin} = \min_{i=1,\ldots,n} \frac{|w^T x_i - b|}{\|w\|}$$
+
+    <h5>Step 2: Use Scaling Freedom</h5>
+
+    <p>If \( (w, b) \) defines a separating hyperplane, so does \( (\alpha w, \alpha b) \) for any \( \alpha > 0 \). We use this freedom to normalize:</p>
+
+
+    $$\min_{i=1,\ldots,n} |w^T x_i - b| = 1$$
+
+    <p>This means the closest point(s) to the hyperplane have distance exactly 1 (in the numerator).</p>
+
+    <h5>Step 3: Reformulate Objective</h5>
+
+    <p>With normalization, margin becomes:</p>
+
+
+    $$\text{Margin} = \frac{1}{\|w\|}$$
+
+    <p>Maximizing \( \frac{1}{\|w\|} \) is equivalent to minimizing \( \|w\| \), or equivalently, minimizing \( \frac{1}{2}\|w\|^2 \) (the \( \frac{1}{2} \) makes derivatives cleaner).</p>
+
+    <h5>Step 4: Express Separation Constraints</h5>
+
+    <p>With normalization, separation constraints become:</p>
+
+
+    $$\begin{align}
+    w^T x_i &\leq b - 1, \quad \text{for Class 1} \\
+    w^T x_i &\geq b + 1, \quad \text{for Class 2}
+    \end{align}$$
+
+    <p>Or in compact form using labels \( y_i \in \{-1, +1\} \):</p>
+
+
+    $$y_i(w^T x_i + b) \geq 1, \quad \forall i$$
+
+    <h5>Step 5: Final SVM Formulation</h5>
+
+
+    $$\begin{align}
+    \text{minimize} \quad & \frac{1}{2} \|w\|^2 \\
+    \text{subject to} \quad & y_i(w^T x_i + b) \geq 1, \quad \forall i = 1, \ldots, n
+    \end{align}$$
+
+    <div class="note-box">
+        <strong>Why This is Beautiful:</strong>
+        <ul>
+            <li><strong>Convex objective:</strong> \( \frac{1}{2}\|w\|^2 = \frac{1}{2}w^T w \) is strictly convex quadratic</li>
+            <li><strong>Linear constraints:</strong> \( y_i(w^T x_i + b) \geq 1 \) are linear in decision variables \( (w, b) \)</li>
+            <li><strong>Unique global minimum:</strong> Guaranteed to exist (if data is separable) and unique</li>
+            <li><strong>Efficient solvers:</strong> Quadratic Programming (QP) solvers are mature and fast</li>
+        </ul>
+    </div>
+
+    <h4>Support Vectors:</h4>
+
+    <p>
+        Points that lie exactly on the margin boundary (satisfying \( y_i(w^T x_i + b) = 1 \)) are called <strong>support vectors</strong>. These are the critical points that define the optimal hyperplane.
+    </p>
+
+    <div class="professor-note">
+        The name "Support Vector Machine" comes from these support vectors. Interestingly, only the support vectors matter for defining the optimal hyperplane! If you remove other points (far from the margin), the solution doesn't change. This makes SVM robust to outliers far from the decision boundary.
+    </div>
+
+    <h4>Solving the SVM Optimization Problem:</h4>
+
+    <p>
+        While we've formulated the problem, <strong>how to actually solve it</strong> will be covered in upcoming lectures when we discuss numerical methods for constrained optimization. The problem can be solved using:
+    </p>
+
+    <ul>
+        <li><strong>Quadratic Programming solvers:</strong> Directly solve the primal formulation</li>
+        <li><strong>Dual formulation:</strong> Convert to a dual problem (often more efficient)</li>
+        <li><strong>Sequential Minimal Optimization (SMO):</strong> Efficient algorithm for large datasets</li>
+        <li><strong>Gradient-based methods:</strong> Iterative optimization techniques</li>
+    </ul>
+
+    <div class="hinglish-summary">
+        Binary classification mein do classes ko separate karne ke liye hyperplane dhoondhte hain. SVM wo hyperplane select karta hai jo maximum margin de - yaani dono classes se sabse zyada door ho. Yeh problem ek quadratic programming problem ban jata hai: minimize \( \frac{1}{2}\|w\|^2 \) subject to \( y_i(w^T x_i + b) \geq 1 \). Support vectors wo points hain jo exactly margin boundary pe hote hain - sirf ye points optimal hyperplane define karte hain. Maximum margin better generalization ensure karta hai naye data pe.
+    </div>
+
+    <div class="practice-questions">
+        <h4>Practice Questions</h4>
+        
+        <p><strong>Q1:</strong> Why do we minimize \( \frac{1}{2}\|w\|^2 \) instead of just \( \|w\| \)?</p>
+        <div class="answer">
+            While both are equivalent optimization problems (same optimal \( w \)), using \( \frac{1}{2}\|w\|^2 \) has computational advantages: (1) It's differentiable everywhere (unlike \( \|w\| \) at \( w=0 \)), (2) Its derivative \( w \) is simpler (no square root), (3) The \( \frac{1}{2} \) factor cancels out the 2 from differentiation, making formulas cleaner.
+        </div>
+
+        <p><strong>Q2:</strong> What happens if the data is not linearly separable?</p>
+        <div class="answer">
+            If data is not linearly separable, the hard-margin SVM has no solution (constraints are infeasible). We use <strong>soft-margin SVM</strong> which introduces slack variables \( \xi_i \) to allow some misclassifications: minimize \( \frac{1}{2}\|w\|^2 + C\sum \xi_i \) subject to \( y_i(w^T x_i + b) \geq 1 - \xi_i, \xi_i \geq 0 \). The parameter \( C \) controls the trade-off between margin size and misclassification.
+        </div>
+
+        <p><strong>Q3:</strong> How does the kernel trick extend SVM to nonlinear classification?</p>
+        <div class="answer">
+            The kernel trick implicitly maps data to a higher-dimensional space where it becomes linearly separable, without explicitly computing the transformation. We replace inner products \( x_i^T x_j \) with kernel functions \( K(x_i, x_j) \). Common kernels: polynomial \( (x^T y + 1)^d \), RBF/Gaussian \( \exp(-\gamma\|x-y\|^2) \). This allows SVM to learn nonlinear decision boundaries efficiently.
+        </div>
+    </div>
+
+    <div class="key-takeaways">
+        <h4>🎯 Key Takeaways - SVM Details</h4>
+        <ul>
+            <li>Goal: Find hyperplane with maximum margin separating two classes</li>
+            <li>Margin: minimum distance from hyperplane to any data point</li>
+            <li>Normalization trick: use scaling freedom to set minimum distance to 1</li>
+            <li>Final problem: minimize \( \frac{1}{2}\|w\|^2 \) subject to \( y_i(w^T x_i + b) \geq 1 \)</li>
+            <li>Support vectors: points on the margin boundary, define the solution</li>
+            <li>Convex QP problem: unique global optimum, efficient algorithms available</li>
+        </ul>
+    </div>
+
+    <!-- ========== MIND MAP SECTION ========== -->
+    <h2 id="mindmap">🗺️ Comprehensive Mind Map</h2>
+
+    <div class="mindmap">
+        <div style="text-align: center;">
+            <div class="mindmap-node" style="font-size: 1.3em;">NUMERICAL OPTIMIZATION: Constrained Problems</div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Optimality Conditions</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">Fritz-John: \( \lambda_0 \nabla f + \sum \lambda_i \nabla g_i = 0 \)</div>
+                    <div class="mindmap-subnode">Limitation: \( \lambda_0 \) can be 0</div>
+                    <div class="mindmap-subnode">KKT: \( \nabla f + \sum \lambda_i \nabla g_i = 0 \) (with LICQ)</div>
+                    <div class="mindmap-subnode">Complementary Slackness: \( \lambda_i g_i = 0 \)</div>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Constraint Qualifications</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">LICQ: Active gradients linearly independent</div>
+                    <div class="mindmap-subnode">MFCQ: Weaker than LICQ</div>
+                    <div class="mindmap-subnode">Slater: ∃ point strictly satisfying all inequalities</div>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Constraint Types</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">Inequality: \( g_i(x) \leq 0 \), \( \lambda_i \geq 0 \)</div>
+                    <div class="mindmap-subnode">Equality: \( h_j(x) = 0 \), \( \mu_j \) unrestricted</div>
+                    <div class="mindmap-subnode">Mixed: Combine both, LICQ on active inequalities + all equalities</div>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Linear Programming</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">Objective & constraints all linear</div>
+                    <div class="mindmap-subnode">Feasible region: Polyhedral set</div>
+                    <div class="mindmap-subnode">Optimal at extreme points</div>
+                    <div class="mindmap-subnode">Simplex algorithm</div>
+                    <div class="mindmap-subnode">Transportation problem example</div>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Support Vector Machine</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">Binary classification problem</div>
+                    <div class="mindmap-subnode">Maximum margin principle</div>
+                    <div class="mindmap-subnode">Quadratic Programming: min \( \frac{1}{2}\|w\|^2 \)</div>
+                    <div class="mindmap-subnode">Constraints: \( y_i(w^T x_i + b) \geq 1 \)</div>
+                    <div class="mindmap-subnode">Support vectors on margin boundary</div>
+                </div>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <div class="mindmap-node">Key Connections</div>
+                <div style="margin: 15px 0;">
+                    <div class="mindmap-subnode">FJ → KKT (with CQ)</div>
+                    <div class="mindmap-subnode">Convexity → Separation → FJ/KKT</div>
+                    <div class="mindmap-subnode">LP ⊂ Convex Optimization</div>
+                    <div class="mindmap-subnode">SVM = Quadratic Programming = Special Constrained Optimization</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FINAL SUMMARY ========== -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin: 40px 0;">
+        <h2 style="color: white; border-bottom: 2px solid white; padding-bottom: 10px;">🎓 Complete Summary</h2>
+        <p style="font-size: 1.1em; line-height: 2;">
+            These lectures covered the fundamental theory of <strong>constrained optimization</strong>, building from Fritz-John conditions (always necessary but can be uninformative) to KKT conditions (necessary under constraint qualifications like LICQ). We explored how to handle both inequality and equality constraints, with inequality multipliers being non-negative and equality multipliers unrestricted. Linear programming was introduced as a special case with polyhedral feasible regions and extreme point solutions. The Support Vector Machine emerged as a powerful application - formulating binary classification as a quadratic programming problem that maximizes the margin between classes. Throughout, we saw how <strong>convexity</strong>, <strong>separation theorems</strong>, and <strong>constraint qualifications</strong> form the theoretical backbone enabling us to characterize and find optimal solutions.
+        </p>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+
+</div>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation of AI - Lecture Notes: Bayesian Networks, Markov Blanket & 8-Queen Problem</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #2c3e50;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+        
+        .toc ul li a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .toc ul li a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        .toc ul ul {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        
+        .toc ul ul li a {
+            font-size: 1em;
+            color: #555;
+        }
+        
+        /* Section Styles */
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 20px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        /* Paragraph and Text */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #555;
+            font-style: italic;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+        
+        /* Special Boxes */
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #e7e8ff;
+            border-left: 5px solid #5b62ff;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #5b62ff;
+        }
+        
+        /* Hinglish Summary */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border: 2px dashed #ff6b6b;
+        }
+        
+        .hinglish-summary h4 {
+            color: #c0392b;
+            margin-bottom: 15px;
+        }
+        
+        .hinglish-summary p {
+            color: #2c3e50;
+            font-size: 1.05em;
+        }
+        
+        /* Math Equations */
+        .math-equation {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            overflow-x: auto;
+        }
+        
+        /* Key Takeaways */
+        .key-takeaways {
+            background: #f1f3f5;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-top: 4px solid #667eea;
+        }
+        
+        .key-takeaways h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .key-takeaways ul {
+            list-style-type: none;
+        }
+        
+        .key-takeaways ul li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* Practice Questions */
+        .practice-questions {
+            background: #fff;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        
+        .practice-questions h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .question {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question strong {
+            color: #667eea;
+        }
+        
+        .answer {
+            background: #e7f5ff;
+            padding: 15px;
+            margin: 10px 0 20px 20px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .answer strong {
+            color: #28a745;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #e9ecef;
+            padding: 60px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border: 2px dashed #6c757d;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        /* Mind Map */
+        .mind-map {
+            background: #fff;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 8px;
+            border: 3px solid #667eea;
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .main-topic {
+            background: #667eea;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .subtopics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .subtopic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .subtopic h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        .subtopic ul {
+            list-style: none;
+            margin: 10px 0;
+        }
+        
+        .subtopic ul li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .subtopic ul li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 3px solid #667eea;
+            color: #6c757d;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+            
+            .subtopics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER SECTION -->
+        <header>
+            <h1>Foundation of Artificial Intelligence</h1>
+            <p>Created by Armaan Kachhawa</p>
+            <p><strong>Lecture Week 12: Bayesian Networks, Markov Blanket & 8-Queen Problem</strong></p>
+        </header>
+
+        <!-- TABLE OF CONTENTS -->
+        <nav class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Bayesian Networks</a>
+                    <ul>
+                        <li><a href="#section1-1">1.1 Overview and Classic Example</a></li>
+                        <li><a href="#section1-2">1.2 Joint Distribution Factorization</a></li>
+                        <li><a href="#section1-3">1.3 Computing Probabilities</a></li>
+                        <li><a href="#section1-4">1.4 Example Calculations</a></li>
+                        <li><a href="#section1-5">1.5 From Factorization to Network</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section2">2. Markov Blanket</a>
+                    <ul>
+                        <li><a href="#section2-1">2.1 Definition and Components</a></li>
+                        <li><a href="#section2-2">2.2 Markov Blankets of Nodes</a></li>
+                        <li><a href="#section2-3">2.3 Intuition and Applications</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section3">3. The 8-Queen Problem</a>
+                    <ul>
+                        <li><a href="#section3-1">3.1 Problem Statement</a></li>
+                        <li><a href="#section3-2">3.2 State Representation</a></li>
+                        <li><a href="#section3-3">3.3 Heuristic Function</a></li>
+                        <li><a href="#section3-4">3.4 Hill Climbing Algorithm</a></li>
+                        <li><a href="#section3-5">3.5 Solutions and Remarks</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mindmap">4. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <!-- SECTION 1: BAYESIAN NETWORKS -->
+        <section id="section1">
+            <h2>1. Bayesian Networks</h2>
+            
+            <div id="section1-1">
+                <h3>1.1 Overview and Classic Example</h3>
+                
+                <p>A <strong>Bayesian Network</strong> is a probabilistic graphical model that represents a set of variables and their conditional dependencies via a <strong>Directed Acyclic Graph (DAG)</strong>. This is a classic example in AI and probabilistic reasoning that helps us understand how probability theory works in real-world scenarios.</p>
+                
+                <div class="example-box">
+                    <h4>🏠 The Burglary-Earthquake-Alarm Example</h4>
+                    <p>Imagine you have installed an alarm system in your house. This alarm can be triggered by two events:</p>
+                    <ul>
+                        <li><strong>Burglary (B)</strong>: Someone breaks into your house</li>
+                        <li><strong>Earthquake (E)</strong>: An earthquake occurs in your area</li>
+                    </ul>
+                    <p>When the alarm rings, two of your neighbors might call you:</p>
+                    <ul>
+                        <li><strong>John Calls (J)</strong>: John hears the alarm and calls you</li>
+                        <li><strong>Mary Calls (M)</strong>: Mary hears the alarm and calls you</li>
+                    </ul>
+                </div>
+                
+                <div class="professor-note">
+                    This is one of the most famous examples that everyone uses for understanding Bayesian networks. The key insight here is understanding the role of independent and conditional probabilities. Each variable can take two values - the event can happen or not happen. For example, Burglary can be <strong>B</strong> (burglary happens) or <strong>¬B</strong> (burglary doesn't happen). Similarly for all other variables.
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Bayesian network showing B and E pointing to A, and A pointing to both J and M]
+                </div>
+                
+                <p><strong>Network Structure:</strong></p>
+                <ul>
+                    <li>Parents of <strong>Alarm (A)</strong>: Burglary (B) and Earthquake (E)</li>
+                    <li>Parents of <strong>John Calls (J)</strong>: Alarm (A)</li>
+                    <li>Parents of <strong>Mary Calls (M)</strong>: Alarm (A)</li>
+                    <li>Parents of <strong>B</strong> and <strong>E</strong>: None (root nodes)</li>
+                </ul>
+                
+                <p>The network represents causal relationships: burglary or earthquake causes the alarm to ring, and the alarm causes John and Mary to call.</p>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Bayesian network ek probabilistic graphical model hai jo variables aur unki dependencies ko represent karta hai. Is example mein, alarm system hai jo burglary ya earthquake se trigger ho sakta hai. Jab alarm bajta hai toh neighbors John aur Mary call karte hain. Har variable do values le sakta hai - true (event hota hai) ya false (event nahi hota). Network structure batata hai ki kaun kisko affect karta hai - B aur E alarm ko affect karte hain, aur alarm J aur M ko affect karta hai.</p>
+                </div>
+            </div>
+            
+            <div id="section1-2">
+                <h3>1.2 Joint Distribution Factorization</h3>
+                
+                <p>One of the most powerful features of Bayesian Networks is that they allow us to <strong>factorize the joint probability distribution</strong> into a product of conditional probabilities. This significantly reduces computational complexity.</p>
+                
+                <div class="info-box">
+                    <h4>Core Principle</h4>
+                    <p>In a Bayesian Network, the probability of any variable <strong>X</strong> depends only on its <strong>parents</strong>, not on all other variables in the network. This is expressed as:</p>
+                    <div class="math-equation">
+
+                        $$P(X | \text{All other variables}) = P(X | \text{Parents}(X))$$
+                    </div>
+                </div>
+                
+                <p>For our burglary-earthquake-alarm example, the joint distribution factorizes as:</p>
+                
+                <div class="math-equation">
+
+                    $$P(B, E, A, J, M) = P(B) \cdot P(E) \cdot P(A | B, E) \cdot P(J | A) \cdot P(M | A)$$
+                </div>
+                
+                <p><strong>Understanding the factorization:</strong></p>
+                <ul>
+                    <li><strong>\(P(B)\)</strong>: Prior probability of burglary (no parents)</li>
+                    <li><strong>\(P(E)\)</strong>: Prior probability of earthquake (no parents)</li>
+                    <li><strong>\(P(A | B, E)\)</strong>: Probability of alarm given its parents (B and E)</li>
+                    <li><strong>\(P(J | A)\)</strong>: Probability of John calling given alarm</li>
+                    <li><strong>\(P(M | A)\)</strong>: Probability of Mary calling given alarm</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <h4>🔑 Why This Matters</h4>
+                    <p>Without this factorization, we would need to specify \(2^5 = 32\) probabilities for all possible combinations. With factorization using the network structure, we only need to specify a much smaller number of conditional probabilities based on the parent-child relationships.</p>
+                </div>
+                
+                <h4>Probability Tables</h4>
+                
+                <p>To use the Bayesian network, we need to specify the following probability tables:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Probability</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Burglary</td>
+                            <td>\(P(B = \text{true})\)</td>
+                            <td>0.001</td>
+                        </tr>
+                        <tr>
+                            <td>Earthquake</td>
+                            <td>\(P(E = \text{true})\)</td>
+                            <td>0.002</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>B</th>
+                            <th>E</th>
+                            <th>\(P(A = \text{true} | B, E)\)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>True</td>
+                            <td>True</td>
+                            <td>0.95</td>
+                        </tr>
+                        <tr>
+                            <td>True</td>
+                            <td>False</td>
+                            <td>0.94</td>
+                        </tr>
+                        <tr>
+                            <td>False</td>
+                            <td>True</td>
+                            <td>0.29</td>
+                        </tr>
+                        <tr>
+                            <td>False</td>
+                            <td>False</td>
+                            <td>0.001</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>A</th>
+                            <th>\(P(J = \text{true} | A)\)</th>
+                            <th>\(P(M = \text{true} | A)\)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>True</td>
+                            <td>0.90</td>
+                            <td>0.70</td>
+                        </tr>
+                        <tr>
+                            <td>False</td>
+                            <td>0.05</td>
+                            <td>0.01</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    These probability tables are the only information we need to calculate any probability in this network. We don't need to store probabilities for all possible combinations. Notice that John can call even if the alarm hasn't rung (probability 0.05) - maybe he just wants to chat! Similarly, Mary might not call even if the alarm rings. These realistic uncertainties are what make Bayesian networks powerful.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Joint probability distribution ko hum chhote chhote conditional probabilities mein tod sakte hain. Isse calculation bahut easy ho jati hai. Har variable sirf apne parents par depend karta hai, baaki variables par nahi. Tables mein humne saare zaroori probabilities store kar li hain - jaise burglary ka probability 0.001 hai, earthquake ka 0.002 hai. Alarm ke liye 4 combinations hain kyunki uske 2 parents hain. Is information se hum koi bhi probability calculate kar sakte hain.</p>
+                </div>
+            </div>
+            
+            <div id="section1-3">
+                <h3>1.3 Computing Probabilities</h3>
+                
+                <p>Now that we have the network structure and probability tables, we can compute any probability query. Let's understand the general approach.</p>
+                
+                <h4>General Formula for Query</h4>
+                
+                <p>Suppose we want to compute the probability of a query variable <strong>X</strong> given evidence variables \(E_1, E_2, \ldots, E_m\):</p>
+                
+                <div class="math-equation">
+
+                    $$P(X | E_1, E_2, \ldots, E_m) = \alpha \cdot P(X, E_1, E_2, \ldots, E_m)$$
+                </div>
+                
+                <p>where \(\alpha\) is a normalization constant:</p>
+                
+                <div class="math-equation">
+
+                    $$\alpha = \frac{1}{P(E_1, E_2, \ldots, E_m)}$$
+                </div>
+                
+                <p>To compute this, we need to:</p>
+                <ol>
+                    <li>Calculate \(P(X, E_1, E_2, \ldots, E_m)\) for each value of X</li>
+                    <li>Normalize by dividing by the sum of all possibilities</li>
+                </ol>
+                
+                <div class="info-box">
+                    <h4>Computing Joint Probabilities</h4>
+                    <p>To compute a joint probability like \(P(B, J, M)\), we need to:</p>
+                    <ol>
+                        <li>Identify missing variables (in this case: E and A)</li>
+                        <li>Sum over all possible values of missing variables</li>
+                        <li>Use the factorization to expand the joint probability</li>
+                    </ol>
+                    <div class="math-equation">
+
+                        $$P(B, J, M) = \sum_{E} \sum_{A} P(B, E, A, J, M)$$
+
+                        $$= \sum_{E} \sum_{A} P(B) \cdot P(E) \cdot P(A|B,E) \cdot P(J|A) \cdot P(M|A)$$
+                    </div>
+                </div>
+                
+                <h4>Step-by-Step Process</h4>
+                
+                <div class="example-box">
+                    <h4>Example Query: \(P(B | J, M)\)</h4>
+                    <p><strong>Question:</strong> What is the probability of burglary given that both John and Mary called?</p>
+                    
+                    <p><strong>Step 1:</strong> Apply Bayes' Rule</p>
+                    <div class="math-equation">
+
+                        $$P(B | J, M) = \frac{P(B, J, M)}{P(J, M)}$$
+                    </div>
+                    
+                    <p><strong>Step 2:</strong> Recognize the normalization constant</p>
+                    <div class="math-equation">
+
+                        $$P(B | J, M) = \alpha \cdot P(B, J, M)$$
+                    </div>
+                    <p>where</p>
+                    <div class="math-equation">
+
+                        $$\alpha = \frac{1}{P(B, J, M) + P(\neg B, J, M)}$$
+                    </div>
+                    
+                    <p><strong>Step 3:</strong> Compute both \(P(B, J, M)\) and \(P(\neg B, J, M)\)</p>
+                    
+                    <p><strong>Step 4:</strong> Normalize to get the final probability</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Probability calculate karne ke liye pehle hum dekhte hain ki query mein kaun se variables missing hain. Phir un missing variables ke saare possible values ke liye sum karte hain. Factorization formula use karke joint probability ko chhote parts mein tod dete hain. Last mein normalization kar ke final answer milta hai. Alpha ek normalization constant hai jo ensure karta hai ki probabilities ka sum 1 ho.</p>
+                </div>
+            </div>
+            
+            <div id="section1-4">
+                <h3>1.4 Example Calculations</h3>
+                
+                <h4>Example 1: Computing \(P(B, J, M)\)</h4>
+                
+                <p>Let's calculate the probability that there is a burglary AND John calls AND Mary calls.</p>
+                
+                <div class="example-box">
+                    <p><strong>Given:</strong> We need to find \(P(B = \text{true}, J = \text{true}, M = \text{true})\)</p>
+                    
+                    <p><strong>Missing variables:</strong> Earthquake (E) and Alarm (A)</p>
+                    
+                    <p><strong>Formula:</strong></p>
+                    <div class="math-equation">
+
+                        $$P(B, J, M) = \sum_{E} \sum_{A} P(B) \cdot P(E) \cdot P(A|B,E) \cdot P(J|A) \cdot P(M|A)$$
+                    </div>
+                    
+                    <p><strong>Expanding the summations:</strong></p>
+                    <p>Since P(B) is constant with respect to E and A, we can factor it out:</p>
+                    <div class="math-equation">
+
+                        $$P(B, J, M) = P(B) \times \sum_{A} [P(J|A) \cdot P(M|A) \times \sum_{E} P(A|B,E) \cdot P(E)]$$
+                    </div>
+                    
+                    <p><strong>Breaking down by values of A and E:</strong></p>
+                    <div class="math-equation">
+
+                        $$= P(B) \times [P(J|A) \cdot P(M|A) \times [P(A|B,E) \cdot P(E) + P(A|B,\neg E) \cdot P(\neg E)]$$
+
+                        $$+ P(J|\neg A) \cdot P(M|\neg A) \times [P(\neg A|B,E) \cdot P(E) + P(\neg A|B,\neg E) \cdot P(\neg E)]]$$
+                    </div>
+                    
+                    <p><strong>Substituting values from tables:</strong></p>
+                    <div class="math-equation">
+
+                        $$= 0.001 \times [0.90 \times 0.70 \times [0.95 \times 0.002 + 0.94 \times 0.998]$$
+
+                        $$+ 0.05 \times 0.01 \times [0.05 \times 0.002 + 0.06 \times 0.998]]$$
+                    </div>
+                    
+                    <p><strong>Result:</strong> \(P(B, J, M) \approx 0.00059\)</p>
+                </div>
+                
+                <div class="professor-note">
+                    When doing these calculations in exams, be very careful about which probability values you're using from the tables. Make sure you're using the correct conditional probabilities. A small mistake in copying numbers can give you completely wrong answers!
+                </div>
+                
+                <h4>Example 2: Computing \(P(J)\)</h4>
+                
+                <p>What is the probability that John calls (regardless of any other information)?</p>
+                
+                <div class="example-box">
+                    <p><strong>Approach:</strong> John calls depends only on whether the alarm rang (its parent).</p>
+                    
+                    <div class="math-equation">
+
+                        $$P(J) = P(J|A) \cdot P(A) + P(J|\neg A) \cdot P(\neg A)$$
+                    </div>
+                    
+                    <p><strong>Computing \(P(A)\):</strong></p>
+                    <p>Alarm depends on Burglary and Earthquake, so we need to sum over all their combinations:</p>
+                    <div class="math-equation">
+
+                        $$P(A) = \sum_{B} \sum_{E} P(A|B,E) \cdot P(B) \cdot P(E)$$
+                    </div>
+                    
+                    <p>This expands to 4 terms:</p>
+                    <div class="math-equation">
+
+                        $$P(A) = P(A|B,E) \cdot P(B) \cdot P(E)$$
+
+                        $$+ P(A|\neg B,E) \cdot P(\neg B) \cdot P(E)$$
+
+                        $$+ P(A|B,\neg E) \cdot P(B) \cdot P(\neg E)$$
+
+                        $$+ P(A|\neg B,\neg E) \cdot P(\neg B) \cdot P(\neg E)$$
+                    </div>
+                    
+                    <p><strong>Substituting values:</strong></p>
+                    <div class="math-equation">
+
+                        $$P(A) = 0.95 \times 0.001 \times 0.002 + 0.29 \times 0.999 \times 0.002$$
+
+                        $$+ 0.94 \times 0.001 \times 0.998 + 0.001 \times 0.999 \times 0.998$$
+
+                        $$\approx 0.00252$$
+                    </div>
+                    
+                    <p><strong>Final calculation:</strong></p>
+                    <div class="math-equation">
+
+                        $$P(J) = 0.90 \times 0.00252 + 0.05 \times 0.99748 \approx 0.0521$$
+                    </div>
+                </div>
+                
+                <h4>Example 3: Computing \(P(J, M, A, \neg B, \neg E)\)</h4>
+                
+                <p>What is the probability that John calls, Mary calls, alarm sounds, but there's no burglary and no earthquake?</p>
+                
+                <div class="example-box">
+                    <p><strong>Solution:</strong> All variables are specified, so we just apply the factorization directly:</p>
+                    
+                    <div class="math-equation">
+
+                        $$P(J, M, A, \neg B, \neg E) = P(\neg B) \cdot P(\neg E) \cdot P(A|\neg B,\neg E) \cdot P(J|A) \cdot P(M|A)$$
+                    </div>
+                    
+                    <p><strong>Substituting values:</strong></p>
+                    <div class="math-equation">
+
+                        $$= 0.999 \times 0.998 \times 0.001 \times 0.90 \times 0.70 \approx 0.00062$$
+                    </div>
+                </div>
+                
+                <div class="professor-note">
+                    This scenario shows an interesting case: the alarm went off even though there was no burglary or earthquake (probability 0.001), and both neighbors called. This is a false alarm situation, which has a very low probability but is still possible!
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Calculations mein sabse pehle missing variables identify karo, phir unke saare possible values ke liye sum karo. Factorization formula use karke complex probabilities ko simple parts mein break kar do. Tables se carefully values nikalo aur substitute karo. Calculation ke time zero dekh kar values match karo, ek bhi galat value se poora answer galat ho sakta hai. Practice karne se ye calculations easy ho jayengi.</p>
+                </div>
+            </div>
+            
+            <div id="section1-5">
+                <h3>1.5 From Factorization to Network</h3>
+                
+                <p>An important skill is being able to work backwards: given a factorized joint probability distribution, can we construct the Bayesian network?</p>
+                
+                <div class="info-box">
+                    <h4>🔄 Reverse Engineering the Network</h4>
+                    <p><strong>Question:</strong> If we're given a factorization like:</p>
+                    <div class="math-equation">
+
+                        $$P(X_1, X_2, X_3, X_4) = P(X_1) \cdot P(X_2|X_1) \cdot P(X_3|X_1,X_2) \cdot P(X_4|X_2)$$
+                    </div>
+                    <p>Can we draw the Bayesian network?</p>
+                </div>
+                
+                <h4>Step-by-Step Process</h4>
+                
+                <p><strong>Step 1: Identify the nodes</strong></p>
+                <p>The variables in the factorization are our nodes: \(X_1, X_2, X_3, X_4\)</p>
+                
+                <p><strong>Step 2: Identify parent-child relationships</strong></p>
+                <p>In Bayesian networks, \(P(X | \text{Parents}(X))\) means there are directed edges from all parents to X.</p>
+                
+                <ul>
+                    <li>\(P(X_1)\) → No parents, X₁ is a root node</li>
+                    <li>\(P(X_2|X_1)\) → X₁ is the parent of X₂</li>
+                    <li>\(P(X_3|X_1,X_2)\) → X₁ and X₂ are parents of X₃</li>
+                    <li>\(P(X_4|X_2)\) → X₂ is the parent of X₄</li>
+                </ul>
+                
+                <p><strong>Step 3: Draw the network</strong></p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: X₁ at top, arrows to X₂ and X₃; X₂ with arrows to X₃ and X₄]
+                </div>
+                
+                <p><strong>Network structure:</strong></p>
+                <ul>
+                    <li>X₁ → X₂ (X₁ is parent of X₂)</li>
+                    <li>X₁ → X₃ (X₁ is parent of X₃)</li>
+                    <li>X₂ → X₃ (X₂ is parent of X₃)</li>
+                    <li>X₂ → X₄ (X₂ is parent of X₄)</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h4>Verification: From Network Back to Factorization</h4>
+                    <p>Let's verify our network is correct by deriving the factorization:</p>
+                    <ul>
+                        <li>Parents(X₁) = {} → \(P(X_1)\)</li>
+                        <li>Parents(X₂) = {X₁} → \(P(X_2|X_1)\)</li>
+                        <li>Parents(X₃) = {X₁, X₂} → \(P(X_3|X_1,X_2)\)</li>
+                        <li>Parents(X₄) = {X₂} → \(P(X_4|X_2)\)</li>
+                    </ul>
+                    <p>Joint probability:</p>
+                    <div class="math-equation">
+
+                        $$P(X_1, X_2, X_3, X_4) = P(X_1) \cdot P(X_2|X_1) \cdot P(X_3|X_1,X_2) \cdot P(X_4|X_2)$$ ✓
+                    </div>
+                    <p>This matches our original factorization, confirming our network is correct!</p>
+                </div>
+                
+                <div class="professor-note">
+                    Both directions are important: from network to factorization AND from factorization to network. In our burglary example, we can see that Parents(B) = {}, Parents(E) = {}, Parents(A) = {B, E}, Parents(J) = {A}, Parents(M) = {A}. So we can draw edges: B→A, E→A, A→J, A→M. This gives us exactly the network we started with!
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways: Bayesian Networks</h4>
+                    <ul>
+                        <li>Bayesian networks represent probabilistic dependencies using a Directed Acyclic Graph (DAG)</li>
+                        <li>Each variable depends only on its parents, enabling factorization of joint distributions</li>
+                        <li>Factorization reduces computational complexity significantly</li>
+                        <li>To compute any probability, identify missing variables and sum over their values</li>
+                        <li>Conditional probability tables for each variable (given its parents) are sufficient to compute any query</li>
+                        <li>You can go from network to factorization and vice versa using parent-child relationships</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>💡 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> In the burglary-alarm network, what is \(P(A|\neg B, \neg E)\)?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> From the conditional probability table for A given B and E, when both B and E are false, \(P(A|\neg B, \neg E) = 0.001\). This is the probability of a false alarm.
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why can we write \(P(J|A)\) instead of \(P(J|B,E,A,M)\)?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> Because in a Bayesian network, each variable is conditionally independent of all non-descendants given its parents. J's only parent is A, so J is independent of B, E, and M given A.
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is the maximum number of edges in a Bayesian network with 5 nodes?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> For 5 nodes, maximum edges = 5(5-1)/2 = 10 edges. However, it must remain a DAG (no cycles), which may further restrict the structure depending on the ordering.
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Factorization se network banane ke liye pehle saare variables ko nodes ki tarah dekho. Phir dekho ki conditional probability mein kaun kis par depend kar raha hai - wo parent-child relationship hai. Edges draw karo parents se children ki taraf. Is tarah se network complete ho jata hai. Reverse mein bhi kar sakte ho - network se factorization nikal sakte ho by checking each node ke parents. Ye dono directions important hain aur exams mein dono taraf se questions aa sakte hain.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MARKOV BLANKET -->
+        <section id="section2">
+            <h2>2. Markov Blanket</h2>
+            
+            <div id="section2-1">
+                <h3>2.1 Definition and Components</h3>
+                
+                <p>The <strong>Markov Blanket</strong> is a fundamental concept that helps us understand which nodes in a Bayesian network are truly relevant for predicting a particular variable.</p>
+                
+                <div class="info-box">
+                    <h4>📖 Definition</h4>
+                    <p>In a Bayesian Network, the <strong>Markov Blanket</strong> of a node X is the set of nodes that renders X conditionally independent of all other nodes in the network.</p>
+                    
+                    <p><strong>Formally:</strong></p>
+                    <div class="math-equation">
+
+                        $$X \perp \text{All other nodes not in MB}(X) \; | \; \text{MB}(X)$$
+                    </div>
+                    
+                    <p>This means: Given the Markov Blanket of X, X is independent of everything else in the network.</p>
+                </div>
+                
+                <div class="professor-note">
+                    The term "blanket" is very intuitive - it's like a blanket that covers or shields the node from all other nodes. Think of it like this: if I know the Markov Blanket of a node, I don't need to know anything else to predict that node's value. The Markov Blanket acts as a protective shield, and information from nodes outside this blanket cannot affect our predictions about X once we know the blanket.
+                </div>
+                
+                <h4>Components of Markov Blanket</h4>
+                
+                <p>For any node X in a Bayesian network, \(\text{MB}(X)\) consists of exactly three types of nodes:</p>
+                
+                <div class="highlight-box">
+                    <ol>
+                        <li><strong>Parents of X</strong>: Nodes with direct edges pointing to X</li>
+                        <li><strong>Children of X</strong>: Nodes to which X has direct edges</li>
+                        <li><strong>Co-parents</strong> (or spouses): Other parents of X's children</li>
+                    </ol>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Visual Understanding</h4>
+                    <p>Imagine node X in the center:</p>
+                    <ul>
+                        <li>⬆️ <strong>Parents</strong> are above X (arrows pointing down to X)</li>
+                        <li>⬇️ <strong>Children</strong> are below X (arrows from X pointing down)</li>
+                        <li>↔️ <strong>Co-parents</strong> are siblings of X (both pointing to same child)</li>
+                    </ul>
+                </div>
+                
+                <p><strong>Key Principle:</strong> Knowing \(\text{MB}(X)\) is sufficient to predict X; other nodes provide no extra information given the Markov Blanket.</p>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Markov Blanket ek aisa set hai jo node X ko baaki saare nodes se independent bana deta hai. Isme teen cheezein hain - X ke parents (jo X ko affect karte hain), X ke children (jinhe X affect karta hai), aur co-parents (X ke children ke doosre parents). Blanket ka matlab hai dhakna - ye nodes X ko baaki network se shield kar dete hain. Agar ye nodes pata ho toh baaki kisi node ki zaroorat nahi X ko predict karne ke liye.</p>
+                </div>
+            </div>
+            
+            <div id="section2-2">
+                <h3>2.2 Markov Blankets of Nodes</h3>
+                
+                <p>Let's compute the Markov Blanket for each node in our burglary-earthquake-alarm example.</p>
+                
+                <h4>Network Structure Recap</h4>
+                <div class="diagram-placeholder">
+                    [Insert diagram: B and E pointing to A; A pointing to J and M]
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Node</th>
+                            <th>Parents</th>
+                            <th>Children</th>
+                            <th>Co-parents</th>
+                            <th>Markov Blanket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Alarm (A)</strong></td>
+                            <td>{B, E}</td>
+                            <td>{J, M}</td>
+                            <td>{}</td>
+                            <td><strong>{B, E, J, M}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Burglary (B)</strong></td>
+                            <td>{}</td>
+                            <td>{A}</td>
+                            <td>{E}</td>
+                            <td><strong>{A, E}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Earthquake (E)</strong></td>
+                            <td>{}</td>
+                            <td>{A}</td>
+                            <td>{B}</td>
+                            <td><strong>{A, B}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>JohnCalls (J)</strong></td>
+                            <td>{A}</td>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td><strong>{A}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>MaryCalls (M)</strong></td>
+                            <td>{A}</td>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td><strong>{A}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Detailed Analysis</h4>
+                
+                <div class="example-box">
+                    <h4>1. Markov Blanket of Alarm (A)</h4>
+                    <ul>
+                        <li><strong>Parents:</strong> {B, E} - Burglary and Earthquake cause the alarm</li>
+                        <li><strong>Children:</strong> {J, M} - Alarm causes John and Mary to call</li>
+                        <li><strong>Co-parents:</strong> {} - J and M have no other parents besides A</li>
+                    </ul>
+                    <p><strong>MB(A) = {B, E, J, M}</strong></p>
+                    <p><em>Interpretation:</em> To predict whether the alarm is ringing, we only need to know about burglary, earthquake, and whether John and Mary called. Nothing else matters!</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>2. Markov Blanket of Burglary (B)</h4>
+                    <ul>
+                        <li><strong>Parents:</strong> {} - B is a root node</li>
+                        <li><strong>Children:</strong> {A} - Burglary affects the alarm</li>
+                        <li><strong>Co-parents:</strong> {E} - E is the other parent of A (B's child)</li>
+                    </ul>
+                    <p><strong>MB(B) = {A, E}</strong></p>
+                    <p><em>Interpretation:</em> To predict burglary, we need to know if the alarm rang and if there was an earthquake. John and Mary's calls don't add information once we know about the alarm.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>3. Markov Blanket of Earthquake (E)</h4>
+                    <ul>
+                        <li><strong>Parents:</strong> {} - E is a root node</li>
+                        <li><strong>Children:</strong> {A} - Earthquake affects the alarm</li>
+                        <li><strong>Co-parents:</strong> {B} - B is the other parent of A (E's child)</li>
+                    </ul>
+                    <p><strong>MB(E) = {A, B}</strong></p>
+                    <p><em>Interpretation:</em> To predict earthquake, we need alarm and burglary information. This is symmetric with MB(B).</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>4. Markov Blanket of JohnCalls (J)</h4>
+                    <ul>
+                        <li><strong>Parents:</strong> {A} - Alarm causes John to call</li>
+                        <li><strong>Children:</strong> {} - J is a leaf node</li>
+                        <li><strong>Co-parents:</strong> {} - No co-parents since J has no children</li>
+                    </ul>
+                    <p><strong>MB(J) = {A}</strong></p>
+                    <p><em>Interpretation:</em> Only the alarm matters for predicting John's call. Burglary, earthquake, or Mary's call don't add information once we know the alarm status.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>5. Markov Blanket of MaryCalls (M)</h4>
+                    <ul>
+                        <li><strong>Parents:</strong> {A} - Alarm causes Mary to call</li>
+                        <li><strong>Children:</strong> {} - M is a leaf node</li>
+                        <li><strong>Co-parents:</strong> {} - No co-parents since M has no children</li>
+                    </ul>
+                    <p><strong>MB(M) = {A}</strong></p>
+                    <p><em>Interpretation:</em> Similar to John, only the alarm matters for Mary's call.</p>
+                </div>
+                
+                <div class="professor-note">
+                    Notice something interesting: B and E are co-parents because they both point to A. This is why E is in MB(B) and B is in MB(E), even though there's no direct edge between them! The co-parent relationship is subtle but important - they become relevant to each other through their shared child.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Har node ka Markov Blanket alag hota hai. Alarm ke liye sabhi 4 nodes important hain kyunki wo center mein hai. Burglary aur Earthquake ke liye ek doosre important hain kyunki dono same child (Alarm) ke parents hain - isko co-parent kehte hain. John aur Mary ke liye sirf Alarm important hai kyunki ye leaf nodes hain aur inke koi children nahi hain. Co-parent concept thoda tricky hai - do nodes agar same child ko point karti hain toh wo ek dusre ke Markov Blanket mein aati hain.</p>
+                </div>
+            </div>
+            
+            <div id="section2-3">
+                <h3>2.3 Intuition and Applications</h3>
+                
+                <h4>Intuitive Understanding</h4>
+                
+                <div class="info-box">
+                    <h4>Why Does the Markov Blanket Work?</h4>
+                    <p>The Markov Blanket captures all the "relevant neighborhood" of a node:</p>
+                    <ul>
+                        <li><strong>Parents</strong> provide direct causal influence TO the node</li>
+                        <li><strong>Children</strong> receive direct causal influence FROM the node</li>
+                        <li><strong>Co-parents</strong> are alternative explanations for the children's values</li>
+                    </ul>
+                    <p>Together, these three components shield the node from all other influences in the network.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>📚 Real-World Analogy</h4>
+                    <p>Think of predicting a student's exam performance:</p>
+                    <ul>
+                        <li><strong>Parents:</strong> Study hours, prior knowledge (direct causes)</li>
+                        <li><strong>Children:</strong> Future course performance, job prospects (direct effects)</li>
+                        <li><strong>Co-parents:</strong> Exam difficulty, teacher quality (alternative causes for the effects)</li>
+                    </ul>
+                    <p>Once you know these factors, other things like the student's height, favorite color, or lunch choice don't matter for predicting exam performance!</p>
+                </div>
+                
+                <h4>Practical Examples from Our Network</h4>
+                
+                <div class="highlight-box">
+                    <h4>Example 1: Alarm Node</h4>
+                    <p><strong>Scenario:</strong> We want to predict if the alarm is ringing.</p>
+                    <p><strong>MB(A) = {B, E, J, M}</strong></p>
+                    <p><strong>What we need to know:</strong></p>
+                    <ul>
+                        <li>Was there a burglary? (cause)</li>
+                        <li>Was there an earthquake? (cause)</li>
+                        <li>Did John call? (effect)</li>
+                        <li>Did Mary call? (effect)</li>
+                    </ul>
+                    <p><strong>What we DON'T need:</strong> Nothing else! These four pieces of information are sufficient.</p>
+                </div>
+                
+                <div class="highlight-box">
+                    <h4>Example 2: JohnCalls Node</h4>
+                    <p><strong>Scenario:</strong> We want to predict if John will call.</p>
+                    <p><strong>MB(J) = {A}</strong></p>
+                    <p><strong>What matters:</strong> Only whether the alarm rang!</p>
+                    <p><strong>What doesn't matter once we know A:</strong></p>
+                    <ul>
+                        <li>Whether there was actually a burglary</li>
+                        <li>Whether there was an earthquake</li>
+                        <li>Whether Mary called</li>
+                    </ul>
+                    <p><em>Why?</em> Because John only responds to the alarm, not directly to burglary or earthquake. And Mary's decision is independent of John's given the alarm status.</p>
+                </div>
+                
+                <h4>Applications of Markov Blanket</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application Area</th>
+                            <th>How Markov Blanket Helps</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Computational Efficiency</strong></td>
+                            <td>Reduces the number of nodes we need to consider for probabilistic inference. Only need to look at MB(X) instead of all nodes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Feature Selection in ML</strong></td>
+                            <td>Identifies minimal set of features needed to predict a target variable. Features outside the Markov Blanket are irrelevant.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Causal Reasoning</strong></td>
+                            <td>Helps understand which variables truly influence a target, separating direct influences from indirect ones.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dimensionality Reduction</strong></td>
+                            <td>Allows us to ignore large portions of high-dimensional networks when making specific predictions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    The Markov Blanket concept is extremely powerful for feature selection in machine learning. If you're building a model to predict variable X, you only need features that are in MB(X). All other features are guaranteed to be conditionally independent of X given MB(X), so they won't improve your model! This can save enormous amounts of computation and prevent overfitting.
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways: Markov Blanket</h4>
+                    <ul>
+                        <li>Markov Blanket of X = Parents(X) ∪ Children(X) ∪ Co-parents(X)</li>
+                        <li>Given MB(X), X is independent of all other nodes in the network</li>
+                        <li>MB(X) is the minimal set of nodes needed to predict X</li>
+                        <li>Co-parents are parents of X's children (often overlooked but important!)</li>
+                        <li>Markov Blanket reduces computational complexity in probabilistic inference</li>
+                        <li>Critical for feature selection - features outside MB(X) are irrelevant for predicting X</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>💡 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> Why is Earthquake in the Markov Blanket of Burglary even though there's no direct edge between them?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> Because E is a co-parent of B - they both are parents of Alarm (A). Co-parents are included in the Markov Blanket because they provide alternative explanations for the child's value.
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> If we add a new node "NeighborSleep" that is affected by Alarm, how does MB(A) change?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> MB(A) would now include {B, E, J, M, NeighborSleep}. The new node becomes a child of A, so it must be included in A's Markov Blanket.
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> Can a node's Markov Blanket be empty?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> Yes! In a network with isolated nodes (no edges), each node's Markov Blanket would be empty. Such nodes are completely independent of all others.
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Markov Blanket ka main fayda ye hai ki ye batata hai ki kaunse nodes really matter hain prediction ke liye. Isse computation bahut kam ho jati hai kyunki baaki saare nodes ko ignore kar sakte hain. Machine learning mein feature selection ke liye ye concept bahut useful hai - agar koi feature Markov Blanket mein nahi hai toh wo useless hai. Real world mein ye samajhne mein help karta hai ki kaun kaun se factors kisi outcome ko affect karte hain aur kaun se nahi.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: THE 8-QUEEN PROBLEM -->
+        <section id="section3">
+            <h2>3. The 8-Queen Problem</h2>
+            
+            <div id="section3-1">
+                <h3>3.1 Problem Statement</h3>
+                
+                <p>The <strong>8-Queen Problem</strong> is a classic problem in computer science and artificial intelligence that demonstrates the application of search algorithms, particularly local search methods like hill climbing.</p>
+                
+                <div class="info-box">
+                    <h4>🎯 Problem Definition</h4>
+                    <p><strong>Task:</strong> Place 8 queens on an 8×8 chessboard such that no two queens attack each other.</p>
+                    
+                    <p><strong>Constraints:</strong> Queens attack along:</p>
+                    <ul>
+                        <li><strong>Rows</strong> - horizontally</li>
+                        <li><strong>Columns</strong> - vertically</li>
+                        <li><strong>Diagonals</strong> - both forward and backward diagonals</li>
+                    </ul>
+                    
+                    <p><strong>Goal:</strong> Find a configuration where no queen threatens any other queen.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>♟️ Chess Rules Reminder</h4>
+                    <p>In chess, the <strong>queen</strong> is the most powerful piece. It can move:</p>
+                    <ul>
+                        <li>Any number of squares horizontally (along rows)</li>
+                        <li>Any number of squares vertically (along columns)</li>
+                        <li>Any number of squares diagonally (in all four diagonal directions)</li>
+                    </ul>
+                    <p>A queen "attacks" or "threatens" any square it can move to in one step.</p>
+                </div>
+                
+                <h4>Why This Problem is Challenging</h4>
+                
+                <div class="highlight-box">
+                    <p><strong>Search Space:</strong> The total number of ways to place 8 queens on 64 squares is:</p>
+                    <div class="math-equation">
+
+                        $$\binom{64}{8} = \frac{64!}{8! \times 56!} = 4,426,165,368$$
+                    </div>
+                    <p>That's over 4 billion possible configurations! Checking all of them would be computationally expensive.</p>
+                    
+                    <p><strong>Better Approach:</strong> Since no two queens can be in the same column, we can use a more efficient representation with only \(8^8 = 16,777,216\) states - still large, but much better!</p>
+                </div>
+                
+                <p><strong>Solution Strategy:</strong> We will use <strong>Hill Climbing</strong>, a local search algorithm, to efficiently find a conflict-free arrangement.</p>
+                
+                <div class="professor-note">
+                    The 8-queen problem is a constraint satisfaction problem. We have constraints (no two queens attack each other) and we need to find a configuration that satisfies all constraints. Hill climbing is used as a local search strategy - we start with some configuration and keep improving it until we reach a solution where there are no conflicts.
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: 8×8 chessboard with 8 queens positioned such that they don't attack each other]
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>8-Queen problem mein hume 8×8 chessboard par 8 queens rakhni hain aisi tarah se ki koi bhi do queens ek doosre ko attack na kar sakein. Queens row, column aur diagonal - teenon directions mein attack kar sakti hain. Ye problem bahut badi hai - 4 billion se zyada configurations possible hain. Isliye hum hill climbing algorithm use karenge jo efficiently solution dhundh sakta hai. Har column mein ek queen rakho toh problem thodi chhoti ho jati hai.</p>
+                </div>
+            </div>
+            
+            <div id="section3-2">
+                <h3>3.2 State Representation</h3>
+                
+                <p>To efficiently solve the 8-queen problem, we need a smart way to represent the state of the chessboard.</p>
+                
+                <div class="info-box">
+                    <h4>🔢 Efficient State Representation</h4>
+                    <p><strong>Key Insight:</strong> Place exactly <strong>one queen per column</strong></p>
+                    <p><strong>Why?</strong> If we have one queen per column, we automatically ensure no two queens are in the same column!</p>
+                    
+                    <p><strong>State Representation:</strong></p>
+                    <div class="math-equation">
+
+                        $$\text{State} = [s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8]$$
+                    </div>
+                    <p>where \(s_i\) represents the <strong>row position</strong> of the queen in column \(i\)</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>📝 Example State: [4, 2, 7, 3, 6, 8, 5, 1]</h4>
+                    <p>This means:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Row</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>4</td>
+                                <td>(1, 4)</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>(2, 2)</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>7</td>
+                                <td>(3, 7)</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>3</td>
+                                <td>(4, 3)</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>(5, 6)</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>8</td>
+                                <td>(6, 8)</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>5</td>
+                                <td>(7, 5)</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>1</td>
+                                <td>(8, 1)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>So if you imagine the chessboard as a matrix, queen in column 1 is at row 4, queen in column 2 is at row 2, and so on.</p>
+                </div>
+                
+                <h4>Advantages of This Representation</h4>
+                
+                <div class="highlight-box">
+                    <ol>
+                        <li><strong>Reduced Search Space:</strong> From \(\binom{64}{8}\) to \(8^8\) configurations</li>
+                        <li><strong>Column Conflicts Eliminated:</strong> By design, no two queens in same column</li>
+                        <li><strong>Easy to Manipulate:</strong> To change state, just move a queen within its column</li>
+                        <li><strong>Compact Storage:</strong> Only need 8 numbers instead of 64-bit board representation</li>
+                    </ol>
+                </div>
+                
+                <div class="professor-note">
+                    This representation is clever because it embeds one constraint directly into the state representation. By having exactly one queen per column, we never violate the "no two queens in same column" constraint. Now we only need to worry about row conflicts and diagonal conflicts. This kind of thinking - embedding constraints into the representation - is a powerful problem-solving technique in AI.
+                </div>
+                
+                <h4>State Space</h4>
+                
+                <p>With this representation:</p>
+                <ul>
+                    <li><strong>Total possible states:</strong> \(8^8 = 16,777,216\)</li>
+                    <li><strong>Each column:</strong> Can have queen in any of 8 rows</li>
+                    <li><strong>Initial state:</strong> Can be random (e.g., [1, 1, 1, 1, 1, 1, 1, 1])</li>
+                    <li><strong>Goal state:</strong> Any state where no conflicts exist</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>State representation mein hum har column mein exactly ek queen rakhte hain. State ko hum 8 numbers ki list se represent karte hain jahan har number batata hai ki us column mein queen kis row mein hai. Jaise [4, 2, 7, 3, 6, 8, 5, 1] matlab pehle column mein queen 4th row mein hai, doosre column mein 2nd row mein hai, aur aage bhi aisa hi. Is representation se automatically column conflicts nahi hote aur search space bhi kam ho jata hai - 4 billion se 16 million tak.</p>
+                </div>
+            </div>
+            
+            <div id="section3-3">
+                <h3>3.3 Heuristic Function</h3>
+                
+                <p>To apply hill climbing, we need a <strong>heuristic function</strong> that measures how "good" or "bad" a state is.</p>
+                
+                <div class="info-box">
+                    <h4>📊 Heuristic Function Definition</h4>
+                    <p><strong>Heuristic \(h\):</strong> Number of pairs of queens attacking each other</p>
+                    
+                    <p><strong>Objective:</strong> Minimize \(h\) (lower is better)</p>
+                    
+                    <p><strong>Goal State:</strong> \(h = 0\) (no attacking pairs)</p>
+                </div>
+                
+                <h4>Attack Conditions</h4>
+                
+                <p>Queens in columns \(i\) and \(j\) (where \(i \neq j\)) attack each other if:</p>
+                
+                <div class="highlight-box">
+                    <p><strong>1. Same Row:</strong></p>
+                    <div class="math-equation">
+
+                        $$s_i = s_j$$
+                    </div>
+                    <p>Both queens are in the same horizontal line</p>
+                    
+                    <p><strong>2. Same Diagonal:</strong></p>
+                    <div class="math-equation">
+
+                        $$|s_i - s_j| = |i - j|$$
+                    </div>
+                    <p>The vertical distance equals the horizontal distance (diagonal condition)</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>🔍 Understanding Diagonal Condition</h4>
+                    <p>Why does \(|s_i - s_j| = |i - j|\) represent diagonal attack?</p>
+                    
+                    <p><strong>Example:</strong> Queen at (2, 4) and queen at (5, 7)</p>
+                    <ul>
+                        <li>Column difference: \(|5 - 2| = 3\)</li>
+                        <li>Row difference: \(|7 - 4| = 3\)</li>
+                        <li>Since they're equal (both 3), queens are on same diagonal!</li>
+                    </ul>
+                    
+                    <p>On a diagonal, moving one square horizontally means moving one square vertically, so the differences must be equal.</p>
+                </div>
+                
+                <h4>Calculating the Heuristic</h4>
+                
+                <div class="example-box">
+                    <h4>Example Calculation</h4>
+                    <p><strong>State:</strong> [5, 6, 7, 4, 6, 6, 7, 6]</p>
+                    
+                    <p><strong>Step 1:</strong> Check all pairs of queens (there are \(\binom{8}{2} = 28\) pairs)</p>
+                    
+                    <p><strong>Step 2:</strong> For each pair \((i, j)\), check if they attack:</p>
+                    <ul>
+                        <li>Columns 2 and 5: \(s_2 = 6, s_5 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 2 and 6: \(s_2 = 6, s_6 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 2 and 8: \(s_2 = 6, s_8 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 5 and 6: \(s_5 = 6, s_6 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 5 and 8: \(s_5 = 6, s_8 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 6 and 8: \(s_6 = 6, s_8 = 6\) → Same row ✓ (conflict!)</li>
+                        <li>Columns 3 and 7: \(s_3 = 7, s_7 = 7\) → Same row ✓ (conflict!)</li>
+                        <li>And potentially some diagonal conflicts...</li>
+                    </ul>
+                    
+                    <p><strong>Total conflicts:</strong> \(h = 17\) (example value)</p>
+                </div>
+                
+                <div class="professor-note">
+                    When calculating the heuristic, we count the number of attacking PAIRS, not the number of queens under attack. If three queens are all in the same row, that's 3 pairs: (Q1, Q2), (Q1, Q3), and (Q2, Q3). This is important for accurate counting! In exams, students often make mistakes in counting conflicts, so practice this carefully.
+                </div>
+                
+                <h4>Heuristic Values Guide Search</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Heuristic Value</th>
+                            <th>State Quality</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\(h = 0\)</td>
+                            <td>Perfect (Goal)</td>
+                            <td>Stop - Solution found!</td>
+                        </tr>
+                        <tr>
+                            <td>\(h < 5\)</td>
+                            <td>Very Good</td>
+                            <td>Close to solution</td>
+                        </tr>
+                        <tr>
+                            <td>\(5 \leq h < 10\)</td>
+                            <td>Good</td>
+                            <td>Making progress</td>
+                        </tr>
+                        <tr>
+                            <td>\(h \geq 10\)</td>
+                            <td>Poor</td>
+                            <td>Many conflicts remain</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Heuristic function batata hai ki current state kitna accha ya bura hai. Hum count karte hain ki kitne pairs of queens ek doosre ko attack kar rahe hain. Do queens attack karti hain agar: (1) same row mein hain (s_i = s_j), ya (2) same diagonal mein hain (row difference = column difference). Goal hai h = 0 tak pahunchna yaani zero conflicts. Jitni kam conflicts, utna better state. Hill climbing isi heuristic ko minimize karne ki koshish karta hai.</p>
+                </div>
+            </div>
+            
+            <div id="section3-4">
+                <h3>3.4 Hill Climbing Algorithm</h3>
+                
+                <p>Now let's see how the <strong>Hill Climbing Algorithm</strong> uses our heuristic to solve the 8-queen problem.</p>
+                
+                <h4>Neighbor Generation</h4>
+                
+                <div class="info-box">
+                    <h4>🔄 How to Generate Neighbors</h4>
+                    <p><strong>Move:</strong> Change the row position of one queen within its column</p>
+                    
+                    <p><strong>Calculation:</strong></p>
+                    <ul>
+                        <li>8 columns (each queen can be moved)</li>
+                        <li>7 alternative rows per column (current position excluded)</li>
+                        <li><strong>Total neighbors:</strong> \(8 \times 7 = 56\) neighbors per state</li>
+                    </ul>
+                    
+                    <p><strong>Strategy:</strong> Evaluate all 56 neighbors and pick the one with <strong>lowest \(h\)</strong></p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Example: Generating Neighbors</h4>
+                    <p><strong>Current State:</strong> [5, 6, 7, 4, 6, 6, 7, 6]</p>
+                    
+                    <p><strong>Some possible neighbors:</strong></p>
+                    <ul>
+                        <li>[<strong>1</strong>, 6, 7, 4, 6, 6, 7, 6] - moved queen in column 1 from row 5 to row 1</li>
+                        <li>[<strong>2</strong>, 6, 7, 4, 6, 6, 7, 6] - moved queen in column 1 from row 5 to row 2</li>
+                        <li>[5, <strong>1</strong>, 7, 4, 6, 6, 7, 6] - moved queen in column 2 from row 6 to row 1</li>
+                        <li>[5, <strong>2</strong>, 7, 4, 6, 6, 7, 6] - moved queen in column 2 from row 6 to row 2</li>
+                        <li>... (52 more neighbors)</li>
+                    </ul>
+                    
+                    <p><strong>For each neighbor, calculate \(h\)</strong> and select the neighbor with minimum \(h\)</p>
+                </div>
+                
+                <h4>Hill Climbing Algorithm Steps</h4>
+                
+                <div class="highlight-box">
+                    <h4>🔢 Algorithm</h4>
+                    <ol>
+                        <li><strong>Initialize:</strong> Start with a random state (e.g., random row for each column)</li>
+                        <li><strong>Evaluate:</strong> Compute heuristic value \(h\) for current state</li>
+                        <li><strong>Generate:</strong> Create all 56 neighbor states</li>
+                        <li><strong>Evaluate Neighbors:</strong> Compute \(h\) for each neighbor</li>
+                        <li><strong>Select Best:</strong> Move to the neighbor with lowest \(h\)</li>
+                        <li><strong>Check Progress:</strong>
+                            <ul>
+                                <li>If \(h = 0\): <strong>Success!</strong> Return the solution</li>
+                                <li>If best neighbor has lower \(h\): Continue to step 3</li>
+                                <li>If no neighbor improves \(h\): <strong>Local minimum</strong> - stuck!</li>
+                            </ul>
+                        </li>
+                        <li><strong>Restart (if stuck):</strong> Generate new random initial state and repeat from step 1</li>
+                    </ol>
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Flowchart showing hill climbing process with states, neighbors, and heuristic values]
+                </div>
+                
+                <h4>The Local Minimum Problem</h4>
+                
+                <div class="info-box">
+                    <h4>⚠️ What is a Local Minimum?</h4>
+                    <p>A <strong>local minimum</strong> is a state where:</p>
+                    <ul>
+                        <li>All neighbors have higher or equal \(h\) values</li>
+                        <li>But \(h \neq 0\) (not the goal)</li>
+                        <li>The algorithm gets "stuck" because it can't find a better move</li>
+                    </ul>
+                    
+                    <p><strong>Solution:</strong> <strong>Random Restart Hill Climbing</strong></p>
+                    <p>When stuck at local minimum, restart with a completely new random state</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>📊 Example Execution</h4>
+                    <p><strong>Initial State:</strong> [5, 6, 7, 4, 6, 6, 7, 6]</p>
+                    <p><strong>Initial \(h\):</strong> 17 conflicts</p>
+                    
+                    <p><strong>Iteration 1:</strong></p>
+                    <ul>
+                        <li>Generate 56 neighbors</li>
+                        <li>Best neighbor: [5, 6, 7, 4, <strong>3</strong>, 6, 7, 6] with \(h = 12\)</li>
+                        <li>Improvement! Move to this state</li>
+                    </ul>
+                    
+                    <p><strong>Iteration 2:</strong></p>
+                    <ul>
+                        <li>Generate 56 neighbors of new state</li>
+                        <li>Best neighbor has \(h = 8\)</li>
+                        <li>Continue...</li>
+                    </ul>
+                    
+                    <p><strong>Eventually:</strong> Either reach \(h = 0\) (success) or stuck at local minimum (restart)</p>
+                </div>
+                
+                <div class="professor-note">
+                    Hill climbing is a greedy algorithm - it always makes the locally best decision. This means it can get stuck in local minima where all immediate moves make things worse, even though better solutions exist further away. Think of it like hiking in fog - you can only see nearby steps, so you might climb a small hill thinking it's the peak, when actually there's a higher peak you can't see. Random restart solves this by trying from different starting points.
+                </div>
+                
+                <h4>Algorithm Visualization</h4>
+                
+                <div class="highlight-box">
+                    <h4>Visual Analogy</h4>
+                    <p>Imagine the state space as a landscape:</p>
+                    <ul>
+                        <li><strong>Height:</strong> Represents \(h\) (number of conflicts)</li>
+                        <li><strong>Valleys:</strong> States with low \(h\) (few conflicts)</li>
+                        <li><strong>Goal:</strong> The lowest point (\(h = 0\))</li>
+                        <li><strong>Hill Climbing:</strong> Always move downhill (reduce \(h\))</li>
+                        <li><strong>Problem:</strong> Might get stuck in a small valley (local minimum) instead of reaching the deepest valley (global minimum)</li>
+                    </ul>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Hill climbing algorithm ek greedy approach hai jo har step mein locally best decision leta hai. Pehle random state se start karte hain, phir 56 neighbors generate karte hain (har column mein queen ko 7 alternative rows mein move kar sakte hain). Sabse kam h value wala neighbor choose karte hain aur wahan move karte hain. Agar h = 0 mil gaya toh solution mil gaya! Agar koi neighbor improve nahi karta toh local minimum mein fas gaye - phir random restart karna padta hai. Typically 100 restarts ke andar solution mil jata hai.</p>
+                </div>
+            </div>
+            
+            <div id="section3-5">
+                <h3>3.5 Solutions and Remarks</h3>
+                
+                <h4>Example Valid Solutions</h4>
+                
+                <p>The 8-queen problem has <strong>92 distinct solutions</strong> (or 12 fundamental solutions if we consider rotations and reflections as the same).</p>
+                
+                <div class="example-box">
+                    <h4>✅ Solution 1: [1, 5, 8, 6, 3, 7, 2, 4]</h4>
+                    <p><strong>Queen positions:</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Row</th>
+                                <th>Position (column, row)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>1</td><td>(1, 1)</td></tr>
+                            <tr><td>2</td><td>5</td><td>(2, 5)</td></tr>
+                            <tr><td>3</td><td>8</td><td>(3, 8)</td></tr>
+                            <tr><td>4</td><td>6</td><td>(4, 6)</td></tr>
+                            <tr><td>5</td><td>3</td><td>(5, 3)</td></tr>
+                            <tr><td>6</td><td>7</td><td>(6, 7)</td></tr>
+                            <tr><td>7</td><td>2</td><td>(7, 2)</td></tr>
+                            <tr><td>8</td><td>4</td><td>(8, 4)</td></tr>
+                        </tbody>
+                    </table>
+                    <p><strong>Verification:</strong> \(h = 0\) - No conflicts!</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>✅ Solution 2: [8, 3, 7, 4, 2, 5, 1, 6]</h4>
+                    <p>This is another valid configuration with zero conflicts.</p>
+                    <p><strong>Note:</strong> Multiple solutions exist, and hill climbing might find different ones on different runs.</p>
+                </div>
+                
+                <h4>Algorithm Performance</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Basic Hill Climbing</th>
+                            <th>Random-Restart Hill Climbing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Success Rate</strong></td>
+                            <td>14% (gets stuck in local minima)</td>
+                            <td>~100% (with enough restarts)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Average Restarts</strong></td>
+                            <td>N/A</td>
+                            <td>< 100 restarts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time Complexity</strong></td>
+                            <td>Fast per attempt</td>
+                            <td>Fast overall (few restarts needed)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Completeness</strong></td>
+                            <td>No (not guaranteed to find solution)</td>
+                            <td>Yes (probabilistically complete)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Key Observations and Remarks</h4>
+                
+                <div class="highlight-box">
+                    <h4>🔍 Important Points</h4>
+                    <ol>
+                        <li><strong>Local Minima are Common:</strong> Basic hill climbing fails ~86% of the time due to local minima</li>
+                        <li><strong>Random Restart is Effective:</strong> Dramatically improves success rate with minimal computational cost</li>
+                        <li><strong>Multiple Solutions:</strong> The problem has many valid solutions, so different runs may find different solutions</li>
+                        <li><strong>Fast Convergence:</strong> When not stuck, hill climbing converges quickly (usually within 5-10 moves)</li>
+                        <li><strong>Not Optimal but Practical:</strong> Hill climbing doesn't guarantee the "best" path to a solution, but finds a solution quickly</li>
+                    </ol>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 Why Hill Climbing Works Well for 8-Queen</h4>
+                    <ul>
+                        <li><strong>Good Heuristic:</strong> Number of conflicts directly measures distance from goal</li>
+                        <li><strong>Rich Solution Space:</strong> 92 solutions mean there are many "peaks" (goal states)</li>
+                        <li><strong>Efficient Moves:</strong> Only need to move one queen at a time</li>
+                        <li><strong>Low Restart Cost:</strong> Starting over is cheap since each attempt is fast</li>
+                    </ul>
+                </div>
+                
+                <h4>Limitations and Improvements</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Limitation</th>
+                            <th>Possible Improvement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gets stuck in local minima</td>
+                            <td>Random restart, simulated annealing, or genetic algorithms</td>
+                        </tr>
+                        <tr>
+                            <td>No guarantee of finding solution</td>
+                            <td>Use complete search algorithms like backtracking</td>
+                        </tr>
+                        <tr>
+                            <td>May take many restarts</td>
+                            <td>Use better initial state generation strategies</td>
+                        </tr>
+                        <tr>
+                            <td>Greedy (locally optimal)</td>
+                            <td>Allow occasional "sideways" or "uphill" moves (simulated annealing)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    Hill climbing is not the only way to solve the 8-queen problem. Backtracking is another popular approach that systematically explores the search space and is guaranteed to find a solution if one exists. However, hill climbing is much faster in practice for this problem. The key lesson is that simple, greedy local search algorithms can be very effective when combined with random restart, even though they lack theoretical guarantees. Typically, you'll find a solution in fewer than 100 restarts, which is still very fast computationally!
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways: 8-Queen Problem</h4>
+                    <ul>
+                        <li>8-Queen problem: place 8 queens on 8×8 board with no attacks</li>
+                        <li>State representation: one queen per column, represented as [s₁, s₂, ..., s₈]</li>
+                        <li>Heuristic: count pairs of attacking queens (goal: h = 0)</li>
+                        <li>Hill climbing: iteratively move to better neighbor (lower h)</li>
+                        <li>56 neighbors per state (8 columns × 7 alternative rows)</li>
+                        <li>Local minima are common - use random restart to overcome</li>
+                        <li>Random-restart hill climbing finds solution in < 100 restarts typically</li>
+                        <li>Multiple valid solutions exist (92 total configurations)</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>💡 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> For state [1, 1, 1, 1, 1, 1, 1, 1], what is the heuristic value h?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> All 8 queens are in row 1, so every pair attacks each other. Number of pairs = C(8,2) = 28. Therefore, h = 28 (worst possible state).
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why do we use 8×7 = 56 neighbors instead of 8×8 = 64?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> Because we exclude the current position of each queen. Each queen has 7 alternative rows (not 8), so total neighbors = 8 columns × 7 alternatives = 56.
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> Can hill climbing with random restart guarantee finding a solution?
+                    </div>
+                    <div class="answer">
+                        <strong>Answer:</strong> Yes, probabilistically. Since solutions exist and random restart explores different starting points, it will eventually find a solution with probability approaching 1 as restarts increase.
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>8-Queen problem ke 92 valid solutions hain. Hill climbing se solution milne ka chance approximately 14% hai ek attempt mein, lekin random restart ke saath almost 100% success rate hai. Typically 100 se kam restarts mein solution mil jata hai jo bahut fast hai. Har solution unique nahi hota - alag alag runs mein alag solutions mil sakte hain. Hill climbing fast hai aur practical hai, lekin theoretical guarantee nahi deta. Local minima common problem hai isliye random restart zaroori hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MIND MAP SECTION -->
+        <section id="mindmap">
+            <div class="mind-map">
+                <h3>🧠 Comprehensive Mind Map</h3>
+                
+                <div class="mind-map-container">
+                    <div class="main-topic">
+                        Foundation of AI - Week 12
+                    </div>
+                    
+                    <div class="subtopics">
+                        <div class="subtopic">
+                            <h4>1. Bayesian Networks</h4>
+                            <ul>
+                                <li>Probabilistic Graphical Models</li>
+                                <li>Directed Acyclic Graph (DAG)</li>
+                                <li>Nodes represent variables</li>
+                                <li>Edges represent dependencies</li>
+                                <li>Joint distribution factorization</li>
+                                <li>P(X) depends only on Parents(X)</li>
+                                <li>Conditional probability tables</li>
+                                <li>Burglary-Alarm example</li>
+                                <li>Computing probabilities via marginalization</li>
+                                <li>Reverse: factorization → network</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>2. Markov Blanket</h4>
+                            <ul>
+                                <li>Set of nodes rendering X independent</li>
+                                <li>Components: Parents + Children + Co-parents</li>
+                                <li>Minimal set for prediction</li>
+                                <li>Co-parents = other parents of X's children</li>
+                                <li>Applications: Feature selection</li>
+                                <li>Reduces computational complexity</li>
+                                <li>Causal reasoning</li>
+                                <li>MB(A) = {B, E, J, M}</li>
+                                <li>MB(J) = {A} (simple case)</li>
+                                <li>Shields node from rest of network</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>3. 8-Queen Problem</h4>
+                            <ul>
+                                <li>Constraint satisfaction problem</li>
+                                <li>Place 8 queens on 8×8 board</li>
+                                <li>No two queens attack each other</li>
+                                <li>Attacks: rows, columns, diagonals</li>
+                                <li>State: [s₁, s₂, ..., s₈]</li>
+                                <li>One queen per column</li>
+                                <li>Heuristic h = attacking pairs</li>
+                                <li>Goal: h = 0</li>
+                                <li>56 neighbors per state</li>
+                                <li>92 total solutions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>4. Hill Climbing Algorithm</h4>
+                            <ul>
+                                <li>Local search strategy</li>
+                                <li>Greedy approach</li>
+                                <li>Always move to best neighbor</li>
+                                <li>Minimize heuristic function</li>
+                                <li>Problem: local minima</li>
+                                <li>Solution: random restart</li>
+                                <li>Success rate ~14% per attempt</li>
+                                <li>< 100 restarts typically needed</li>
+                                <li>Fast and practical</li>
+                                <li>Not theoretically complete</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>5. Key Connections</h4>
+                            <ul>
+                                <li>Bayesian → Markov: MB uses parent-child structure</li>
+                                <li>8-Queen → Hill Climbing: optimization problem</li>
+                                <li>All topics: uncertainty and search</li>
+                                <li>Probabilistic reasoning + heuristic search</li>
+                                <li>Trade-off: completeness vs efficiency</li>
+                                <li>Real-world applicability</li>
+                                <li>Computational efficiency matters</li>
+                                <li>Practical AI problem-solving</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>6. Important Formulas</h4>
+                            <ul>
+                                <li>P(B,E,A,J,M) = P(B)P(E)P(A|B,E)P(J|A)P(M|A)</li>
+                                <li>P(X|Parents(X))</li>
+                                <li>MB(X) = Parents ∪ Children ∪ Co-parents</li>
+                                <li>Diagonal attack: |sᵢ - sⱼ| = |i - j|</li>
+                                <li>Neighbors = 8 × 7 = 56</li>
+                                <li>α = 1 / P(Evidence)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong><br>
+                Probability and Statistics in AI<br>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

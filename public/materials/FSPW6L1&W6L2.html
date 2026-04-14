@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Types of Correlation - Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        main {
+            padding: 40px;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 35px;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .toc ol {
+            list-style-position: inside;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        .key-term {
+            background: linear-gradient(120deg, #ffd89b 0%, #19547b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .formula-box .formula-title {
+            font-weight: 600;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f5f7fa;
+        }
+
+        .example-box {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .example-box .example-title {
+            font-weight: 600;
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .hinglish-summary {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .hinglish-summary .summary-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .hinglish-summary p {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .practice-questions {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .practice-questions .questions-title {
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .practice-questions ol {
+            margin-left: 20px;
+            color: #155724;
+        }
+
+        .practice-questions li {
+            margin-bottom: 8px;
+        }
+
+        .key-takeaways {
+            background: #e2e3e5;
+            border-left: 4px solid #6c757d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-takeaways .takeaway-title {
+            font-weight: 600;
+            color: #383d41;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .key-takeaways ul {
+            margin-left: 20px;
+            color: #383d41;
+        }
+
+        .key-takeaways li {
+            margin-bottom: 8px;
+        }
+
+        .note {
+            background: #ffeaa7;
+            border-left: 4px solid #fdcb6e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        .note::before {
+            content: "📌 ";
+            font-style: normal;
+        }
+
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #666;
+        }
+
+        .summary-table {
+            margin: 30px 0;
+        }
+
+        .mindmap {
+            background: #f8f9fa;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .mindmap h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        footer .footer-text {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        footer .footer-author {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .learning-outcomes {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .learning-outcomes h3 {
+            color: #1976D2;
+            margin-top: 0;
+        }
+
+        .learning-outcomes ul {
+            margin-left: 20px;
+            color: #1565C0;
+        }
+
+        .learning-outcomes li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Types of Correlation</h1>
+            <p>A Comprehensive Guide to Correlation Coefficients</p>
+        </header>
+
+        <main>
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h2>📑 Table of Contents</h2>
+                <ol>
+                    <li><a href="#intro">Introduction</a></li>
+                    <li><a href="#learning">Learning Outcomes</a></li>
+                    <li><a href="#pearson">Pearson's Correlation Coefficient</a></li>
+                    <li><a href="#spearman">Spearman Rank Order Correlation</a></li>
+                    <li><a href="#kendall">Kendall's Tau</a></li>
+                    <li><a href="#pointbiserial">Point-Biserial Correlation</a></li>
+                    <li><a href="#phi">Phi Coefficient</a></li>
+                    <li><a href="#summary">Summary & Comparison</a></li>
+                    <li><a href="#mindmap">Concept Mind Map</a></li>
+                </ol>
+            </div>
+
+            <!-- Introduction -->
+            <section id="intro">
+                <h2>Introduction to Correlation</h2>
+
+                <p>Welcome to the final topic of Module 2! In this comprehensive lesson, we will explore the different types of correlation coefficients used in statistics. <span class="key-term">Correlation</span> is fundamentally a measure of how two variables change together, whether they move in the same direction or opposite directions, and how strongly they are related. Understanding correlation is essential for data analysis, as it helps us identify relationships between variables and make informed decisions based on data.</p>
+
+                <p>Throughout our previous discussions, we have examined the basic concepts of correlation, distinguishing between strong and weak correlations, and between positive and negative correlations. However, these distinctions only scratch the surface of correlation analysis. The reality is that different types of variables require different measures of association. A <span class="key-term">correlation coefficient</span> is a quantitative measure that precisely captures the strength and direction of a relationship between two variables, allowing us to compare relationships across different datasets and make statistical inferences.</p>
+
+                <p>The key insight to understand before we dive into specific correlation types is that there is no single "one-size-fits-all" correlation coefficient. The appropriate coefficient depends entirely on the nature of the data you are working with. Are your variables continuous or categorical? Do they follow a normal distribution? Is the relationship linear or monotonic? These questions will guide us in selecting the correct correlation measure for our analysis.</p>
+            </section>
+
+            <!-- Learning Outcomes -->
+            <section id="learning">
+                <h2>Learning Outcomes</h2>
+
+                <div class="learning-outcomes">
+                    <h3>By the end of this lecture, you will be able to:</h3>
+                    <ul>
+                        <li>List and identify five different types of correlation coefficients used in statistics</li>
+                        <li>Understand the data type requirements and assumptions for each correlation coefficient</li>
+                        <li>Identify the correct usage of correlation coefficients based on your specific data characteristics</li>
+                        <li>Compute the appropriate correlation between variables using the correct formula</li>
+                        <li>Interpret correlation results and draw meaningful insights from your analysis</li>
+                    </ul>
+                </div>
+
+                <p>These five correlation coefficients—Pearson, Spearman, Kendall's Tau, Point-Biserial, and Phi—form the foundation of correlation analysis in statistics. Each has its unique applications, advantages, and limitations. By mastering these concepts, you will be equipped to handle virtually any correlation analysis problem you encounter in your data science journey.</p>
+            </section>
+
+            <!-- Pearson's Correlation Coefficient -->
+            <section id="pearson">
+                <h2>Pearson's Correlation Coefficient</h2>
+
+                <h3>Overview and Purpose</h3>
+
+                <p><span class="key-term">Pearson's correlation coefficient</span> is the most commonly used measure of correlation in statistics. It measures the <span class="key-term">linear relationship</span> between two continuous variables. This coefficient assumes that the data is normally distributed and that the relationship between the two variables follows a linear pattern. It is important to note that even if your data is not perfectly normally distributed, Pearson's correlation coefficient still provides a reasonably good estimate of the correlation.</p>
+
+                <p>A continuous variable is one that can take any numerical value within a range. Examples include study hours, exam scores, temperature, height, weight, and income. When both variables in your analysis are continuous, Pearson's correlation coefficient is typically your first choice for measuring their association.</p>
+
+                <h3>Formula and Components</h3>
+
+                <div class="formula-box">
+                    <div class="formula-title">Pearson's Correlation Coefficient Formula:</div>
+                    $$r = \frac{\sum(X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum(X_i - \bar{X})^2} \cdot \sqrt{\sum(Y_i - \bar{Y})^2}}$$
+                </div>
+
+                <p>Understanding the components of this formula is crucial. The <span class="key-term">numerator</span> is what statisticians call <span class="key-term">covariance</span>—it measures how much two variables vary together. If both variables increase or decrease together, this value will be positive and large. If they move in opposite directions, it will be negative. The <span class="key-term">denominator</span> consists of the standard deviations of both variables, which normalize the covariance to produce a value between -1 and 1. This normalization is what makes Pearson's correlation coefficient so interpretable and comparable across different datasets.</p>
+
+                <h3>Practical Examples</h3>
+
+                <div class="example-box">
+                    <div class="example-title">Example Scenarios for Pearson's Correlation:</div>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Study Hours vs. Exam Scores:</strong> Students who study more typically score higher on exams. This is a positive correlation.</li>
+                        <li><strong>Exercise Hours vs. Resting Heart Rate:</strong> People who exercise more regularly typically have lower resting heart rates. This shows a negative correlation.</li>
+                        <li><strong>Temperature vs. Ice Cream Sales:</strong> Higher temperatures correlate with increased ice cream sales.</li>
+                    </ul>
+                </div>
+
+                <p>It is essential to remember that we have already discussed Pearson's correlation coefficient extensively in previous modules. The examples we worked through using continuous variables like study hours and exam scores, or exercise time and heart rate, were all applications of Pearson's correlation coefficient, even if we did not explicitly label them as such at the time.</p>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Hinglish Summary (Pearson's Correlation):</div>
+                    <p>Pearson correlation tab use hota hai jab tumhare paas do continuous variables ho, jaise study hours aur marks. Iska range -1 se +1 tak hota hai. Agar dono variables ek saath increase ho rahe hain, to yeh positive hoga. Numerator mein covariance hota hai aur denominator mein standard deviation hote hain. Basically, yeh check karta hai ki linear relationship kitni strong hai dono variables ke beech.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Practice Questions:</div>
+                    <ol>
+                        <li><strong>Q: When would you use Pearson's correlation coefficient?</strong><br>A: When you have two continuous variables and want to measure their linear relationship.</li>
+                        <li><strong>Q: What does a Pearson correlation of 0.85 indicate?</strong><br>A: A strong positive linear relationship between the two variables—as one increases, the other tends to increase as well.</li>
+                        <li><strong>Q: Can Pearson correlation be used for ranked data?</strong><br>A: No, for ranked or ordinal data, you should use Spearman or Kendall's Tau instead.</li>
+                    </ol>
+                </div>
+
+                <div class="key-takeaways">
+                    <div class="takeaway-title">Key Takeaways:</div>
+                    <ul>
+                        <li>Pearson's correlation measures linear relationships between continuous variables</li>
+                        <li>The coefficient ranges from -1 (perfect negative) to +1 (perfect positive correlation)</li>
+                        <li>The formula uses covariance in the numerator and standard deviations in the denominator</li>
+                        <li>A value of 0 indicates no linear relationship</li>
+                        <li>This is the most common and widely used correlation coefficient</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Spearman Rank Order Correlation -->
+            <section id="spearman">
+                <h2>Spearman Rank Order Correlation</h2>
+
+                <h3>Overview and Purpose</h3>
+
+                <p><span class="key-term">Spearman's rank order correlation</span>, often denoted by the Greek letter ρ (rho), is designed to measure the <span class="key-term">monotonic relationship</span> between two variables. Monotonic means that the variables move in a single direction consistently—either both increasing or both decreasing. The beauty of Spearman's correlation is that it does not require a strictly linear relationship like Pearson's does.</p>
+
+                <p>The key distinction that makes Spearman's correlation special is that it works with <span class="key-term">rank orders</span> rather than raw values. This means that instead of using the actual numerical values, we assign ranks to the data points. This approach has significant advantages: it is less affected by outliers (extreme values that could distort other analyses) and it does not assume that the data follows a normal distribution. Spearman's correlation is particularly useful when your data is ordinal in nature—that is, when the data can be ordered but the differences between values are not necessarily equal or meaningful.</p>
+
+                <h3>Formula and Calculation</h3>
+
+                <div class="formula-box">
+                    <div class="formula-title">Spearman's Rank Order Correlation Formula:</div>
+                    $$\rho = 1 - \frac{6\sum d_i^2}{n(n^2 - 1)}$$
+                    <p style="margin-top: 10px; font-size: 0.95em;"><strong>Where:</strong></p>
+                    <ul style="margin: 5px 0 0 20px; font-size: 0.95em;">
+                        <li>\(d_i\) = difference between the ranks of corresponding values</li>
+                        <li>\(n\) = number of samples or data points</li>
+                    </ul>
+                </div>
+
+                <h3>Step-by-Step Process</h3>
+
+                <p>To calculate Spearman's correlation, you must follow these steps systematically:</p>
+
+                <p><strong>Step 1: Rank the Data</strong> - For each variable, assign ranks to the data points. The smallest value gets rank 1, the next smallest gets rank 2, and so on. If there are ties (equal values), assign them the average of the ranks they would occupy.</p>
+
+                <p><strong>Step 2: Calculate Differences</strong> - For each pair of data points, find the difference between the ranks in the two variables. This is \(d_i\) for the \(i\)th observation.</p>
+
+                <p><strong>Step 3: Square the Differences</strong> - Square each difference to get \(d_i^2\).</p>
+
+                <p><strong>Step 4: Sum and Calculate</strong> - Sum all the squared differences and plug them into the formula along with the number of data points.</p>
+
+                <h3>Practical Example</h3>
+
+                <div class="example-box">
+                    <div class="example-title">Example: Group Study Hours vs. Presentation Quality</div>
+                    <p>Imagine a scenario where we have five study groups that prepare together for hours and then make presentations. The instructor evaluates the quality of their presentations by assigning ranks.</p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Group</th>
+                            <th>Group Study Hours</th>
+                            <th>Study Hours Rank</th>
+                            <th>Presentation Quality Rank</th>
+                            <th>Rank Difference (d<sub>i</sub>)</th>
+                            <th>d<sub>i</sub><sup>2</sup></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A</td>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>6</td>
+                            <td>4</td>
+                            <td>3</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>D</td>
+                            <td>7</td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>E</td>
+                            <td>5</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>-1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Now, applying the formula with \(\sum d_i^2 = 0 + 1 + 0 + 0 + 1 = 2\) and \(n = 5\):</p>
+
+                <div class="formula-box">
+                    <div class="formula-title">Calculation:</div>
+                    $$\rho = 1 - \frac{6 \times 2}{5(5^2 - 1)} = 1 - \frac{12}{5 \times 24} = 1 - \frac{12}{120} = 1 - 0.1 = 0.9$$
+                </div>
+
+                <p>The result of ρ = 0.9 indicates a <span class="key-term">strong positive monotonic relationship</span>. This tells us that students who study more in groups tend to deliver better presentations. The high correlation value suggests that study hours are a good predictor of presentation quality in this scenario.</p>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Hinglish Summary (Spearman's Correlation):</div>
+                    <p>Spearman use hota hai jab tumhare paas ordinal data ho ya ranked data ho. Isme raw values se ranks banate hain fir unka difference nikaalte hain. Outliers se kam affected hota hai, aur normal distribution ki zaroorat nahi. Formula mein \(d_i\) rank differences hote hain. Monotonic relationship find karta hai, matlab dono variables ek hi direction mein move kar rahe ho—ya to dono increase ya dono decrease.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Practice Questions:</div>
+                    <ol>
+                        <li><strong>Q: How is Spearman correlation different from Pearson correlation?</strong><br>A: Spearman works with ranks and doesn't assume linearity or normal distribution, while Pearson uses raw values and assumes linearity.</li>
+                        <li><strong>Q: What does a Spearman correlation of 0.9 mean?</strong><br>A: It indicates a strong positive monotonic relationship—as one variable's rank increases, the other tends to increase as well.</li>
+                        <li><strong>Q: Can Spearman correlation handle tied values?</strong><br>A: Yes, you assign tied values the average of the ranks they would occupy.</li>
+                    </ol>
+                </div>
+
+                <div class="key-takeaways">
+                    <div class="takeaway-title">Key Takeaways:</div>
+                    <ul>
+                        <li>Spearman's correlation measures monotonic relationships using rank-ordered data</li>
+                        <li>It does not assume normal distribution and is less affected by outliers</li>
+                        <li>The relationship need not be strictly linear</li>
+                        <li>Formula involves the sum of squared rank differences</li>
+                        <li>Ideal for ordinal or ranked data types</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Kendall's Tau -->
+            <section id="kendall">
+                <h2>Kendall's Tau (τ)</h2>
+
+                <h3>Overview and Purpose</h3>
+
+                <p><span class="key-term">Kendall's Tau (τ)</span> is another correlation coefficient designed for measuring association between two <span class="key-term">ordinal variables</span>. Like Spearman's correlation, it also measures monotonic relationships. However, Kendall's Tau uses a fundamentally different approach based on the concept of concordant and discordant pairs rather than rank differences. This different methodology makes Kendall's Tau particularly useful for datasets with many tied ranks, and it is often preferred for smaller sample sizes.</p>
+
+                <p>The key concept behind Kendall's Tau is the idea of <span class="key-term">pair concordance</span>. When we compare two pairs of observations, we check whether they move in the same direction (concordant) or opposite directions (discordant). By counting these concordant and discordant pairs, we can quantify the relationship between variables. This approach has a nice intuitive interpretation: Kendall's Tau literally tells us the probability that two randomly selected pairs are ordered the same way for both variables.</p>
+
+                <h3>Key Concepts: Concordant vs. Discordant Pairs</h3>
+
+                <p><strong>Concordant Pairs:</strong> Two pairs are concordant if they move in the same direction. Mathematically, for two observations i and j, if \(X_i > X_j\) AND \(Y_i > Y_j\), or if \(X_i < X_j\) AND \(Y_i < Y_j\), then the pair is concordant. In simpler terms, both variables increase or both decrease—they agree with each other.</p>
+
+                <p><strong>Discordant Pairs:</strong> Two pairs are discordant if they move in opposite directions. If \(X_i > X_j\) BUT \(Y_i < Y_j\), or if \(X_i < X_j\) BUT \(Y_i > Y_j\), then the pair is discordant. The variables disagree on the ordering.</p>
+
+                <div class="example-box">
+                    <div class="example-title">Example of Pair Classification:</div>
+                    <p><strong>Concordant Example:</strong> Consider two students, P and Q, comparing their marks in Math and Science. If student P scores higher than student Q in both Math and Science, this is a concordant pair—the ranking is consistent across both subjects.</p>
+                    <p><strong>Discordant Example:</strong> If student P scores higher than student Q in Math, but lower in Science, this is a discordant pair—the ranking reverses between the two subjects.</p>
+                </div>
+
+                <h3>Formula and Calculation</h3>
+
+                <div class="formula-box">
+                    <div class="formula-title">Kendall's Tau Formula:</div>
+                    $$\tau = \frac{C - D}{\frac{1}{2}n(n-1)}$$
+                    <p style="margin-top: 10px; font-size: 0.95em;"><strong>Where:</strong></p>
+                    <ul style="margin: 5px 0 0 20px; font-size: 0.95em;">
+                        <li>\(C\) = number of concordant pairs</li>
+                        <li>\(D\) = number of discordant pairs</li>
+                        <li>\(n\) = number of observations</li>
+                        <li>The denominator \(\frac{1}{2}n(n-1)\) is the total number of unique pairs possible</li>
+                    </ul>
+                </div>
+
+                <h3>Step-by-Step Calculation</h3>
+
+                <p><strong>Step 1: Count Total Pairs</strong> - The total number of unique pairs from \(n\) observations is \(\binom{n}{2} = \frac{n(n-1)}{2}\). For 4 students, this would be \(\frac{4 \times 3}{2} = 6\) unique pairs.</p>
+
+                <p><strong>Step 2: List All Pairs</strong> - Systematically list all possible pairs. For observations A, B, C, D: (A,B), (A,C), (A,D), (B,C), (B,D), (C,D).</p>
+
+                <p><strong>Step 3: Classify Each Pair</strong> - For each pair, determine if it is concordant or discordant by comparing the rankings in both variables.</p>
+
+                <p><strong>Step 4: Calculate τ</strong> - Use the counts of concordant and discordant pairs in the formula.</p>
+
+                <h3>Practical Example with Math and Science Ranks</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Rank in Math (X)</th>
+                            <th>Rank in Science (Y)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A</td>
+                            <td>1</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>3</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>D</td>
+                            <td>4</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Now let us analyze all six unique pairs:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pair</th>
+                            <th>(X<sub>i</sub>, X<sub>j</sub>) vs (Y<sub>i</sub>, Y<sub>j</sub>)</th>
+                            <th>Comparison</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>(A, B)</td>
+                            <td>(1, 2) and (2, 3)</td>
+                            <td>Both increase: 1 < 2 and 2 < 3</td>
+                            <td>Concordant</td>
+                        </tr>
+                        <tr>
+                            <td>(A, C)</td>
+                            <td>(1, 3) and (2, 1)</td>
+                            <td>X increases, Y decreases: 1 < 3 but 2 > 1</td>
+                            <td>Discordant</td>
+                        </tr>
+                        <tr>
+                            <td>(A, D)</td>
+                            <td>(1, 4) and (2, 4)</td>
+                            <td>Both increase: 1 < 4 and 2 < 4</td>
+                            <td>Concordant</td>
+                        </tr>
+                        <tr>
+                            <td>(B, C)</td>
+                            <td>(2, 3) and (3, 1)</td>
+                            <td>X increases, Y decreases: 2 < 3 but 3 > 1</td>
+                            <td>Discordant</td>
+                        </tr>
+                        <tr>
+                            <td>(B, D)</td>
+                            <td>(2, 4) and (3, 4)</td>
+                            <td>Both increase: 2 < 4 and 3 < 4</td>
+                            <td>Concordant</td>
+                        </tr>
+                        <tr>
+                            <td>(C, D)</td>
+                            <td>(3, 4) and (1, 4)</td>
+                            <td>Both increase: 3 < 4 and 1 < 4</td>
+                            <td>Concordant</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>From this analysis, we have C = 4 concordant pairs and D = 2 discordant pairs. Applying the formula:</p>
+
+                <div class="formula-box">
+                    <div class="formula-title">Calculation of Kendall's Tau:</div>
+                    $$\tau = \frac{4 - 2}{\frac{1}{2} \times 4 \times 3} = \frac{2}{6} = 0.33$$
+                </div>
+
+                <p>The result τ = 0.33 indicates a <span class="key-term">moderate positive association</span>. This suggests that students who rank higher in Math tend to rank higher in Science, but this pattern is not universal. Some students perform better in one subject than the other, which explains why the correlation is not higher.</p>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Hinglish Summary (Kendall's Tau):</div>
+                    <p>Kendall's Tau ordinal data ke liye use hota hai, par Spearman se alag tarike se. Isme concordant aur discordant pairs count karte hain. Concordant pair tab hota hai jab dono variables ek hi direction mein move kar rahe ho, discordant tab jab opposite direction mein ho. Phir formula mein (C - D) divided by total pairs. Chhoti datasets aur ties ke liye achcha hai. Interpretation bhi simple—probability ki dono pairs ek jaisa ordered hain.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Practice Questions:</div>
+                    <ol>
+                        <li><strong>Q: What is a concordant pair in Kendall's Tau?</strong><br>A: A pair where both variables move in the same direction—either both increase or both decrease when comparing two observations.</li>
+                        <li><strong>Q: How many unique pairs can be formed from 5 observations?</strong><br>A: Using the combination formula \(\binom{5}{2} = 10\) unique pairs.</li>
+                        <li><strong>Q: When is Kendall's Tau preferred over Spearman?</strong><br>A: When dealing with smaller sample sizes or when there are many tied ranks in the data.</li>
+                    </ol>
+                </div>
+
+                <div class="key-takeaways">
+                    <div class="takeaway-title">Key Takeaways:</div>
+                    <ul>
+                        <li>Kendall's Tau measures association between two ordinal variables</li>
+                        <li>Uses concordant and discordant pair classification rather than rank differences</li>
+                        <li>Particularly useful for small sample sizes and data with many ties</li>
+                        <li>Range is from -1 (perfect negative) to +1 (perfect positive)</li>
+                        <li>Formula: \(\tau = \frac{C-D}{\frac{1}{2}n(n-1)}\)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Point-Biserial Correlation -->
+            <section id="pointbiserial">
+                <h2>Point-Biserial Correlation</h2>
+
+                <h3>Overview and Purpose</h3>
+
+                <p><span class="key-term">Point-Biserial correlation</span> measures the association between a <span class="key-term">binary variable</span> (a variable with only two possible values) and a <span class="key-term">continuous variable</span>. A binary variable is fundamentally different from what we have discussed so far—it can take only two distinct values. Think of attendance (present/absent), pass/fail status, treatment/control, yes/no answers, and similar dichotomous variables.</p>
+
+                <p>The point-biserial correlation is actually a special case of Pearson's correlation coefficient, adapted specifically for this two-group scenario. What makes it special is that we can treat the binary variable as dividing our continuous data into exactly two groups, and we measure how well these two groups differ in terms of their mean values on the continuous variable. If one group consistently has higher values on the continuous variable, we get a strong correlation.</p>
+
+                <h3>Understanding the Two-Group Structure</h3>
+
+                <p>Because a binary variable creates exactly two groups, we can denote them as Group 0 and Group 1. Group 1 represents the presence of the characteristic (e.g., attended = 1) and Group 0 represents its absence (e.g., attended = 0). We then calculate the mean of the continuous variable for each group and compare them.</p>
+
+                <h3>Formula and Interpretation</h3>
+
+                <div class="formula-box">
+                    <div class="formula-title">Point-Biserial Correlation Formula:</div>
+                    $$r_{pb} = \frac{\bar{X}_1 - \bar{X}_0}{S} \cdot \sqrt{\frac{n_1 n_0}{n(n-1)}}$$
+                    <p style="margin-top: 10px; font-size: 0.95em;"><strong>Where:</strong></p>
+                    <ul style="margin: 5px 0 0 20px; font-size: 0.95em;">
+                        <li>\(\bar{X}_1\) = mean of the continuous variable for Group 1</li>
+                        <li>\(\bar{X}_0\) = mean of the continuous variable for Group 0</li>
+                        <li>\(S\) = standard deviation of all scores (combined sample standard deviation)</li>
+                        <li>\(n_1\) = number of observations in Group 1</li>
+                        <li>\(n_0\) = number of observations in Group 0</li>
+                        <li>\(n\) = total number of observations</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <strong>Important Note on Standard Deviation:</strong> The standard deviation \(S\) in the formula is the <span class="key-term">sample standard deviation</span>, which uses \(n-1\) in the denominator, not \(n\). This distinction is important for accurate calculation.
+                </div>
+
+                <h3>Practical Example: Tutorial Attendance and Exam Scores</h3>
+
+                <div class="example-box">
+                    <div class="example-title">Example: Does Tutorial Attendance Improve Exam Scores?</div>
+                    <p>An instructor wants to examine whether attending tutorial sessions is associated with higher exam scores. Five students' data is collected:</p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Attended (1/0)</th>
+                            <th>Exam Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A</td>
+                            <td>1</td>
+                            <td>88</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>1</td>
+                            <td>85</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>0</td>
+                            <td>70</td>
+                        </tr>
+                        <tr>
+                            <td>D</td>
+                            <td>0</td>
+                            <td>72</td>
+                        </tr>
+                        <tr>
+                            <td>E</td>
+                            <td>1</td>
+                            <td>90</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Now we organize the data into two groups:</p>
+
+                <p><strong>Group 1 (Attended = 1):</strong> Students A, B, E with scores 88, 85, 90</p>
+                <p style="margin-bottom: 15px;"><strong>Group 0 (Attended = 0):</strong> Students C, D with scores 70, 72</p>
+
+                <p>Calculating the necessary components:</p>
+
+                <p>\(\bar{X}_1 = \frac{88 + 85 + 90}{3} = \frac{263}{3} = 87.67\)</p>
+
+                <p>\(\bar{X}_0 = \frac{70 + 72}{2} = \frac{142}{2} = 71\)</p>
+
+                <p>\(S = \sqrt{\frac{\sum(X_i - \bar{X})^2}{n-1}}\) where the overall mean is \(\bar{X} = \frac{88+85+70+72+90}{5} = 81\)</p>
+
+                <p>\(S = \sqrt{\frac{(88-81)^2 + (85-81)^2 + (70-81)^2 + (72-81)^2 + (90-81)^2}{4}} = \sqrt{\frac{49+16+121+81+81}{4}} = \sqrt{\frac{348}{4}} = \sqrt{87} ≈ 9.33\)</p>
+
+                <p>Now applying the formula with \(n_1 = 3\), \(n_0 = 2\), \(n = 5\):</p>
+
+                <div class="formula-box">
+                    <div class="formula-title">Calculation of Point-Biserial Correlation:</div>
+                    $$r_{pb} = \frac{87.67 - 71}{9.33} \cdot \sqrt{\frac{3 \times 2}{5 \times 4}} = \frac{16.67}{9.33} \cdot \sqrt{\frac{6}{20}} = 1.786 \times 0.548 ≈ 0.98$$
+                </div>
+
+                <p>The result \(r_{pb} ≈ 0.98\) indicates an <span class="key-term">extremely strong positive association</span> between attending tutorial sessions and exam scores. In practical terms, this tells us that tutorial attendance is highly associated with better exam performance. Students who attended the tutorials scored significantly higher (mean 87.67) compared to those who did not attend (mean 71).</p>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Hinglish Summary (Point-Biserial):</div>
+                    <p>Point-Biserial tab use hota hai jab ek variable binary ho (yes/no, present/absent, pass/fail) aur doosra continuous ho (marks, time, salary, etc.). Basically do groups banate hain—Group 1 aur Group 0—aur check karte hain ke unke means kitni alag hain. Formula mein numerator mein mean difference hota hai aur denominator mein standard deviation aur ek probability term. Strong correlation matlab ki binary characteristic (jaise attendance) bahut associated hai continuous variable (jaise marks) ke saath.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Practice Questions:</div>
+                    <ol>
+                        <li><strong>Q: What types of variables are used in Point-Biserial correlation?</strong><br>A: A binary variable (two values) and a continuous variable (any numerical value in a range).</li>
+                        <li><strong>Q: What does a Point-Biserial correlation of 0.98 tell us?</strong><br>A: An extremely strong positive association—the binary characteristic is strongly associated with higher values on the continuous variable.</li>
+                        <li><strong>Q: Can you use Point-Biserial correlation for two continuous variables?</strong><br>A: No, use Pearson correlation instead. Point-Biserial requires one binary and one continuous variable.</li>
+                    </ol>
+                </div>
+
+                <div class="key-takeaways">
+                    <div class="takeaway-title">Key Takeaways:</div>
+                    <ul>
+                        <li>Point-Biserial measures association between binary and continuous variables</li>
+                        <li>It is a special case of Pearson's correlation for two-group scenarios</li>
+                        <li>The binary variable divides data into exactly two groups</li>
+                        <li>The formula compares group means and normalizes by overall standard deviation</li>
+                        <li>Ranges from -1 to +1, with interpretation similar to Pearson's</li>
+                        <li>Sample standard deviation (using n-1) must be used in calculations</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Phi Coefficient -->
+            <section id="phi">
+                <h2>Phi Coefficient (Φ)</h2>
+
+                <h3>Overview and Purpose</h3>
+
+                <p><span class="key-term">Phi coefficient (Φ)</span> measures the association between <span class="key-term">two binary variables</span>. This is the final piece of our correlation toolkit. When both variables you are analyzing are binary (each having exactly two possible values), Pearson's correlation can technically be applied, but the Phi coefficient is specifically designed for this scenario and is more interpretable. The Phi coefficient is essentially Pearson's correlation coefficient applied to a 2×2 contingency table.</p>
+
+                <p>Binary variables might represent pass/fail, success/failure, treatment/control, male/female, yes/no, or any similar dichotomous classification. When we want to measure how strongly two such classifications are associated with each other, we use the Phi coefficient. For example, we might ask: "Is watching tutorial videos associated with passing the exam?" Both variables are binary—you either watched or didn't watch, and you either passed or failed.</p>
+
+                <h3>Formula and Components</h3>
+
+                <div class="formula-box">
+                    <div class="formula-title">Phi Coefficient Formula:</div>
+                    $$\Phi = \frac{ad - bc}{\sqrt{(a+b)(c+d)(a+c)(b+d)}}$$
+                    <p style="margin-top: 10px; font-size: 0.95em;"><strong>Where the 2×2 contingency table is:</strong></p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Variable 2: Yes</th>
+                            <th>Variable 2: No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Variable 1: Yes</strong></td>
+                            <td>a</td>
+                            <td>b</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Variable 1: No</strong></td>
+                            <td>c</td>
+                            <td>d</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>In this table, a, b, c, and d represent the frequencies (counts) of observations in each cell. The numerator (ad - bc) captures the diagonal difference, which measures association. The denominator normalizes this difference to produce a value between -1 and 1.</p>
+
+                <h3>Practical Example: Tutorial Videos and Exam Performance</h3>
+
+                <div class="example-box">
+                    <div class="example-title">Example: Association Between Watching Tutorial Videos and Passing Exams</div>
+                    <p>A professor collected data from 20 students, tracking whether they watched tutorial videos and whether they passed or failed an exam. The results are presented in a 2×2 contingency table:</p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Passed Exam</th>
+                            <th>Failed Exam</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Watched Video</strong></td>
+                            <td><strong>a =</strong> 8</td>
+                            <td><strong>b =</strong> 2</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Didn't Watch Video</strong></td>
+                            <td><strong>c =</strong> 3</td>
+                            <td><strong>d =</strong> 7</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td>11</td>
+                            <td>9</td>
+                            <td>20</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Now we apply the Phi coefficient formula with \(a = 8\), \(b = 2\), \(c = 3\), \(d = 7\):</p>
+
+                <div class="formula-box">
+                    <div class="formula-title">Calculation of Phi Coefficient:</div>
+                    $$\Phi = \frac{(8 \times 7) - (2 \times 3)}{\sqrt{(8+2)(3+7)(8+3)(2+7)}}$$
+                    <p style="margin-top: 10px;">$$= \frac{56 - 6}{\sqrt{(10)(10)(11)(9)}}$$</p>
+                    <p style="margin-top: 10px;">$$= \frac{50}{\sqrt{9900}}$$</p>
+                    <p style="margin-top: 10px;">$$= \frac{50}{99.50} ≈ 0.53$$</p>
+                </div>
+
+                <p>The result Φ ≈ 0.53 indicates a <span class="key-term">moderate positive association</span>. This means that watching tutorial videos is moderately associated with improved likelihood of passing the exam. Out of 10 students who watched videos, 8 passed (80% pass rate), whereas out of 10 who didn't watch, only 3 passed (30% pass rate). However, since the association is moderate (not very strong), watching videos is helpful but not a guarantee of success—other factors also play important roles.</p>
+
+                <h3>Interpreting the Contingency Table</h3>
+
+                <p>The contingency table reveals important patterns. The diagonal cells (a = 8 and d = 7) represent cases where both variables agree (watched and passed, or didn't watch and failed). The off-diagonal cells (b = 2 and c = 3) represent disagreement cases. When the diagonal dominates (larger values), we get a stronger positive association.</p>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Hinglish Summary (Phi Coefficient):</div>
+                    <p>Phi coefficient jab use hota hai jab dono variables binary ho—jaise pass/fail, yes/no, watched/not watched. Data ko 2×2 table mein organize karte hain aur formula use karte hain. Numerator mein ad minus bc (diagonal products ka difference) hota hai jo association show karta hai. Denominator mein sab edges ka product ka square root hota hai jo normalize karta hai. Result bhi -1 se +1 ke beech hota hai. Moderate positive association matlab ki dono variables somewhat related hain but perfect nahi.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Practice Questions:</div>
+                    <ol>
+                        <li><strong>Q: What is the structure of data used in Phi coefficient?</strong><br>A: Data is organized in a 2×2 contingency table with frequencies for each combination of the two binary variables.</li>
+                        <li><strong>Q: What does a Phi coefficient of 0.53 mean?</strong><br>A: A moderate positive association—the two binary variables are somewhat related, with one characteristic tending to occur with the other, but the relationship is not very strong.</li>
+                        <li><strong>Q: Can Phi coefficient handle variables with more than two categories?</strong><br>A: No, Phi is specifically for binary variables. For categorical variables with more categories, use Cramér's V instead.</li>
+                    </ol>
+                </div>
+
+                <div class="key-takeaways">
+                    <div class="takeaway-title">Key Takeaways:</div>
+                    <ul>
+                        <li>Phi coefficient measures association between two binary variables</li>
+                        <li>Data is represented in a 2×2 contingency table</li>
+                        <li>Formula: \(\Phi = \frac{ad - bc}{\sqrt{(a+b)(c+d)(a+c)(b+d)}}\)</li>
+                        <li>Values range from -1 (perfect negative) to +1 (perfect positive)</li>
+                        <li>Numerator captures the diagonal difference; denominator provides normalization</li>
+                        <li>Results are directly comparable to other correlation coefficients on the -1 to +1 scale</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Summary and Comparison -->
+            <section id="summary">
+                <h2>Summary & Comparative Analysis</h2>
+
+                <h3>When to Use Each Correlation Coefficient</h3>
+
+                <p>Throughout this lecture, we have explored five distinct correlation coefficients, each serving a specific purpose depending on your data characteristics. Choosing the correct coefficient is crucial for accurate analysis. Here is a comprehensive guide to help you select the appropriate measure:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Data Type Configuration</th>
+                            <th style="width: 15%;">Relationship Type</th>
+                            <th style="width: 15%;">Correlation Coefficient</th>
+                            <th style="width: 25%;">Key Element</th>
+                            <th style="width: 30%;">When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Continuous + Continuous</td>
+                            <td>Linear</td>
+                            <td><strong>Pearson's r</strong></td>
+                            <td>Covariance & Standard Deviation</td>
+                            <td>Both variables are numerical and you expect a linear relationship. This is your default choice for numerical data.</td>
+                        </tr>
+                        <tr>
+                            <td>Ordinal/Ranked + Ordinal/Ranked or Continuous + Ordinal</td>
+                            <td>Monotonic</td>
+                            <td><strong>Spearman's ρ</strong></td>
+                            <td>Rank Differences</td>
+                            <td>Variables are ranked, data may have outliers, or you lack confidence in linear assumptions. Good for small datasets with ordinal data.</td>
+                        </tr>
+                        <tr>
+                            <td>Ordinal/Ranked + Ordinal/Ranked</td>
+                            <td>Rank Concordance</td>
+                            <td><strong>Kendall's τ</strong></td>
+                            <td>Concordant vs. Discordant Pairs</td>
+                            <td>You have ranked data with potential ties, smaller sample sizes, or you prefer interpretation based on pair agreement patterns.</td>
+                        </tr>
+                        <tr>
+                            <td>Binary + Continuous</td>
+                            <td>Group Difference</td>
+                            <td><strong>Point-Biserial</strong></td>
+                            <td>Group Means & Std. Dev.</td>
+                            <td>One variable is binary (yes/no, present/absent) and the other is continuous (scores, times). Measures group mean differences.</td>
+                        </tr>
+                        <tr>
+                            <td>Binary + Binary</td>
+                            <td>Association in 2×2 Table</td>
+                            <td><strong>Phi (Φ)</strong></td>
+                            <td>2×2 Table Cell Frequencies</td>
+                            <td>Both variables are binary. Data fits naturally into a 2×2 contingency table. Measures how strongly the classifications are related.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Relationship Between the Coefficients</h3>
+
+                <p>An important insight is that these five correlation coefficients are not completely independent—they are related through a hierarchy. Pearson's correlation is the foundational measure for continuous variables. When you cannot meet Pearson's assumptions (linearity, normality), you often move to Spearman. When working with binary variables, Point-Biserial and Phi are specialized versions designed for specific two-group scenarios. Kendall's Tau is an alternative to Spearman for ordinal data, particularly useful with smaller samples or more ties.</p>
+
+                <h3>Key Properties All Coefficients Share</h3>
+
+                <ul style="margin-left: 20px;">
+                    <li><strong>Range:</strong> All five coefficients range from -1 (perfect negative association) to +1 (perfect positive association), with 0 indicating no association.</li>
+                    <li><strong>Symmetry:</strong> The association between X and Y equals the association between Y and X—correlation is symmetric.</li>
+                    <li><strong>Magnitude Interpretation:</strong> Despite different underlying calculations, the magnitude of the coefficient has similar meaning across all five measures. A value of 0.7 indicates stronger association than 0.4, regardless of which coefficient you are using.</li>
+                    <li><strong>Not Causation:</strong> All coefficients measure association or co-variation only. They cannot prove that one variable causes changes in another.</li>
+                </ul>
+
+                <h3>Common Mistakes to Avoid</h3>
+
+                <p><strong>Mistake 1: Using Pearson for Ranked Data</strong> - If your data is already ranked or ordinal in nature, using Pearson's correlation is inappropriate. Use Spearman or Kendall instead.</p>
+
+                <p><strong>Mistake 2: Ignoring Outliers</strong> - Pearson's correlation is sensitive to extreme values. If outliers are present, Spearman is a more robust choice.</p>
+
+                <p><strong>Mistake 3: Treating Binary as Continuous</strong> - A common error is treating a binary variable (like yes/no) as continuous. When one or both variables are binary, use Point-Biserial or Phi accordingly.</p>
+
+                <p><strong>Mistake 4: Confusing Association with Causation</strong> - Finding a strong correlation does not prove causation. Just because two variables are correlated does not mean one causes the other.</p>
+
+                <p><strong>Mistake 5: Wrong Data Type Detection</strong> - Misidentifying your data type (continuous vs. ordinal vs. binary) leads to using the wrong coefficient. Always examine your data carefully first.</p>
+            </section>
+
+            <!-- Concept Mind Map -->
+            <section id="mindmap">
+                <h2>Concept Mind Map: Correlation Coefficients Hierarchy</h2>
+
+                <div class="mindmap">
+                    <h3>🧠 Understanding Correlation Coefficients</h3>
+                    <svg viewBox="0 0 800 500" style="border: 1px solid #ccc; border-radius: 8px;">
+                        <!-- Central node -->
+                        <circle cx="400" cy="250" r="80" fill="#667eea" opacity="0.2" stroke="#667eea" stroke-width="2"/>
+                        <text x="400" y="250" text-anchor="middle" font-weight="bold" font-size="16" dy="0.3em">Correlation Coefficients</text>
+
+                        <!-- Branch 1: Continuous -->
+                        <line x1="340" y1="190" x2="150" y2="120" stroke="#667eea" stroke-width="2" stroke-dasharray="5,5"/>
+                        <circle cx="150" cy="120" r="60" fill="#667eea" opacity="0.1" stroke="#667eea" stroke-width="1.5"/>
+                        <text x="150" y="115" text-anchor="middle" font-weight="bold" font-size="12">Continuous</text>
+                        <text x="150" y="135" text-anchor="middle" font-size="11">Variables</text>
+
+                        <line x1="150" y1="180" x2="80" y2="280" stroke="#667eea" stroke-width="1.5"/>
+                        <rect x="30" y="270" width="100" height="40" fill="#e8f4f8" stroke="#17a2b8" rx="5"/>
+                        <text x="80" y="285" text-anchor="middle" font-size="11" font-weight="bold">Pearson r</text>
+                        <text x="80" y="302" text-anchor="middle" font-size="10">Linear</text>
+
+                        <!-- Branch 2: Ordinal -->
+                        <line x1="400" y1="170" x2="400" y2="80" stroke="#667eea" stroke-width="2"/>
+                        <circle cx="400" cy="50" r="50" fill="#667eea" opacity="0.1" stroke="#667eea" stroke-width="1.5"/>
+                        <text x="400" y="50" text-anchor="middle" font-weight="bold" font-size="12">Ordinal</text>
+                        <text x="400" y="65" text-anchor="middle" font-size="11">Ranked Data</text>
+
+                        <line x1="360" y1="100" x2="280" y2="200" stroke="#667eea" stroke-width="1.5"/>
+                        <rect x="240" y="190" width="100" height="40" fill="#e8f4f8" stroke="#17a2b8" rx="5"/>
+                        <text x="290" y="205" text-anchor="middle" font-size="11" font-weight="bold">Spearman ρ</text>
+                        <text x="290" y="222" text-anchor="middle" font-size="10">Monotonic</text>
+
+                        <line x1="440" y1="100" x2="520" y2="200" stroke="#667eea" stroke-width="1.5"/>
+                        <rect x="480" y="190" width="100" height="40" fill="#e8f4f8" stroke="#17a2b8" rx="5"/>
+                        <text x="530" y="205" text-anchor="middle" font-size="11" font-weight="bold">Kendall τ</text>
+                        <text x="530" y="222" text-anchor="middle" font-size="10">Pairs</text>
+
+                        <!-- Branch 3: Binary -->
+                        <line x1="460" y1="190" x2="650" y2="120" stroke="#667eea" stroke-width="2"/>
+                        <circle cx="650" cy="120" r="60" fill="#667eea" opacity="0.1" stroke="#667eea" stroke-width="1.5"/>
+                        <text x="650" y="115" text-anchor="middle" font-weight="bold" font-size="12">Binary</text>
+                        <text x="650" y="135" text-anchor="middle" font-size="11">Variables</text>
+
+                        <line x1="650" y1="180" x2="700" y2="280" stroke="#667eea" stroke-width="1.5"/>
+                        <rect x="660" y="270" width="100" height="40" fill="#e8f4f8" stroke="#17a2b8" rx="5"/>
+                        <text x="710" y="285" text-anchor="middle" font-size="11" font-weight="bold">Phi Φ</text>
+                        <text x="710" y="302" text-anchor="middle" font-size="10">2×2 Table</text>
+
+                        <line x1="620" y1="180" x2="520" y2="280" stroke="#667eea" stroke-width="1.5"/>
+                        <rect x="450" y="270" width="120" height="40" fill="#e8f4f8" stroke="#17a2b8" rx="5"/>
+                        <text x="510" y="285" text-anchor="middle" font-size="11" font-weight="bold">Point-Biserial</text>
+                        <text x="510" y="302" text-anchor="middle" font-size="10">Binary + Cont.</text>
+
+                        <!-- Legend -->
+                        <text x="20" y="450" font-size="10" fill="#666">🟠 Central Concept: All coefficients range from -1 to +1</text>
+                        <text x="20" y="470" font-size="10" fill="#666">🟢 Key: Each coefficient suited to specific data type combinations</text>
+                    </svg>
+                </div>
+
+                <div class="hinglish-summary">
+                    <div class="summary-title">🎯 Overall Hinglish Summary:</div>
+                    <p>Ek correlation coefficient kaunsa use karna hai, yeh data type par depend karta hai. Agar dono continuous hain to Pearson lo. Agar ranked ya ordinal data hai to Spearman ya Kendall choose karo. Agar ek binary hai aur ek continuous hai to Point-Biserial use karo. Agar dono binary hain to Phi coefficient chalega. Saath mein ek baat yaad rakho—correlation means association dikhata hai, causation nahi. Aur har coefficient -1 se +1 ke beech hota hai, jisme negative matlab opposite direction, positive matlab same direction, aur 0 matlab koi relationship nahi.</p>
+                </div>
+            </section>
+
+            <!-- Practice Questions Summary -->
+            <section id="practice-summary">
+                <h2>Final Practice & Reflection Questions</h2>
+
+                <div class="practice-questions">
+                    <div class="questions-title">Comprehensive Practice Questions:</div>
+                    <ol>
+                        <li><strong>You have data on students' heights and weights (both continuous).</strong> Which correlation coefficient would you use?<br><strong>Answer:</strong> Pearson's correlation coefficient, as both variables are continuous and you expect a linear relationship.</li>
+
+                        <li><strong>You collect rankings of 10 movies by two different critics.</strong> What coefficient is appropriate?<br><strong>Answer:</strong> Spearman's rank order correlation, since both variables are ranked/ordinal data and you want to measure how well the two rankings agree.</li>
+
+                        <li><strong>You want to study if participating in a training program (yes/no) affects job performance scores.</strong> Which coefficient applies?<br><strong>Answer:</strong> Point-Biserial correlation, as you have a binary variable (participated or not) and a continuous variable (performance scores).</li>
+
+                        <li><strong>You have data on whether students attended class (yes/no) and whether they passed the exam (pass/fail).</strong> What's your choice?<br><strong>Answer:</strong> Phi coefficient, since both variables are binary and can be organized in a 2×2 contingency table.</li>
+
+                        <li><strong>Your data has extreme outliers that might distort the analysis.</strong> Would Pearson or Spearman be more appropriate?<br><strong>Answer:</strong> Spearman, because it works with ranks and is less affected by outliers compared to Pearson's.</li>
+
+                        <li><strong>All five correlation coefficients you studied—what do they have in common?</strong><br><strong>Answer:</strong> They all range from -1 to +1, they all measure association (not causation), they are all symmetric, and they all have zero meaning no relationship.</li>
+                    </ol>
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

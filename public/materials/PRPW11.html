@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 11: Pattern Recognition Principles - Dimensionality Reduction & Linear Algebra</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* =========================
+           CSS STYLING SECTION
+           Professional and clean styling for better readability
+           ========================= */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .key-term {
+            font-weight: bold;
+            color: #667eea;
+            background-color: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .professor-note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .professor-note strong {
+            color: #2e7d32;
+        }
+        
+        .hinglish-summary {
+            background-color: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        
+        .hinglish-summary h4 {
+            color: #f57c00;
+            margin-top: 0;
+            font-style: normal;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background-color: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .diagram-placeholder {
+            background-color: #f0f4ff;
+            border: 2px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        .practice-questions {
+            background-color: #e3f2fd;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .practice-questions h4 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        
+        .question {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            border-left: 3px solid #2196f3;
+        }
+        
+        .answer {
+            background-color: #f1f8f4;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .key-takeaways {
+            background-color: #fce4ec;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e91e63;
+        }
+        
+        .key-takeaways h4 {
+            color: #c2185b;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            margin-top: 15px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .formula {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            border-left: 4px solid #6c757d;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .example-box {
+            background-color: #fff3e0;
+            border: 1px solid #ffb74d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .example-box h4 {
+            color: #f57c00;
+            margin-top: 0;
+        }
+        
+        .mind-map {
+            background-color: #f5f5f5;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .main-topic {
+            background-color: #667eea;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 5px solid #764ba2;
+        }
+        
+        .branch h3 {
+            color: #764ba2;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .sub-branches {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .sub-branches li {
+            background-color: #f0f4ff;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .matrix-notation {
+            display: inline-block;
+            border-left: 2px solid #333;
+            border-right: 2px solid #333;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- =========================
+         MAIN CONTAINER
+         Contains all lecture content
+         ========================= -->
+    <div class="container">
+        
+        <!-- =========================
+             HEADER SECTION
+             Course title and lecture information
+             ========================= -->
+        <header>
+            <h1>Lecture 11: Pattern Recognition Principles</h1>
+            <p class="subtitle">Dimensionality Reduction & Linear Algebra Foundations</p>
+            <p class="subtitle">BS/BSc in Applied AI and Data Science</p>
+        </header>
+        
+        <!-- =========================
+             TABLE OF CONTENTS
+             Clickable navigation links
+             ========================= -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Introduction & Motivation for Dimensionality Reduction</a></li>
+                <li><a href="#section2">2. Why Dimensionality Reduction?</a></li>
+                <li><a href="#section3">3. Crash Course on Linear Algebra</a>
+                    <ul style="margin-left: 30px; list-style-type: circle;">
+                        <li><a href="#section3-1">3.1 What is a Vector?</a></li>
+                        <li><a href="#section3-2">3.2 Vector Operations</a></li>
+                        <li><a href="#section3-3">3.3 When Vector Meets Matrix</a></li>
+                        <li><a href="#section3-4">3.4 Linear Transformation</a></li>
+                        <li><a href="#section3-5">3.5 Vector Space</a></li>
+                        <li><a href="#section3-6">3.6 Subspace</a></li>
+                        <li><a href="#section3-7">3.7 Span</a></li>
+                        <li><a href="#section3-8">3.8 Linear Independence</a></li>
+                        <li><a href="#section3-9">3.9 Basis</a></li>
+                        <li><a href="#section3-10">3.10 Orthogonal and Orthonormal Basis</a></li>
+                        <li><a href="#section3-11">3.11 Projection</a></li>
+                        <li><a href="#section3-12">3.12 Eigenvalues and Eigenvectors</a></li>
+                    </ul>
+                </li>
+                <li><a href="#takeaways">4. Key Takeaways</a></li>
+                <li><a href="#mindmap">5. Concept Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- =========================
+             SECTION 1: INTRODUCTION & MOTIVATION
+             Overview of the lecture topic
+             ========================= -->
+        <section id="section1">
+            <h2>1. Introduction & Motivation for Dimensionality Reduction</h2>
+            
+            <p>Welcome to <span class="key-term">Lecture 11 on Pattern Recognition Principles</span>. Today we're embarking on an exciting journey into a new topic: <span class="key-term">Dimensionality Reduction</span>. This lecture will provide the foundational understanding necessary for advanced pattern recognition techniques.</p>
+            
+            <h3>Lecture Overview</h3>
+            <p>In this lecture, we will cover:</p>
+            <ul>
+                <li><strong>Why dimensionality reduction is required</strong> in pattern recognition tasks</li>
+                <li><strong>Motivation and applications</strong> for performing dimensionality reduction</li>
+                <li><strong>Linear algebra fundamentals</strong> - since dimensionality reduction techniques heavily depend on linear algebra concepts</li>
+                <li><strong>Preparation for Principal Component Analysis (PCA)</strong> - which will be covered in the next lecture</li>
+            </ul>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Since dimensionality reduction techniques often require a lot of linear algebra, we will brush up on linear algebra a little bit today, and then in the next lecture we will be covering Principal Component Analysis (PCA)."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Aaj hum dimensionality reduction ke baare mein seekhenge. Yeh pattern recognition mein bahut important hai. Pehle hum dekhenge ki dimensionality reduction kyun zaroori hai, phir linear algebra ke basic concepts revise karenge jo iske liye chahiye hote hain. Next lecture mein hum PCA (Principal Component Analysis) padhenge jo ek powerful technique hai data ko simplify karne ke liye.</p>
+            </div>
+        </section>
+        
+        <!-- =========================
+             SECTION 2: WHY DIMENSIONALITY REDUCTION?
+             Five key motivations explained
+             ========================= -->
+        <section id="section2">
+            <h2>2. Why Dimensionality Reduction?</h2>
+            
+            <p>Dimensionality reduction is not just a theoretical concept—it has practical applications that solve real-world problems in pattern recognition and machine learning. Let's explore the key motivations:</p>
+            
+            <h3>2.1 Remove Redundancy</h3>
+            
+            <p>Often in pattern recognition tasks, we encounter data with <span class="key-term">redundant features</span>—features that don't add new information because they can be derived from other features.</p>
+            
+            <div class="example-box">
+                <h4>Example: Income and Income Tax</h4>
+                <p>Consider a dataset with three features:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Gender</th>
+                            <th>Income</th>
+                            <th>Income Tax</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Male</td>
+                            <td>$50,000</td>
+                            <td>$10,000</td>
+                        </tr>
+                        <tr>
+                            <td>Female</td>
+                            <td>$60,000</td>
+                            <td>$12,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p>Here, we have three-dimensional feature data. However, <span class="highlight">Income Tax is directly a function of Income</span>. Since income tax can be determined using income (it's usually a percentage or calculated based on income brackets), the Income Tax feature is <span class="key-term">redundant</span>. We could work with just two features: Gender and Income.</p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Income tax is something which will be definitely related to income, so income tax can be determined using income right. So in some sense, we could actually work with two features only in this case."
+            </div>
+            
+            <h3>2.2 Reduce Noise</h3>
+            
+            <p>During the <span class="key-term">measurement or observation process</span>, noise is often captured in the data. This noise can create unnecessary dimensions in the feature space. When we reduce dimensions, we often <span class="key-term">filter out this noise</span>, leading to cleaner data representations.</p>
+            
+            <p>By projecting data onto dimensions that capture the most variance (signal) and ignoring dimensions with minimal variance (often noise), dimensionality reduction acts as a <span class="highlight">denoising mechanism</span>.</p>
+            
+            <h3>2.3 Better Visualization & Understanding</h3>
+            
+            <p><span class="key-term">Visualization</span> is a powerful tool for understanding data, but it becomes extremely challenging in high-dimensional spaces. Humans can easily visualize data in 2D or 3D, but beyond three dimensions, visualization becomes non-trivial.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D visualization of high-dimensional data projected onto principal components]
+            </div>
+            
+            <p>By reducing high-dimensional data to 2D or 3D representations, we can:</p>
+            <ul>
+                <li>Create scatter plots and visual representations</li>
+                <li>Identify clusters and patterns</li>
+                <li>Gain intuitive understanding of data structure</li>
+                <li>Communicate findings more effectively</li>
+            </ul>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "We visualize the data in low dimension better and we understand the data better. Visualization in very high dimension is very non-trivial, so if we project something into let's say two dimensional or three dimensional sometime then the visualization becomes much easier."
+            </div>
+            
+            <p><strong>Important Note:</strong> We don't always reduce dimensions to 2D or 3D. Sometimes we reduce to higher dimensions (e.g., from 1000 dimensions to 50 dimensions) for computational efficiency while preserving most information. The 2D/3D reduction is specifically useful for visualization purposes.</p>
+            
+            <h3>2.4 Avoid the Curse of Dimensionality</h3>
+            
+            <p>The <span class="key-term">curse of dimensionality</span> is a phenomenon where, in very high-dimensional spaces, the concept of distance becomes less meaningful. This was discussed in earlier lectures.</p>
+            
+            <p>Key problems in high dimensions:</p>
+            <ul>
+                <li><strong>Distance metrics become unreliable:</strong> All points appear almost equidistant from each other</li>
+                <li><strong>Distance-based methods fail:</strong> Algorithms like k-NN, k-means clustering perform poorly</li>
+                <li><strong>Data sparsity:</strong> Data points become sparse, making pattern recognition difficult</li>
+                <li><strong>Computational complexity:</strong> Operations become exponentially expensive</li>
+            </ul>
+            
+            <p>By reducing dimensionality, we can <span class="highlight">avoid the curse of dimensionality</span> and make distance-based methods work effectively again.</p>
+            
+            <h3>2.5 Efficient Storage and Transmission</h3>
+            
+            <p>In real-world applications, data is often very large-scale. High-dimensional data requires:</p>
+            <ul>
+                <li><strong>Large memory</strong> for storage</li>
+                <li><strong>High bandwidth</strong> for transmission</li>
+                <li><strong>Significant computational resources</strong> for processing</li>
+            </ul>
+            
+            <p>If we can reduce the dimension while maintaining most of the information, we can:</p>
+            <ul>
+                <li><span class="key-term">Store data efficiently</span> with reduced memory requirements</li>
+                <li><span class="key-term">Transmit data faster</span> with lower bandwidth</li>
+                <li><span class="key-term">Recover data</span> when needed (if information loss is minimal)</li>
+            </ul>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Often data is very very large scale, you need a lot more memory to store and or a lot more bandwidth to transmit that data. But if you can reduce the dimension and you can actually transmit the data and or restore the data and if whenever required you can also recover the data because if the information loss is minimum with dimensionality reduction we can efficiently recover the data as well."
+            </div>
+            
+            <h3>Visual Understanding: How Dimensionality Reduction Works</h3>
+            
+            <p>Let's understand dimensionality reduction visually with a simple example:</p>
+            
+            <div class="example-box">
+                <h4>Example: 2D to 1D Projection</h4>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: 2D data points diagonally spread with projection vectors u and v]
+                </div>
+                
+                <p>Imagine we have two-dimensional data points (\(x_1\) and \(x_2\) axes) that are spread diagonally:</p>
+                
+                <ul>
+                    <li>Though the data is two-dimensional, the <span class="key-term">majority of spread is along one particular direction</span> (let's call this direction \(u\))</li>
+                    <li>The spread in the <span class="key-term">orthogonal direction</span> (let's call it \(v\)) is very small</li>
+                    <li>If we <span class="highlight">project all data points onto the \(u\) direction</span>, we can represent them in 1D instead of 2D</li>
+                    <li>Since the spread along \(v\) is minimal, the <span class="key-term">information loss will be minimal</span></li>
+                </ul>
+                
+                <p><strong>The key idea:</strong> Project data in the direction where spread is maximum. This preserves most information while reducing dimensions.</p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "The idea behind the dimensionality reduction is: if you have high dimensional data points and you project the data to the dimension where the spread of data is in the direction where the spread is more, then after projecting, we can represent these points with minimal information loss."
+            </div>
+            
+            <p>In the next lecture, we'll learn <span class="highlight">how to find such directions (like \(u\) and \(v\))</span> where projecting data minimizes information loss. This technique is called <span class="key-term">Principal Component Analysis (PCA)</span>.</p>
+            
+            <!-- Practice Questions for Section 2 -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Give an example from your daily life where two features might be redundant in a dataset.
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> Consider a dataset about students with features: "Age in years" and "Age in months". These are redundant because Age in months = Age in years × 12. Another example: "Temperature in Celsius" and "Temperature in Fahrenheit" - they're related by the formula F = (C × 9/5) + 32.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why can't we effectively visualize 10-dimensional data?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> Humans can only perceive and visualize up to 3 spatial dimensions effectively. While we can use techniques like multiple plots or color coding for additional dimensions, we cannot directly "see" 10-dimensional space. Dimensionality reduction helps by projecting such high-dimensional data into 2D or 3D for visualization while preserving the most important patterns.
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> How does dimensionality reduction help with the curse of dimensionality?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> In very high-dimensional spaces, all points appear almost equidistant from each other, making distance metrics meaningless. By reducing dimensions while preserving the data structure, we bring the data into a lower-dimensional space where distances are more meaningful and distance-based algorithms (like k-NN, k-means) work effectively.
+                </div>
+            </div>
+            
+            <!-- Key Takeaways for Section 2 -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Dimensionality reduction has five main motivations: removing redundancy, reducing noise, enabling visualization, avoiding curse of dimensionality, and efficient storage/transmission</li>
+                    <li>Redundant features can be derived from other features and don't add new information</li>
+                    <li>Reducing dimensions helps filter out noise captured during measurement</li>
+                    <li>Visualization is practically only possible in 2D or 3D, necessitating dimension reduction for understanding</li>
+                    <li>The curse of dimensionality makes distance-based methods fail in high dimensions</li>
+                    <li>The core principle: project data in directions of maximum spread to minimize information loss</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Dimensionality reduction ke paanch main reasons hain. Pehla, redundant features ko hatana - jaise income se income tax nikaal sakte hain toh dono rakhne ki zaroorat nahi. Doosra, noise kam karna. Teesra, data ko visualize karna - kyunki hum sirf 2D ya 3D mein dekh sakte hain. Chautha, curse of dimensionality se bachna - very high dimensions mein distance ka matlab hi khatam ho jata hai. Paanchwa, storage aur transmission efficient banana. Basic idea yeh hai ki data ko us direction mein project karo jahaan spread zyada hai, taaki kam se kam information loss ho.</p>
+            </div>
+        </section>
+        
+        <!-- =========================
+             SECTION 3: LINEAR ALGEBRA CRASH COURSE
+             Comprehensive linear algebra foundations
+             ========================= -->
+        <section id="section3">
+            <h2>3. Crash Course on Linear Algebra</h2>
+            
+            <p>Dimensionality reduction is <span class="key-term">heavily dependent on linear algebra</span>. Before diving into advanced techniques like PCA, we need to refresh our understanding of fundamental linear algebra concepts. Though you've studied linear algebra in the first semester, let's quickly brush up on the concepts most relevant to dimensionality reduction.</p>
+            
+            <!-- 3.1 What is a Vector? -->
+            <section id="section3-1">
+                <h3>3.1 What is a Vector?</h3>
+                
+                <h4>School Definition</h4>
+                <p>In school, we learn that a <span class="key-term">vector</span> is a quantity that has both <span class="highlight">magnitude and direction</span>.</p>
+                
+                <div class="example-box">
+                    <h4>Example: 2D Vector</h4>
+                    <p>Consider a 2D coordinate system with \(x_1\) and \(x_2\) axes. Suppose there's a point at coordinates (3, 2).</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: 2D coordinate system showing vector u from origin to point (3,2)]
+                    </div>
+                    
+                    <ul>
+                        <li><strong>Representation:</strong> \(\vec{u} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}\)</li>
+                        <li><strong>Magnitude:</strong> \(\|\vec{u}\| = \sqrt{3^2 + 2^2} = \sqrt{9 + 4} = \sqrt{13} \approx 3.6\) units</li>
+                        <li><strong>Direction:</strong> Pointed from origin to the point (3, 2)</li>
+                    </ul>
+                    
+                    <p><strong>Opposite Vector:</strong> \(-\vec{u} = \begin{bmatrix} -3 \\ -2 \end{bmatrix}\)</p>
+                </div>
+                
+                <h4>Pattern Recognition Definition</h4>
+                <p>In pattern recognition, a <span class="key-term">vector is a representation of a data point</span> in the feature space.</p>
+                
+                <div class="example-box">
+                    <h4>Example: Student Data</h4>
+                    <p>Consider a dataset with two features: Height (in cm) and Weight (in kg).</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: 2D feature space with Height on x-axis (0-200cm) and Weight on y-axis (0-100kg)]
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Height (cm)</th>
+                                <th>Weight (kg)</th>
+                                <th>Vector Representation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Student 1</td>
+                                <td>140</td>
+                                <td>60</td>
+                                <td>\(\begin{bmatrix} 140 \\ 60 \end{bmatrix}\)</td>
+                            </tr>
+                            <tr>
+                                <td>Student 2</td>
+                                <td>120</td>
+                                <td>100</td>
+                                <td>\(\begin{bmatrix} 120 \\ 100 \end{bmatrix}\)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p>Each student is represented as a <span class="key-term">point (vector)</span> in the 2D feature space. Student 2 might be considered slightly overweight based on the height-weight ratio.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "In pattern recognition, vector is nothing but a representation of a data point. Anything in pattern recognition task, you usually define some features for the data, so the features could be more than two dimensions, it could be very very high dimension, but at the end, these data points are one vector in that high dimensional or n-dimensional space."
+                </div>
+                
+                <p><strong>Key Insight:</strong> In pattern recognition, an entire dataset can be represented as a <span class="highlight">set of vectors</span> in the feature space. Each vector still has magnitude and direction, just like geometric vectors.</p>
+                
+            </section>
+            
+            <!-- 3.2 Vector Operations -->
+            <section id="section3-2">
+                <h3>3.2 Vector Operations</h3>
+                
+                <p>Vectors support several important operations that are fundamental to linear algebra and dimensionality reduction:</p>
+                
+                <h4>A. Vector Sum</h4>
+                
+                <p>If \(\vec{v}_1\) and \(\vec{v}_2\) are two vectors, their sum \(\vec{v}_1 + \vec{v}_2\) is also a vector.</p>
+                
+                <div class="formula">
+                    <strong>Geometric Interpretation:</strong> The sum vector is obtained by placing the tail of \(\vec{v}_2\) at the head of \(\vec{v}_1\), or by completing the parallelogram formed by the two vectors.
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Vector addition showing v1, v2, and v1+v2 using parallelogram law]
+                </div>
+                
+                <h4>B. Vector Scaling</h4>
+                
+                <p>If \(\vec{v}_1\) is a vector and \(\alpha\) is a scalar, then \(\alpha \vec{v}_1\) is the scaled vector.</p>
+                
+                <div class="formula">
+                    <strong>Scaling Rules:</strong>
+                    <ul>
+                        <li>If \(\alpha > 1\): Vector is <strong>scaled up</strong> (elongated) in the same direction</li>
+                        <li>If \(0 < \alpha < 1\): Vector is <strong>scaled down</strong> (shortened) in the same direction</li>
+                        <li>If \(\alpha < 0\): Vector is scaled in the <strong>opposite direction</strong></li>
+                        <li>If \(\alpha = 0\): Results in zero vector</li>
+                    </ul>
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Vector v1 and its scaled versions 2v1, 0.5v1, and -v1]
+                </div>
+                
+                <h4>C. Dot Product</h4>
+                
+                <p>The <span class="key-term">dot product</span> (also called scalar product or inner product) is one of the most important operations in pattern recognition.</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> For vectors \(\vec{u} = \begin{bmatrix} u_1 \\ u_2 \\ \vdots \\ u_n \end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_n \end{bmatrix}\)
+
+                    
+                    $$\vec{u} \cdot \vec{v} = u_1v_1 + u_2v_2 + \cdots + u_nv_n = \sum_{i=1}^{n} u_i v_i$$
+                </div>
+                
+                <div class="formula">
+                    <strong>Geometric Definition:</strong>
+
+                    $$\vec{u} \cdot \vec{v} = \|\vec{u}\| \|\vec{v}\| \cos\theta$$
+                    where \(\theta\) is the angle between vectors \(\vec{u}\) and \(\vec{v}\)
+                </div>
+                
+                <p><strong>Dot Product as Similarity Measure:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Condition</th>
+                            <th>Angle \(\theta\)</th>
+                            <th>Dot Product Value</th>
+                            <th>Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vectors in same direction</td>
+                            <td>\(\theta = 0°\)</td>
+                            <td>\(\vec{u} \cdot \vec{v} = \|\vec{u}\| \|\vec{v}\|\) (Maximum positive)</td>
+                            <td>High similarity</td>
+                        </tr>
+                        <tr>
+                            <td>Vectors perpendicular</td>
+                            <td>\(\theta = 90°\)</td>
+                            <td>\(\vec{u} \cdot \vec{v} = 0\)</td>
+                            <td>No similarity (orthogonal)</td>
+                        </tr>
+                        <tr>
+                            <td>Vectors in opposite direction</td>
+                            <td>\(\theta = 180°\)</td>
+                            <td>\(\vec{u} \cdot \vec{v} = -\|\vec{u}\| \|\vec{v}\|\) (Maximum negative)</td>
+                            <td>Negative similarity</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Dot product actually measures similarity. If the dot product is higher, that means similarity is high between two vectors. If two data points are similar, their dot products are higher. Dot product will be zero if they are orthogonal to each other, while if theta is 180, u dot v becomes negative."
+                </div>
+                
+                <h4>D. Vector Norm</h4>
+                
+                <p>The <span class="key-term">vector norm</span> (or magnitude) measures the <span class="highlight">distance of the vector from the origin</span>.</p>
+                
+                <div class="formula">
+                    <strong>Definition (L2 Norm):</strong> For vector \(\vec{u} = \begin{bmatrix} u_1 \\ u_2 \\ \vdots \\ u_n \end{bmatrix}\)
+
+                    
+                    $$\|\vec{u}\| = \|\vec{u}\|_2 = \sqrt{u_1^2 + u_2^2 + \cdots + u_n^2}$$
+                </div>
+                
+                <p>If \(\|\vec{u}\| = 1\), the vector is called a <span class="key-term">unit vector</span> or <span class="key-term">normal vector</span>.</p>
+                
+            </section>
+            
+            <!-- 3.3 When Vector Meets Matrix -->
+            <section id="section3-3">
+                <h3>3.3 When Vector Meets Matrix</h3>
+                
+                <p>What happens when a vector is multiplied by a matrix? Let's explore this fascinating interaction:</p>
+                
+                <div class="example-box">
+                    <h4>Example: Matrix-Vector Multiplication</h4>
+                    
+                    <p>Consider vector \(\vec{u} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}\) and matrix \(A = \begin{bmatrix} 5 & 0 \\ 0 & 5 \end{bmatrix}\)</p>
+                    
+                    <p><strong>Multiplication:</strong></p>
+
+                    $$\vec{v} = A\vec{u} = \begin{bmatrix} 5 & 0 \\ 0 & 5 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 5 \cdot 1 + 0 \cdot 1 \\ 0 \cdot 1 + 5 \cdot 1 \end{bmatrix} = \begin{bmatrix} 5 \\ 5 \end{bmatrix} = 5\begin{bmatrix} 1 \\ 1 \end{bmatrix} = 5\vec{u}$$
+                    
+                    <p><strong>Effect:</strong> This particular matrix has the effect of <span class="key-term">scaling</span> the vector by a factor of 5.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "When a vector meets a matrix, the matrix can have different effects based on what matrix you're multiplying. Some matrices can rotate the vector, some can scale it up, some can scale it down, and so on."
+                </div>
+                
+                <p><strong>Different Matrices, Different Effects:</strong></p>
+                <ul>
+                    <li><strong>Scaling matrices:</strong> Scale the vector up or down</li>
+                    <li><strong>Rotation matrices:</strong> Rotate the vector by a certain angle</li>
+                    <li><strong>Reflection matrices:</strong> Reflect the vector across a line/plane</li>
+                    <li><strong>Shear matrices:</strong> Skew the vector</li>
+                </ul>
+                
+                <p>The type of transformation depends on the structure and values of the matrix.</p>
+                
+            </section>
+            
+            <!-- 3.4 Linear Transformation -->
+            <section id="section3-4">
+                <h3>3.4 Linear Transformation</h3>
+                
+                <p>A <span class="key-term">linear transformation</span> is a function \(T\) that maps vectors to vectors while preserving certain properties.</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> A function \(T\) is called a linear transformation if it satisfies two properties:
+                    
+                    <ol>
+                        <li><strong>Additivity:</strong> \(T(\vec{x} + \vec{y}) = T(\vec{x}) + T(\vec{y})\)</li>
+                        <li><strong>Homogeneity (Scalar multiplication):</strong> \(T(\alpha\vec{x}) = \alpha T(\vec{x})\) where \(\alpha\) is a scalar</li>
+                    </ol>
+                </div>
+                
+                <h4>Example: Rotation is a Linear Transformation</h4>
+                
+                <div class="example-box">
+                    <h4>Verifying Rotation as Linear Transformation</h4>
+                    
+                    <p>Consider a <span class="key-term">rotation matrix</span> that rotates vectors by 90° counterclockwise:</p>
+
+                    
+                    $$R_\theta = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$$
+                    
+                    <p>Let's apply this to vector \(\vec{u} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}\):</p>
+
+                    
+                    $$\vec{v} = R_\theta\vec{u} = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$$
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: Vector (1,1) being rotated 90° to (-1,1)]
+                    </div>
+                    
+                    <p><strong>Before rotation:</strong> \(\vec{u} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}\) points diagonally in the first quadrant</p>
+                    <p><strong>After rotation:</strong> \(\vec{v} = \begin{bmatrix} -1 \\ 1 \end{bmatrix}\) points diagonally in the second quadrant (rotated 90°)</p>
+                    
+                    <p>✓ This transformation satisfies both additivity and homogeneity properties, so it's a linear transformation.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Any matrix multiplication to a vector is a linear transformation. While if there is a non-linearity in the function T, then it becomes a non-linear transformation. But for this course, we will be just worried about the linear transformation."
+                </div>
+                
+                <p><strong>Key Point:</strong> <span class="highlight">Any matrix multiplication is a linear transformation</span>. This is why matrices are so powerful in linear algebra and machine learning.</p>
+                
+            </section>
+            
+            <!-- 3.5 Vector Space -->
+            <section id="section3-5">
+                <h3>3.5 Vector Space</h3>
+                
+                <p>A <span class="key-term">vector space</span> is a collection \(V\) of vectors that satisfies two closure properties:</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> A collection \(V\) of vectors is called a vector space if:
+                    
+                    <ol>
+                        <li><strong>Closure under addition:</strong> For any \(\vec{v}_i, \vec{v}_j \in V\), their sum \(\vec{v}_i + \vec{v}_j\) is also in \(V\)</li>
+                        <li><strong>Closure under scalar multiplication:</strong> For any \(\vec{v}_i \in V\) and scalar \(\alpha \in \mathbb{R}\), the product \(\alpha\vec{v}_i\) is also in \(V\)</li>
+                    </ol>
+                </div>
+                
+                <h4>Examples of Vector Spaces</h4>
+                
+                <div class="example-box">
+                    <h4>Example 1: \(\mathbb{R}^2\) (2D Plane)</h4>
+                    
+                    <p>\(\mathbb{R}^2\) is the set of all vectors in the 2D plane, i.e., all vectors of the form \(\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\) where \(x_1, x_2 \in \mathbb{R}\).</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: 2D plane showing multiple vectors]
+                    </div>
+                    
+                    <p><strong>Verification:</strong></p>
+                    <ul>
+                        <li>✓ If you take any two vectors in \(\mathbb{R}^2\) and add them, the result is still in \(\mathbb{R}^2\)</li>
+                        <li>✓ If you scale any vector in \(\mathbb{R}^2\), it remains in \(\mathbb{R}^2\)</li>
+                    </ul>
+                    
+                    <p>Therefore, \(\mathbb{R}^2\) is a vector space.</p>
+                </div>
+                
+                <p><strong>Other Examples:</strong></p>
+                <ul>
+                    <li>\(\mathbb{R}^3\): All 3D vectors - is a vector space</li>
+                    <li>\(\mathbb{R}^n\): All n-dimensional vectors - is a vector space</li>
+                    <li>The set of all polynomials - is a vector space</li>
+                    <li>The set of all continuous functions - is a vector space</li>
+                </ul>
+                
+            </section>
+            
+            <!-- 3.6 Subspace -->
+            <section id="section3-6">
+                <h3>3.6 Subspace</h3>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> Let \(V\) be a vector space. A subset \(S \subseteq V\) is called a <span class="key-term">subspace</span> if \(S\) is also a vector space.
+                </div>
+                
+                <p>In other words, a subspace is a "vector space within a vector space" that inherits the vector space properties from the larger space.</p>
+                
+                <h4>Examples of Subspaces</h4>
+                
+                <div class="example-box">
+                    <h4>Example 1: Subspaces of \(\mathbb{R}^2\)</h4>
+                    
+                    <p><strong>Trivial subspace:</strong> \(\mathbb{R}^2\) itself is a subspace of \(\mathbb{R}^2\) (every set is a subset of itself)</p>
+                    
+                    <p><strong>Lines through origin:</strong> Any line that passes through the origin (0, 0) is also a subspace of \(\mathbb{R}^2\)</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: 2D plane with several lines passing through origin]
+                    </div>
+                    
+                    <p><strong>Why is a line through origin a subspace?</strong></p>
+                    <ul>
+                        <li>✓ If you take any two vectors on the line and add them, the result is still on the same line</li>
+                        <li>✓ If you scale any vector on the line, it remains on the same line</li>
+                    </ul>
+                    
+                    <p><strong>Important:</strong> A line NOT passing through the origin is NOT a subspace, because scaling or adding vectors might give results outside that line.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Example 2: Subspaces of \(\mathbb{R}^3\)</h4>
+                    
+                    <p>Subspaces of \(\mathbb{R}^3\) include:</p>
+                    <ul>
+                        <li>\(\mathbb{R}^3\) itself (trivial subspace)</li>
+                        <li>Any plane that passes through the origin</li>
+                        <li>Any line that passes through the origin</li>
+                        <li>The origin itself: \(\{\vec{0}\}\)</li>
+                    </ul>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: 3D space showing a plane and a line through origin]
+                    </div>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "In \(\mathbb{R}^3\), any plane which passes through the origin is also a subspace. The basic idea is: what is subspace? A subspace is nothing but a subset of a vector space and it itself is also a vector space."
+                </div>
+                
+            </section>
+            
+            <!-- 3.7 Span -->
+            <section id="section3-7">
+                <h3>3.7 Span</h3>
+                
+                <p>The concept of <span class="key-term">span</span> is crucial for understanding dimensionality reduction.</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> Let \(V\) be a vector space. A set of vectors \(S = \{\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_k\}\) is called a <span class="key-term">span</span> of \(V\) if every vector \(\vec{v} \in V\) can be represented as a linear combination of vectors in \(S\):
+
+                    
+                    $$\vec{v} = \alpha_1\vec{v}_1 + \alpha_2\vec{v}_2 + \cdots + \alpha_k\vec{v}_k$$
+                    
+                    where \(\alpha_1, \alpha_2, \ldots, \alpha_k\) are scalars.
+                </div>
+                
+                <p><strong>Intuition:</strong> The span "spans" or covers the entire vector space. You can reach any point in the vector space by taking appropriate linear combinations of the spanning vectors.</p>
+                
+                <div class="example-box">
+                    <h4>Example: Span of \(\mathbb{R}^2\)</h4>
+                    
+                    <p>Consider the set \(S = \left\{\begin{bmatrix} 1 \\ 2 \end{bmatrix}, \begin{bmatrix} 3 \\ 4 \end{bmatrix}\right\}\). Is \(S\) a span of \(\mathbb{R}^2\)?</p>
+                    
+                    <p>We need to check if ANY vector \(\vec{v} = \begin{bmatrix} v_1 \\ v_2 \end{bmatrix}\) can be represented as:</p>
+
+                    
+                    $$\begin{bmatrix} v_1 \\ v_2 \end{bmatrix} = \alpha_1\begin{bmatrix} 1 \\ 2 \end{bmatrix} + \alpha_2\begin{bmatrix} 3 \\ 4 \end{bmatrix}$$
+                    
+                    <p>This gives us two equations:</p>
+
+                    $$\alpha_1 + 3\alpha_2 = v_1$$
+
+                    $$2\alpha_1 + 4\alpha_2 = v_2$$
+                    
+                    <p><strong>Solution process (as shown by professor):</strong></p>
+                    <p>Multiply first equation by 2: \(2\alpha_1 + 6\alpha_2 = 2v_1\)</p>
+                    <p>Subtract second equation: \(2\alpha_2 = 2v_1 - v_2\)</p>
+                    <p>Therefore: \(\alpha_2 = \frac{2v_1 - v_2}{2} = v_1 - \frac{v_2}{2}\)</p>
+                    
+                    <p>Substituting back: \(\alpha_1 = v_1 - 3\alpha_2 = v_1 - 3(v_1 - \frac{v_2}{2}) = -2v_1 + \frac{3v_2}{2}\)</p>
+                    
+                    <p>✓ Since we can find \(\alpha_1\) and \(\alpha_2\) for ANY values of \(v_1\) and \(v_2\), the set \(S\) is a span of \(\mathbb{R}^2\).</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "We can find alpha 1 and alpha 2, and it is irrespective of what v1 and v2 are. So therefore, this S is a span. But is this the only span? No, right? There can be many other spans, infinitely many spans exist."
+                </div>
+                
+                <p><strong>Key Insight:</strong> A vector space can have infinitely many different spans. Any set of vectors that can generate the entire space through linear combinations is a valid span.</p>
+                
+            </section>
+            
+            <!-- 3.8 Linear Independence -->
+            <section id="section3-8">
+                <h3>3.8 Linear Independence</h3>
+                
+                <p><span class="key-term">Linear independence</span> is a property that distinguishes "useful" sets of vectors from redundant ones.</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> Vectors \(\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_k\) are called <span class="key-term">linearly independent</span> if and only if:
+
+                    
+                    $$\alpha_1\vec{v}_1 + \alpha_2\vec{v}_2 + \cdots + \alpha_k\vec{v}_k = \vec{0}$$
+                    
+                    implies that \(\alpha_1 = \alpha_2 = \cdots = \alpha_k = 0\)
+                </div>
+                
+                <p><strong>Intuition:</strong> No vector in the set can be expressed as a linear combination of the others. Each vector provides "new" information or direction.</p>
+                
+                <div class="example-box">
+                    <h4>Example 1: Linearly Independent Vectors</h4>
+                    
+                    <p>Consider \(\vec{v}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}\) and \(\vec{v}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}\)</p>
+                    
+                    <p>For the combination: \(\alpha_1\begin{bmatrix} 1 \\ 0 \end{bmatrix} + \alpha_2\begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}\)</p>
+                    
+                    <p>This gives: \(\begin{bmatrix} \alpha_1 \\ \alpha_2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}\)</p>
+                    
+                    <p>The ONLY solution is \(\alpha_1 = 0\) and \(\alpha_2 = 0\).</p>
+                    
+                    <p>✓ Therefore, these vectors are <strong>linearly independent</strong>.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Example 2: Linearly Dependent Vectors</h4>
+                    
+                    <p>Consider \(\vec{v}_1 = \begin{bmatrix} 1 \\ 2 \end{bmatrix}\) and \(\vec{v}_2 = \begin{bmatrix} 2 \\ 4 \end{bmatrix}\)</p>
+                    
+                    <p>Notice that \(\vec{v}_2 = 2\vec{v}_1\) (one vector is a scalar multiple of the other)</p>
+                    
+                    <p>We can write: \(2\vec{v}_1 - 1\vec{v}_2 = \vec{0}\)</p>
+                    
+                    <p>Here, \(\alpha_1 = 2\) and \(\alpha_2 = -1\) (both non-zero) give the zero vector.</p>
+                    
+                    <p>✗ Therefore, these vectors are <strong>NOT linearly independent</strong> (they are linearly dependent).</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Linearly independent means there is no other way you can combine these vectors such that their linear combination is zero. The only way is to make all the alphas zero."
+                </div>
+                
+            </section>
+            
+            <!-- 3.9 Basis -->
+            <section id="section3-9">
+                <h3>3.9 Basis</h3>
+                
+                <p>A <span class="key-term">basis</span> is the most efficient way to represent a vector space.</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> A <span class="key-term">basis</span> of a vector space \(V\) is a set of linearly independent vectors that spans \(V\).
+                    
+                    <p style="margin-top: 10px;"><strong>In other words:</strong> A basis is a minimal spanning set - it spans the entire space without any redundancy.</p>
+                </div>
+                
+                <p><strong>Properties of a Basis:</strong></p>
+                <ul>
+                    <li>Every vector in the space can be uniquely represented as a linear combination of basis vectors</li>
+                    <li>The number of vectors in a basis is called the <span class="key-term">dimension</span> of the vector space</li>
+                    <li>All bases of a vector space have the same number of vectors</li>
+                    <li>A vector space can have infinitely many different bases</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h4>Example 1: Standard Basis of \(\mathbb{R}^2\)</h4>
+                    
+                    <p>The <span class="key-term">standard basis</span> of \(\mathbb{R}^2\) is:</p>
+
+                    
+                    $$\left\{\begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 0 \\ 1 \end{bmatrix}\right\}$$
+                    
+                    <p><strong>Why is this a basis?</strong></p>
+                    <ul>
+                        <li>✓ These vectors are linearly independent</li>
+                        <li>✓ They span \(\mathbb{R}^2\): any vector \(\begin{bmatrix} a \\ b \end{bmatrix} = a\begin{bmatrix} 1 \\ 0 \end{bmatrix} + b\begin{bmatrix} 0 \\ 1 \end{bmatrix}\)</li>
+                    </ul>
+                    
+                    <p>For example, to represent \(\begin{bmatrix} 5 \\ 6 \end{bmatrix}\):</p>
+
+                    $$\begin{bmatrix} 5 \\ 6 \end{bmatrix} = 5\begin{bmatrix} 1 \\ 0 \end{bmatrix} + 6\begin{bmatrix} 0 \\ 1 \end{bmatrix}$$
+                </div>
+                
+                <div class="example-box">
+                    <h4>Example 2: Alternative Basis of \(\mathbb{R}^2\)</h4>
+                    
+                    <p>Another valid basis of \(\mathbb{R}^2\) is:</p>
+
+                    
+                    $$\left\{\begin{bmatrix} 1 \\ 2 \end{bmatrix}, \begin{bmatrix} 3 \\ 4 \end{bmatrix}\right\}$$
+                    
+                    <p><strong>Why is this also a basis?</strong></p>
+                    <ul>
+                        <li>✓ These vectors are linearly independent (we verified this in the span section)</li>
+                        <li>✓ They span \(\mathbb{R}^2\) (we showed any vector can be represented using them)</li>
+                    </ul>
+                    
+                    <p>Any point in \(\mathbb{R}^2\) can be represented using this basis as well, though the coefficients will be different from the standard basis representation.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Remember that the standard basis is not the only basis. You can find many other bases for \(\mathbb{R}^2\). For example, even using vectors (1,2) and (3,4), you will be able to find out that all other vectors in \(\mathbb{R}^2\) can be represented using the linear combinations of these two vectors. So therefore, this is also a basis."
+                </div>
+                
+            </section>
+            
+            <!-- 3.10 Orthogonal and Orthonormal Basis -->
+            <section id="section3-10">
+                <h3>3.10 Orthogonal and Orthonormal Basis</h3>
+                
+                <p>While any linearly independent spanning set is a basis, some bases have special properties that make them particularly useful.</p>
+                
+                <h4>Orthogonal Basis</h4>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> A basis \(\{\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_k\}\) is called an <span class="key-term">orthogonal basis</span> if:
+
+                    
+                    $$\vec{v}_i \cdot \vec{v}_j = 0 \text{ for all } i \neq j$$
+                    
+                    <p style="margin-top: 10px;">In other words, all basis vectors are perpendicular (orthogonal) to each other.</p>
+                </div>
+                
+                <h4>Orthonormal Basis</h4>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> A basis \(\{\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_k\}\) is called an <span class="key-term">orthonormal basis</span> if:
+                    
+                    <ol>
+                        <li>\(\vec{v}_i \cdot \vec{v}_j = 0\) for all \(i \neq j\) (orthogonality)</li>
+                        <li>\(\vec{v}_i \cdot \vec{v}_i = 1\) for all \(i\) (unit vectors)</li>
+                    </ol>
+                    
+                    <p style="margin-top: 10px;">In other words, all basis vectors are perpendicular AND have unit length.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Example: Standard Basis is Orthonormal</h4>
+                    
+                    <p>The standard basis of \(\mathbb{R}^2\): \(\left\{\begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 0 \\ 1 \end{bmatrix}\right\}\)</p>
+                    
+                    <p><strong>Verification:</strong></p>
+                    <ul>
+                        <li>Orthogonality: \(\begin{bmatrix} 1 \\ 0 \end{bmatrix} \cdot \begin{bmatrix} 0 \\ 1 \end{bmatrix} = 1 \times 0 + 0 \times 1 = 0\) ✓</li>
+                        <li>Unit vectors: \(\left\|\begin{bmatrix} 1 \\ 0 \end{bmatrix}\right\| = 1\) and \(\left\|\begin{bmatrix} 0 \\ 1 \end{bmatrix}\right\| = 1\) ✓</li>
+                    </ul>
+                    
+                    <p>Therefore, the standard basis is <strong>orthonormal</strong>.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Counterexample: Basis that is NOT Orthonormal</h4>
+                    
+                    <p>The basis \(\left\{\begin{bmatrix} 1 \\ 2 \end{bmatrix}, \begin{bmatrix} 3 \\ 4 \end{bmatrix}\right\}\)</p>
+                    
+                    <p><strong>Check orthogonality:</strong></p>
+
+                    $$\begin{bmatrix} 1 \\ 2 \end{bmatrix} \cdot \begin{bmatrix} 3 \\ 4 \end{bmatrix} = 1 \times 3 + 2 \times 4 = 11 \neq 0$$
+                    
+                    <p>✗ These vectors are NOT orthogonal, so the basis is neither orthogonal nor orthonormal.</p>
+                </div>
+                
+                <p><strong>Converting Orthogonal to Orthonormal:</strong></p>
+                <p>If you have an orthogonal basis, you can easily convert it to orthonormal by <span class="highlight">dividing each vector by its magnitude</span>:</p>
+                
+                <div class="formula">
+
+                    $$\vec{v}_i^{\text{normalized}} = \frac{\vec{v}_i}{\|\vec{v}_i\|}$$
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "From orthogonal, if any vector is orthogonal, we can make it orthonormal just by dividing with the magnitude of the vectors. Orthonormal basis is usually like a convenient basis, convenient because if you have any orthonormal basis, you can easily represent data by just doing some dot products."
+                </div>
+                
+                <p><strong>Why are Orthonormal Bases Useful?</strong></p>
+                <ul>
+                    <li>Simplify calculations significantly</li>
+                    <li>Make projections easy to compute (just dot products!)</li>
+                    <li>Used extensively in dimensionality reduction techniques like PCA</li>
+                    <li>Provide geometric interpretations that are easy to visualize</li>
+                </ul>
+                
+            </section>
+            
+            <!-- 3.11 Projection -->
+            <section id="section3-11">
+                <h3>3.11 Projection</h3>
+                
+                <p><span class="key-term">Projection</span> is the process of representing data points from one basis to another basis. This is the core operation in dimensionality reduction!</p>
+                
+                <h4>Single Vector Projection</h4>
+                
+                <div class="example-box">
+                    <h4>Example: Projecting a Vector to a New Orthonormal Basis</h4>
+                    
+                    <p><strong>Original basis (standard XY basis):</strong></p>
+
+                    $$B_1 = \left\{\begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 0 \\ 1 \end{bmatrix}\right\}$$
+                    
+                    <p><strong>New orthonormal basis:</strong></p>
+
+                    $$B_2 = \left\{\vec{u} = \begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix}, \vec{v} = \begin{bmatrix} -1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix}\right\}$$
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: Standard XY axes and rotated UV axes (45° rotation)]
+                    </div>
+                    
+                    <p><strong>Vector to project:</strong> \(\begin{bmatrix} 1 \\ 1 \end{bmatrix}\) in the standard basis</p>
+                    
+                    <p><strong>Goal:</strong> Represent this vector in basis \(B_2\)</p>
+                    
+                    <p>We want to find \(\alpha_1\) and \(\alpha_2\) such that:</p>
+
+                    $$\begin{bmatrix} 1 \\ 1 \end{bmatrix} = \alpha_1\begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix} + \alpha_2\begin{bmatrix} -1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix}$$
+                    
+                    <p><strong>Solution using Orthonormal Property:</strong></p>
+                    <p>Since \(B_2\) is orthonormal, we can find coefficients using dot products!</p>
+                    
+                    <p><strong>Finding \(\alpha_1\):</strong> Take dot product of both sides with \(\vec{u}\)</p>
+
+                    $$\alpha_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix} \cdot \begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix} = \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} = \frac{2}{\sqrt{2}} = \sqrt{2}$$
+                    
+                    <p><strong>Finding \(\alpha_2\):</strong> Take dot product of both sides with \(\vec{v}\)</p>
+
+                    $$\alpha_2 = \begin{bmatrix} 1 \\ 1 \end{bmatrix} \cdot \begin{bmatrix} -1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix} = -\frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} = 0$$
+                    
+                    <p><strong>Result:</strong> In the new basis \(B_2\), the vector is represented as \(\begin{bmatrix} \sqrt{2} \\ 0 \end{bmatrix}\)</p>
+                    
+                    <p>This means the vector lies entirely along the \(\vec{u}\) direction with magnitude \(\sqrt{2}\), and has zero component along \(\vec{v}\)!</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Because this basis is actually orthogonal or orthonormal, we can apply that logic and perform dot product. The dot product with the first basis vector gives us alpha 1, and dot product with the second gives alpha 2. This is what I mean by projection - any point can be projected to different basis using projection."
+                </div>
+                
+                <h4>Matrix Form: Projecting Multiple Data Points</h4>
+                
+                <p>When we have multiple data points, we can project them all at once using matrix multiplication:</p>
+                
+                <div class="formula">
+                    <strong>Projection Formula:</strong>
+
+                    $$Y = XW$$
+                    
+                    where:
+                    <ul>
+                        <li>\(X\) is the <strong>data matrix</strong> of size \(n \times d\) (\(n\) samples, \(d\) features)</li>
+                        <li>\(W\) is the <strong>projection matrix</strong> of size \(d \times k\)</li>
+                        <li>\(Y\) is the <strong>projected data</strong> of size \(n \times k\)</li>
+                    </ul>
+                </div>
+                
+                <p><strong>Detailed Explanation:</strong></p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matrix</th>
+                            <th>Dimensions</th>
+                            <th>Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\(X\) (Data matrix)</td>
+                            <td>\(n \times d\)</td>
+                            <td>\(n\) data points, each with \(d\) features (dimensions)</td>
+                        </tr>
+                        <tr>
+                            <td>\(W\) (Projection matrix)</td>
+                            <td>\(d \times k\)</td>
+                            <td>\(k\) basis vectors, each of dimension \(d\)<br>Columns represent the new basis directions</td>
+                        </tr>
+                        <tr>
+                            <td>\(Y\) (Projected data)</td>
+                            <td>\(n \times k\)</td>
+                            <td>Same \(n\) data points, now in \(k\)-dimensional space</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Dimensionality Reduction:</strong></p>
+                <ul>
+                    <li>If \(k < d\): <span class="key-term">Dimensionality is reduced</span> - this is what we want!</li>
+                    <li>If \(k = d\): Dimensionality remains the same (just a change of basis)</li>
+                    <li>If \(k > d\): Dimensionality is increased (less common)</li>
+                </ul>
+                
+                <div class="formula">
+                    <strong>Projection Matrix Structure:</strong>
+
+                    $$W = \begin{bmatrix} | & | & & | \\ \vec{w}_1 & \vec{w}_2 & \cdots & \vec{w}_k \\ | & | & & | \end{bmatrix}$$
+                    
+                    where each \(\vec{w}_i\) is a \(d\)-dimensional basis vector (column of \(W\))
+                </div>
+                
+                <p><strong>If the basis is orthonormal:</strong> The projection matrix \(W\) consists of orthonormal vectors. This makes computations efficient and interpretations clear.</p>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "All the data points, n data points, we are multiplying with a projection matrix, which is d cross k. So, in this case, the projection matrix could be just like the orthogonal basis. Any orthogonal basis will do. So, w is nothing but they are the basis - another basis where we are projecting. And if you just do the matrix multiplication with X, you get another n number of points and that will be in the k-dimension space."
+                </div>
+                
+            </section>
+            
+            <!-- 3.12 Eigenvalues and Eigenvectors -->
+            <section id="section3-12">
+                <h3>3.12 Eigenvalues and Eigenvectors</h3>
+                
+                <p><span class="key-term">Eigenvalues and eigenvectors</span> are special properties of matrices that play a crucial role in dimensionality reduction, particularly in Principal Component Analysis (PCA).</p>
+                
+                <div class="formula">
+                    <strong>Definition:</strong> For a square matrix \(A\), a non-zero vector \(\vec{v}\) is called an <span class="key-term">eigenvector</span> if:
+
+                    
+                    $$A\vec{v} = \lambda\vec{v}$$
+                    
+                    where \(\lambda\) is a scalar called the <span class="key-term">eigenvalue</span> corresponding to eigenvector \(\vec{v}\).
+                </div>
+                
+                <p><strong>Intuitive Explanation:</strong></p>
+                <p>When a matrix \(A\) multiplies a vector \(\vec{v}\), it usually transforms the vector by:</p>
+                <ul>
+                    <li>Changing its direction (rotation)</li>
+                    <li>Changing its magnitude (scaling)</li>
+                    <li>Or both</li>
+                </ul>
+                
+                <p>However, <span class="highlight">eigenvectors are special vectors that only get scaled</span> when multiplied by the matrix - their direction doesn't change! The scaling factor is the eigenvalue.</p>
+                
+                <div class="example-box">
+                    <h4>Example: Understanding Eigenvectors Geometrically</h4>
+                    
+                    <p>Consider a transformation matrix \(A\) that stretches space:</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Insert diagram: Transformation showing eigenvector directions remain unchanged while other vectors rotate]
+                    </div>
+                    
+                    <ul>
+                        <li>Most vectors change both direction and magnitude under transformation</li>
+                        <li><strong>Eigenvectors only change in magnitude</strong> (stretched or compressed)</li>
+                        <li>The <strong>eigenvalue tells us by how much</strong> the eigenvector is scaled</li>
+                    </ul>
+                </div>
+                
+                <p><strong>Properties:</strong></p>
+                <ul>
+                    <li>An \(n \times n\) matrix can have up to \(n\) eigenvectors (and eigenvalues)</li>
+                    <li>Eigenvectors corresponding to different eigenvalues are linearly independent</li>
+                    <li>For symmetric matrices (like covariance matrices), eigenvectors are orthogonal</li>
+                    <li>The eigenvalue can be positive, negative, or zero</li>
+                </ul>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Eigenvalue (\(\lambda\))</th>
+                            <th>Effect on Eigenvector</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\(\lambda > 1\)</td>
+                            <td>Eigenvector is stretched (scaled up)</td>
+                        </tr>
+                        <tr>
+                            <td>\(0 < \lambda < 1\)</td>
+                            <td>Eigenvector is compressed (scaled down)</td>
+                        </tr>
+                        <tr>
+                            <td>\(\lambda = 1\)</td>
+                            <td>Eigenvector remains unchanged</td>
+                        </tr>
+                        <tr>
+                            <td>\(\lambda < 0\)</td>
+                            <td>Eigenvector is scaled AND reversed in direction</td>
+                        </tr>
+                        <tr>
+                            <td>\(\lambda = 0\)</td>
+                            <td>Eigenvector is mapped to zero vector</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Eigenvectors are like a particular vector - when you multiply this vector with a matrix, it does not change direction, it just scales that. Lambda is a scalar here. So, that action does not rotate or change anything, it just scales. Every matrix may have different eigenvectors. These eigenvectors are some kind of special vectors. When they are multiplied with that matrix, it does not change the direction, it just changes the scale of that matrix."
+                </div>
+                
+                <h4>Importance in Dimensionality Reduction</h4>
+                
+                <p>Eigenvalues and eigenvectors are fundamental to PCA (which we'll cover in the next lecture):</p>
+                <ul>
+                    <li><strong>Eigenvectors</strong> of the covariance matrix give us the <span class="key-term">principal directions</span> (directions of maximum variance)</li>
+                    <li><strong>Eigenvalues</strong> tell us <span class="key-term">how much variance</span> is explained along each principal direction</li>
+                    <li>We select eigenvectors with largest eigenvalues for dimensionality reduction</li>
+                    <li>This ensures we retain the most important information while reducing dimensions</li>
+                </ul>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "In terms of dimensional reduction, we will see that this eigenvalue and eigenvector are going to play an important role. Therefore they are very important. At this stage you should also know how to compute eigenvalue and eigenvector for a particular matrix and for a given matrix."
+                </div>
+                
+                <p><strong>Note:</strong> The professor mentions that students should know how to compute eigenvalues and eigenvectors. While the computational method wasn't detailed in this lecture (likely covered in the linear algebra course), the conceptual understanding is crucial for understanding PCA.</p>
+                
+            </section>
+            
+            <!-- Practice Questions for Section 3 -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What is the dot product of vectors \(\vec{u} = \begin{bmatrix} 3 \\ 4 \end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} 4 \\ -3 \end{bmatrix}\)? What does this tell you about their relationship?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> \(\vec{u} \cdot \vec{v} = (3)(4) + (4)(-3) = 12 - 12 = 0\). Since the dot product is zero, the vectors are orthogonal (perpendicular) to each other. They have no similarity in direction.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Are the vectors \(\begin{bmatrix} 1 \\ 1 \end{bmatrix}\), \(\begin{bmatrix} 2 \\ 2 \end{bmatrix}\), and \(\begin{bmatrix} 1 \\ -1 \end{bmatrix}\) linearly independent?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> No, they are NOT linearly independent. Notice that \(\begin{bmatrix} 2 \\ 2 \end{bmatrix} = 2\begin{bmatrix} 1 \\ 1 \end{bmatrix}\), so the second vector is just a scaled version of the first. Since one vector can be expressed as a scalar multiple of another, the set is linearly dependent. (Note: We only need three linearly independent vectors in 3D space, but we're in 2D, so at most 2 vectors can be linearly independent.)
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Why are orthonormal bases particularly useful for projection operations?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> Orthonormal bases make projection extremely simple because we can find the coefficients (projections) using just dot products. For an orthonormal basis, the coefficient for each basis vector is simply the dot product of the data point with that basis vector. No complex system of equations needs to be solved! This computational simplicity is why PCA uses orthonormal bases.
+                </div>
+                
+                <div class="question">
+                    <strong>Q4:</strong> If matrix \(A\) has eigenvector \(\vec{v} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}\) with eigenvalue \(\lambda = 3\), what is \(A\vec{v}\)?
+                </div>
+                <div class="answer">
+                    <strong>Answer:</strong> By the definition of eigenvectors: \(A\vec{v} = \lambda\vec{v} = 3\begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}\). The vector is scaled by a factor of 3 but its direction remains the same.
+                </div>
+            </div>
+            
+            <!-- Key Takeaways for Section 3 -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>In pattern recognition, vectors represent data points in the feature space</li>
+                    <li>Dot product measures similarity between vectors; higher dot product = higher similarity</li>
+                    <li>Matrix multiplication can scale, rotate, or transform vectors depending on the matrix</li>
+                    <li>Linear transformations preserve vector addition and scalar multiplication properties</li>
+                    <li>A vector space is a collection of vectors closed under addition and scalar multiplication</li>
+                    <li>Span is a set of vectors that can generate the entire vector space through linear combinations</li>
+                    <li>Linear independence means no vector can be expressed as a combination of others (no redundancy)</li>
+                    <li>A basis is a minimal spanning set - linearly independent vectors that span the space</li>
+                    <li>Orthonormal bases are especially convenient as they simplify projection calculations to dot products</li>
+                    <li>Projection is the process of representing data in a different basis</li>
+                    <li>In dimensionality reduction, we project n-dimensional data to k-dimensional space where k < n</li>
+                    <li>Eigenvectors are special vectors that only get scaled (not rotated) by matrix multiplication</li>
+                    <li>Eigenvalues tell us the scaling factor for eigenvectors</li>
+                    <li>Eigenvectors of covariance matrices point in directions of maximum variance (crucial for PCA)</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Linear algebra ki kaafi concepts revise ki humne. Vector basically data point ko represent karta hai feature space mein. Dot product se vectors ki similarity pata chalti hai - agar perpendicular hain toh dot product zero hoga. Linear transformation woh transformation hote hain jo addition aur scalar multiplication ko preserve karte hain. Vector space ek collection hai vectors ka jo addition aur scaling ke under closed hai. Basis linearly independent vectors ka set hota hai jo pure space ko span karta hai. Orthonormal basis sabse convenient hota hai kyunki projection ko simple dot product se calculate kar sakte hain. Eigenvectors woh special vectors hote hain jo matrix se multiply karne par sirf scale hote hain, direction nahi badalta. Eigenvalues batate hain kitna scaling ho raha hai. Yeh sab concepts PCA mein bahut important role play karenge jo next lecture mein padhenge.</p>
+            </div>
+        </section>
+        
+        <!-- =========================
+             SECTION 4: KEY TAKEAWAYS (Overall)
+             Summary of entire lecture
+             ========================= -->
+        <section id="takeaways">
+            <h2>4. Overall Key Takeaways</h2>
+            
+            <div class="key-takeaways">
+                <h4>🎓 Main Learning Points from Lecture 11</h4>
+                <ul>
+                    <li><strong>Dimensionality reduction</strong> is essential in pattern recognition for removing redundancy, reducing noise, enabling visualization, avoiding curse of dimensionality, and efficient storage/transmission</li>
+                    <li>The <strong>core principle</strong>: Project data in directions of maximum spread to minimize information loss</li>
+                    <li><strong>Linear algebra</strong> forms the mathematical foundation for dimensionality reduction techniques</li>
+                    <li><strong>Vectors in pattern recognition</strong> represent data points in feature space</li>
+                    <li><strong>Basis concepts</strong> are crucial: understanding span, linear independence, and bases helps us represent data efficiently</li>
+                    <li><strong>Orthonormal bases</strong> are particularly convenient as they simplify projection calculations</li>
+                    <li><strong>Projection</strong> is the mechanism by which we transform data from high to low dimensions</li>
+                    <li><strong>Eigenvalues and eigenvectors</strong> of the covariance matrix identify directions of maximum variance, which will be key in PCA</li>
+                    <li>The <strong>next lecture</strong> will cover Principal Component Analysis (PCA), which applies these concepts to perform dimensionality reduction</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "We learnt concepts like basis, orthonormal/orthogonal basis, projection, covariance matrix, eigenvalues/eigenvectors. Eigenvalues of the covariance matrix represent the variance along their corresponding eigenvectors. These concepts will be fundamental when we study PCA in the next lecture."
+            </div>
+        </section>
+        
+        <!-- =========================
+             SECTION 5: MIND MAP
+             Visual representation of all concepts and connections
+             ========================= -->
+        <section id="mindmap">
+            <div class="mind-map">
+                <h2>5. Concept Mind Map</h2>
+                
+                <div class="mind-map-container">
+                    <div class="main-topic">
+                        Lecture 11: Dimensionality Reduction & Linear Algebra
+                    </div>
+                    
+                    <div class="branches">
+                        <!-- Branch 1: Why Dimensionality Reduction -->
+                        <div class="branch">
+                            <h3>Why Dimensionality Reduction?</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Remove Redundancy</strong> - Eliminate correlated/derived features</li>
+                                <li><strong>Reduce Noise</strong> - Filter measurement/observation noise</li>
+                                <li><strong>Better Visualization</strong> - Project to 2D/3D for understanding</li>
+                                <li><strong>Avoid Curse of Dimensionality</strong> - Make distances meaningful again</li>
+                                <li><strong>Efficient Storage/Transmission</strong> - Reduce memory and bandwidth needs</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 2: Vector Fundamentals -->
+                        <div class="branch">
+                            <h3>Vector Fundamentals</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Vector</strong> - Data point representation (magnitude + direction)</li>
+                                <li><strong>Vector Sum</strong> - Parallelogram law</li>
+                                <li><strong>Vector Scaling</strong> - Multiply by scalar</li>
+                                <li><strong>Dot Product</strong> - Similarity measure (u·v = ||u||||v||cosθ)</li>
+                                <li><strong>Vector Norm</strong> - Distance from origin</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 3: Matrix & Transformations -->
+                        <div class="branch">
+                            <h3>Matrix & Transformations</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Matrix-Vector Multiplication</strong> - Transforms vectors</li>
+                                <li><strong>Linear Transformation</strong> - Preserves addition & scaling</li>
+                                <li><strong>Effects</strong> - Rotation, scaling, reflection, shear</li>
+                                <li><strong>Eigenvalues/Eigenvectors</strong> - Special directions (Av = λv)</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 4: Vector Spaces -->
+                        <div class="branch">
+                            <h3>Vector Spaces & Subspaces</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Vector Space</strong> - Closed under addition & scaling</li>
+                                <li><strong>Subspace</strong> - Subset that's also a vector space</li>
+                                <li><strong>Examples</strong> - ℝ², ℝ³, ℝⁿ, lines/planes through origin</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 5: Span & Independence -->
+                        <div class="branch">
+                            <h3>Span & Linear Independence</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Span</strong> - Vectors generating entire space via linear combinations</li>
+                                <li><strong>Linear Independence</strong> - No vector is combination of others</li>
+                                <li><strong>Criterion</strong> - α₁v₁ + ... + αₖvₖ = 0 only if all αᵢ = 0</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 6: Basis Concepts -->
+                        <div class="branch">
+                            <h3>Basis Concepts</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Basis</strong> - Linearly independent set that spans space</li>
+                                <li><strong>Standard Basis</strong> - e.g., [(1,0), (0,1)] for ℝ²</li>
+                                <li><strong>Orthogonal Basis</strong> - Basis vectors perpendicular</li>
+                                <li><strong>Orthonormal Basis</strong> - Orthogonal + unit length</li>
+                                <li><strong>Conversion</strong> - Divide by magnitude for normalization</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 7: Projection -->
+                        <div class="branch">
+                            <h3>Projection</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Single Vector</strong> - Find coefficients via dot products</li>
+                                <li><strong>Matrix Form</strong> - Y = XW (n×d → n×k)</li>
+                                <li><strong>X</strong> - Data matrix (n samples, d features)</li>
+                                <li><strong>W</strong> - Projection matrix (d×k basis vectors)</li>
+                                <li><strong>Y</strong> - Projected data (n samples, k dimensions)</li>
+                                <li><strong>Dimensionality Reduction</strong> - When k < d</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Branch 8: Key Connections -->
+                        <div class="branch">
+                            <h3>Key Connections to PCA</h3>
+                            <ul class="sub-branches">
+                                <li><strong>Covariance Matrix</strong> - Captures data variance structure</li>
+                                <li><strong>Eigenvectors</strong> - Principal component directions</li>
+                                <li><strong>Eigenvalues</strong> - Variance along each principal component</li>
+                                <li><strong>Maximum Variance</strong> - Project onto top eigenvectors</li>
+                                <li><strong>Information Preservation</strong> - Minimize loss via variance maximization</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 40px; text-align: center; padding: 20px; background-color: #e8f5e9; border-radius: 8px;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">🔗 Concept Flow</h4>
+                        <p style="margin: 5px 0;"><strong>Motivation</strong> → Why reduce dimensions?</p>
+                        <p style="margin: 5px 0;">↓</p>
+                        <p style="margin: 5px 0;"><strong>Foundation</strong> → Linear algebra concepts</p>
+                        <p style="margin: 5px 0;">↓</p>
+                        <p style="margin: 5px 0;"><strong>Representation</strong> → Vectors, spaces, bases</p>
+                        <p style="margin: 5px 0;">↓</p>
+                        <p style="margin: 5px 0;"><strong>Transformation</strong> → Projection to new basis</p>
+                        <p style="margin: 5px 0;">↓</p>
+                        <p style="margin: 5px 0;"><strong>Optimization</strong> → Eigenvalue/eigenvector analysis</p>
+                        <p style="margin: 5px 0;">↓</p>
+                        <p style="margin: 5px 0;"><strong>Application</strong> → PCA (Next Lecture)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- =========================
+             FOOTER
+             Additional notes and references
+             ========================= -->
+        <footer style="margin-top: 60px; padding: 30px; background-color: #f8f9fa; border-top: 3px solid #667eea; border-radius: 8px;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">📚 Additional Notes</h3>
+            
+            <h4 style="color: #555; margin-top: 20px;">Next Lecture Preview:</h4>
+            <p>In the next lecture, we will cover <strong>Principal Component Analysis (PCA)</strong>, which applies all the linear algebra concepts we learned today to perform dimensionality reduction. We'll learn:</p>
+            <ul>
+                <li>How to compute the covariance matrix from data</li>
+                <li>How to find eigenvectors and eigenvalues of the covariance matrix</li>
+                <li>How to select the top k principal components</li>
+                <li>How to project data onto principal components</li>
+                <li>How to interpret and visualize PCA results</li>
+            </ul>
+            
+            <h4 style="color: #555; margin-top: 20px;">Study Tips:</h4>
+            <ul>
+                <li>Practice computing dot products, norms, and projections by hand</li>
+                <li>Visualize 2D examples to build intuition before moving to higher dimensions</li>
+                <li>Review eigenvalue and eigenvector computation from your linear algebra course</li>
+                <li>Try to identify redundant features in real datasets</li>
+                <li>Experiment with projecting simple 2D data onto different bases</li>
+            </ul>
+            
+            <h4 style="color: #555; margin-top: 20px;">Key Formulas to Remember:</h4>
+            <div style="background-color: white; padding: 20px; border-left: 4px solid #667eea; margin: 15px 0;">
+                <p><strong>Dot Product:</strong> \(\vec{u} \cdot \vec{v} = \sum_{i=1}^{n} u_i v_i = \|\vec{u}\| \|\vec{v}\| \cos\theta\)</p>
+                <p><strong>Vector Norm:</strong> \(\|\vec{u}\| = \sqrt{u_1^2 + u_2^2 + \cdots + u_n^2}\)</p>
+                <p><strong>Projection:</strong> \(Y = XW\) where \(X\) is \(n \times d\), \(W\) is \(d \times k\), \(Y\) is \(n \times k\)</p>
+                <p><strong>Eigenvalue Equation:</strong> \(A\vec{v} = \lambda\vec{v}\)</p>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; color: #888; font-size: 0.9em;">
+                <p><strong>Course:</strong> Pattern Recognition Principles | <strong>Program:</strong> BS/BSc in Applied AI and Data Science</p>
+                <p>Lecture 11: Dimensionality Reduction & Linear Algebra Foundations</p>
+            </div>
+        </footer>
+        
+    </div>
+    
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

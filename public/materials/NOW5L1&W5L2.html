@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 5: Numerical Optimization - Complete Notes</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        },
+        options: {
+            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #2c3e50;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            font-size: 2em;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .important {
+            background-color: #d1ecf1;
+            border-left: 5px solid #0c5460;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background-color: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #1976D2;
+        }
+        
+        .hinglish-summary {
+            background-color: #fff9e6;
+            border: 2px dashed #ff9800;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .hinglish-summary h4 {
+            color: #f57c00;
+            margin-top: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .diagram-placeholder {
+            background-color: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .toc {
+            background-color: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 2px solid #adb5bd;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .toc li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #0056b3;
+            padding-left: 10px;
+        }
+        
+        .practice-questions {
+            background-color: #e8f5e9;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .practice-questions h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #c8e6c9;
+            border-radius: 5px;
+        }
+        
+        .answer strong {
+            color: #1b5e20;
+        }
+        
+        .key-takeaways {
+            background-color: #fff3e0;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 5px solid #ff9800;
+        }
+        
+        .key-takeaways h4 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 20px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+        }
+        
+        code {
+            background-color: #282c34;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .algorithm {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .mind-map {
+            background-color: #f5f5f5;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 8px;
+            border: 2px solid #9e9e9e;
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #424242;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        
+        .mind-map-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map-node h4 {
+            color: white;
+            margin: 0 0 10px 0;
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+        }
+        
+        .mind-map-node ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .mind-map-node li {
+            margin: 8px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .mind-map-node li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        .formula {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Lecture 5: Numerical Optimization</h1>
+            <p>Advanced Gradient Descent Variants and Newton's Method</p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap: Gradient Descent</a></li>
+                <li><a href="#issues">2. Issues with Vanilla Gradient Descent</a></li>
+                <li><a href="#variants">3. Gradient Descent Variants</a>
+                    <ul style="padding-left: 20px; list-style-type: circle;">
+                        <li><a href="#sgd">3.1 Stochastic Gradient Descent (SGD)</a></li>
+                        <li><a href="#mini-batch">3.2 Mini-Batch Gradient Descent</a></li>
+                        <li><a href="#momentum">3.3 Accelerated Gradient Descent (Momentum)</a></li>
+                        <li><a href="#adagrad">3.4 AdaGrad</a></li>
+                        <li><a href="#rmsprop">3.5 RMSProp</a></li>
+                        <li><a href="#adam">3.6 Adam Optimizer</a></li>
+                    </ul>
+                </li>
+                <li><a href="#choosing">4. Choosing the Right Optimizer</a></li>
+                <li><a href="#libraries">5. Where to Find Them - Popular Libraries</a></li>
+                <li><a href="#newton">6. Newton's Method</a>
+                    <ul style="padding-left: 20px; list-style-type: circle;">
+                        <li><a href="#newton-basics">6.1 Understanding Newton's Method</a></li>
+                        <li><a href="#newton-algorithm">6.2 Pure Newton's Method Algorithm</a></li>
+                        <li><a href="#newton-quadratic">6.3 Newton's Method for Quadratic Functions</a></li>
+                        <li><a href="#newton-convergence">6.4 Convergence Properties</a></li>
+                        <li><a href="#damped-newton">6.5 Damped Newton's Method</a></li>
+                    </ul>
+                </li>
+                <li><a href="#summary">7. Summary</a></li>
+                <li><a href="#mindmap">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <section id="recap">
+            <h2>1. Recap: Gradient Descent</h2>
+            
+            <p>Welcome to another lecture on numerical optimization! In the previous lecture, we started studying numerical methods for solving optimization problems and mainly focused on one of the most prominent numerical methods: the <span class="key-term">Gradient Descent Method</span>.</p>
+            
+            <h3>What is Gradient Descent?</h3>
+            
+            <p>Gradient Descent is a fundamental optimization algorithm used to find the minimum of a function. The goal is to:</p>
+            
+            <div class="formula">
+
+                $$\min_x f(x)$$
+            </div>
+            
+            <p>The <span class="key-term">update rule</span> for gradient descent is:</p>
+            
+            <div class="formula">
+
+                $$x := x - \alpha \nabla f(x)$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$x$ is the current position/parameter</li>
+                <li>$\alpha$ is the <span class="key-term">learning rate</span> (step size)</li>
+                <li>$\nabla f(x)$ is the gradient of function $f$ at point $x$</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained the intuition behind gradient descent: You start from some initial point $x_0$. At each iteration, you calculate the gradient at the current point. If the gradient is already zero, you've reached a critical point and don't need to move. If the gradient is not zero, you move in the negative gradient direction (because that's the direction of steepest descent). You keep updating: start from $x_0$, calculate gradient, move a little bit in the negative gradient direction, calculate gradient again, and keep repeating this process.
+            </div>
+            
+            <h3>Termination Criteria</h3>
+            
+            <p>The professor mentioned two common ways to stop the gradient descent algorithm:</p>
+            
+            <ol>
+                <li><strong>Maximum Iterations:</strong> Set a threshold on the number of iterations (e.g., 500, 1000, or 1500 iterations)</li>
+                <li><strong>Gradient Norm Condition:</strong> Stop when $\|\nabla f(x)\| < \epsilon$ where $\epsilon$ is a small threshold value</li>
+            </ol>
+            
+            <h3>Alternative Names</h3>
+            
+            <p>This basic gradient descent method is also called:</p>
+            <ul>
+                <li><span class="key-term">Batch Gradient Descent</span></li>
+                <li><span class="key-term">Vanilla Gradient Descent</span></li>
+                <li><span class="key-term">Gradient Descent with Constant Step Size</span></li>
+            </ul>
+            
+            <div class="important">
+                <strong>⚠️ Limitations:</strong> While gradient descent works well, it can be slow and is sensitive to the learning rate choice. Choosing an appropriate learning rate is crucial for convergence.
+            </div>
+            
+            <div class="professor-note">
+                The professor noted that gradient descent is sensitive to learning rate. Calculating the Lipschitz constant $L$ helps (any $\alpha < 1/L$ will work), but finding the exact Lipschitz constant is not very easy in practice. To avoid this sensitivity, we discussed backtracking line search in the last class, where you run an inner iteration on $\alpha$ at each step to adaptively choose the step size.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Gradient Descent ek basic optimization method hai jisme hum function ko minimize karne ke liye negative gradient direction mein move karte hain. Starting point se shuru karke, har step pe gradient calculate karo aur thoda sa us direction mein move karo. Ye method kaam toh achha karta hai, lekin slow ho sakta hai aur learning rate ke choice pe bahut depend karta hai. Agar learning rate bahut bada ho toh diverge ho sakta hai, aur agar bahut chota ho toh bahut slow convergence hoga. Isliye practical problems mein backtracking jaise adaptive methods use karte hain.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Gradient descent moves in the direction of steepest descent (negative gradient)</li>
+                    <li>The learning rate $\alpha$ controls how big each step is</li>
+                    <li>The method is simple but can be slow for large datasets</li>
+                    <li>Learning rate selection is critical for convergence</li>
+                    <li>Backtracking line search can help adaptively choose step sizes</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="issues">
+            <h2>2. Issues with Vanilla Gradient Descent</h2>
+            
+            <p>While gradient descent is a powerful optimization method, it has several significant limitations, especially when applied to real-world data science problems.</p>
+            
+            <h3>Problem 1: Needs Whole Dataset → Slow for Large Data</h3>
+            
+            <p>Let's consider a practical example: <span class="key-term">Linear Regression</span> (Least Squares Problem).</p>
+            
+            <p>Suppose we want to fit a line to data $\{(x_i, y_i) : i = 1, \ldots, n\}$ where:</p>
+            
+            <div class="formula">
+
+                $$y \approx Xw$$
+            </div>
+            
+            <p>Our prediction is $\hat{y} = Xw$, and we want to minimize the squared error:</p>
+            
+            <div class="formula">
+
+                $$\min_w \|\hat{y} - y\|_2^2 = \sum_{i=1}^{n} (y_i - x_i^T w)^2$$
+            </div>
+            
+            <p>The gradient of the loss function is:</p>
+            
+            <div class="formula">
+
+                $$\nabla_w L(w) = 2X^T(Xw - y)$$
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized the computational challenge: "If you want to calculate the loss function or the gradient, you have to use all the data points. Suppose your number of data points is very high - say 1 million or 1 billion - then this matrix product is a very, very expensive product. It's computationally very challenging. You have to do a lot of dot products, sums, and all those things."
+                
+                <br><br>He explained with an example: "In housing data, each $x_i$ is a vector having features like size of the house, number of rooms, which floor it's on, etc. Depending on these features, $y_i$ is your price. If you have millions of such data points, calculating the full gradient becomes extremely expensive."
+            </div>
+            
+            <h3>Problem 2: Struggles with Sparse/Noisy Gradients</h3>
+            
+            <p>Vanilla gradient descent can struggle when:</p>
+            <ul>
+                <li>Gradients are sparse (many zero components)</li>
+                <li>Gradients are noisy (high variance)</li>
+                <li>Different parameters need different learning rates</li>
+            </ul>
+            
+            <h3>Problem 3: Sensitive to Learning Rate Choice</h3>
+            
+            <p>Choosing the right learning rate $\alpha$ is challenging:</p>
+            <ul>
+                <li>Too large → divergence or oscillation</li>
+                <li>Too small → very slow convergence</li>
+                <li>Often requires manual tuning and multiple trials</li>
+            </ul>
+            
+            <div class="important">
+                <strong>💡 Key Insight:</strong> These problems led researchers to develop various <span class="key-term">Gradient Descent Variants</span> that address specific issues, especially for large-scale machine learning and deep learning applications.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Vanilla Gradient Descent ke teen main problems hain. Pehla, agar dataset bahut bada hai (jaise 1 million ya 1 billion data points) toh puri gradient calculate karna bahut expensive hai - har iteration mein sabhi data points ka use hota hai. Doosra, agar gradients sparse ya noisy hain toh method achhe se kaam nahi karta. Teesra, learning rate choose karna bahut mushkil hai - agar bahut bada hua toh diverge karega, agar bahut chota hua toh bahut slow hoga. Isliye data science aur deep learning problems ke liye gradient descent ke different variants develop kiye gaye hain.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Why is computing the full gradient expensive for large datasets?
+                    <div class="answer">
+                        <strong>Answer:</strong> Computing the full gradient requires processing all $n$ data points in each iteration. For the linear regression example, we need to compute $\nabla_w L(w) = 2X^T(Xw - y)$, which involves matrix multiplication with dimension $n$. When $n$ is very large (millions or billions), this becomes computationally prohibitive as we need to perform $O(n \cdot m)$ operations per iteration, where $m$ is the number of features.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> What happens if the learning rate is too large or too small?
+                    <div class="answer">
+                        <strong>Answer:</strong> If the learning rate is too large: The algorithm may overshoot the minimum, causing oscillation or divergence. The updates become so large that we jump past the optimal point. If the learning rate is too small: Convergence becomes extremely slow. The algorithm takes tiny steps and may require thousands or millions of iterations to reach the minimum, making it impractical for real applications.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> In the context of least squares regression, what does each component of the gradient represent?
+                    <div class="answer">
+                        <strong>Answer:</strong> The gradient $\nabla_w L(w) = 2X^T(Xw - y)$ represents the direction and magnitude of steepest ascent of the loss function. Each component tells us how much the loss would increase if we slightly increased that particular weight parameter. The negative gradient thus points in the direction of steepest descent, which is why we subtract it from our current parameters.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Computing full gradients is expensive for large datasets ($O(n \cdot m)$ complexity)</li>
+                    <li>Data science problems often involve millions or billions of samples</li>
+                    <li>Learning rate selection significantly impacts convergence</li>
+                    <li>These limitations motivate the development of gradient descent variants</li>
+                    <li>Different problems may benefit from different optimization strategies</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="variants">
+            <h2>3. Gradient Descent Variants</h2>
+            
+            <p>To overcome the limitations of vanilla gradient descent, researchers have developed numerous variants, each addressing specific challenges. These variants are especially crucial for <span class="key-term">data science and deep learning problems</span>.</p>
+            
+            <div class="professor-note">
+                The professor noted: "There are many variants of gradient descent, especially for data science people. Why do we need different methods? Because when you have very large datasets with many features, calculating the full gradient using all functions becomes very, very challenging. That's why we prefer different variants for data science problems. Some of these variants are implemented as solvers in Python libraries like AdaGrad, RMSProp, and Adam - you can call them directly to solve optimization problems."
+            </div>
+            
+            <p>The main gradient descent variants we'll study are:</p>
+            <ul>
+                <li><strong>Stochastic Gradient Descent (SGD)</strong></li>
+                <li><strong>Mini-Batch Gradient Descent</strong></li>
+                <li><strong>Momentum (Accelerated Gradient Descent)</strong></li>
+                <li><strong>AdaGrad</strong></li>
+                <li><strong>RMSProp</strong></li>
+                <li><strong>Adam</strong></li>
+            </ul>
+        </section>
+
+        <section id="sgd">
+            <h3>3.1 Stochastic Gradient Descent (SGD)</h3>
+            
+            <p><span class="key-term">Stochastic Gradient Descent (SGD)</span> is one of the most popular variants of gradient descent, particularly for large-scale machine learning problems.</p>
+            
+            <h4>Core Idea</h4>
+            
+            <p>Instead of using the entire dataset to compute the gradient at each iteration, SGD uses <strong>one random sample at a time</strong>.</p>
+            
+            <div class="professor-note">
+                The professor explained: "To calculate the gradient in vanilla GD, you need the entire dataset. But what if the dataset is very large? Calculating the gradient itself becomes computationally heavy. So to avoid that, at each update (each epoch - which is the term used in machine learning for iterations), I will calculate the gradient using just one random sample."
+            </div>
+            
+            <h4>Mathematical Formulation</h4>
+            
+            <p>For <span class="key-term">Empirical Risk Minimization</span>, the objective function is:</p>
+            
+            <div class="formula">
+
+                $$f(w) = \frac{1}{n} \sum_{i=1}^{n} f_i(w)$$
+            </div>
+            
+            <p>where each $f_i(w)$ represents the loss on the $i$-th training example.</p>
+            
+            <p>The <span class="key-term">SGD update rule</span> with random sample $i_t$ at iteration $t$ is:</p>
+            
+            <div class="formula">
+
+                $$w_{t+1} = w_t - \eta_t \nabla f_{i_t}(w_t)$$
+            </div>
+            
+            <p>where $\eta_t$ is the learning rate at iteration $t$.</p>
+            
+            <div class="professor-note">
+                The professor clarified with an example: "In the least squares problem, instead of calculating $\nabla_w L(w) = 2X^T(Xw - y)$ which uses all $n$ samples, we calculate the gradient with respect to just one sample: $\nabla_w [(y_i - x_i^T w)^2]$. If your data has $m$ features, this is just $m$ multiplications - a one-dimensional problem! Compare this to the full batch where if $n$ is 1 million, you're doing much more expensive matrix operations."
+            </div>
+            
+            <h4>Pros of SGD</h4>
+            <ul>
+                <li><strong>Cheaper per iteration:</strong> Only processes one sample, so complexity is $O(m)$ instead of $O(n \cdot m)$</li>
+                <li><strong>Faster updates:</strong> Can make progress quickly even on large datasets</li>
+                <li><strong>Online learning:</strong> Can update model as new data arrives</li>
+                <li><strong>Can escape shallow local minima:</strong> Noise helps avoid getting stuck</li>
+            </ul>
+            
+            <h4>Cons of SGD</h4>
+            <ul>
+                <li><strong>Noisy path:</strong> Updates are based on single samples, leading to high variance</li>
+                <li><strong>Zig-zag trajectory:</strong> Doesn't follow the true gradient direction exactly</li>
+                <li><strong>Doesn't guarantee descent:</strong> Function value may increase in some iterations</li>
+                <li><strong>Requires careful learning rate tuning:</strong> Often needs decreasing learning rates</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Comparison of Batch GD (smooth path) vs SGD (zig-zag path) towards optimum]
+            </div>
+            
+            <div class="professor-note">
+                The professor showed a practical example: "When I ran gradient descent on a simple 2D linear regression problem, the loss gradually decreased smoothly. But with stochastic gradient descent, because we're not using the entire dataset - we're just using one sample at a time - you can see some zig-zagging. The loss doesn't always decrease; there's not a very smooth decrease. But it still converges! This is how gradient descent and stochastic gradient descent work in practice."
+            </div>
+            
+            <h4>Convergence Properties</h4>
+            
+            <p>With step sizes $\eta_t = O(1/\sqrt{t})$, for <span class="key-term">strongly convex</span> functions $f$:</p>
+            
+            <div class="formula">
+
+                $$\mathbb{E}[f(\bar{w}_T)] - f(w^*) = O\left(\frac{1}{\sqrt{T}}\right)$$
+            </div>
+            
+            <div class="formula">
+
+                $$\mathbb{E}[\|w_T - w^*\|^2] = O\left(\frac{1}{T}\right)$$
+            </div>
+            
+            <div class="important">
+                <strong>⚠️ Important Note:</strong> The convergence is in <strong>expectation</strong> - meaning if you run SGD many times and average the results. Individual runs may diverge! This is different from batch gradient descent which guarantees descent at every iteration.
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized: "This convergence is 'up to probability' or 'up to expectation'. That means sometimes if you run it, it can diverge as well. It's not guaranteed that it will always converge. You have to take this with a pinch of salt. That's the drawback of stochastic gradient descent - it's a very nice and implementable method, but theoretical justification is still not as solid as batch gradient descent. This is still a research area!"
+            </div>
+            
+            <h4>Foundation of Deep Learning</h4>
+            
+            <p>SGD is the <span class="key-term">foundation of deep learning optimization</span> because:</p>
+            <ul>
+                <li>Deep learning datasets are enormous (millions of images, text samples, etc.)</li>
+                <li>Computing full gradients over entire datasets is impractical</li>
+                <li>The stochastic nature helps escape poor local minima</li>
+                <li>Works well in practice despite theoretical limitations</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>SGD mein hum pure dataset ki jagah sirf ek random sample use karke gradient calculate karte hain. Ye bahut faster hai kyunki har iteration mein sirf $O(m)$ operations hote hain, na ki $O(n \cdot m)$. Agar dataset mein 1 million samples hain aur 50 features hain, toh batch GD mein 50 million operations per iteration, jabki SGD mein sirf 50! Lekin SGD ka path zig-zag hota hai, smooth nahi. Function value har step pe decrease nahi hota, thoda upar-neeche hota rehta hai. Theoretical guarantees bhi sirf expected value ki hain, matlab kabhi-kabhi diverge bhi ho sakta hai. Phir bhi, deep learning mein ye bahut popular hai kyunki large datasets pe practical hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Calculate the computational complexity reduction when using SGD vs batch GD for a dataset with $n = 1,000,000$ samples and $m = 100$ features.
+                    <div class="answer">
+                        <strong>Answer:</strong> 
+                        <ul>
+                            <li>Batch GD per iteration: $O(n \cdot m) = O(1,000,000 \times 100) = O(100,000,000)$ operations</li>
+                            <li>SGD per iteration: $O(m) = O(100)$ operations</li>
+                            <li>Speedup factor: $1,000,000 \times$ per iteration!</li>
+                        </ul>
+                        However, SGD typically needs more iterations to converge, but the per-iteration cost reduction is so significant that overall time is still much better.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why does SGD have a "zig-zag" trajectory compared to batch GD?
+                    <div class="answer">
+                        <strong>Answer:</strong> Batch GD uses the true gradient (averaged over all samples), which points in the exact direction of steepest descent of the full objective. SGD uses the gradient from a single random sample, which is only an estimate of the true gradient. This single-sample gradient has high variance - sometimes it points in roughly the right direction, sometimes not. This variability causes the zig-zag pattern. The true gradient is $\nabla f = \frac{1}{n}\sum_{i=1}^n \nabla f_i$, while SGD uses just $\nabla f_i$ for a random $i$, which is a noisy estimate.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Explain why convergence guarantees for SGD are given in terms of expectation.
+                    <div class="answer">
+                        <strong>Answer:</strong> SGD involves randomness in sample selection at each iteration. Because of this stochasticity, we cannot guarantee that every single run will converge smoothly. Some runs might take longer, some might get unlucky with sample selection. The expectation $\mathbb{E}[\cdot]$ is taken over all possible random sample selections. It means "on average, over many runs with different random seeds, the algorithm converges at this rate." Individual runs may vary significantly, and some may even diverge temporarily before converging.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>SGD uses one random sample per iteration instead of the full dataset</li>
+                    <li>Computational cost per iteration: $O(m)$ vs $O(n \cdot m)$ for batch GD</li>
+                    <li>Creates a noisy, zig-zag path toward the optimum</li>
+                    <li>Convergence is guaranteed only in expectation for strongly convex functions</li>
+                    <li>Foundation of modern deep learning optimization</li>
+                    <li>Trade-off: faster iterations but more total iterations needed</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mini-batch">
+            <h3>3.2 Mini-Batch Gradient Descent</h3>
+            
+            <p><span class="key-term">Mini-Batch Gradient Descent</span> is a compromise between batch gradient descent and stochastic gradient descent.</p>
+            
+            <h4>Core Idea</h4>
+            
+            <p>Instead of using:</p>
+            <ul>
+                <li>All $n$ samples (batch GD) - slow but stable</li>
+                <li>Just 1 sample (SGD) - fast but noisy</li>
+            </ul>
+            
+            <p>Mini-batch GD uses a <strong>small subset of samples</strong> (e.g., 32, 64, 128, 256) at each iteration.</p>
+            
+            <div class="professor-note">
+                The professor explained: "Instead of using one sample at each epoch, you use multiple samples - maybe 32 samples, 64 samples, or 128 samples. You randomly select some batch of samples and calculate the gradient using all those samples. It's something in between batch gradient and stochastic gradient. Usually it's a little smoother than stochastic gradient descent."
+            </div>
+            
+            <h4>Update Rule</h4>
+            
+            <p>At iteration $t$, randomly select a mini-batch $\mathcal{B}_t$ of size $b$ (batch size):</p>
+            
+            <div class="formula">
+
+                $$w_{t+1} = w_t - \eta_t \frac{1}{b} \sum_{i \in \mathcal{B}_t} \nabla f_i(w_t)$$
+            </div>
+            
+            <h4>Common Batch Sizes</h4>
+            
+            <table>
+                <tr>
+                    <th>Batch Size</th>
+                    <th>Use Case</th>
+                    <th>Characteristics</th>
+                </tr>
+                <tr>
+                    <td>32</td>
+                    <td>Small models, limited GPU memory</td>
+                    <td>Faster iteration, more noise</td>
+                </tr>
+                <tr>
+                    <td>64</td>
+                    <td>Standard choice for many problems</td>
+                    <td>Good balance of speed and stability</td>
+                </tr>
+                <tr>
+                    <td>128</td>
+                    <td>Medium to large models</td>
+                    <td>Smoother gradients, more computation</td>
+                </tr>
+                <tr>
+                    <td>256</td>
+                    <td>Large models, powerful hardware</td>
+                    <td>Very stable, slower iteration</td>
+                </tr>
+                <tr>
+                    <td>512+</td>
+                    <td>Distributed training</td>
+                    <td>Maximum stability, highest computation</td>
+                </tr>
+            </table>
+            
+            <h4>Advantages</h4>
+            
+            <ul>
+                <li><strong>Smoother than SGD:</strong> Averaging over multiple samples reduces gradient variance</li>
+                <li><strong>Faster than batch GD:</strong> Doesn't require processing entire dataset</li>
+                <li><strong>Hardware efficient:</strong> Can leverage parallel computation (GPUs, vectorization)</li>
+                <li><strong>Better gradient estimates:</strong> Mini-batch gradient is closer to true gradient than single-sample</li>
+                <li><strong>Common in deep learning:</strong> Standard approach in modern neural network training</li>
+            </ul>
+            
+            <h4>Why It's Popular in Deep Learning</h4>
+            
+            <p>Mini-batch gradient descent is the <span class="key-term">de facto standard</span> in deep learning because:</p>
+            
+            <ol>
+                <li><strong>GPU Efficiency:</strong> GPUs excel at parallel operations. Processing 64 samples simultaneously is almost as fast as processing 1 sample due to parallelization.</li>
+                <li><strong>Gradient Variance Reduction:</strong> Averaging over a mini-batch provides a better estimate of the true gradient than a single sample.</li>
+                <li><strong>Memory Constraints:</strong> Modern GPUs have limited memory. Mini-batches fit in GPU memory while full datasets don't.</li>
+                <li><strong>Practical Balance:</strong> Offers a good trade-off between convergence speed and computational efficiency.</li>
+            </ol>
+            
+            <div class="important">
+                <strong>💡 Practical Tip:</strong> The batch size is often chosen as a power of 2 (32, 64, 128, 256) because computer memory and GPU architectures are optimized for these values. This can lead to better hardware utilization and faster training.
+            </div>
+            
+            <h4>Computational Complexity</h4>
+            
+            <p>Cost per iteration with mini-batch size $b$:</p>
+            
+            <div class="formula">
+
+                $$O(b \cdot m)$$
+            </div>
+            
+            <p>where $m$ is the number of features.</p>
+            
+            <p>Comparison:</p>
+            <ul>
+                <li>Batch GD: $O(n \cdot m)$ per iteration (where $n$ might be millions)</li>
+                <li>Mini-batch GD: $O(b \cdot m)$ per iteration (where $b$ is typically 32-256)</li>
+                <li>SGD: $O(m)$ per iteration</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Mini-batch GD ek middle approach hai - na poora dataset use karo (batch GD ki tarah), na sirf ek sample (SGD ki tarah). Isme hum chhote groups of samples use karte hain, typically 32, 64, ya 128 samples ek saath. Ye SGD se smooth hai kyunki multiple samples ka average lete hain, lekin batch GD se fast hai kyunki poora dataset process nahi karna padta. GPU pe ye bahut efficient hai because parallel computation ho sakti hai. Deep learning mein ye standard approach hai - almost har neural network is tarah se train hota hai. Batch size usually power of 2 rakha jata hai (32, 64, 128) kyunki computer memory aur GPU architecture ke liye optimize hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> For a dataset with 100,000 samples, compare the number of gradient computations per epoch for: (a) Batch GD, (b) SGD, (c) Mini-batch GD with batch size 64.
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <ul>
+                            <li><strong>(a) Batch GD:</strong> 1 gradient computation per epoch (uses all 100,000 samples at once)</li>
+                            <li><strong>(b) SGD:</strong> 100,000 gradient computations per epoch (one for each sample)</li>
+                            <li><strong>(c) Mini-batch GD (size 64):</strong> 100,000 / 64 ≈ 1,563 gradient computations per epoch</li>
+                        </ul>
+                        Note: One "epoch" means passing through the entire dataset once. Batch GD does this in 1 step, while SGD and mini-batch break it into multiple steps.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why is mini-batch size often chosen as powers of 2 (32, 64, 128, etc.)?
+                    <div class="answer">
+                        <strong>Answer:</strong> Powers of 2 are chosen for several technical reasons:
+                        <ul>
+                            <li><strong>Memory Alignment:</strong> Computer memory is organized in powers of 2, leading to more efficient memory access</li>
+                            <li><strong>GPU Architecture:</strong> GPUs have architectures optimized for power-of-2 operations</li>
+                            <li><strong>Parallel Processing:</strong> Power-of-2 sizes distribute more evenly across parallel processing units</li>
+                            <li><strong>Cache Efficiency:</strong> CPU/GPU caches work better with power-of-2 aligned data</li>
+                        </ul>
+                        While not strictly necessary, using powers of 2 can improve training speed by 10-20% in practice.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> How does increasing batch size affect gradient variance and training time?
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <strong>Increasing batch size:</strong>
+                        <ul>
+                            <li><strong>Reduces gradient variance:</strong> Larger average = better estimate of true gradient = smoother convergence</li>
+                            <li><strong>Increases time per iteration:</strong> More samples to process = more computation per update</li>
+                            <li><strong>Reduces number of updates per epoch:</strong> Fewer mini-batches = fewer parameter updates</li>
+                            <li><strong>May require larger learning rates:</strong> More stable gradients can handle bigger steps</li>
+                        </ul>
+                        Trade-off: Very large batches (e.g., 1024+) converge in fewer iterations but each iteration is expensive. Very small batches (e.g., 8-16) have fast iterations but need many updates. The sweet spot is typically 32-256 for most problems.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Mini-batch GD compromises between batch GD and SGD</li>
+                    <li>Uses small subsets (32-256 samples) instead of full dataset or single samples</li>
+                    <li>Provides smoother convergence than SGD while being faster than batch GD</li>
+                    <li>Highly efficient on GPUs due to parallel processing capabilities</li>
+                    <li>Standard approach in modern deep learning frameworks</li>
+                    <li>Batch size choice affects convergence speed and gradient quality</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="momentum">
+            <h3>3.3 Accelerated Gradient Descent (Momentum/Nesterov)</h3>
+            
+            <p><span class="key-term">Accelerated Gradient Descent</span>, also known as <span class="key-term">Nesterov Accelerated Gradient</span> or simply <span class="key-term">Momentum</span>, is a method that improves convergence rates for convex and smooth functions.</p>
+            
+            <h4>Motivation</h4>
+            
+            <p>Regular gradient descent can be slow because:</p>
+            <ul>
+                <li>It doesn't remember previous directions of movement</li>
+                <li>Can oscillate in narrow valleys of the loss surface</li>
+                <li>Treats each iteration independently</li>
+            </ul>
+            
+            <p>The idea of momentum is to <strong>accumulate velocity</strong> in directions of consistent gradient, allowing faster movement.</p>
+            
+            <div class="professor-note">
+                The professor explained: "Nesterov's accelerated gradient descent is an established method that uses the entire information - don't think about sampling from data science perspective. The update rule itself is different. What Nesterov did is instead of calculating the gradient at $w_t$ at this iteration, I will calculate the gradient at a certain point between $w_t$ and $w_{t-1}$. So you're using a little bit of history as well."
+            </div>
+            
+            <h4>Standard Gradient Descent Update</h4>
+            
+            <div class="formula">
+
+                $$w_{t+1} = w_t - \eta_t \nabla f(w_t)$$
+            </div>
+            
+            <h4>Nesterov Accelerated Gradient Update</h4>
+            
+            <p>Uses momentum with <span class="key-term">lookahead</span>:</p>
+            
+            <div class="formula">
+
+                $$y_t = w_t + \beta_t (w_t - w_{t-1})$$
+            </div>
+            
+            <div class="formula">
+
+                $$w_{t+1} = y_t - \eta \nabla f(y_t)$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$\beta_t$ is the momentum coefficient (typically $\beta_t \approx \frac{t-1}{t+2}$)</li>
+                <li>$y_t$ is the "lookahead" position</li>
+                <li>$\eta$ is the learning rate</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor emphasized: "Actually, you can prove that if you just make this slight change, many things happen - your convergence actually improves! For convex and smooth functions, this gradient descent improves the convergence rate. Generally gradient descent is a linear method, but you can improve the convergence rate with this approach. This is a remarkable discovery by Nesterov - it has changed a lot of things. This is why this accelerated gradient method is very, very useful!"
+            </div>
+            
+            <h4>Improved Convergence Rate</h4>
+            
+            <p>For <span class="key-term">convex and smooth</span> functions:</p>
+            
+            <ul>
+                <li><strong>Standard GD:</strong> $O(1/t)$ convergence rate (linear)</li>
+                <li><strong>Nesterov AGD:</strong> $O(1/t^2)$ convergence rate (quadratic)</li>
+            </ul>
+            
+            <div class="important">
+                <strong>🚀 Key Achievement:</strong> Nesterov's method achieves <strong>optimal</strong> convergence rate for first-order methods (methods using only gradient information). You cannot do better than $O(1/t^2)$ without using second-order information (Hessian).
+            </div>
+            
+            <h4>Why Momentum Helps</h4>
+            
+            <ol>
+                <li><strong>Accumulates velocity:</strong> Builds up speed in consistent directions</li>
+                <li><strong>Dampens oscillations:</strong> Reduces zig-zagging in narrow valleys</li>
+                <li><strong>Faster convergence:</strong> Can escape plateaus more quickly</li>
+                <li><strong>Better conditioning:</strong> Handles ill-conditioned problems better</li>
+            </ol>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Standard GD vs Nesterov Momentum showing smoother, faster path]
+            </div>
+            
+            <h4>Typical Momentum Coefficient Choice</h4>
+            
+            <div class="formula">
+
+                $$\beta_t = \frac{t-1}{t+2}$$
+            </div>
+            
+            <p>This choice gives:</p>
+            <ul>
+                <li>$\beta_1 = 0$ (no momentum at start)</li>
+                <li>$\beta_2 = 0.25$</li>
+                <li>$\beta_3 = 0.4$</li>
+                <li>$\beta_{10} = 0.75$</li>
+                <li>$\beta_{\infty} \to 1$ (approaches 1 as iterations increase)</li>
+            </ul>
+            
+            <h4>Applications</h4>
+            
+            <p>Nesterov momentum is <span class="key-term">widely used in convex optimization problems</span> and has been adapted for:</p>
+            <ul>
+                <li>Deep learning (though with modifications)</li>
+                <li>Convex optimization solvers</li>
+                <li>Large-scale machine learning</li>
+                <li>Scientific computing applications</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor noted: "This accelerated gradient descent also has the name 'momentum'. If you use RMSProp plus momentum, you get something like Adam. So these are variants - you can actually make your own combination! How do you know your combination may be a better algorithm, at least for some datasets? For different datasets, some algorithms show good results. Typically, the nice solver which works for a large number of datasets - you can actually use them directly by calling from libraries. That will be explained in your tutorial sessions."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Nesterov's Accelerated Gradient Descent ek bahut important improvement hai normal gradient descent pe. Isme hum sirf current point ki gradient nahi lete, balki thoda "lookahead" karte hain - matlab history bhi use karte hain. Ye method convex aur smooth functions ke liye convergence rate ko $O(1/t)$ se improve karke $O(1/t^2)$ kar deta hai - ye ek remarkable achievement hai! Isko momentum bhi kehte hain kyunki ye consistent directions mein velocity build up karta hai, jisse faster movement hoti hai. Deep learning mein bhi iska use hota hai, aur RMSProp ke saath combine karke Adam optimizer milta hai. Ye prove kiya ja sakta hai ki agar tum ye small change karo gradient descent mein, toh bahut improvement aa jata hai!</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Explain the "lookahead" concept in Nesterov momentum. Why is it better than standard momentum?
+                    <div class="answer">
+                        <strong>Answer:</strong> In Nesterov momentum, we first make a "lookahead" step using the momentum term: $y_t = w_t + \beta_t(w_t - w_{t-1})$. This gives us a prediction of where we're likely to be. Then we evaluate the gradient at this future position $y_t$ rather than the current position $w_t$. This is smarter than standard momentum because:
+                        <ul>
+                            <li>If we're heading toward a minimum, the lookahead gradient will be smaller, allowing us to slow down appropriately</li>
+                            <li>If we're heading in a wrong direction, we detect it earlier and can correct sooner</li>
+                            <li>It provides a form of "error correction" that standard momentum lacks</li>
+                        </ul>
+                        This correction mechanism leads to the improved $O(1/t^2)$ convergence rate.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> How much faster does Nesterov AGD converge compared to standard GD?
+                    <div class="answer">
+                        <strong>Answer:</strong> To reach an error of $\epsilon$:
+                        <ul>
+                            <li><strong>Standard GD:</strong> Needs $O(1/\epsilon)$ iterations (since error = $O(1/t)$)</li>
+                            <li><strong>Nesterov AGD:</strong> Needs $O(1/\sqrt{\epsilon})$ iterations (since error = $O(1/t^2)$)</li>
+                        </ul>
+                        Example: To reach $\epsilon = 0.0001$ accuracy:
+                        <ul>
+                            <li>Standard GD: ~10,000 iterations</li>
+                            <li>Nesterov AGD: ~100 iterations</li>
+                        </ul>
+                        That's a 100× speedup! This is why Nesterov's method is considered a major breakthrough.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Why does the momentum coefficient $\beta_t = \frac{t-1}{t+2}$ start small and increase over time?
+                    <div class="answer">
+                        <strong>Answer:</strong> This schedule is carefully designed:
+                        <ul>
+                            <li><strong>At start ($t$ small):</strong> We don't have reliable history yet. Using little momentum ($\beta \approx 0$) lets us explore and find the right direction</li>
+                            <li><strong>As $t$ increases:</strong> We've built up reliable information about the descent direction. Higher momentum ($\beta \to 1$) lets us accelerate in that direction</li>
+                            <li><strong>Prevents overshooting:</strong> Starting with high momentum when we don't know the landscape could cause wild oscillations</li>
+                            <li><strong>Theoretical optimality:</strong> This specific schedule $\frac{t-1}{t+2}$ is proven to achieve the optimal $O(1/t^2)$ rate</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Nesterov momentum uses history to accelerate convergence</li>
+                    <li>Improves convergence from $O(1/t)$ to $O(1/t^2)$ for convex smooth functions</li>
+                    <li>Uses "lookahead" gradient evaluation: $y_t = w_t + \beta_t(w_t - w_{t-1})$</li>
+                    <li>Typical momentum coefficient: $\beta_t = \frac{t-1}{t+2}$</li>
+                    <li>Achieves optimal convergence rate for first-order methods</li>
+                    <li>Widely used in convex optimization and adapted for deep learning</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="adagrad">
+            <h3>3.4 AdaGrad (Adaptive Gradient)</h3>
+            
+            <p><span class="key-term">AdaGrad</span> (Adaptive Gradient Algorithm) is an optimization method that adapts the learning rate for each parameter individually based on historical gradient information.</p>
+            
+            <h4>Core Problem It Solves</h4>
+            
+            <p>In standard gradient descent, all parameters use the same learning rate $\eta$. This is problematic when:</p>
+            <ul>
+                <li>Some features are sparse (rarely appear in data)</li>
+                <li>Some features have much larger gradients than others</li>
+                <li>Different parameters require different learning rates for optimal convergence</li>
+            </ul>
+            
+            <h4>Key Idea</h4>
+            
+            <p>AdaGrad maintains a running sum of squared gradients for each parameter and uses this to adapt learning rates:</p>
+            <ul>
+                <li><strong>Frequent parameters:</strong> Receive smaller updates (have seen much data)</li>
+                <li><strong>Infrequent parameters:</strong> Receive larger updates (need more learning)</li>
+            </ul>
+            
+            <h4>Update Rule</h4>
+            
+            <p>For parameter $w_i$ at iteration $t$:</p>
+            
+            <div class="formula">
+
+                $$G_{t,i} = G_{t-1,i} + (\nabla_{w_i} f(w_t))^2$$
+            </div>
+            
+            <div class="formula">
+
+                $$w_{t+1,i} = w_{t,i} - \frac{\eta}{\sqrt{G_{t,i} + \epsilon}} \nabla_{w_i} f(w_t)$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$G_{t,i}$ is the sum of squared gradients for parameter $i$ up to time $t$</li>
+                <li>$\eta$ is the global learning rate (typically 0.01)</li>
+                <li>$\epsilon$ is a small constant (e.g., $10^{-8}$) to avoid division by zero</li>
+            </ul>
+            
+            <h4>Advantages</h4>
+            
+            <ul>
+                <li><strong>No manual learning rate tuning:</strong> Adapts automatically per parameter</li>
+                <li><strong>Good for sparse data:</strong> Particularly effective for sparse gradients (NLP, recommender systems)</li>
+                <li><strong>Per-parameter adaptation:</strong> Each parameter gets its own effective learning rate</li>
+                <li><strong>Simple to implement:</strong> Only requires maintaining sum of squared gradients</li>
+            </ul>
+            
+            <h4>Main Problem: Aggressive Learning Rate Decay</h4>
+            
+            <div class="important">
+                <strong>⚠️ Critical Issue:</strong> The denominator $\sqrt{G_t}$ continuously grows (we keep adding squared gradients). This causes the learning rate to shrink aggressively over time, potentially stopping learning prematurely.
+            </div>
+            
+            <p>Mathematically, the effective learning rate for parameter $i$ is:</p>
+            
+            <div class="formula">
+
+                $$\eta_{t,i}^{\text{effective}} = \frac{\eta}{\sqrt{\sum_{\tau=1}^{t} (\nabla_{w_i} f(w_\tau))^2}}$$
+            </div>
+            
+            <p>As $t \to \infty$, this tends to zero, even if we haven't converged yet!</p>
+            
+            <h4>When to Use AdaGrad</h4>
+            
+            <ul>
+                <li>✅ Sparse data problems (text, categorical features)</li>
+                <li>✅ When features have very different scales</li>
+                <li>✅ Early stages of training</li>
+                <li>❌ Long training runs (learning rate decays too much)</li>
+                <li>❌ Deep neural networks (RMSProp or Adam are better)</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>AdaGrad ek smart optimizer hai jo har parameter ke liye alag-alag learning rate adapt karta hai. Jis parameter ki gradient zyada baar large aayi hai, uske liye learning rate chota kar deta hai. Jis parameter ki gradient kam aayi hai (sparse features), uske liye learning rate bada rakhta hai. Ye sparse data problems (jaise text analysis) mein bahut useful hai. Lekin ek badi problem hai - ye sum of squared gradients rakhta hai jo continuously badhta rehta hai, toh learning rate bahut zyada shrink ho jata hai long training mein. Isliye deep learning mein log AdaGrad se better methods jaise RMSProp ya Adam use karte hain.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Adapts learning rate individually for each parameter</li>
+                    <li>Parameters with large historical gradients get smaller learning rates</li>
+                    <li>Excellent for sparse gradient problems (NLP, recommendation systems)</li>
+                    <li>Main limitation: learning rate shrinks too aggressively over time</li>
+                    <li>Led to development of improved methods like RMSProp and Adam</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="rmsprop">
+            <h3>3.5 RMSProp (Root Mean Square Propagation)</h3>
+            
+            <p><span class="key-term">RMSProp</span> was developed to fix AdaGrad's aggressive learning rate decay problem while maintaining its per-parameter adaptation benefits.</p>
+            
+            <h4>Key Innovation</h4>
+            
+            <p>Instead of accumulating <strong>all</strong> past squared gradients (like AdaGrad), RMSProp uses an <span class="key-term">exponentially weighted moving average</span> of recent squared gradients.</p>
+            
+            <h4>Update Rule</h4>
+            
+            <div class="formula">
+
+                $$v_t = \gamma v_{t-1} + (1 - \gamma) (\nabla f(w_t))^2$$
+            </div>
+            
+            <div class="formula">
+
+                $$w_{t+1} = w_t - \frac{\eta}{\sqrt{v_t + \epsilon}} \nabla f(w_t)$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$v_t$ is the exponentially weighted average of squared gradients</li>
+                <li>$\gamma$ is the decay rate (typically 0.9 or 0.99)</li>
+                <li>$\eta$ is the learning rate (typically 0.001)</li>
+                <li>$\epsilon$ is a small constant (e.g., $10^{-8}$)</li>
+            </ul>
+            
+            <h4>Comparison with AdaGrad</h4>
+            
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>AdaGrad</th>
+                    <th>RMSProp</th>
+                </tr>
+                <tr>
+                    <td><strong>Accumulation</strong></td>
+                    <td>Sum of all past squared gradients</td>
+                    <td>Exponentially weighted average</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory</strong></td>
+                    <td>Remembers everything</td>
+                    <td>Recent gradients matter more</td>
+                </tr>
+                <tr>
+                    <td><strong>Learning Rate</strong></td>
+                    <td>Monotonically decreases</td>
+                    <td>Can increase or decrease</td>
+                </tr>
+                <tr>
+                    <td><strong>Long Training</strong></td>
+                    <td>Eventually stops learning</td>
+                    <td>Continues learning effectively</td>
+                </tr>
+                <tr>
+                    <td><strong>Use Case</strong></td>
+                    <td>Sparse data, short training</td>
+                    <td>Deep learning, long training</td>
+                </tr>
+            </table>
+            
+            <h4>Why Moving Average Works Better</h4>
+            
+            <p>The exponentially weighted moving average means:</p>
+            
+            <div class="formula">
+
+                $$v_t = (1-\gamma)\sum_{\tau=1}^{t} \gamma^{t-\tau} (\nabla f(w_\tau))^2$$
+            </div>
+            
+            <ul>
+                <li>Recent gradients have weight $(1-\gamma)$</li>
+                <li>Gradients from $k$ steps ago have weight $(1-\gamma)\gamma^k$</li>
+                <li>Very old gradients have negligible weight</li>
+            </ul>
+            
+            <p>With $\gamma = 0.9$, a gradient from 10 steps ago has weight $0.1 \times 0.9^{10} \approx 0.035$ (only 3.5% influence).</p>
+            
+            <h4>Advantages</h4>
+            
+            <ul>
+                <li><strong>Non-monotonic learning rate:</strong> Can adapt to changing gradient landscapes</li>
+                <li><strong>Default choice for RNNs:</strong> Particularly effective for recurrent neural networks</li>
+                <li><strong>Stable for long training:</strong> Doesn't suffer from vanishing learning rate</li>
+                <li><strong>Minimal hyperparameter tuning:</strong> Default values work well for most problems</li>
+            </ul>
+            
+            <h4>Typical Hyperparameters</h4>
+            
+            <ul>
+                <li>Learning rate $\eta$: 0.001 (good default)</li>
+                <li>Decay rate $\gamma$: 0.9 (standard choice)</li>
+                <li>Epsilon $\epsilon$: $10^{-8}$ (for numerical stability)</li>
+            </ul>
+            
+            <h4>Applications</h4>
+            
+            <p>RMSProp is particularly popular for:</p>
+            <ul>
+                <li><strong>Recurrent Neural Networks (RNNs):</strong> Default optimizer choice</li>
+                <li><strong>Non-stationary problems:</strong> Where gradient statistics change over time</li>
+                <li><strong>Online learning:</strong> Streaming data scenarios</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>RMSProp ne AdaGrad ki main problem solve kar di. AdaGrad mein learning rate continuously decrease hota rehta tha kyunki wo saare past gradients ka sum rakhta tha. RMSProp isme smart improvement laaya - ye sirf recent gradients ka exponentially weighted moving average rakhta hai. Matlab agar $\gamma = 0.9$ hai, toh 10 steps purane gradient ka weight sirf 3.5% hai, bahut purane gradients ka almost koi effect nahi. Isliye learning rate dynamically adjust ho sakta hai - kabhi badh sakta hai, kabhi kam ho sakta hai, situation ke according. Ye RNNs (Recurrent Neural Networks) ke liye default choice hai aur long training runs mein bhi achhe se kaam karta hai.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Fixes AdaGrad's decaying learning rate problem</li>
+                    <li>Uses exponentially weighted moving average instead of cumulative sum</li>
+                    <li>Recent gradients have more influence than old ones</li>
+                    <li>Default choice for training RNNs and online learning</li>
+                    <li>Learning rate can adapt dynamically to changing landscapes</li>
+                    <li>Typically uses $\gamma = 0.9$ and $\eta = 0.001$</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="adam">
+            <h3>3.6 Adam Optimizer (Adaptive Moment Estimation)</h3>
+            
+            <p><span class="key-term">Adam</span> (Adaptive Moment Estimation) is currently the most popular optimizer in deep learning. It combines the best ideas from <strong>Momentum</strong> and <strong>RMSProp</strong>.</p>
+            
+            <h4>Core Idea: Best of Both Worlds</h4>
+            
+            <p>Adam maintains:</p>
+            <ol>
+                <li><strong>First moment (mean):</strong> Exponentially weighted average of gradients (like Momentum)</li>
+                <li><strong>Second moment (variance):</strong> Exponentially weighted average of squared gradients (like RMSProp)</li>
+            </ol>
+            
+            <h4>Update Rules</h4>
+            
+            <p><strong>Step 1: Compute moments</strong></p>
+            
+            <div class="formula">
+
+                $$m_t = \beta_1 m_{t-1} + (1 - \beta_1) \nabla f(w_t)$$
+            </div>
+            
+            <div class="formula">
+
+                $$v_t = \beta_2 v_{t-1} + (1 - \beta_2) (\nabla f(w_t))^2$$
+            </div>
+            
+            <p><strong>Step 2: Bias correction</strong></p>
+            
+            <div class="formula">
+
+                $$\hat{m}_t = \frac{m_t}{1 - \beta_1^t}$$
+            </div>
+            
+            <div class="formula">
+
+                $$\hat{v}_t = \frac{v_t}{1 - \beta_2^t}$$
+            </div>
+            
+            <p><strong>Step 3: Parameter update</strong></p>
+            
+            <div class="formula">
+
+                $$w_{t+1} = w_t - \frac{\eta}{\sqrt{\hat{v}_t} + \epsilon} \hat{m}_t$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$m_t$ is the first moment (mean of gradients)</li>
+                <li>$v_t$ is the second moment (mean of squared gradients)</li>
+                <li>$\beta_1$ is the decay rate for first moment (typically 0.9)</li>
+                <li>$\beta_2$ is the decay rate for second moment (typically 0.999)</li>
+                <li>$\eta$ is the learning rate (typically 0.001)</li>
+                <li>$\epsilon$ is a small constant (typically $10^{-8}$)</li>
+            </ul>
+            
+            <h4>Why Bias Correction?</h4>
+            
+            <p>At the beginning of training, $m_0 = 0$ and $v_0 = 0$. Without correction:</p>
+            <ul>
+                <li>Early estimates $m_t$ and $v_t$ are biased toward zero</li>
+                <li>This causes slow initial learning</li>
+            </ul>
+            
+            <p>The bias correction terms $(1 - \beta_1^t)$ and $(1 - \beta_2^t)$ compensate for this initialization bias. As $t$ increases, these terms approach 1, and the correction becomes negligible.</p>
+            
+            <h4>Default Hyperparameters (Recommended by Authors)</h4>
+            
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Default Value</th>
+                    <th>Meaning</th>
+                </tr>
+                <tr>
+                    <td>$\eta$</td>
+                    <td>0.001</td>
+                    <td>Learning rate</td>
+                </tr>
+                <tr>
+                    <td>$\beta_1$</td>
+                    <td>0.9</td>
+                    <td>First moment decay</td>
+                </tr>
+                <tr>
+                    <td>$\beta_2$</td>
+                    <td>0.999</td>
+                    <td>Second moment decay</td>
+                </tr>
+                <tr>
+                    <td>$\epsilon$</td>
+                    <td>$10^{-8}$</td>
+                    <td>Numerical stability</td>
+                </tr>
+            </table>
+            
+            <div class="important">
+                <strong>💡 Practical Tip:</strong> The default Adam hyperparameters work remarkably well across a wide range of problems. Start with defaults and only tune if necessary!
+            </div>
+            
+            <h4>Why Adam is So Popular</h4>
+            
+            <ul>
+                <li><strong>Works well with little tuning:</strong> Default parameters often sufficient</li>
+                <li><strong>Widely used default:</strong> Go-to starting point in deep learning</li>
+                <li><strong>Combines best features:</strong> Momentum + adaptive learning rates</li>
+                <li><strong>Handles sparse gradients:</strong> Good for NLP and other sparse problems</li>
+                <li><strong>Efficient computation:</strong> Only requires first-order gradients</li>
+                <li><strong>Minimal memory overhead:</strong> Just stores $m_t$ and $v_t$ per parameter</li>
+            </ul>
+            
+            <h4>Adam vs Other Optimizers</h4>
+            
+            <table>
+                <tr>
+                    <th>Optimizer</th>
+                    <th>Advantages</th>
+                    <th>Disadvantages</th>
+                </tr>
+                <tr>
+                    <td><strong>SGD</strong></td>
+                    <td>Simple, well-understood</td>
+                    <td>Requires careful tuning</td>
+                </tr>
+                <tr>
+                    <td><strong>SGD + Momentum</strong></td>
+                    <td>Faster convergence than SGD</td>
+                    <td>Still needs learning rate tuning</td>
+                </tr>
+                <tr>
+                    <td><strong>AdaGrad</strong></td>
+                    <td>Good for sparse data</td>
+                    <td>Learning rate decays too fast</td>
+                </tr>
+                <tr>
+                    <td><strong>RMSProp</strong></td>
+                    <td>Fixes AdaGrad, good for RNNs</td>
+                    <td>No momentum</td>
+                </tr>
+                <tr>
+                    <td><strong>Adam</strong></td>
+                    <td>Combines best of all, minimal tuning</td>
+                    <td>Sometimes generalizes worse than SGD</td>
+                </tr>
+            </table>
+            
+            <h4>When NOT to Use Adam</h4>
+            
+            <p>While Adam is excellent for most cases, there are situations where SGD with momentum might be better:</p>
+            <ul>
+                <li><strong>Final model performance:</strong> SGD sometimes achieves slightly better generalization</li>
+                <li><strong>Simple convex problems:</strong> Overkill; basic GD might suffice</li>
+                <li><strong>When reproducibility is critical:</strong> SGD behavior is more predictable</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor mentioned: "For deep learning problems, Adam is usually the go-to starting point nowadays. It combines RMSProp plus momentum. You can also make your own combination of optimizers - how do you know your combination may be a better algorithm, at least for some datasets? Different datasets show different results with different algorithms."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Adam optimizer deep learning mein sabse popular hai kyunki ye Momentum aur RMSProp dono ke best features combine karta hai. Ye do cheezein track karta hai: pehla, gradients ka moving average (momentum ke liye), aur doosra, squared gradients ka moving average (adaptive learning rate ke liye). Shuru mein bias correction bhi lagata hai taaki initial slow learning na ho. Default parameters ($\eta = 0.001$, $\beta_1 = 0.9$, $\beta_2 = 0.999$) bahut achhe se kaam karte hain, isliye zyada tuning ki zarurat nahi padti. Isliye deep learning mein Adam usually starting point hota hai - kaam bhi achha karta hai aur tuning ki tension bhi nahi. Bas kabhi-kabhi final generalization SGD se thoda weak ho sakta hai, but mostly Adam hi best choice hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Explain how Adam combines Momentum and RMSProp. What does each component contribute?
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <strong>From Momentum ($m_t$):</strong>
+                        <ul>
+                            <li>Maintains exponentially weighted average of gradients</li>
+                            <li>Provides velocity/momentum in consistent directions</li>
+                            <li>Helps escape plateaus and accelerate convergence</li>
+                            <li>Controlled by $\beta_1 = 0.9$</li>
+                        </ul>
+                        <strong>From RMSProp ($v_t$):</strong>
+                        <ul>
+                            <li>Maintains exponentially weighted average of squared gradients</li>
+                            <li>Provides per-parameter adaptive learning rates</li>
+                            <li>Handles sparse gradients and different parameter scales</li>
+                            <li>Controlled by $\beta_2 = 0.999$</li>
+                        </ul>
+                        The final update uses momentum direction $\hat{m}_t$ with RMSProp-style adaptive step sizes $1/\sqrt{\hat{v}_t}$.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why is bias correction necessary in Adam? What happens without it?
+                    <div class="answer">
+                        <strong>Answer:</strong> Since $m_0 = 0$ and $v_0 = 0$, the initial estimates are biased toward zero. Without correction:
+                        <ul>
+                            <li><strong>Early iterations:</strong> $m_t$ and $v_t$ are very small, close to zero</li>
+                            <li><strong>Impact:</strong> Effective learning rate becomes too small initially</li>
+                            <li><strong>Result:</strong> Very slow initial learning</li>
+                        </ul>
+                        The correction terms $\hat{m}_t = m_t/(1-\beta_1^t)$ and $\hat{v}_t = v_t/(1-\beta_2^t)$ scale up these early estimates. For example, at $t=1$ with $\beta_1=0.9$: without correction, $m_1 = 0.1 \cdot \nabla f$, but with correction, $\hat{m}_1 = 0.1 \cdot \nabla f / (1-0.9) = \nabla f$, fully compensating for the initialization.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Compare the memory requirements and computational cost of SGD, RMSProp, and Adam.
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <strong>Per parameter, need to store:</strong>
+                        <ul>
+                            <li><strong>SGD:</strong> Just the parameter $w$ (1 value) - <strong>Memory: $O(d)$</strong></li>
+                            <li><strong>RMSProp:</strong> Parameter $w$ + running average $v$ (2 values) - <strong>Memory: $O(2d)$</strong></li>
+                            <li><strong>Adam:</strong> Parameter $w$ + first moment $m$ + second moment $v$ (3 values) - <strong>Memory: $O(3d)$</strong></li>
+                        </ul>
+                        <strong>Computational cost per iteration:</strong>
+                        <ul>
+                            <li><strong>SGD:</strong> Compute gradient + update - <strong>Cost: $O(d)$</strong></li>
+                            <li><strong>RMSProp:</strong> Compute gradient + update $v$ + parameter update - <strong>Cost: $O(d)$</strong></li>
+                            <li><strong>Adam:</strong> Compute gradient + update $m$ and $v$ + bias correction + parameter update - <strong>Cost: $O(d)$</strong></li>
+                        </ul>
+                        All have same computational complexity $O(d)$ per iteration, but Adam requires 3× memory compared to SGD. For modern deep learning where $d$ can be billions, this matters but is usually acceptable.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Adam = Momentum + RMSProp + Bias Correction</li>
+                    <li>Maintains both first moment (mean) and second moment (variance) of gradients</li>
+                    <li>Default hyperparameters work well: $\eta=0.001$, $\beta_1=0.9$, $\beta_2=0.999$</li>
+                    <li>Most popular optimizer in deep learning - often the first choice</li>
+                    <li>Minimal tuning required compared to other optimizers</li>
+                    <li>Handles sparse gradients and varying scales effectively</li>
+                    <li>Memory overhead: 3× compared to SGD (stores $w$, $m_t$, $v_t$)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="choosing">
+            <h2>4. Choosing the Right Optimizer</h2>
+            
+            <p>With so many optimizer options, how do you choose? Here's a practical guide based on your problem characteristics:</p>
+            
+            <h3>Decision Framework</h3>
+            
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Recommended Optimizer</th>
+                    <th>Reasoning</th>
+                </tr>
+                <tr>
+                    <td><strong>Small datasets, convex problems</strong></td>
+                    <td>Gradient Descent (GD)</td>
+                    <td>Simple, guaranteed convergence, full batch computation is feasible</td>
+                </tr>
+                <tr>
+                    <td><strong>Large datasets (millions of samples)</strong></td>
+                    <td>SGD or Mini-batch GD</td>
+                    <td>Faster iterations, handles large data efficiently</td>
+                </tr>
+                <tr>
+                    <td><strong>Deep neural networks (starting point)</strong></td>
+                    <td>Adam</td>
+                    <td>Works with minimal tuning, adaptive learning rates, momentum</td>
+                </tr>
+                <tr>
+                    <td><strong>Recurrent Neural Networks (RNNs)</strong></td>
+                    <td>RMSProp or Adam</td>
+                    <td>Handles gradient instability in recurrent architectures</td>
+                </tr>
+                <tr>
+                    <td><strong>Sparse data (NLP, recommendations)</strong></td>
+                    <td>AdaGrad or Adam</td>
+                    <td>Per-parameter adaptation handles sparse features well</td>
+                </tr>
+                <tr>
+                    <td><strong>Need best generalization</strong></td>
+                    <td>SGD + Momentum</td>
+                    <td>Sometimes generalizes better than Adam (with careful tuning)</td>
+                </tr>
+                <tr>
+                    <td><strong>Convex optimization problems</strong></td>
+                    <td>Nesterov Accelerated GD</td>
+                    <td>Optimal convergence rate for smooth convex functions</td>
+                </tr>
+            </table>
+            
+            <h3>Practical Workflow</h3>
+            
+            <ol>
+                <li><strong>Start with Adam:</strong> Use default parameters ($\eta=0.001$, $\beta_1=0.9$, $\beta_2=0.999$)</li>
+                <li><strong>If training is unstable:</strong> Reduce learning rate by 10× (try $\eta=0.0001$)</li>
+                <li><strong>If convergence is slow:</strong> Try SGD with momentum or increase learning rate</li>
+                <li><strong>If need better generalization:</strong> Switch to SGD + momentum with careful tuning</li>
+                <li><strong>For RNNs specifically:</strong> Consider RMSProp if Adam doesn't work well</li>
+            </ol>
+            
+            <div class="professor-note">
+                The professor emphasized: "GD is for small datasets and convex problems. SGD or Mini-batch for large datasets. RMSProp or Adam for deep learning. Adam is usually the go-to starting point. It's important to know these optimizers exist and when to use them, but you don't always have to implement from scratch - use the libraries!"
+            </div>
+            
+            <h3>Key Principles</h3>
+            
+            <ul>
+                <li><strong>No universal best:</strong> Different problems benefit from different optimizers</li>
+                <li><strong>Start simple:</strong> Begin with Adam (or SGD for simple problems)</li>
+                <li><strong>Experiment:</strong> Try 2-3 optimizers if first choice doesn't work well</li>
+                <li><strong>Monitor metrics:</strong> Watch both training and validation performance</li>
+                <li><strong>Consider trade-offs:</strong> Training speed vs. final performance vs. hyperparameter sensitivity</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Optimizer choose karna problem ke type pe depend karta hai. Agar dataset chota hai aur problem convex hai, toh simple Gradient Descent achha hai. Agar dataset bahut bada hai (millions samples), toh SGD ya Mini-batch GD use karo kyunki fast hai. Deep learning ke liye, Adam usually sabse achha starting point hai - minimal tuning chahiye aur mostly achha kaam karta hai. RNNs ke liye RMSProp ya Adam best hai. Agar final accuracy sabse important hai aur time hai tuning ka, toh SGD + momentum try karo. Convex problems ke liye Nesterov Accelerated GD optimal hai. General thumb rule: Adam se shuru karo, agar kaam nahi kiya toh dusre try karo. Aur sab library mein available hain, scratch se implement karne ki zarurat nahi!</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Adam is the default starting point for deep learning</li>
+                    <li>SGD/Mini-batch for large datasets where full batch is infeasible</li>
+                    <li>RMSProp is the traditional choice for RNNs</li>
+                    <li>SGD + momentum sometimes achieves better final generalization</li>
+                    <li>No single optimizer is best for all problems - experiment!</li>
+                    <li>Start with standard defaults, then tune only if necessary</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="libraries">
+            <h2>5. Where to Find Them - Popular Libraries</h2>
+            
+            <p>All these optimization algorithms are implemented in popular machine learning libraries. You don't need to implement them from scratch!</p>
+            
+            <h3>Scikit-Learn (sklearn)</h3>
+            
+            <p><strong>For traditional ML:</strong> Classification, regression, clustering</p>
+            
+            <pre><code class="language-python">from sklearn.linear_model import SGDRegressor, SGDClassifier
+
+# SGD for regression
+model = SGDRegressor(loss='squared_error', max_iter=1000, 
+                     learning_rate='adaptive', eta0=0.01)
+model.fit(X_train, y_train)
+
+# SGD for classification
+clf = SGDClassifier(loss='log', max_iter=1000)
+clf.fit(X_train, y_train)</code></pre>
+            
+            <h3>PyTorch (torch.optim)</h3>
+            
+            <p><strong>For deep learning:</strong> Neural networks, custom models</p>
+            
+            <pre><code class="language-python">import torch.optim as optim
+
+# Adam optimizer
+optimizer = optim.Adam(model.parameters(), lr=0.001, 
+                       betas=(0.9, 0.999), eps=1e-08)
+
+# SGD with momentum
+optimizer = optim.SGD(model.parameters(), lr=0.01, 
+                      momentum=0.9)
+
+# RMSProp
+optimizer = optim.RMSprop(model.parameters(), lr=0.001, 
+                          alpha=0.99)
+
+# Training loop
+for epoch in range(num_epochs):
+    optimizer.zero_grad()  # Reset gradients
+    output = model(input)
+    loss = criterion(output, target)
+    loss.backward()        # Compute gradients
+    optimizer.step()       # Update parameters</code></pre>
+            
+            <h3>TensorFlow / Keras</h3>
+            
+            <p><strong>For deep learning:</strong> High-level API</p>
+            
+            <pre><code class="language-python">import tensorflow as tf
+from tensorflow.keras.optimizers import Adam, SGD, RMSprop
+
+# Adam optimizer
+model.compile(optimizer=Adam(learning_rate=0.001),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# SGD with momentum
+model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9),
+              loss='mse')
+
+# RMSprop
+model.compile(optimizer=RMSprop(learning_rate=0.001),
+              loss='binary_crossentropy')
+
+# Training
+model.fit(X_train, y_train, epochs=10, batch_size=64)</code></pre>
+            
+            <h3>Summary of Library Support</h3>
+            
+            <table>
+                <tr>
+                    <th>Optimizer</th>
+                    <th>Scikit-Learn</th>
+                    <th>PyTorch</th>
+                    <th>TensorFlow/Keras</th>
+                </tr>
+                <tr>
+                    <td>SGD</td>
+                    <td>✅ SGDRegressor/Classifier</td>
+                    <td>✅ optim.SGD</td>
+                    <td>✅ SGD</td>
+                </tr>
+                <tr>
+                    <td>SGD + Momentum</td>
+                    <td>✅ (momentum parameter)</td>
+                    <td>✅ optim.SGD</td>
+                    <td>✅ SGD</td>
+                </tr>
+                <tr>
+                    <td>AdaGrad</td>
+                    <td>❌</td>
+                    <td>✅ optim.Adagrad</td>
+                    <td>✅ Adagrad</td>
+                </tr>
+                <tr>
+                    <td>RMSProp</td>
+                    <td>❌</td>
+                    <td>✅ optim.RMSprop</td>
+                    <td>✅ RMSprop</td>
+                </tr>
+                <tr>
+                    <td>Adam</td>
+                    <td>❌</td>
+                    <td>✅ optim.Adam</td>
+                    <td>✅ Adam</td>
+                </tr>
+            </table>
+            
+            <h3>Free Resources for Learning</h3>
+            
+            <ul>
+                <li><strong>Google Colab:</strong> Free Jupyter notebooks with GPU access</li>
+                <li><strong>Kaggle Kernels:</strong> Free compute + datasets + community notebooks</li>
+                <li><strong>PyTorch Tutorials:</strong> pytorch.org/tutorials</li>
+                <li><strong>TensorFlow Tutorials:</strong> tensorflow.org/tutorials</li>
+                <li><strong>Scikit-Learn Docs:</strong> scikit-learn.org/stable/documentation</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor mentioned: "These are some of the libraries you should know - Scikit-Learn for traditional machine learning, PyTorch and TensorFlow for deep learning. You have free demos available on Kaggle and Google Colab. These will be illustrated in your tutorial sessions. You should know how to actually use them. Sometimes you write code from scratch to understand the algorithm, but usually you'll call these solvers directly from libraries."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Saare optimizers already popular libraries mein implement hain - khud se code likhne ki zarurat nahi! Scikit-Learn traditional machine learning ke liye hai (classification, regression), PyTorch aur TensorFlow/Keras deep learning ke liye. PyTorch mein torch.optim module mein saare optimizers hain (Adam, SGD, RMSprop sab). TensorFlow mein keras.optimizers use karte hain. Sikhne ke liye bahut free resources hain - Google Colab (free GPU milta hai), Kaggle (datasets + notebooks), aur official tutorials. Tutorial sessions mein ye sab practical mein dikhaya jayega. Important hai ki tum jaan jao ki kab kaun sa optimizer use karna hai aur library se kaise call karna hai!</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>All major optimizers are available in popular libraries</li>
+                    <li>Scikit-Learn: For traditional ML (SGD variants available)</li>
+                    <li>PyTorch: torch.optim module with all optimizers</li>
+                    <li>TensorFlow/Keras: High-level optimizer API</li>
+                    <li>Free resources: Google Colab, Kaggle, official tutorials</li>
+                    <li>Rarely need to implement optimizers from scratch</li>
+                    <li>Focus on understanding when to use which optimizer</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="newton">
+            <h2>6. Newton's Method</h2>
+            
+            <p>Now we move to a fundamentally different optimization approach: <span class="key-term">Newton's Method</span>. This is a classical and very powerful method that uses second-order information (the Hessian matrix) to achieve much faster convergence.</p>
+            
+            <div class="professor-note">
+                The professor introduced: "There is another very popular method called Newton's method. This is an old method that was actually used to solve equations. Ultimately, what is my optimizer or minimizer? It's a solution to the problem where $\nabla f = 0$. So to find an optimizer, I have to solve an equation - actually a system of equations since $\nabla f$ is usually a vector. Newton's method is one way to solve systems of equations, and that's why you can use Newton's method for optimization as well."
+            </div>
+        </section>
+
+        <section id="newton-basics">
+            <h3>6.1 Understanding Newton's Method</h3>
+            
+            <h4>Historical Context</h4>
+            
+            <p>Newton's method, also called the <span class="key-term">Newton-Raphson method</span>, was originally developed to find roots of nonlinear equations. It's credited to Isaac Newton.</p>
+            
+            <h4>From Root Finding to Optimization</h4>
+            
+            <p><strong>Root finding problem:</strong> Find $x$ such that $g(x) = 0$</p>
+            
+            <p>Newton's iteration for root finding:</p>
+            
+            <div class="formula">
+
+                $$x_{n+1} = x_n - \frac{g(x_n)}{g'(x_n)}$$
+            </div>
+            
+            <p><strong>Optimization problem:</strong> Find $x^*$ such that $\nabla f(x^*) = 0$</p>
+            
+            <p>Setting $g(x) = \nabla f(x)$, we get:</p>
+            
+            <div class="formula">
+
+                $$x_{n+1} = x_n - \frac{\nabla f(x_n)}{\nabla^2 f(x_n)}$$
+            </div>
+            
+            <p>For multi-dimensional problems, division becomes matrix inversion:</p>
+            
+            <div class="formula">
+
+                $$x_{n+1} = x_n - (\nabla^2 f(x_n))^{-1} \nabla f(x_n)$$
+            </div>
+            
+            <h4>Connection to Descent Methods</h4>
+            
+            <div class="professor-note">
+                The professor recalled: "Remember the descent method framework? You start from a point, find a direction in which to move, and choose how much to move in that direction. Different algorithms vary in how they choose the direction and the step length. Gradient descent chooses direction as negative gradient. Newton method chooses direction as negative Hessian inverse times gradient."
+            </div>
+            
+            <p>In the <span class="key-term">descent method framework</span>:</p>
+            
+            <ol>
+                <li><strong>Find direction:</strong> $d_k$ such that $\nabla f(x_k)^T d_k < 0$ (descent direction)</li>
+                <li><strong>Choose step size:</strong> $\alpha_k > 0$</li>
+                <li><strong>Update:</strong> $x_{k+1} = x_k + \alpha_k d_k$</li>
+            </ol>
+            
+            <p><strong>Gradient Descent:</strong> $d_k = -\nabla f(x_k)$</p>
+            
+            <p><strong>Newton's Method:</strong> $d_k = -(\nabla^2 f(x_k))^{-1} \nabla f(x_k)$</p>
+            
+            <h4>Why This Direction?</h4>
+            
+            <p>Newton's direction comes from approximating $f$ with its <span class="key-term">second-order Taylor expansion</span>:</p>
+            
+            <div class="formula">
+
+                $$f(x) \approx f(x_k) + \nabla f(x_k)^T (x - x_k) + \frac{1}{2}(x - x_k)^T \nabla^2 f(x_k) (x - x_k)$$
+            </div>
+            
+            <p>To minimize this quadratic approximation, differentiate with respect to $x$ and set to zero:</p>
+            
+            <div class="formula">
+
+                $$\nabla f(x_k) + \nabla^2 f(x_k) (x - x_k) = 0$$
+            </div>
+            
+            <p>Solving for $(x - x_k)$:</p>
+            
+            <div class="formula">
+
+                $$(x - x_k) = -(\nabla^2 f(x_k))^{-1} \nabla f(x_k)$$
+            </div>
+            
+            <p>This is exactly the Newton direction!</p>
+            
+            <div class="important">
+                <strong>🔑 Key Insight:</strong> Newton's method minimizes a quadratic approximation of the function at each step. For quadratic functions, this approximation is exact, leading to convergence in one step!
+            </div>
+            
+            <h4>Requirements for Newton's Method</h4>
+            
+            <p>For Newton's direction to be a valid descent direction:</p>
+            
+            <ul>
+                <li>$f$ must be <strong>twice continuously differentiable</strong></li>
+                <li>$\nabla^2 f(x_k)$ must be <strong>positive definite</strong> (i.e., $f$ must be locally strictly convex)</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor emphasized: "For Pure Newton method, you can only apply it if the function is twice differentiable and not just that - the Hessian has to be positive definite. That means it has to be something like a strictly convex function. That's a drawback - a very big drawback of Newton's method. Its applicability is very limited compared to gradient descent, which only needs first derivatives."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Newton's method ek purana aur powerful method hai jo originally equations solve karne ke liye banaya gaya tha. Optimization problem bhi ultimately ek equation hai: $\nabla f(x) = 0$. Newton's method isme direction choose karta hai second-order information use karke - yaani Hessian matrix. Ye function ka quadratic approximation minimize karta hai har step pe. Isliye quadratic functions ke liye ek hi step mein converge kar jata hai! Lekin limitation hai - function twice differentiable hona chahiye aur Hessian positive definite hona chahiye (strictly convex). Gradient descent mein ye problems nahi hain, usko sirf first derivative chahiye. Lekin jab applicable ho, Newton's method gradient descent se bahut faster hai!</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Newton's method originally designed for solving equations $g(x) = 0$</li>
+                    <li>Applied to optimization by solving $\nabla f(x) = 0$</li>
+                    <li>Uses second-order Taylor approximation (quadratic model)</li>
+                    <li>Direction: $d_k = -(\nabla^2 f(x_k))^{-1} \nabla f(x_k)$</li>
+                    <li>Requires function to be twice differentiable</li>
+                    <li>Hessian must be positive definite (strictly convex function)</li>
+                    <li>More restrictive than gradient descent but much faster when applicable</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="newton-algorithm">
+            <h3>6.2 Pure Newton's Method Algorithm</h3>
+            
+            <p>The <span class="key-term">Pure Newton's Method</span> (also called simply Newton's Method) uses a fixed step size of $\alpha = 1$.</p>
+            
+            <div class="algorithm">
+<strong>Algorithm: Pure Newton's Method</strong>
+
+1. <strong>Initialize:</strong> x⁰ = (x₁⁰, x₂⁰, ..., xₙ⁰), tolerance tol, k = 0
+2. <strong>while</strong> ‖∇f(xᵏ)‖ > tol <strong>do</strong>
+3.     <strong>Direction:</strong> dᵏ = -(∇²f(xᵏ))⁻¹ ∇f(xᵏ)
+4.     <strong>Update:</strong> xᵏ⁺¹ = xᵏ + dᵏ     [Note: Step size α = 1]
+5.     k = k + 1
+6. <strong>end while</strong>
+7. <strong>Output:</strong> xᵏ as a critical point of f(·)
+            </div>
+            
+            <h4>Key Difference from Gradient Descent</h4>
+            
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Gradient Descent</th>
+                    <th>Newton's Method</th>
+                </tr>
+                <tr>
+                    <td><strong>Direction</strong></td>
+                    <td>$d_k = -\nabla f(x_k)$</td>
+                    <td>$d_k = -(\nabla^2 f(x_k))^{-1} \nabla f(x_k)$</td>
+                </tr>
+                <tr>
+                    <td><strong>Step Size</strong></td>
+                    <td>Needs tuning: $\alpha_k$ (often requires line search)</td>
+                    <td>Fixed: $\alpha = 1$ (pure Newton)</td>
+                </tr>
+                <tr>
+                    <td><strong>Information Used</strong></td>
+                    <td>First-order (gradient only)</td>
+                    <td>Second-order (gradient + Hessian)</td>
+                </tr>
+                <tr>
+                    <td><strong>Cost per Iteration</strong></td>
+                    <td>$O(n)$ to compute gradient</td>
+                    <td>$O(n^2)$ to compute Hessian, $O(n^3)$ to invert</td>
+                </tr>
+                <tr>
+                    <td><strong>Convergence Rate</strong></td>
+                    <td>Linear: $O(1/t)$</td>
+                    <td>Quadratic: $O(1/t^2)$ near solution</td>
+                </tr>
+                <tr>
+                    <td><strong>Requirements</strong></td>
+                    <td>$f$ differentiable</td>
+                    <td>$f$ twice differentiable, Hessian positive definite</td>
+                </tr>
+            </table>
+            
+            <h4>Computational Cost Analysis</h4>
+            
+            <p>For a function with $n$ variables, each Newton iteration requires:</p>
+            
+            <ol>
+                <li><strong>Compute gradient:</strong> $O(n)$ operations</li>
+                <li><strong>Compute Hessian:</strong> $O(n^2)$ operations (it's an $n \times n$ matrix)</li>
+                <li><strong>Solve linear system:</strong> $(\nabla^2 f(x_k)) d_k = -\nabla f(x_k)$ requires $O(n^3)$ operations</li>
+            </ol>
+            
+            <div class="important">
+                <strong>⚠️ Computational Challenge:</strong> For large $n$ (e.g., deep learning with millions of parameters), computing and inverting the Hessian is prohibitively expensive. This is why <span class="key-term">Quasi-Newton methods</span> were developed to approximate the Hessian efficiently.
+            </div>
+            
+            <div class="professor-note">
+                The professor explained: "For quadratic functions, if you start from anywhere, you will reach the solution in just one step with pure Newton's method! You cannot expect any faster algorithm than that. But it has a starting point issue and applicability issues - the Hessian must be positive definite throughout. To avoid the starting point issue, we have the Damped Newton method where we don't use step length as 1 but use some line search method."
+            </div>
+            
+            <h4>Why Step Size α = 1?</h4>
+            
+            <p>The choice $\alpha = 1$ comes from the quadratic approximation:</p>
+            <ul>
+                <li>Newton's direction minimizes the quadratic model exactly</li>
+                <li>For truly quadratic functions, $\alpha = 1$ gives the exact solution</li>
+                <li>Near the optimum, functions behave approximately quadratic</li>
+                <li>Using $\alpha = 1$ exploits this quadratic nature</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Pure Newton's Method mein hum hamesha step size $\alpha = 1$ use karte hain - ye "pure" naam ka reason hai. Har iteration mein teen cheezein karni padti hain: gradient calculate karo ($O(n)$), Hessian calculate karo ($O(n^2)$), aur Hessian ko invert karke linear system solve karo ($O(n^3)$). Ye bahut expensive hai jab $n$ bada ho (jaise deep learning mein millions parameters). Isliye Quasi-Newton methods develop kiye gaye jo Hessian ko efficiently approximate karte hain. Pure Newton ka biggest advantage ye hai ki quadratic functions ke liye ek hi step mein converge ho jata hai - bilkul exact solution! Lekin starting point important hai, aur Hessian positive definite hona chahiye.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Pure Newton's Method uses fixed step size α = 1</li>
+                    <li>Direction: $d_k = -(\nabla^2 f(x_k))^{-1} \nabla f(x_k)$</li>
+                    <li>Computational cost: $O(n^3)$ per iteration (Hessian inversion)</li>
+                    <li>Much faster convergence than gradient descent (quadratic vs linear)</li>
+                    <li>But each iteration is much more expensive</li>
+                    <li>Impractical for large-scale problems (millions of parameters)</li>
+                    <li>Motivates Quasi-Newton methods for large-scale optimization</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="newton-quadratic">
+            <h3>6.3 Newton's Method for Quadratic Functions</h3>
+            
+            <p>Newton's method achieves its most remarkable performance on <span class="key-term">quadratic functions with positive definite matrices</span>.</p>
+            
+            <h4>Quadratic Function Form</h4>
+            
+            <p>Consider a quadratic function:</p>
+            
+            <div class="formula">
+
+                $$f(x) = \frac{1}{2} x^T A x + b^T x + c$$
+            </div>
+            
+            <p>where:</p>
+            <ul>
+                <li>$A$ is a <strong>positive definite matrix</strong> (i.e., symmetric and all eigenvalues > 0)</li>
+                <li>$b$ is a vector in $\mathbb{R}^n$</li>
+                <li>$c$ is a scalar constant</li>
+            </ul>
+            
+            <h4>Gradient and Hessian</h4>
+            
+            <p>For this quadratic function:</p>
+            
+            <div class="formula">
+
+                $$\nabla f(x) = Ax + b$$
+            </div>
+            
+            <div class="formula">
+
+                $$\nabla^2 f(x) = A \quad \text{(constant everywhere!)}$$
+            </div>
+            
+            <h4>Unique Minimizer</h4>
+            
+            <p>Since $A$ is positive definite, the unique minimizer is found by setting $\nabla f(x^*) = 0$:</p>
+            
+            <div class="formula">
+
+                $$Ax^* + b = 0 \implies x^* = -A^{-1}b$$
+            </div>
+            
+            <h4>One-Step Convergence</h4>
+            
+            <p><strong>Theorem:</strong> For a quadratic function with positive definite $A$, Newton's method converges in exactly <strong>one iteration</strong> from any starting point $x_0$.</p>
+            
+            <p><strong>Proof:</strong></p>
+            
+            <p>Starting from any $x_0$, compute the Newton direction:</p>
+            
+            <div class="formula">
+
+                $$d_0 = -(\nabla^2 f(x_0))^{-1} \nabla f(x_0) = -A^{-1}(Ax_0 + b)$$
+            </div>
+            
+            <div class="formula">
+
+                $$d_0 = -A^{-1}Ax_0 - A^{-1}b = -x_0 - A^{-1}b$$
+            </div>
+            
+            <p>The next iterate is:</p>
+            
+            <div class="formula">
+
+                $$x_1 = x_0 + d_0 = x_0 + (-x_0 - A^{-1}b) = -A^{-1}b = x^*$$
+            </div>
+            
+            <div class="important">
+                <strong>🎯 Amazing Result:</strong> In just <strong>one step</strong>, we reach the exact solution $x^* = -A^{-1}b$, regardless of where we started! This is the fastest possible convergence.
+            </div>
+            
+            <div class="professor-note">
+                The professor demonstrated: "Let me show you an example. This is a quadratic function. If I calculate using Newton's method... see, in just one iteration it is converging! But this is only true for quadratic functions. If I use some other function [non-quadratic], it converges in say 19 steps. So it has converged after certain points. But in quadratic functions, you see it actually converges in just one step, and that is very, very remarkable!"
+            </div>
+            
+            <h4>Why Quadratic Functions Are Important</h4>
+            
+            <p>Even though most real optimization problems aren't quadratic, this result is extremely important because:</p>
+            
+            <ol>
+                <li><strong>Least Squares:</strong> Linear regression is a quadratic problem</li>
+                <li><strong>Local approximation:</strong> Near any minimum, smooth functions behave quadratically</li>
+                <li><strong>Theoretical insight:</strong> Shows Newton's method's potential power</li>
+                <li><strong>Motivation for variants:</strong> Inspires Quasi-Newton methods</li>
+            </ol>
+            
+            <h4>Example: Least Squares Regression</h4>
+            
+            <p>In linear regression, we minimize:</p>
+            
+            <div class="formula">
+
+                $$f(w) = \frac{1}{2}\|Xw - y\|^2 = \frac{1}{2}(Xw - y)^T(Xw - y)$$
+            </div>
+            
+            <p>Expanding:</p>
+            
+            <div class="formula">
+
+                $$f(w) = \frac{1}{2}w^T X^T X w - w^T X^T y + \frac{1}{2}y^T y$$
+            </div>
+            
+            <p>This is quadratic in $w$ with:</p>
+            <ul>
+                <li>$A = X^T X$ (positive definite if $X$ has full rank)</li>
+                <li>$b = -X^T y$</li>
+                <li>$c = \frac{1}{2}y^T y$</li>
+            </ul>
+            
+            <p>Newton's method finds the solution in one step:</p>
+            
+            <div class="formula">
+
+                $$w^* = (X^T X)^{-1} X^T y$$
+            </div>
+            
+            <p>This is the famous <span class="key-term">Normal Equation</span> solution!</p>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Quadratic functions ke liye Newton's method ka performance ekdum remarkable hai - sirf ek step mein exact solution mil jata hai, chahe starting point kahan bhi ho! Quadratic function ka form hota hai $f(x) = \frac{1}{2}x^T A x + b^T x + c$ jahan $A$ positive definite hai. Is function ka gradient $Ax + b$ hai aur Hessian constant $A$ hai. Unique minimizer $x^* = -A^{-1}b$ hai. Jab Newton's method apply karte hain, pehle iteration mein hi $x_1 = x^*$ mil jata hai! Ye result bahut important hai kyunki least squares regression (linear regression) bhi ek quadratic problem hai. Aur general functions bhi minimum ke paas quadratic ki tarah behave karte hain, isliye Newton's method near solution pe bahut fast converge karta hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Prove that for the quadratic function $f(x) = \frac{1}{2}x^T A x + b^T x + c$, the Hessian is constant.
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        First, compute the gradient:
+
+                        $$\nabla f(x) = \frac{\partial}{\partial x}\left(\frac{1}{2}x^T A x + b^T x + c\right)$$
+                        Using the fact that $\frac{\partial}{\partial x}(x^T A x) = (A + A^T)x = 2Ax$ (when $A$ is symmetric):
+
+                        $$\nabla f(x) = Ax + b$$
+                        Now compute the Hessian (second derivative):
+
+                        $$\nabla^2 f(x) = \frac{\partial}{\partial x}(Ax + b) = A$$
+                        Since $A$ is a constant matrix (doesn't depend on $x$), the Hessian is constant everywhere! This is a unique property of quadratic functions.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why does Newton's method converge in one step for quadratics but not for other functions?
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        Newton's method minimizes the second-order Taylor approximation of the function at each step:
+
+                        $$f(x) \approx f(x_k) + \nabla f(x_k)^T(x-x_k) + \frac{1}{2}(x-x_k)^T \nabla^2 f(x_k)(x-x_k)$$
+                        
+                        <strong>For quadratic functions:</strong> This approximation is <em>exact</em> (not an approximation at all), since a quadratic function equals its own second-order Taylor expansion. Therefore, minimizing the approximation gives the exact minimum of the actual function.
+                        
+                        <strong>For non-quadratic functions:</strong> The Taylor approximation is just an approximation. Minimizing it gives a point closer to the optimum but not the exact optimum. Multiple iterations are needed, each time building a new quadratic approximation at the new point.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> For the least squares problem $\min_w \frac{1}{2}\|Xw - y\|^2$, show that Newton's method gives the normal equation solution in one step.
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        The objective function is:
+
+                        $$f(w) = \frac{1}{2}(Xw - y)^T(Xw - y) = \frac{1}{2}w^T X^T X w - w^T X^T y + \frac{1}{2}y^T y$$
+                        
+                        Gradient: $\nabla f(w) = X^T X w - X^T y$
+                        
+                        Hessian: $\nabla^2 f(w) = X^T X$
+                        
+                        Starting from any $w_0$, Newton's direction is:
+
+                        $$d_0 = -(X^T X)^{-1}(X^T X w_0 - X^T y) = -w_0 + (X^T X)^{-1}X^T y$$
+                        
+                        Newton's update:
+
+                        $$w_1 = w_0 + d_0 = w_0 - w_0 + (X^T X)^{-1}X^T y = (X^T X)^{-1}X^T y$$
+                        
+                        This is exactly the normal equation solution! Newton's method solves least squares in one iteration.
+                                            </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Newton's method converges in exactly one iteration for quadratic functions</li>
+                    <li>For $f(x) = \frac{1}{2}x^T A x + b^T x + c$, solution is $x^* = -A^{-1}b$</li>
+                    <li>Linear regression (least squares) is a quadratic problem solved by normal equations</li>
+                    <li>This remarkable property motivates Newton's method for general optimization</li>
+                    <li>Non-quadratic functions behave quadratically near minima, explaining fast local convergence</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="newton-convergence">
+            <h3>6.4 Convergence Properties</h3>
+            
+            <p>Newton's method exhibits <span class="key-term">quadratic convergence</span> under certain conditions, which is much faster than the linear convergence of gradient descent.</p>
+            
+            <h4>Convergence Theorem</h4>
+            
+            <p><strong>Theorem:</strong> Let $f: \mathbb{R}^n \to \mathbb{R}$ be a twice continuously differentiable function. Suppose the following conditions hold:</p>
+            
+            <ol>
+                <li>There exists some $m > 0$ such that $\nabla^2 f(x) - mI$ is a positive semidefinite matrix for all $x \in \mathbb{R}^n$</li>
+                <li>There exists some $L > 0$ such that $\|\nabla^2 f(x) - \nabla^2 f(y)\| \leq L\|x - y\|$ for all $x, y \in \mathbb{R}^n$</li>
+            </ol>
+            
+            <p>If $x^*$ is the unique minimizer and $\{x_k\}$ is the sequence generated by Newton's method, then:</p>
+            
+            <div class="formula">
+
+                $$\|x_{k+1} - x^*\| \leq \frac{L}{2m} \|x_k - x^*\|^2$$             </div>
+            
+            <p>In particular, if $\|x_0 - x^*\| \leq \frac{m}{L}$, then:</p>
+            
+            <div class="formula">
+
+                $$\|x_k - x^*\| \leq \frac{2m}{L} \left(\frac{1}{2}\right)^{2^k}$$             </div>
+            
+            <h4>Understanding Quadratic Convergence</h4>
+            
+            <p><strong>Linear convergence (gradient descent):</strong> Error reduces by constant factor each iteration</p>
+            
+            <div class="formula">
+
+                $$\|x_{k+1} - x^*\| \leq c \|x_k - x^*\| \quad \text{where } 0 < c < 1$$             </div>
+            
+            <p><strong>Quadratic convergence (Newton's method):</strong> Error squares each iteration</p>
+            
+            <div class="formula">
+
+                $$\|x_{k+1} - x^*\| \leq c \|x_k - x^*\|^2$$             </div>
+            
+            <div class="professor-note">
+                The professor explained: "This is a very, very fast method. Once you're very close to the solution, it converges very fast, much faster than gradient descent. But you need to start nearby - if you start much outside, pure Newton method may diverge. That's why we have the damped version."
+            </div>
+            
+            <h4>Practical Implications</h4>
+            
+            <table>
+                <tr>
+                    <th>Iteration</th>
+                    <th>Linear Convergence (c=0.5)</th>
+                    <th>Quadratic Convergence (c=1)</th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>1.0</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>0.5</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>0.25</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>0.125</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>0.0625</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>0.03125</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>0.015625</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>0.0078125</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>0.00390625</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>0.001953125</td>
+                    <td>1.0</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>0.0009765625</td>
+                    <td>1.0</td>
+                </tr>
+            </table>
+            
+            <div class="important">
+                <strong>🚀 Key Insight:</strong> With quadratic convergence, once you're close enough to the solution, the number of correct digits roughly doubles each iteration! This is extremely fast compared to linear convergence.
+            </div>
+            
+            <h4>Limitations and Challenges</h4>
+            
+            <ul>
+                <li><strong>Starting point sensitivity:</strong> Need to start sufficiently close to solution</li>
+                <li><strong>Hessian requirements:</strong> Must be positive definite throughout</li>
+                <li><strong>Computational cost:</strong> $O(n^3)$ per iteration for Hessian inversion</li>
+                <li><strong>Memory requirements:</strong> Storing $n \times n$ Hessian matrix</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Newton's method ka convergence rate quadratic hai - matlab error har iteration mein square ho jata hai! Gradient descent mein linear convergence hota hai (error constant factor se kam hota hai). Quadratic convergence bahut fast hai - jab tum solution ke paas pahunch jaate ho, toh har iteration mein correct digits roughly double ho jaate hain. Example: agar error 0.01 hai, toh next iteration mein 0.0001 ho jaata hai! Lekin limitation hai - tumhe solution ke bahut paas se start karna padta hai, warna diverge ho sakta hai. Aur Hessian positive definite hona chahiye. Isliye practical problems mein "Damped Newton" method use karte hain jo line search use karta hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Explain the difference between linear and quadratic convergence with a numerical example.
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <strong>Linear convergence:</strong> Error reduces by constant factor
+                        - Start with error = 0.1, factor = 0.5
+                        - Iteration 1: 0.05, Iteration 2: 0.025, Iteration 3: 0.0125, ...
+                        - After 10 iterations: 0.1 × 0.5^10 ≈ 0.000098
+                        
+                        <strong>Quadratic convergence:</strong> Error squares each iteration
+                        - Start with error = 0.1
+                        - Iteration 1: 0.01, Iteration 2: 0.0001, Iteration 3: 0.00000001, ...
+                        - After just 3 iterations: 0.1^8 = 0.00000001
+                        
+                        Quadratic convergence achieves 10^-8 accuracy in 3 iterations, while linear convergence needs 10 iterations for 10^-4 accuracy!
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why does Newton's method require starting close to the solution?
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        Newton's method relies on the quadratic approximation being accurate. When far from the solution:
+                        <ul>
+                            <li>The function may not behave quadratically</li>
+                            <li>The Hessian might not be positive definite</li>
+                            <li>The quadratic model could be very different from the actual function</li>
+                            <li>The Newton direction might not point toward the minimum</li>
+                        </ul>
+                        The convergence theorem requires $\|x_0 - x^*\| \leq \frac{m}{L}$ where $m$ relates to curvature and $L$ relates to how quickly curvature changes. Outside this region, the method can diverge or converge to the wrong point.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Newton's method exhibits quadratic convergence under suitable conditions</li>
+                    <li>Error squares each iteration: $\|x_{k+1} - x^*\| \leq c \|x_k - x^*\|^2$</li>
+                    <li>Number of correct digits roughly doubles each iteration near solution</li>
+                    <li>Requires starting sufficiently close to the solution</li>
+                    <li>Hessian must remain positive definite throughout</li>
+                    <li>Much faster than gradient descent but with stricter requirements</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="damped-newton">
+            <h3>6.5 Damped Newton's Method</h3>
+            
+            <p>To address the <span class="key-term">starting point sensitivity</span> of pure Newton's method, we introduce the <span class="key-term">Damped Newton's Method</span>, which uses a line search to determine the step size.</p>
+            
+            <h4>Motivation</h4>
+            
+            <p>Pure Newton's method has two main issues:</p>
+            <ol>
+                <li><strong>Starting point sensitivity:</strong> May diverge if starting far from solution</li>
+                <li><strong>Fixed step size:</strong> Always uses $\alpha = 1$, which might be too large</li>
+            </ol>
+            
+            <p>Damped Newton's method addresses both by using <span class="key-term">adaptive step sizes</span> via line search.</p>
+            
+            <div class="algorithm">
+<strong>Algorithm: Damped Newton's Method</strong>
+
+1. <strong>Initialize:</strong> x⁰ = (x₁⁰, x₂⁰, ..., xₙ⁰), tolerance tol, k = 0<br>
+2. <strong>while</strong> ‖∇f(xᵏ)‖ > tol <strong>do</strong><br>
+3.     <strong>Direction:</strong> dᵏ = -(∇²f(xᵏ))⁻¹ ∇f(xᵏ)<br>
+4.     <strong>Step size:</strong> Compute αₖ using any line search algorithm<br>
+5.     <strong>Update:</strong> xᵏ⁺¹ = xᵏ + αₖ dᵏ<br>
+6.     k = k + 1<br>
+7. <strong>end while</strong><br>
+8. <strong>Output:</strong> xᵏ as a critical point of f(·)
+            </div>
+            
+            <h4>Line Search Options</h4>
+            
+            <p>Several line search methods can be used to find $\alpha_k$:</p>
+            
+            <ol>
+                <li><strong>Exact Line Search:</strong> Minimize $f(x_k + \alpha d_k)$ exactly</li>
+                <li><strong>Backtracking Line Search:</strong> Start with $\alpha = 1$, reduce until sufficient decrease</li>
+                <li><strong>Armijo Rule:</strong> Ensure sufficient decrease: $f(x_k + \alpha d_k) \leq f(x_k) + c\alpha \nabla f(x_k)^T d_k$</li>
+                <li><strong>Wolfe Conditions:</strong> Combine sufficient decrease with curvature condition</li>
+            </ol>
+            
+            <h4>Advantages of Damped Newton's Method</h4>
+            
+            <ul>
+                <li><strong>Robust initialization:</strong> Can start from farther points</li>
+                <li><strong>Guaranteed descent:</strong> Ensures $f(x_{k+1}) < f(x_k)$ at each step</li>
+                <li><strong>Global convergence:</strong> Converges from any starting point under mild conditions</li>
+                <li><strong>Local quadratic convergence:</strong> Still achieves quadratic rate near solution</li>
+            </ul>
+            
+            <h4>Trade-offs</h4>
+            
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Pure Newton</th>
+                    <th>Damped Newton</th>
+                </tr>
+                <tr>
+                    <td><strong>Step Size</strong></td>
+                    <td>Fixed: $\alpha = 1$</td>
+                    <td>Adaptive: $\alpha_k$ from line search</td>
+                </tr>
+                <tr>
+                    <td><strong>Starting Point</strong></td>
+                    <td>Must be close to solution</td>
+                    <td>Can start from anywhere</td>
+                </tr>
+                <tr>
+                    <td><strong>Guaranteed Descent</strong></td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><strong>Global Convergence</strong></td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><strong>Local Convergence Rate</strong></td>
+                    <td>Quadratic</td>
+                    <td>Quadratic</td>
+                </tr>
+                <tr>
+                    <td><strong>Computational Cost</strong></td>
+                    <td>Lower (no line search)</td>
+                    <td>Higher (line search cost)</td>
+                </tr>
+            </table>
+            
+            <div class="professor-note">
+                The professor explained: "To tackle the starting point issue, we have a modified version called Damped Newton method. Here, instead of using step length as 1, you use $\alpha_k$ using some line search method. Usually it can be shown that with this, the initialization problem can go away. But it still has the applicability issue - it's only applicable for functions with positive definite Hessian."
+            </div>
+            
+            <h4>Practical Considerations</h4>
+            
+            <ul>
+                <li><strong>Line search cost:</strong> Adds computational overhead per iteration</li>
+                <li><strong>Step size selection:</strong> Backtracking is simple and effective in practice</li>
+                <li><strong>Hybrid approach:</strong> Start with damped method, switch to pure when close to solution</li>
+                <li><strong>Trust region methods:</strong> Alternative approach for global convergence</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Damped Newton's Method pure Newton ki starting point problem solve karta hai. Isme hum fixed step size $\alpha = 1$ ki jagah line search use karte hain to find optimal $\alpha_k$. Isse guarantee milta hai ki function value har step pe decrease hogi ($f(x_{k+1}) < f(x_k)$), aur tum kahin se bhi start kar sakte ho. Backtracking line search simple aur effective hai - start karo $\alpha = 1$ se aur kam karte raho jab tak sufficient decrease na mile. Damped Newton method globally converge karta hai aur locally still quadratic convergence rate maintain karta hai. Extra cost hai line search ka, lekin robustness ke liye ye chhota price hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Explain how backtracking line search works in the context of Damped Newton's method.
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        Backtracking line search for Damped Newton's method:<br>
+                        <br>
+                        1. Start with $\alpha = 1$ (the pure Newton step)<br>
+                        2. Check if $f(x_k + \alpha d_k) \leq f(x_k) + c\alpha \nabla f(x_k)^T d_k$ for some $c \in (0,1)$<br>                         3. If not satisfied, reduce $\alpha$ by a factor (e.g., $\alpha = \beta \alpha$ where $\beta \in (0,1)$)
+                        4. Repeat until condition is satisfied<br>
+                        <br>
+                        The parameter $c$ (typically 0.01 or 0.1) controls how much decrease we require, and $\beta$ (typically 0.5) controls how quickly we reduce the step size. This ensures we get sufficient decrease while not making the step too small.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why does Damped Newton's method still achieve quadratic convergence locally?
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        Near the solution, the line search will typically select $\alpha_k \approx 1$ because:
+                        <ul>
+                            <li>The Newton direction $d_k$ points almost exactly toward the minimum</li>
+                            <li>The quadratic approximation is very accurate near the solution</li>
+                            <li>The sufficient decrease condition is easily satisfied with $\alpha = 1$</li>
+                        </ul>
+                        Therefore, once close enough to the solution, Damped Newton's method behaves almost identically to Pure Newton's method, inheriting its quadratic convergence property. The damping only affects the initial iterations when far from the solution.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Damped Newton's method uses line search to adapt step sizes</li>
+                    <li>Addresses starting point sensitivity of pure Newton's method</li>
+                    <li>Guarantees descent at each iteration: $f(x_{k+1}) < f(x_k)$</li>
+                    <li>Converges globally from any starting point</li>
+                    <li>Maintains local quadratic convergence rate</li>
+                    <li>Trade-off: more computational cost per iteration but more robust</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="summary">
+            <h2>7. Summary</h2>
+            
+            <p>In this lecture, we've explored two major families of optimization algorithms: <span class="key-term">Gradient Descent Variants</span> and <span class="key-term">Newton's Method</span>.</p>
+            
+            <h3>Gradient Descent Variants</h3>
+            
+            <p>Gradient descent variants solve different issues with vanilla gradient descent:</p>
+            
+            <ul>
+                <li><strong>SGD:</strong> Uses one sample per iteration - fast but noisy</li>
+                <li><strong>Mini-batch GD:</strong> Compromise between batch and SGD - smoother than SGD</li>
+                <li><strong>Momentum/Nesterov:</strong> Uses history to accelerate convergence</li>
+                <li><strong>AdaGrad:</strong> Adapts learning rates per parameter - good for sparse data</li>
+                <li><strong>RMSProp:</strong> Fixes AdaGrad's decaying learning rate - good for RNNs</li>
+                <li><strong>Adam:</strong> Combines Momentum + RMSProp - widely used default</li>
+            </ul>
+            
+            <h3>Newton's Method</h3>
+            
+            <p>Newton's method offers much faster convergence for suitable problems:</p>
+            
+            <ul>
+                <li><strong>Pure Newton:</strong> Converges in one step for quadratic functions</li>
+                <li><strong>Quadratic convergence:</strong> Error squares each iteration near solution</li>
+                <li><strong>Starting point issue:</strong> Needs to start close to solution</li>
+                <li><strong>Damped Newton:</strong> Uses line search for global convergence</li>
+            </ul>
+            
+            <h3>Practical Guidance</h3>
+            
+            <p>Choosing the right optimizer depends on your problem:</p>
+            
+            <ul>
+                <li><strong>Small datasets, convex problems:</strong> Gradient Descent</li>
+                <li><strong>Large datasets:</strong> SGD / Mini-batch</li>
+                <li><strong>Deep learning:</strong> Adam (usually the go-to starting point)</li>
+                <li><strong>Well-conditioned convex problems:</strong> Newton's method (if applicable)</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor concluded: "So what have we learned today? We learned various versions of gradient descent method especially from the data science perspective - stochastic gradient descent, mini-batch gradient descent, and some existing solvers like Adagrad, RMSprop, and Adam. We also learned about pure Newton method - much faster for quadratic functions, in fact for quadratic functions it converges in one step, but it has a starting point issue. To avoid that, we have the Damped Newton method. For the next class, we'll talk about variants of Newton's method - those will be the Quasi-Newton methods which are very, very popular!"
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (संक्षेप)</h4>
+                <p>Is lecture mein humne do major optimization families seekhe: Gradient Descent Variants aur Newton's Method. Gradient descent variants (SGD, Mini-batch, Momentum, AdaGrad, RMSProp, Adam) vanilla GD ke different issues solve karte hain. Adam sabse popular hai deep learning mein kyunki ye Momentum aur RMSProp combine karta hai. Newton's method quadratic convergence deta hai - bahut fast hai, lekin starting point sensitive hai aur Hessian positive definite chahiye. Damped Newton isme line search add karta hai. Practical advice: small datasets ke liye simple GD, large datasets ke liye SGD/mini-batch, aur deep learning ke liye Adam se start karo. Next class mein hum Quasi-Newton methods padhenge jo Newton's method ke popular variants hain!</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Gradient descent variants address different limitations of vanilla GD</li>
+                    <li>Adam = RMSProp + Momentum → widely used default in deep learning</li>
+                    <li>All optimizers are available in standard libraries (PyTorch, TensorFlow, etc.)</li>
+                    <li>Newton's method offers quadratic convergence but with stricter requirements</li>
+                    <li>For quadratic functions, Newton's method converges in one iteration</li>
+                    <li>Damped Newton's method addresses starting point sensitivity</li>
+                    <li>Choose optimizer based on problem characteristics, not popularity alone</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mindmap">
+            <h2>8. Comprehensive Mind Map</h2>
+            
+            <div class="mind-map">
+                <h3>Numerical Optimization Methods</h3>
+                
+                <div class="mind-map-content">
+                    <div class="mind-map-node">
+                        <h4>Gradient Descent</h4>
+                        <ul>
+                            <li>Batch/Vanilla GD</li>
+                            <li>Issues: Slow, Sensitive to LR</li>
+                            <li>For: Small datasets, Convex problems</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>GD Variants</h4>
+                        <ul>
+                            <li>SGD: One sample/iteration</li>
+                            <li>Mini-batch: 32-256 samples</li>
+                            <li>Momentum: Uses history</li>
+                            <li>AdaGrad: Per-parameter LR</li>
+                            <li>RMSProp: Moving average</li>
+                            <li>Adam: Momentum + RMSProp</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>Newton's Method</h4>
+                        <ul>
+                            <li>Pure Newton: α = 1</li>
+                            <li>Damped Newton: Line search</li>
+                            <li>Quadratic convergence</li>
+                            <li>One step for quadratics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>Applications</h4>
+                        <ul>
+                            <li>Traditional ML: Scikit-Learn</li>
+                            <li>Deep Learning: PyTorch, TF</li>
+                            <li>Convex Optimization: Nesterov</li>
+                            <li>Large Scale: SGD, Adam</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>Key Concepts</h4>
+                        <ul>
+                            <li>Convergence Rates</li>
+                            <li>Linear vs Quadratic</li>
+                            <li>Learning Rate Adaptation</li>
+                            <li>Computational Complexity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

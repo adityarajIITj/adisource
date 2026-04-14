@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayes' Theorem and Conditional Probability - Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #667eea;
+            border-left: 5px solid #764ba2;
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        h4 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .key-term {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #856404;
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .formula-box strong {
+            color: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .example-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .example-box h4 {
+            color: #1976D2;
+            margin-top: 0;
+        }
+
+        .hinglish-summary {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #4a148c;
+        }
+
+        .practice-questions {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .practice-questions h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .question-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .question-item strong {
+            color: #1b5e20;
+        }
+
+        .key-takeaways {
+            background: #fff8e1;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-takeaways h4 {
+            color: #e65100;
+            margin-top: 0;
+        }
+
+        .takeaway-item {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .takeaway-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        .toc {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .diagram-placeholder {
+            background: #f0f4ff;
+            border: 2px dashed #667eea;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #667eea;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .footer-inner p {
+            margin: 5px 0;
+        }
+
+        .footer-text {
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .footer-author {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .venn-diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .formula-explanation {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .mindmap-container {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bayes' Theorem & Conditional Probability</h1>
+            <p>Module 03: Foundations of Statistics & Probability</p>
+            <p>AIL1020</p>
+        </div>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h3>📚 Table of Contents</h3>
+                <ul>
+                    <li><a href="#learning-outcomes">Learning Outcomes</a></li>
+                    <li><a href="#conditioning">Conditioning and Weighted Average</a></li>
+                    <li><a href="#bayes-theorem">Bayes' Theorem: Fundamentals</a></li>
+                    <li><a href="#law-total-probability">Law of Total Probability</a></li>
+                    <li><a href="#example-1">Example 1: Insurance Policy</a></li>
+                    <li><a href="#example-2">Example 2: Multiple Choice Test</a></li>
+                    <li><a href="#example-3">Example 3: Blood Test</a></li>
+                    <li><a href="#mindmap">Concept Mind Map</a></li>
+                </ul>
+            </div>
+
+            <!-- Learning Outcomes -->
+            <h2 id="learning-outcomes">🎯 Learning Outcomes</h2>
+            <p>By the end of this lecture, you will be able to:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>Understand the concept of <span class="key-term">conditional probability</span> and its real-world applications</li>
+                <li>Explain <span class="key-term">Bayes' Theorem</span> and its four key components: prior probability, likelihood, evidence, and posterior probability</li>
+                <li>Apply the <span class="key-term">Law of Total Probability</span> to solve complex probability problems</li>
+                <li>Calculate overall probability of events based on different conditions or cases</li>
+                <li>Recognize and avoid the <span class="key-term">base rate fallacy</span> in probability interpretations</li>
+            </ul>
+
+            <!-- Conditioning and Weighted Average -->
+            <h2 id="conditioning">📊 Conditioning and Weighted Average</h2>
+
+            <h3>Fundamental Concept</h3>
+            <p>Before diving into Bayes' Theorem, it's crucial to understand what conditioning means. Let's consider two events, <strong>E</strong> and <strong>F</strong>. Any point that lies in event <strong>E</strong> must satisfy one of two conditions: it either lies in both <strong>E</strong> and <strong>F</strong>, or it lies in <strong>E</strong> but not in <strong>F</strong>. Mathematically, this can be expressed as:</p>
+
+            <div class="formula-box">
+                <strong>E = (E ∩ F) ∪ (E ∩ F<sup>c</sup>)</strong>
+            </div>
+
+            <p>Since these two regions (E ∩ F and E ∩ F<sup>c</sup>) are mutually exclusive, we can write the probability of E as:</p>
+
+            <div class="formula-box">
+                <strong>P(E) = P(E ∩ F) + P(E ∩ F<sup>c</sup>)</strong>
+                <br><br>
+                Which can be rewritten as:
+                <br><br>
+                <strong>P(E) = P(E|F) · P(F) + P(E|F<sup>c</sup>) · P(F<sup>c</sup>)</strong>
+                <br><br>
+                Or equivalently:
+                <br><br>
+                <strong>P(E) = P(E|F) · P(F) + P(E|F<sup>c</sup>) · [1 - P(F)]</strong>
+            </div>
+
+            <div class="venn-diagram">
+                [Insert diagram: Venn diagram showing E, F, and their intersection]
+            </div>
+
+            <h3>Understanding Weighted Average</h3>
+            <p>Here's the beautiful insight: <strong>the probability of event E is a weighted average of two conditional probabilities.</strong> The weights are the probabilities of the conditions themselves. Think of it this way:</p>
+
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>The first conditional probability P(E|F) tells us: "If F happens, what's the chance of E?"</li>
+                <li>We weight this by P(F), which answers: "What's the chance that F even happens?"</li>
+                <li>Similarly for the second term with F<sup>c</sup></li>
+            </ul>
+
+            <p>This weighted averaging approach is <span class="key-term">extremely important</span> because it forms the foundation for applying Bayes' Theorem effectively in real-world scenarios. When you're unsure about an outcome, you consider all possible conditions and weight each possibility by its likelihood.</p>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Agar hum kisi event ka probability nikalna chahte hain, toh hum sab possible conditions ko consider karte hain. Har condition ke liye, hum dekh sakte hain ke agar wo condition happen ho, toh event ke kya chances hain. Aur phir in sabko combine karte hain condition ke actually happen hone ke probability se weight karke. Issi ko weighted average kehte hain. Ye concept Bayes' Theorem ka core foundation hai!
+            </div>
+
+            <!-- Bayes' Theorem -->
+            <h2 id="bayes-theorem">🔑 Bayes' Theorem: Fundamentals</h2>
+
+            <h3>The Theorem Statement</h3>
+            <p>For two events <strong>A</strong> and <strong>B</strong>, where P(B) > 0, Bayes' Theorem states:</p>
+
+            <div class="formula-box">
+                <strong style="font-size: 1.2em;">P(A|B) = [P(B|A) · P(A)] / P(B)</strong>
+            </div>
+
+            <h3>Proof of Bayes' Theorem</h3>
+            <p>The theorem elegantly follows from the definition of conditional probability. We start with two expressions for the probability of the intersection:</p>
+
+            <div class="formula-box">
+                <strong>(1) P(B|A) = P(A ∩ B) / P(A)</strong>
+                <br>
+                <strong>(2) P(A|B) = P(A ∩ B) / P(B)</strong>
+                <br><br>
+                From equation (1): <strong>P(A ∩ B) = P(B|A) · P(A)</strong>
+                <br><br>
+                Since intersection is commutative: <strong>P(A ∩ B) = P(B ∩ A)</strong>
+                <br><br>
+                Substituting into equation (2):
+                <br>
+                <strong>P(A|B) = [P(B|A) · P(A)] / P(B)</strong> ✓
+            </div>
+
+            <h3>The Four Key Components</h3>
+            <p>Bayes' Theorem elegantly relates four fundamental probabilistic quantities. Understanding each is crucial:</p>
+
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Notation</th>
+                    <th>Meaning</th>
+                    <th>Interpretation</th>
+                </tr>
+                <tr>
+                    <td><strong>Prior Probability</strong></td>
+                    <td>P(A)</td>
+                    <td>Probability of A before any evidence</td>
+                    <td>Our baseline belief in A without seeing other information</td>
+                </tr>
+                <tr>
+                    <td><strong>Likelihood</strong></td>
+                    <td>P(B|A)</td>
+                    <td>Probability of observing B if A is true</td>
+                    <td>How likely is the evidence B given that our hypothesis A is true?</td>
+                </tr>
+                <tr>
+                    <td><strong>Evidence (Marginal Probability)</strong></td>
+                    <td>P(B)</td>
+                    <td>Overall probability of observing B in all scenarios</td>
+                    <td>A normalizing factor that accounts for all ways B could occur</td>
+                </tr>
+                <tr>
+                    <td><strong>Posterior Probability</strong></td>
+                    <td>P(A|B)</td>
+                    <td>Probability of A after observing evidence B</td>
+                    <td>Our updated belief in A after incorporating the evidence</td>
+                </tr>
+            </table>
+
+            <h3>The Essence of Bayes' Theorem</h3>
+            <p><strong>Bayes' Theorem is fundamentally about updating beliefs.</strong> It tells us: given our baseline belief in something (prior), if we observe new evidence, how should we revise our belief (posterior)? This is more than just a mathematical formula—it's a philosophy of learning from data.</p>
+
+            <div class="formula-explanation">
+                Think of it this way: You hear a knock on your door at night. Without looking, what's your prior probability that it's a friend? Maybe 5%. But then you hear a familiar voice calling your name (evidence). Now your posterior probability that it's a friend increases dramatically. Bayes' Theorem mathematically describes exactly how to make this update.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Bayes' Theorem hamein batata hai ke jab hum koi naya evidence dekh le, toh apna belief kaise update kare. Phele hum kuch assume karte ho (prior), phir kuch observe karte ho (evidence). Bayes' Theorem batata hai ke iss naye evidence ki light mein hamara revised belief (posterior) kya hona chahiye. Ye practically har jagah use hota hai—medicine mein, machine learning mein, detective work mein—basically jahan bhi hum incomplete information se decisions lete ho!
+            </div>
+
+            <!-- Law of Total Probability -->
+            <h2 id="law-total-probability">📐 Law of Total Probability</h2>
+
+            <h3>The Concept</h3>
+            <p>When calculating the probability of an event, that event might occur under several different, mutually exclusive conditions. The Law of Total Probability allows us to account for all these possibilities systematically.</p>
+
+            <p>Suppose we have a set of <span class="key-term">mutually exclusive and exhaustive</span> events B₁, B₂, ..., B<sub>n</sub>. This means:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>Mutually exclusive: No two of these events can happen at the same time</li>
+                <li>Exhaustive: Exactly one of these events must happen</li>
+            </ul>
+
+            <h3>The Formula</h3>
+            <p>For any event A that can occur under these n conditions:</p>
+
+            <div class="formula-box">
+                <strong>P(A) = Σ P(A|B<sub>i</sub>) · P(B<sub>i</sub>)  for i = 1 to n</strong>
+            </div>
+
+            <p>Or written more explicitly:</p>
+
+            <div class="formula-box">
+                <strong>P(A) = P(A|B₁)·P(B₁) + P(A|B₂)·P(B₂) + ... + P(A|B<sub>n</sub>)·P(B<sub>n</sub>)</strong>
+            </div>
+
+            <h3>Why This Matters</h3>
+            <p>The Law of Total Probability is the key to computing P(B) in Bayes' Theorem! When we need P(B) in the denominator, we often don't know it directly. Instead, we calculate it by conditioning on all possible scenarios for A:</p>
+
+            <div class="formula-box">
+                <strong>P(B) = P(B|A)·P(A) + P(B|A<sup>c</sup>)·P(A<sup>c</sup>)</strong>
+            </div>
+
+            <p>This is exactly what happens in real-world applications. We don't know the total probability of observing some evidence (B), but we know how likely that evidence is under different hypotheses, and we know the probability of each hypothesis. By combining these pieces, we get the total probability.</p>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Total probability nikalne ke liye, hum sochte hain ke event kitne different tarike se happen kar sakta hai. Har tarike ka apna probability hai. In sabko add karte hain toh total probability milta hai. Jaise ek traffic light ko dekho—green ho sakta, yellow ho sakta, red ho sakta. Agar sirf pata ho ke green hone ke baad jab tum aage move karo toh kisi accident ka 2% chance hai, toh total accident probability nikalne ke liye tum sabko combine karte ho. Bayes' Theorem mein ye concept directly use hota hai!
+            </div>
+
+            <!-- Examples -->
+            <h2 id="example-1">💼 Example 1: Insurance Company Problem</h2>
+
+            <div class="example-box">
+                <h4>Problem Statement</h4>
+                <p>An insurance company classifies people into two categories: <strong>accident-prone</strong> or <strong>not accident-prone</strong>. Based on their statistics:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Accident-prone people: 40% chance of having an accident within 1 year</li>
+                    <li>Non-accident-prone people: 20% chance of having an accident within 1 year</li>
+                    <li>Population estimate: 30% are accident-prone</li>
+                </ul>
+                <p><strong>Question 1:</strong> What is the probability that a new policyholder will have an accident within one year?</p>
+                <p><strong>Question 2:</strong> If a policyholder has had an accident, what's the probability they're accident-prone?</p>
+            </div>
+
+            <h3>Solution Part 1: Using Law of Total Probability</h3>
+
+            <p>Let's define our events:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>A</strong> = Event that policyholder is accident-prone</li>
+                <li><strong>A<sup>c</sup></strong> = Event that policyholder is not accident-prone</li>
+                <li><strong>Acc</strong> = Event that policyholder has an accident within 1 year</li>
+            </ul>
+
+            <p>We're given:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>P(Acc|A) = 0.4  (40% accident rate for accident-prone)</li>
+                <li>P(Acc|A<sup>c</sup>) = 0.2  (20% accident rate for non-accident-prone)</li>
+                <li>P(A) = 0.3  (30% of population is accident-prone)</li>
+                <li>P(A<sup>c</sup>) = 0.7  (70% of population is not accident-prone)</li>
+            </ul>
+
+            <p>Using the Law of Total Probability:</p>
+
+            <div class="formula-box">
+                <strong>P(Acc) = P(Acc|A) · P(A) + P(Acc|A<sup>c</sup>) · P(A<sup>c</sup>)</strong>
+                <br><br>
+                <strong>P(Acc) = (0.4)(0.3) + (0.2)(0.7)</strong>
+                <br><br>
+                <strong>P(Acc) = 0.12 + 0.14 = 0.26</strong>
+            </div>
+
+            <p><strong>Answer to Question 1:</strong> The probability that a new policyholder will have an accident within one year is <span class="key-term">0.26 or 26%</span>.</p>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Insurance company two types ke log ko track karta hai—jo dangerous drivers hain aur jo safe hain. Dangerous drivers ko 40% chance accident ka, safe drivers ko 20% chance. Agar random kisi ko select kare, toh overall accident ka chance nikalne ke liye, dono category ko weigh karte hain inke population mein hone ke chance se. 30% × 40% + 70% × 20% = 26%. Matlab har 100 naye policy holders mein se average 26 ko accident hoga 1 saal mein.
+            </div>
+
+            <h3>Solution Part 2: Using Bayes' Theorem</h3>
+
+            <p>Now suppose a new policyholder has had an accident. Does this change our belief about whether they're accident-prone?</p>
+
+            <p><strong>Before observing the accident:</strong> We assumed 30% chance they're accident-prone (prior probability)</p>
+
+            <p><strong>After observing the accident:</strong> We should update this belief using Bayes' Theorem</p>
+
+            <div class="formula-box">
+                <strong>P(A|Acc) = [P(Acc|A) · P(A)] / P(Acc)</strong>
+                <br><br>
+                <strong>P(A|Acc) = [(0.4)(0.3)] / 0.26</strong>
+                <br><br>
+                <strong>P(A|Acc) = 0.12 / 0.26 ≈ 0.4615</strong>
+            </div>
+
+            <p><strong>Answer to Question 2:</strong> Given that the policyholder had an accident, the probability they're accident-prone is approximately <span class="key-term">0.4615 or 46.15%</span>.</p>
+
+            <p>Notice the dramatic change: from our initial belief of 30% to 46.15% after observing the accident! This demonstrates the power of Bayes' Theorem—new evidence substantially revises our beliefs.</p>
+
+            <div class="practice-questions">
+                <h4>✍️ Practice Questions</h4>
+                <div class="question-item">
+                    <strong>Q1:</strong> If the accident rate for non-accident-prone people increased to 30%, how would P(Acc) change?
+                    <br>
+                    <strong>Answer:</strong> P(Acc) = (0.4)(0.3) + (0.3)(0.7) = 0.12 + 0.21 = 0.33. It increases to 33%.
+                </div>
+                <div class="question-item">
+                    <strong>Q2:</strong> In the original problem, what's the posterior probability of being NOT accident-prone after observing an accident?
+                    <br>
+                    <strong>Answer:</strong> P(A<sup>c</sup>|Acc) = 1 - 0.4615 = 0.5385 or about 53.85%
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎓 Key Takeaways from Example 1</h4>
+                <div class="takeaway-item">Prior beliefs (baseline assumptions) matter, but they're not final—new evidence updates them</div>
+                <div class="takeaway-item">Even accident-prone people don't always have accidents; this affects our calculations</div>
+                <div class="takeaway-item">An accident increases the probability of being accident-prone from 30% to 46%, but it's still not certain</div>
+                <div class="takeaway-item">Bayes' Theorem quantifies exactly how much new evidence should change our beliefs</div>
+            </div>
+
+            <!-- Example 2: Multiple Choice Test -->
+            <h2 id="example-2">✏️ Example 2: Student Taking a Multiple Choice Test</h2>
+
+            <div class="example-box">
+                <h4>Problem Statement</h4>
+                <p>A student answers a question on a multiple-choice test with m options. The student either:</p>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Knows the answer</strong> with probability <strong>p</strong></li>
+                    <li><strong>Guesses the answer</strong> with probability <strong>1 - p</strong></li>
+                </ul>
+                <p>If the student guesses, the probability of selecting the correct answer is <strong>1/m</strong>.</p>
+                <p><strong>Question:</strong> If we observe that the student answered the question correctly, what's the probability they actually <strong>knew</strong> the answer?</p>
+            </div>
+
+            <h3>Setting up the Problem</h3>
+
+            <p>Let's define:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>K</strong> = Event that student knows the answer</li>
+                <li><strong>C</strong> = Event that student answers correctly</li>
+            </ul>
+
+            <p>We're given:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>P(K) = p  (probability of knowing)</li>
+                <li>P(K<sup>c</sup>) = 1 - p  (probability of guessing)</li>
+                <li>P(C|K) = 1  (if you know, you're correct for sure)</li>
+                <li>P(C|K<sup>c</sup>) = 1/m  (if you guess, probability is 1/m)</li>
+            </ul>
+
+            <p>We need to find: <strong>P(K|C)</strong> (probability knew the answer, given answered correctly)</p>
+
+            <h3>Step 1: Find P(C) Using Law of Total Probability</h3>
+
+            <div class="formula-box">
+                <strong>P(C) = P(C|K) · P(K) + P(C|K<sup>c</sup>) · P(K<sup>c</sup>)</strong>
+                <br><br>
+                <strong>P(C) = (1)(p) + (1/m)(1 - p)</strong>
+                <br><br>
+                <strong>P(C) = p + (1/m)(1 - p)</strong>
+                <br><br>
+                <strong>P(C) = p + (1 - p)/m</strong>
+            </div>
+
+            <h3>Step 2: Apply Bayes' Theorem</h3>
+
+            <div class="formula-box">
+                <strong>P(K|C) = [P(C|K) · P(K)] / P(C)</strong>
+                <br><br>
+                <strong>P(K|C) = [(1)(p)] / [p + (1 - p)/m]</strong>
+                <br><br>
+                <strong>P(K|C) = p / [p + (1 - p)/m]</strong>
+                <br><br>
+                Simplifying by multiplying numerator and denominator by m:
+                <br><br>
+                <strong>P(K|C) = mp / [mp + (1 - p)]</strong>
+                <br><br>
+                <strong>P(K|C) = mp / [1 + (m - 1)p]</strong>
+            </div>
+
+            <h3>Numerical Example</h3>
+
+            <p>Let's say the test has <strong>4 options</strong> (m = 4) and the student is well-prepared with <strong>p = 0.4</strong> (40% chance of knowing the answer).</p>
+
+            <div class="formula-box">
+                <strong>P(K|C) = (4 × 0.4) / [1 + (4 - 1) × 0.4]</strong>
+                <br><br>
+                <strong>P(K|C) = 1.6 / [1 + 1.2]</strong>
+                <br><br>
+                <strong>P(K|C) = 1.6 / 2.2 ≈ 0.727</strong>
+            </div>
+
+            <p><strong>Interpretation:</strong> If the student answered correctly, there's about a <span class="key-term">72.7% probability</span> they knew the answer. This makes intuitive sense—knowing guarantees correctness, while guessing only gives 25% chance, so a correct answer is strong evidence of knowledge.</p>
+
+            <h3>What If the Student Wasn't Well Prepared?</h3>
+
+            <p>If p = 0.1 (only 10% chance of knowing):</p>
+
+            <div class="formula-box">
+                <strong>P(K|C) = (4 × 0.1) / [1 + (4 - 1) × 0.1]</strong>
+                <br><br>
+                <strong>P(K|C) = 0.4 / 1.3 ≈ 0.308</strong>
+            </div>
+
+            <p>Now there's only about 30.8% probability they knew the answer. When the base rate of knowing is low, even a correct answer doesn't strongly evidence knowledge—they could have just gotten lucky.</p>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Ek student ne test question answer kiya correctly. Ab question ye hai ke usse pata tha ya lucky guess tha? Agar student zyada prepared hai (zyada probability knowing ke liye), toh correct answer detect karna ke chances zyada hain ke he knew it. Agar student kam prepared hai, toh wo randomly 1 out of 4 options choose kar sakta tha. Bayes' Theorem batata hai ke kaunsa factor zyada strong hai—preparation level aur guessing chances ko consider karke. Well-prepared student correct answer marne par 73% chance knowledge ka, poorly-prepared student par sirf 31% chance.
+            </div>
+
+            <div class="practice-questions">
+                <h4>✍️ Practice Questions</h4>
+                <div class="question-item">
+                    <strong>Q1:</strong> With m = 4 and p = 0.5, what is P(K|C)?
+                    <br>
+                    <strong>Answer:</strong> P(K|C) = (4 × 0.5) / [1 + (3 × 0.5)] = 2 / 2.5 = 0.8 or 80%
+                </div>
+                <div class="question-item">
+                    <strong>Q2:</strong> What happens to P(K|C) as m increases (more options)?
+                    <br>
+                    <strong>Answer:</strong> As m increases, P(K|C) increases because guessing becomes less likely to produce a correct answer, so correct answers become stronger evidence of knowledge.
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎓 Key Takeaways from Example 2</h4>
+                <div class="takeaway-item">A correct answer can result from either knowing or lucky guessing</div>
+                <div class="takeaway-item">The base rate of knowledge (prior) strongly affects our conclusion</div>
+                <div class="takeaway-item">With more multiple choices, correct answers are stronger evidence of actual knowledge</div>
+                <div class="takeaway-item">Well-prepared students' correct answers are more trustworthy than unprepared students' correct answers</div>
+            </div>
+
+            <!-- Example 3: Blood Test -->
+            <h2 id="example-3">🩺 Example 3: Medical Testing - The Base Rate Fallacy</h2>
+
+            <div class="example-box">
+                <h4>Problem Statement</h4>
+                <p>A laboratory blood test for detecting a certain disease has the following accuracy:</p>
+                <ul style="margin-left: 20px;">
+                    <li>When disease is present: 99% effective in detecting it (true positive rate)</li>
+                    <li>When disease is absent: Gives false positive 1% of the time</li>
+                    <li>Disease prevalence: Only 0.5% of population actually has the disease</li>
+                </ul>
+                <p><strong>Question:</strong> If a person's test comes back <strong>positive</strong>, what's the probability they actually have the disease?</p>
+            </div>
+
+            <h3>Initial Intuition vs. Reality</h3>
+
+            <p>Most people would initially think: "If the test is 99% accurate, a positive result means I probably have the disease!" But let's see what Bayes' Theorem actually tells us.</p>
+
+            <h3>Setting up the Problem</h3>
+
+            <p>Let's define:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>D</strong> = Event that person has the disease</li>
+                <li><strong>Pos</strong> = Event that test result is positive</li>
+            </ul>
+
+            <p>We're given:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>P(Pos|D) = 0.99  (99% true positive rate)</li>
+                <li>P(Pos|D<sup>c</sup>) = 0.01  (1% false positive rate)</li>
+                <li>P(D) = 0.005  (0.5% disease prevalence)</li>
+                <li>P(D<sup>c</sup>) = 0.995  (99.5% don't have disease)</li>
+            </ul>
+
+            <p>We need: <strong>P(D|Pos)</strong> (probability has disease, given positive test)</p>
+
+            <h3>Step 1: Find P(Pos) Using Law of Total Probability</h3>
+
+            <div class="formula-box">
+                <strong>P(Pos) = P(Pos|D) · P(D) + P(Pos|D<sup>c</sup>) · P(D<sup>c</sup>)</strong>
+                <br><br>
+                <strong>P(Pos) = (0.99)(0.005) + (0.01)(0.995)</strong>
+                <br><br>
+                <strong>P(Pos) = 0.00495 + 0.00995</strong>
+                <br><br>
+                <strong>P(Pos) = 0.0149</strong>
+            </div>
+
+            <h3>Step 2: Apply Bayes' Theorem</h3>
+
+            <div class="formula-box">
+                <strong>P(D|Pos) = [P(Pos|D) · P(D)] / P(Pos)</strong>
+                <br><br>
+                <strong>P(D|Pos) = [(0.99)(0.005)] / 0.0149</strong>
+                <br><br>
+                <strong>P(D|Pos) = 0.00495 / 0.0149</strong>
+                <br><br>
+                <strong>P(D|Pos) ≈ 0.3322  or  33.22%</strong>
+            </div>
+
+            <p><strong>Shocking Result:</strong> Even with a positive test, there's only about a <span class="key-term">33% probability</span> the person actually has the disease! This is far lower than most people would expect.</p>
+
+            <h3>Understanding the Counterintuitive Result</h3>
+
+            <p>Let's think about this concretely. Imagine testing 200 people:</p>
+
+            <table>
+                <tr>
+                    <th>Group</th>
+                    <th>Count</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Actually have disease</td>
+                    <td>0.5% × 200 = 1</td>
+                    <td>Only 1 person out of 200 has the disease</td>
+                </tr>
+                <tr>
+                    <td>Don't have disease</td>
+                    <td>99.5% × 200 = 199</td>
+                    <td>199 people are healthy</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><strong>Test Results:</strong></td>
+                </tr>
+                <tr>
+                    <td>True Positives</td>
+                    <td>99% × 1 ≈ 1</td>
+                    <td>Test correctly catches the 1 sick person</td>
+                </tr>
+                <tr>
+                    <td>False Positives</td>
+                    <td>1% × 199 ≈ 2</td>
+                    <td>Test wrongly flags about 2 healthy people</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Positives</strong></td>
+                    <td><strong>~3</strong></td>
+                    <td>About 3 people test positive</td>
+                </tr>
+            </table>
+
+            <div class="formula-explanation">
+                So when someone tests positive, they're one of approximately 3 positive cases. Only 1 of those 3 actually has the disease. Therefore: P(has disease | positive) = 1/3 ≈ 33.3%. The problem isn't with the test accuracy—it's that the disease is so rare that false positives outnumber true positives!
+            </div>
+
+            <h3>The Base Rate Fallacy</h3>
+
+            <p>This example perfectly demonstrates the <span class="key-term">base rate fallacy</span>—the tendency to ignore the initial probability (base rate) of an event when interpreting new evidence.</p>
+
+            <p><strong>The fallacy:</strong> "The test is 99% accurate, so a positive result means I almost certainly have the disease."</p>
+
+            <p><strong>The reality:</strong> We must also consider that the disease is extremely rare (0.5% base rate). This rarity means that even a very accurate test will produce more false positives than true positives when applied to the general population.</p>
+
+            <p>Key insight: <strong>When screening for rare diseases, even highly accurate tests will have a low positive predictive value.</strong></p>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Imagine karo ke 200 logon ko test kiya. Sirf 1 ko actually disease hai. Test accuracy 99% hai, toh wo 1 sick person correctly catch ho jaega. Lekin 199 healthy logon mein se, 1% false positive aayenge—that's about 2 log. Toh total 3 positive cases aaye—1 true, 2 false. Agar tum positive aaye ho, toh 1 out of 3 chance hai ke tum sach mein sick ho, 2 out of 3 chance hai ke ye false alarm hai. Ye base rate fallacy hai—kaafi log test accuracy dekh ke soochte hain positive ≈ sick, par sirf 1/3 logon ko sach mein disease tha!
+            </div>
+
+            <h3>What Increases P(D|Pos)?</h3>
+
+            <p>To get a higher posterior probability with a positive test, we would need:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>Higher disease prevalence:</strong> If the disease affected 5% instead of 0.5%, P(D|Pos) would be much higher</li>
+                <li><strong>Better test specificity:</strong> If false positives were 0.1% instead of 1%, P(D|Pos) would be much higher</li>
+                <li><strong>Risk factors:</strong> If we only test high-risk populations, the prior P(D) increases, raising the posterior</li>
+            </ul>
+
+            <div class="practice-questions">
+                <h4>✍️ Practice Questions</h4>
+                <div class="question-item">
+                    <strong>Q1:</strong> If the disease affected 5% of population instead of 0.5%, what would P(D|Pos) be?
+                    <br>
+                    <strong>Answer:</strong> P(Pos) = (0.99)(0.05) + (0.01)(0.95) = 0.0495 + 0.0095 = 0.059
+                    <br>
+                    P(D|Pos) = 0.0495 / 0.059 ≈ 0.839 or 83.9%. Much higher!
+                </div>
+                <div class="question-item">
+                    <strong>Q2:</strong> What if the test had a false positive rate of 0.1% instead of 1%?
+                    <br>
+                    <strong>Answer:</strong> P(Pos) = (0.99)(0.005) + (0.001)(0.995) = 0.00495 + 0.000995 ≈ 0.00595
+                    <br>
+                    P(D|Pos) = 0.00495 / 0.00595 ≈ 0.832 or 83.2%. Even better!
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎓 Key Takeaways from Example 3</h4>
+                <div class="takeaway-item">High test accuracy doesn't guarantee high probability of disease when the disease is rare</div>
+                <div class="takeaway-item">Base rate (prior probability) is crucial in interpreting test results</div>
+                <div class="takeaway-item">False positives often outnumber true positives when screening for rare conditions</div>
+                <div class="takeaway-item">A positive test should be followed by confirmatory testing, especially for rare diseases</div>
+                <div class="takeaway-item">Understanding Bayes' Theorem protects us from the base rate fallacy in medical contexts</div>
+            </div>
+
+            <!-- Mind Map -->
+            <h2 id="mindmap">🗺️ Concept Mind Map: Bayes' Theorem & Conditional Probability</h2>
+
+            <div class="mindmap-container">
+                <p style="margin-bottom: 20px;"><strong>Visual representation of how all concepts connect:</strong></p>
+
+                <svg width="100%" height="400" viewBox="0 0 800 400" style="max-width: 100%;">
+                    <!-- Central Circle -->
+                    <circle cx="400" cy="200" r="50" fill="#667eea" stroke="#764ba2" stroke-width="2"/>
+                    <text x="400" y="210" text-anchor="middle" fill="white" font-size="12" font-weight="bold">
+                        Bayes'
+                    </text>
+                    <text x="400" y="225" text-anchor="middle" fill="white" font-size="12" font-weight="bold">
+                        Theorem
+                    </text>
+
+                    <!-- Four Main Branches -->
+                    <!-- Prior Probability -->
+                    <rect x="50" y="50" width="100" height="60" fill="#e3f2fd" stroke="#667eea" stroke-width="2" rx="8"/>
+                    <line x1="150" y1="80" x2="350" y2="180" stroke="#667eea" stroke-width="2"/>
+                    <text x="100" y="75" text-anchor="middle" font-size="11" font-weight="bold" fill="#1976D2">Prior</text>
+                    <text x="100" y="90" text-anchor="middle" font-size="10" fill="#1976D2">P(A)</text>
+                    <text x="100" y="105" text-anchor="middle" font-size="9" fill="#1976D2">Initial Belief</text>
+
+                    <!-- Likelihood -->
+                    <rect x="650" y="50" width="100" height="60" fill="#f3e5f5" stroke="#764ba2" stroke-width="2" rx="8"/>
+                    <line x1="650" y1="80" x2="450" y2="180" stroke="#764ba2" stroke-width="2"/>
+                    <text x="700" y="75" text-anchor="middle" font-size="11" font-weight="bold" fill="#512da8">Likelihood</text>
+                    <text x="700" y="90" text-anchor="middle" font-size="10" fill="#512da8">P(B|A)</text>
+                    <text x="700" y="105" text-anchor="middle" font-size="9" fill="#512da8">Evidence if True</text>
+
+                    <!-- Evidence -->
+                    <rect x="50" y="280" width="100" height="60" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" rx="8"/>
+                    <line x1="150" y1="310" x2="350" y2="230" stroke="#4caf50" stroke-width="2"/>
+                    <text x="100" y="305" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Evidence</text>
+                    <text x="100" y="320" text-anchor="middle" font-size="10" fill="#2e7d32">P(B)</text>
+                    <text x="100" y="335" text-anchor="middle" font-size="9" fill="#2e7d32">Total Prob.</text>
+
+                    <!-- Posterior -->
+                    <rect x="650" y="280" width="100" height="60" fill="#fff3e0" stroke="#ff9800" stroke-width="2" rx="8"/>
+                    <line x1="650" y1="310" x2="450" y2="230" stroke="#ff9800" stroke-width="2"/>
+                    <text x="700" y="305" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Posterior</text>
+                    <text x="700" y="320" text-anchor="middle" font-size="10" fill="#e65100">P(A|B)</text>
+                    <text x="700" y="335" text-anchor="middle" font-size="9" fill="#e65100">Updated Belief</text>
+                </svg>
+
+                <div style="margin-top: 30px; text-align: left;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">How These Components Interact:</h4>
+                    <p style="margin-bottom: 10px;"><strong>Starting Point:</strong> You have an initial belief about something (Prior: P(A))</p>
+                    <p style="margin-bottom: 10px;"><strong>Observation:</strong> You observe some evidence (B)</p>
+                    <p style="margin-bottom: 10px;"><strong>Two Questions:</strong></p>
+                    <ul style="margin-left: 40px; margin-bottom: 10px;">
+                        <li>"How likely is this evidence IF my belief is true?" (Likelihood: P(B|A))</li>
+                        <li>"How likely is this evidence overall?" (Evidence: P(B))</li>
+                    </ul>
+                    <p style="margin-bottom: 10px;"><strong>Integration:</strong> Combine these using Bayes' Theorem</p>
+                    <p><strong>Result:</strong> Updated belief about A after seeing evidence B (Posterior: P(A|B))</p>
+                </div>
+            </div>
+
+            <h3>Connections to Other Concepts</h3>
+
+            <table>
+                <tr>
+                    <th>Concept</th>
+                    <th>How It Relates</th>
+                </tr>
+                <tr>
+                    <td><strong>Law of Total Probability</strong></td>
+                    <td>Provides the denominator P(B) in Bayes' Theorem; essential for calculation</td>
+                </tr>
+                <tr>
+                    <td><strong>Conditional Probability</strong></td>
+                    <td>The foundation of Bayes' Theorem; describes probability given some condition</td>
+                </tr>
+                <tr>
+                    <td><strong>Mutually Exclusive Events</strong></td>
+                    <td>Ensures we can partition the sample space for the Law of Total Probability</td>
+                </tr>
+                <tr>
+                    <td><strong>Normalization</strong></td>
+                    <td>P(B) acts as a normalizing constant, ensuring posterior probabilities are valid</td>
+                </tr>
+            </table>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Bayes' Theorem ke 4 parts hain. Pehla—prior—ye aapka initial guess hai. Dusra—likelihood—ye batata hai ke evidence kitna probable hai agar aapka guess sahi ho. Teesra—evidence—ye overall probability hai observation ka. Chautha—posterior—ye final updated belief hai. Ye sabko Law of Total Probability through combine karte ho aur Bayes' Theorem milta hai. Har real-world scenario mein ye same process repeat hota hai!
+            </div>
+
+            <!-- Summary Section -->
+            <h2 style="margin-top: 50px; border-top: 3px solid #667eea; padding-top: 20px;">📋 Summary of Key Concepts</h2>
+
+            <div class="key-takeaways" style="margin-bottom: 20px;">
+                <h4>The Foundation: Conditional Probability</h4>
+                <div class="takeaway-item">Probability of an event given that another event has occurred</div>
+                <div class="takeaway-item">Written as P(A|B): "probability of A given B"</div>
+                <div class="takeaway-item">Not the same as P(A and B) or P(B|A)</div>
+            </div>
+
+            <div class="key-takeaways" style="margin-bottom: 20px;">
+                <h4>The Tool: Bayes' Theorem</h4>
+                <div class="takeaway-item">Mathematically formalizes how to update beliefs when new evidence arrives</div>
+                <div class="takeaway-item">Prior × Likelihood / Evidence = Posterior</div>
+                <div class="takeaway-item">Applicable to medicine, machine learning, decision-making, and hypothesis testing</div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>The Insight: Base Rate Matters</h4>
+                <div class="takeaway-item">Never ignore the initial probability when interpreting new evidence</div>
+                <div class="takeaway-item">Rare events remain rare even with strong evidence</div>
+                <div class="takeaway-item">Common sense combined with Bayes' Theorem prevents logical fallacies</div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

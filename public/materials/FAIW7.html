@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logical Agents - Lecture Notes | IIT Jodhpur</title>
+    
+    <!-- MathJax Configuration for LaTeX Math Rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ============================================
+           CSS STYLING FOR PROFESSIONAL LECTURE NOTES
+           ============================================ */
+        
+        /* Root Variables for Consistent Theming */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dee2e6;
+            --code-bg: #f4f4f4;
+            --highlight-bg: #fff3cd;
+        }
+        
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styling */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* Table of Contents Styling */
+        .toc {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .toc h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+        }
+        
+        .toc ul li a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        
+        .toc ul li a:hover {
+            background: var(--bg-color);
+            padding-left: 20px;
+            color: var(--accent-color);
+        }
+        
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .toc ul ul li a {
+            font-size: 1em;
+            color: #666;
+        }
+        /* Dark Mode */
+body.dark-mode {
+    --primary-color: #dfe6e9;
+    --secondary-color: #74b9ff;
+    --accent-color: #ff7675;
+    --success-color: #55efc4;
+    --warning-color: #ffeaa7;
+    --bg-color: #1e272e;
+    --card-bg: #2f3640;
+    --text-color: #f5f6fa;
+    --border-color: #353b48;
+    --code-bg: #2d3436;
+    --highlight-bg: #636e72;
+    transition: all 0.4s ease;
+}
+
+/* Theme Toggle Button Styling */
+.theme-btn {
+    background-color: var(--accent-color);
+    color: var(--card-bg);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+        /* Section Styling */
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Heading Styles */
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+        }
+        
+        h4 {
+            font-size: 1.2em;
+            color: #555;
+        }
+        
+        /* Paragraph and Text Styling */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        /* Strong/Bold Text */
+        strong, .key-term {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        /* Code and Formula Styling */
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        table tbody tr:nth-child(even) {
+            background: var(--bg-color);
+        }
+        
+        table tbody tr:hover {
+            background: #e8f4f8;
+        }
+        
+        /* Special Box Styles */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .professor-note {
+            background: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        /* Hinglish Summary Box */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border: 2px solid #fdcb6e;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-top: 0;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+        }
+        
+        .hinglish-summary p {
+            color: #2d3436;
+            line-height: 1.7;
+        }
+        
+        /* Practice Questions Section */
+        .practice-questions {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .practice-questions h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        
+        /* Key Takeaways */
+        .key-takeaways {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid var(--success-color);
+        }
+        
+        .key-takeaways h4 {
+            color: var(--success-color);
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 25px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Mind Map Styles */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .branches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: var(--bg-color);
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 280px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .branch h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .branch ul li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .branch ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 2px solid var(--border-color);
+            color: #666;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .branches {
+                flex-direction: column;
+            }
+            
+            .branch {
+                min-width: 100%;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER SECTION
+         Contains course information and title
+         ============================================ -->
+    <header>
+        <h1>📚 Logical Agents</h1>
+        <p><strong>Created by:</strong> Armaan Kachhawa </p>
+        <p><strong>Topic:</strong> Propositional Logic, Complex Sentences, Truth Tables, and Inference Rules</p>
+     
+
+    </header>
+
+    <!-- ============================================
+         TABLE OF CONTENTS
+         Clickable navigation to all sections
+         ============================================ -->
+    <nav class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#introduction">1. Introduction to Logical Agents</a></li>
+            <li><a href="#propositional-logic">2. Propositional Logic Review</a>
+                <ul>
+                    <li><a href="#atomic-sentences">2.1 Atomic and Complex Sentences</a></li>
+                    <li><a href="#connectives">2.2 Logical Connectives</a></li>
+                </ul>
+            </li>
+            <li><a href="#truth-tables">3. Truth Tables for Complex Sentences</a>
+                <ul>
+                    <li><a href="#not-operation">3.1 NOT Operation</a></li>
+                    <li><a href="#and-operation">3.2 AND Operation</a></li>
+                    <li><a href="#or-operation">3.3 OR Operation</a></li>
+                    <li><a href="#implication">3.4 Implication (→)</a></li>
+                    <li><a href="#biconditional">3.5 Biconditional (↔)</a></li>
+                </ul>
+            </li>
+            <li><a href="#inference-rules">4. Inference Rules</a>
+                <ul>
+                    <li><a href="#valid-arguments">4.1 Valid Arguments and Premises</a></li>
+                    <li><a href="#modus-ponens">4.2 Modus Ponens</a></li>
+                    <li><a href="#modus-tollens">4.3 Modus Tollens</a></li>
+                    <li><a href="#hypothetical-syllogism">4.4 Hypothetical Syllogism</a></li>
+                    <li><a href="#disjunctive-syllogism">4.5 Disjunctive Syllogism</a></li>
+                    <li><a href="#addition">4.6 Addition</a></li>
+                    <li><a href="#simplification">4.7 Simplification</a></li>
+                    <li><a href="#conjunction">4.8 Conjunction</a></li>
+                    <li><a href="#resolution">4.9 Resolution</a></li>
+                </ul>
+            </li>
+            <li><a href="#theorem-proving">5. Propositional Theorem Proving</a>
+                <ul>
+                    <li><a href="#logical-equivalence">5.1 Logical Equivalence</a></li>
+                    <li><a href="#commutativity">5.2 Commutativity</a></li>
+                    <li><a href="#associativity">5.3 Associativity</a></li>
+                    <li><a href="#double-negation">5.4 Double Negation</a></li>
+                    <li><a href="#contraposition">5.5 Contraposition</a></li>
+                    <li><a href="#implication-elimination">5.6 Implication Elimination</a></li>
+                    <li><a href="#de-morgans-law">5.7 De Morgan's Laws</a></li>
+                    <li><a href="#distributivity">5.8 Distributivity</a></li>
+                    <li><a href="#validity">5.9 Validity and Tautologies</a></li>
+                    <li><a href="#satisfiability">5.10 Satisfiability</a></li>
+                    <li><a href="#monotonicity">5.11 Monotonicity</a></li>
+                </ul>
+            </li>
+            <li><a href="#mind-map">6. Comprehensive Mind Map</a></li>
+        </ul>
+    </nav>
+
+    <!-- ============================================
+         SECTION 1: INTRODUCTION
+         ============================================ -->
+    <section id="introduction">
+        <h1>1. Introduction to Logical Agents</h1>
+        
+        <p>Welcome to the comprehensive lecture on <strong>Logical Agents</strong>. This lecture builds upon our previous understanding of propositional logic and extends it to more complex scenarios involving inference and theorem proving.</p>
+        
+        <p>In artificial intelligence, <strong class="key-term">logical agents</strong> are entities that use logic to represent knowledge and make decisions. These agents operate based on formal logical reasoning rather than purely reactive behaviors. Understanding how logical agents work requires mastering propositional logic, truth tables, and inference mechanisms.</p>
+        
+        <div class="info-box">
+            <strong>Lecture Scope:</strong> In this lecture, we will cover:
+            <ul>
+                <li>Review of propositional logic concepts</li>
+                <li>Truth tables for complex sentences with multiple connectives</li>
+                <li>Inference rules for logical reasoning</li>
+                <li>Theorem proving techniques using logical equivalences</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Last lecture we talked about propositional logics where we started with atomic sentences, compound sentences, then we came to the truth tables and the values of propositional symbols or sentences. Today we will cover complex sentences and their truth tables, then move to theorem proving and inference rules.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                <strong>Logical agents</strong> basically AI entities hain jo logic ka use karke decisions lete hain. Iss lecture mein hum propositional logic ko revise karenge, phir complex sentences ke truth tables dekhenge, aur finally inference rules aur theorem proving seekhenge. Yeh sab AI agents ko smart banana aur unhe reasoning karne mein help karta hai. Simple shabdon mein, hum seekhenge ki computer kaise logical tarike se soch sakta hai!
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 2: PROPOSITIONAL LOGIC REVIEW
+         ============================================ -->
+    <section id="propositional-logic">
+        <h1>2. Propositional Logic Review</h1>
+        
+        <h2 id="atomic-sentences">2.1 Atomic and Complex Sentences</h2>
+        
+        <p>In propositional logic, we work with two fundamental types of sentences:</p>
+        
+        <h3>Atomic Sentences (Simple Sentences)</h3>
+        <p><strong class="key-term">Atomic sentences</strong> are the basic building blocks of propositional logic. They are indivisible statements that can be either true or false, but not both. These are also called <strong>simple sentences</strong> or <strong>propositions</strong>.</p>
+        
+        <div class="info-box">
+            <strong>Examples of Atomic Sentences:</strong>
+            <ul>
+                <li>$P$: "I am eating rice"</li>
+                <li>$Q$: "It is raining"</li>
+                <li>$R$: "The football ground is wet"</li>
+            </ul>
+        </div>
+        
+        <h3>Complex Sentences (Compound Sentences)</h3>
+        <p><strong class="key-term">Complex sentences</strong> are formed by connecting multiple atomic sentences using logical connectives. The structure is:</p>
+        
+        <div class="info-box">
+            <p style="text-align: center; font-size: 1.2em;">
+                <strong>Simple Sentence + Connective + Simple Sentence = Complex Sentence</strong>
+            </p>
+            <p style="text-align: center;">
+                $P \land Q$ (where $\land$ is the connective)
+            </p>
+        </div>
+
+        <h2 id="connectives">2.2 Logical Connectives</h2>
+        
+        <p>Logical connectives are operators that combine atomic sentences to form complex sentences. Here are the primary connectives used in propositional logic:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Connective Name</th>
+                    <th>Symbol</th>
+                    <th>Read As</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Negation (NOT)</strong></td>
+                    <td>$\neg$ or $\sim$</td>
+                    <td>"not"</td>
+                    <td>$\neg P$ (not P)</td>
+                </tr>
+                <tr>
+                    <td><strong>Conjunction (AND)</strong></td>
+                    <td>$\land$ or $\wedge$</td>
+                    <td>"and"</td>
+                    <td>$P \land Q$ (P and Q)</td>
+                </tr>
+                <tr>
+                    <td><strong>Disjunction (OR)</strong></td>
+                    <td>$\lor$ or $\vee$</td>
+                    <td>"or"</td>
+                    <td>$P \lor Q$ (P or Q)</td>
+                </tr>
+                <tr>
+                    <td><strong>Implication</strong></td>
+                    <td>$\rightarrow$ or $\Rightarrow$</td>
+                    <td>"implies" or "if...then"</td>
+                    <td>$P \rightarrow Q$ (if P then Q)</td>
+                </tr>
+                <tr>
+                    <td><strong>Biconditional</strong></td>
+                    <td>$\leftrightarrow$ or $\Leftrightarrow$</td>
+                    <td>"if and only if"</td>
+                    <td>$P \leftrightarrow Q$ (P if and only if Q)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            See if we are coming to our natural language, so we can say something like "I am eating rice AND I am eating curry." Here "I am eating rice" is one atomic sentence, "I am eating curry" is another atomic sentence, and "AND" is the connective connecting them. Similarly, you could replace AND with OR, or use IF-THEN for implications.
+        </div>
+        
+        <h3>Natural Language Examples</h3>
+        
+        <div class="info-box">
+            <p><strong>AND Example:</strong> "I am eating rice and I am eating curry"</p>
+            <p style="margin-left: 20px;">→ $P \land Q$ where $P$ = "I am eating rice", $Q$ = "I am eating curry"</p>
+            
+            <p><strong>OR Example:</strong> "I am eating rice or I am eating roti"</p>
+            <p style="margin-left: 20px;">→ $P \lor Q$ where $P$ = "I am eating rice", $Q$ = "I am eating roti"</p>
+            
+            <p><strong>IMPLICATION Example:</strong> "If it is raining, then I will take an umbrella"</p>
+            <p style="margin-left: 20px;">→ $P \rightarrow Q$ where $P$ = "It is raining", $Q$ = "I will take umbrella"</p>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                Propositional logic mein <strong>atomic sentences</strong> basic statements hote hain jo true ya false ho sakte hain, jaise "barish ho rahi hai". Jab hum in atomic sentences ko <strong>connectives</strong> (AND, OR, NOT, IF-THEN) se jod dete hain, toh <strong>complex sentences</strong> ban jaate hain. For example: "Agar barish hogi (P) toh main chata le jaunga (Q)" ek implication hai ($P \rightarrow Q$). Yeh connectives natural language se logic ki bhasha mein translate karne mein help karte hain.
+            </p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Atomic sentences are indivisible propositions that can be true or false</li>
+                <li>Complex sentences are formed by combining atomic sentences with logical connectives</li>
+                <li>Five main connectives: NOT ($\neg$), AND ($\land$), OR ($\lor$), IMPLIES ($\rightarrow$), IFF ($\leftrightarrow$)</li>
+                <li>Propositional logic bridges natural language and formal logical reasoning</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 3: TRUTH TABLES FOR COMPLEX SENTENCES
+         ============================================ -->
+    <section id="truth-tables">
+        <h1>3. Truth Tables for Complex Sentences</h1>
+        
+        <p>A <strong class="key-term">truth table</strong> is a mathematical table that shows all possible truth values for a logical expression. For complex sentences, we evaluate the truth value of the entire expression based on the truth values of its atomic components.</p>
+        
+        <div class="info-box">
+            <strong>Fundamental Principle:</strong> Every proposition can take one of two values:
+            <ul>
+                <li><strong>True (T)</strong> - symbolically denoted as 1</li>
+                <li><strong>False (F)</strong> - symbolically denoted as 0</li>
+            </ul>
+            <p><strong>Important:</strong> If you have $n$ propositions, there will be $2^n$ possible combinations of truth values.</p>
+        </div>
+        
+        <div class="professor-note">
+            We said that every proposition can take two values, one is true and one is false. True itself is also a proposition which is always true. These are called tautologies, which we will talk about later.
+        </div>
+
+        <h2 id="not-operation">3.1 NOT Operation (Negation)</h2>
+        
+        <p>The <strong class="key-term">NOT operation</strong> (denoted by $\neg$) simply inverts the truth value of a proposition. If $P$ is true, then $\neg P$ (not P) is false, and vice versa.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$\neg P$</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="info-box">
+            <strong>Example:</strong> 
+            <ul>
+                <li>$P$: "I am eating rice" → TRUE</li>
+                <li>$\neg P$: "I am NOT eating rice" → FALSE</li>
+            </ul>
+        </div>
+
+        <h2 id="and-operation">3.2 AND Operation (Conjunction)</h2>
+        
+        <p>The <strong class="key-term">AND operation</strong> (denoted by $\land$) produces TRUE only when BOTH operands are true. If either operand is false, the entire expression is false.</p>
+        
+        <div class="warning-box">
+            <strong>Rule for AND:</strong> $P \land Q$ is TRUE if and only if both $P$ is TRUE AND $Q$ is TRUE. In all other cases, it is FALSE.
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$Q$</th>
+                    <th>$P \land Q$</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td><strong style="color: red;">F</strong></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td><strong style="color: red;">F</strong></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td><strong style="color: red;">F</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            Let's take an example: "I am eating rice AND I am eating curry." This sentence will be TRUE only if I am actually eating rice AND also eating curry at the same time. If I am eating rice and chapati instead, then this sentence becomes FALSE because the second part (eating curry) is false.
+        </div>
+        
+        <h3>Real-World Understanding</h3>
+        <p>Think of AND as requiring <strong>all conditions to be met</strong>. Just like to pass an exam, you might need to score 40% or more AND submit all assignments. If either condition fails, you don't pass.</p>
+
+        <h2 id="or-operation">3.3 OR Operation (Disjunction)</h2>
+        
+        <p>The <strong class="key-term">OR operation</strong> (denoted by $\lor$) produces TRUE when AT LEAST ONE of the operands is true. It is FALSE only when both operands are false.</p>
+        
+        <div class="warning-box">
+            <strong>Rule for OR:</strong> $P \lor Q$ is TRUE if either $P$ is TRUE OR $Q$ is TRUE OR both are TRUE. It is FALSE only when both are FALSE.
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$Q$</th>
+                    <th>$P \lor Q$</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td><strong style="color: red;">F</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            Consider the sentence: "I will eat rice OR I will eat roti." This gives me two options. The sentence is TRUE if I eat rice, OR if I eat roti, OR even if I eat both! The sentence will be FALSE only when I am eating neither rice nor roti - when both options are not happening.
+        </div>
+        
+        <h3>Real-World Understanding</h3>
+        <p>Think of OR as requiring <strong>at least one condition to be met</strong>. Like when choosing a dessert: "I'll have ice cream OR cake" - you're happy if you get either one (or even both!).</p>
+
+        <h2 id="implication">3.4 Implication (Conditional)</h2>
+        
+        <p>The <strong class="key-term">implication</strong> operation (denoted by $\rightarrow$) represents "if...then" relationships. $P \rightarrow Q$ reads as "if P then Q" or "P implies Q".</p>
+        
+        <div class="warning-box">
+            <strong>⚠️ Important - This is Counter-Intuitive!</strong><br>
+            $P \rightarrow Q$ is FALSE <strong>only when</strong> $P$ is TRUE and $Q$ is FALSE. In all other cases, it is TRUE!
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$Q$</th>
+                    <th>$P \rightarrow Q$</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                    <td>Promise kept: P happened and Q happened</td>
+                </tr>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td><strong style="color: red;">F</strong></td>
+                    <td>Promise broken: P happened but Q didn't</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                    <td>No promise: P didn't happen, but Q still occurred</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td><strong style="color: green;">T</strong></td>
+                    <td>No promise: P didn't happen, Q didn't happen</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            This is most unintuitive for me! Let me explain with an example: "If it rains, then the football ground will be wet." Now, this statement tells you that raining will make the ground wet, but it doesn't say that rain is the ONLY way the ground can become wet! Someone could sprinkle water on the ground too. So if it's NOT raining (P is false) but the ground is still wet (Q is true), the original statement isn't violated - it's still TRUE because there could be other causes. The statement is FALSE only when it IS raining (P is true) but somehow the ground is NOT wet (Q is false) - that would break the implication.
+        </div>
+        
+        <h3>Why is Implication Counter-Intuitive?</h3>
+        
+        <div class="info-box">
+            <strong>Key Insight:</strong> An implication $P \rightarrow Q$ states that:
+            <ul>
+                <li>"Whenever P is true, Q must be true"</li>
+                <li>It does NOT say "P is the only way for Q to be true"</li>
+                <li>It does NOT say "If P is false, then Q must be false"</li>
+            </ul>
+        </div>
+        
+        <p><strong>Example Analysis:</strong> "If it rains ($P$), then the football ground will be wet ($Q$)"</p>
+        <ul>
+            <li><strong>Case 1:</strong> It rains (T) and ground is wet (T) → TRUE ✓ (implication holds)</li>
+            <li><strong>Case 2:</strong> It rains (T) but ground is NOT wet (F) → FALSE ✗ (implication violated!)</li>
+            <li><strong>Case 3:</strong> It doesn't rain (F) but ground is wet (T) → TRUE ✓ (water sprinkler used, implication not violated)</li>
+            <li><strong>Case 4:</strong> It doesn't rain (F) and ground is NOT wet (F) → TRUE ✓ (no claim was made about this case)</li>
+        </ul>
+
+        <h2 id="biconditional">3.5 Biconditional (If and Only If)</h2>
+        
+        <p>The <strong class="key-term">biconditional</strong> operation (denoted by $\leftrightarrow$) represents "if and only if" (abbreviated as "iff"). $P \leftrightarrow Q$ means $P \rightarrow Q$ AND $Q \rightarrow P$.</p>
+        
+        <div class="warning-box">
+            <strong>Rule for Biconditional:</strong> $P \leftrightarrow Q$ is TRUE if and only if both $P$ and $Q$ have the SAME truth value (both true or both false).
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$Q$</th>
+                    <th>$P \leftrightarrow Q$</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                    <td>Both true - they agree</td>
+                </tr>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td><strong style="color: red;">F</strong></td>
+                    <td>Different values - they disagree</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td><strong style="color: red;">F</strong></td>
+                    <td>Different values - they disagree</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td><strong style="color: green;">T</strong></td>
+                    <td>Both false - they agree</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            $P \leftrightarrow Q$ means both $P \rightarrow Q$ AND $Q \rightarrow P$. So biconditional is TRUE if and only if P and Q both are true or both are false. Think of it as a two-way street: P implies Q AND Q implies P. If P is true but Q is false, then one direction is violated, making the whole statement false.
+        </div>
+        
+        <h3>Real-World Example</h3>
+        <p><strong>Statement:</strong> "You will pass the exam if and only if you score 40% or more"</p>
+        <ul>
+            <li>If you score ≥40% → You pass ✓</li>
+            <li>If you pass → You must have scored ≥40% ✓</li>
+            <li>This is a biconditional relationship: passing and scoring ≥40% always go together</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                Truth tables complex sentences ke liye sari possible combinations dikhate hain. <strong>NOT</strong> operation values ko ulta kar deta hai. <strong>AND</strong> tab hi true hota hai jab dono conditions true hon. <strong>OR</strong> tab true hai jab kam se kam ek condition true ho. <strong>Implication</strong> ($\rightarrow$) sabse tricky hai - yeh sirf tab false hota hai jab pehla part true ho aur doosra false (promise break ho jaye). <strong>Biconditional</strong> ($\leftrightarrow$) tab true hai jab dono ki values same hon (dono true ya dono false). Yeh sab samajhna AI reasoning ke liye bahut zaroori hai!
+            </p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Given $P$ = "It is sunny" and $Q$ = "I will go to the beach", evaluate the truth value of $P \land Q$ when it is sunny but you stay home.
+                <div class="answer">
+                    $P$ is TRUE (it is sunny), $Q$ is FALSE (didn't go to beach). Therefore, $P \land Q$ = T $\land$ F = <strong>FALSE</strong>. The AND operation requires both to be true.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Evaluate $(P \lor Q) \land R$ when $P$ = F, $Q$ = T, $R$ = T.
+                <div class="answer">
+                    First evaluate $(P \lor Q)$ = (F $\lor$ T) = T<br>
+                    Then evaluate T $\land$ R = T $\land$ T = <strong>TRUE</strong>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Why is the implication $P \rightarrow Q$ TRUE when both $P$ and $Q$ are FALSE?
+                <div class="answer">
+                    When $P$ is FALSE, the implication makes no claim about what should happen (the condition isn't met). Since we can't say the implication was violated, we consider it TRUE by default. The implication only fails when $P$ is TRUE but $Q$ is FALSE (promise broken).
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Create a truth table for $(P \land Q) \rightarrow R$ with all possible combinations.
+                <div class="answer">
+                    <table>
+                        <tr><th>P</th><th>Q</th><th>R</th><th>P∧Q</th><th>(P∧Q)→R</th></tr>
+                        <tr><td>T</td><td>T</td><td>T</td><td>T</td><td><strong>T</strong></td></tr>
+                        <tr><td>T</td><td>T</td><td>F</td><td>T</td><td><strong>F</strong></td></tr>
+                        <tr><td>T</td><td>F</td><td>T</td><td>F</td><td><strong>T</strong></td></tr>
+                        <tr><td>T</td><td>F</td><td>F</td><td>F</td><td><strong>T</strong></td></tr>
+                        <tr><td>F</td><td>T</td><td>T</td><td>F</td><td><strong>T</strong></td></tr>
+                        <tr><td>F</td><td>T</td><td>F</td><td>F</td><td><strong>T</strong></td></tr>
+                        <tr><td>F</td><td>F</td><td>T</td><td>F</td><td><strong>T</strong></td></tr>
+                        <tr><td>F</td><td>F</td><td>F</td><td>F</td><td><strong>T</strong></td></tr>
+                    </table>
+                    Note: With 3 variables, we get $2^3 = 8$ combinations
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Truth tables systematically show all possible truth value combinations for logical expressions</li>
+                <li>With $n$ propositions, there are $2^n$ rows in the truth table</li>
+                <li>NOT inverts truth values; AND requires all true; OR requires at least one true</li>
+                <li>Implication is false only when antecedent is true and consequent is false</li>
+                <li>Biconditional is true when both operands have the same truth value</li>
+                <li>Understanding these operations is crucial for logical reasoning in AI systems</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 4: INFERENCE RULES
+         ============================================ -->
+    <section id="inference-rules">
+        <h1>4. Inference Rules</h1>
+        
+        <p><strong class="key-term">Inference</strong> is the process of deriving new conclusions from existing statements or premises using logical reasoning. Inference rules are the formal mechanisms that allow us to make valid arguments and draw sound conclusions.</p>
+        
+        <div class="info-box">
+            <strong>What is Inference?</strong>
+            <ul>
+                <li>We have a collection of statements (premises)</li>
+                <li>From these premises, we want to conclude something new</li>
+                <li>The conclusion must follow logically from the premises</li>
+                <li>This process creates a valid argument</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Inference is about what we are inferring or concluding from given statements. We have to make valid arguments - meaning the conclusion must logically follow from the premises using proper inference rules. It's like having ingredients (premises) and following a recipe (inference rules) to cook a dish (conclusion).
+        </div>
+
+        <h2 id="valid-arguments">4.1 Valid Arguments and Premises</h2>
+        
+        <p>An <strong class="key-term">argument</strong> consists of:</p>
+        <ul>
+            <li><strong>Premises</strong>: A sequence of propositions $P_1, P_2, P_3, ..., P_n$ (given statements)</li>
+            <li><strong>Conclusion</strong>: A proposition $Q$ that we want to prove</li>
+        </ul>
+        
+        <p>A <strong class="key-term">valid argument</strong> means: If all premises are true, then the conclusion must also be true.</p>
+        
+        <div class="info-box">
+            <p style="text-align: center; font-size: 1.2em;">
+                <strong>Valid Argument Structure:</strong><br>
+                $P_1, P_2, P_3, ..., P_n \vdash Q$
+            </p>
+            <p style="text-align: center;">
+                (The premises imply the conclusion)
+            </p>
+        </div>
+        
+        <h3>Simple Example</h3>
+        <div class="success-box">
+            <strong>Premises:</strong>
+            <ol>
+                <li>"If it is raining, I will take an umbrella" → $P \rightarrow Q$</li>
+                <li>"It is raining" → $P$</li>
+            </ol>
+            <strong>Conclusion:</strong> "I will take an umbrella" → $Q$
+            
+            <p style="margin-top: 10px;">This is a valid argument! We'll learn this is called <em>Modus Ponens</em>.</p>
+        </div>
+
+        <h2 id="modus-ponens">4.2 Modus Ponens</h2>
+        
+        <p><strong class="key-term">Modus Ponens</strong> (Latin for "method of affirming") is one of the most fundamental inference rules.</p>
+        
+        <div class="warning-box">
+            <strong>Modus Ponens Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \rightarrow Q, \quad P}{\therefore Q}$$
+            </p>
+            <p>If we know "$P$ implies $Q$" is true, and we know "$P$" is true, then we can conclude "$Q$" is true.</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \rightarrow Q) \land P \Rightarrow Q$</p>
+        
+        <h3>Examples</h3>
+        <div class="info-box">
+            <strong>Example 1:</strong>
+            <ul>
+                <li>Premise 1: If it is raining, then I will take an umbrella ($P \rightarrow Q$)</li>
+                <li>Premise 2: It is raining ($P$)</li>
+                <li><strong>Conclusion:</strong> Therefore, I will take an umbrella ($Q$) ✓</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <strong>Example 2:</strong>
+            <ul>
+                <li>Premise 1: If you study hard, you will pass the exam ($P \rightarrow Q$)</li>
+                <li>Premise 2: You studied hard ($P$)</li>
+                <li><strong>Conclusion:</strong> Therefore, you will pass the exam ($Q$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="modus-tollens">4.3 Modus Tollens</h2>
+        
+        <p><strong class="key-term">Modus Tollens</strong> (Latin for "method of denying") allows us to reason backwards from a false conclusion.</p>
+        
+        <div class="warning-box">
+            <strong>Modus Tollens Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \rightarrow Q, \quad \neg Q}{\therefore \neg P}$$
+            </p>
+            <p>If we know "$P$ implies $Q$" is true, and we know "$Q$" is false, then we can conclude "$P$" must be false.</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \rightarrow Q) \land \neg Q \Rightarrow \neg P$</p>
+        
+        <h3>Examples</h3>
+        <div class="info-box">
+            <strong>Example 1:</strong>
+            <ul>
+                <li>Premise 1: If it is raining, the ground is wet ($P \rightarrow Q$)</li>
+                <li>Premise 2: The ground is NOT wet ($\neg Q$)</li>
+                <li><strong>Conclusion:</strong> Therefore, it is NOT raining ($\neg P$) ✓</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <strong>Example 2:</strong>
+            <ul>
+                <li>Premise 1: If the alarm rings, I wake up ($P \rightarrow Q$)</li>
+                <li>Premise 2: I did NOT wake up ($\neg Q$)</li>
+                <li><strong>Conclusion:</strong> Therefore, the alarm did NOT ring ($\neg P$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="hypothetical-syllogism">4.4 Hypothetical Syllogism</h2>
+        
+        <p><strong class="key-term">Hypothetical Syllogism</strong> allows us to chain implications together.</p>
+        
+        <div class="warning-box">
+            <strong>Hypothetical Syllogism Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \rightarrow Q, \quad Q \rightarrow R}{\therefore P \rightarrow R}$$
+            </p>
+            <p>If "$P$ implies $Q$" and "$Q$ implies $R$", then we can conclude "$P$ implies $R$".</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \rightarrow Q) \land (Q \rightarrow R) \Rightarrow (P \rightarrow R)$</p>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise 1: If I study hard, I will understand the concepts ($P \rightarrow Q$)</li>
+                <li>Premise 2: If I understand the concepts, I will pass the exam ($Q \rightarrow R$)</li>
+                <li><strong>Conclusion:</strong> Therefore, if I study hard, I will pass the exam ($P \rightarrow R$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="disjunctive-syllogism">4.5 Disjunctive Syllogism</h2>
+        
+        <p><strong class="key-term">Disjunctive Syllogism</strong> uses the elimination of one option to confirm another.</p>
+        
+        <div class="warning-box">
+            <strong>Disjunctive Syllogism Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \lor Q, \quad \neg P}{\therefore Q}$$
+            </p>
+            <p>If we know "$P$ or $Q$" is true, and we know "$P$" is false, then we can conclude "$Q$" must be true.</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \lor Q) \land \neg P \Rightarrow Q$</p>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise 1: Either it is Monday or it is Tuesday ($P \lor Q$)</li>
+                <li>Premise 2: It is NOT Monday ($\neg P$)</li>
+                <li><strong>Conclusion:</strong> Therefore, it is Tuesday ($Q$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="addition">4.6 Addition</h2>
+        
+        <p><strong class="key-term">Addition</strong> allows us to add any proposition to a true statement using OR.</p>
+        
+        <div class="warning-box">
+            <strong>Addition Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P}{\therefore P \lor Q}$$
+            </p>
+            <p>If we know "$P$" is true, then "$P$ or $Q$" is also true (regardless of $Q$'s truth value).</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $P \Rightarrow (P \lor Q)$</p>
+        
+        <div class="professor-note">
+            Addition means you are adding something with OR, and it will not change the validity. If P is true, then "P or anything" will still be true because OR requires at least one operand to be true, and we already have P as true!
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise: I have a car ($P$)</li>
+                <li><strong>Conclusion:</strong> Therefore, I have a car OR I have a bicycle ($P \lor Q$) ✓</li>
+            </ul>
+            <p><em>Note: This is always valid even if you don't have a bicycle!</em></p>
+        </div>
+
+        <h2 id="simplification">4.7 Simplification</h2>
+        
+        <p><strong class="key-term">Simplification</strong> extracts individual components from a conjunction.</p>
+        
+        <div class="warning-box">
+            <strong>Simplification Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \land Q}{\therefore P} \quad \text{or} \quad \frac{P \land Q}{\therefore Q}$$
+            </p>
+            <p>If we know "$P$ and $Q$" is true, then we can conclude both "$P$" is true and "$Q$" is true individually.</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \land Q) \Rightarrow P$ and $(P \land Q) \Rightarrow Q$</p>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise: I have a car AND I have a bicycle ($P \land Q$)</li>
+                <li><strong>Conclusion 1:</strong> Therefore, I have a car ($P$) ✓</li>
+                <li><strong>Conclusion 2:</strong> Therefore, I have a bicycle ($Q$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="conjunction">4.8 Conjunction</h2>
+        
+        <p><strong class="key-term">Conjunction</strong> combines two true statements into one conjunction.</p>
+        
+        <div class="warning-box">
+            <strong>Conjunction Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P, \quad Q}{\therefore P \land Q}$$
+            </p>
+            <p>If we know "$P$" is true and "$Q$" is true separately, then we can conclude "$P$ and $Q$" is true.</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $P, Q \Rightarrow (P \land Q)$</p>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise 1: It is raining ($P$)</li>
+                <li>Premise 2: It is cold ($Q$)</li>
+                <li><strong>Conclusion:</strong> Therefore, it is raining AND it is cold ($P \land Q$) ✓</li>
+            </ul>
+        </div>
+
+        <h2 id="resolution">4.9 Resolution</h2>
+        
+        <p><strong class="key-term">Resolution</strong> is one of the most powerful and important inference rules, especially for automated theorem proving.</p>
+        
+        <div class="warning-box">
+            <strong>Resolution Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \lor Q, \quad \neg P \lor R}{\therefore Q \lor R}$$
+            </p>
+            <p>If we have "$P$ or $Q$" and "$\neg P$ or $R$", we can "cancel out" $P$ and $\neg P$ to conclude "$Q$ or $R$".</p>
+        </div>
+        
+        <p><strong>Alternative notation:</strong> $(P \lor Q) \land (\neg P \lor R) \Rightarrow (Q \lor R)$</p>
+        
+        <div class="professor-note">
+            This is VERY VERY important! Resolution allows us to cancel out complementary literals (P and ¬P), similar to how we cancel terms in algebra. But don't think of it exactly like addition - it's a logical rule. This is extensively used in automated reasoning systems.
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>Premise 1: Either I study OR I fail ($S \lor F$)</li>
+                <li>Premise 2: Either I don't study OR I get tired ($\neg S \lor T$)</li>
+                <li><strong>Conclusion:</strong> Therefore, either I fail OR I get tired ($F \lor T$) ✓</li>
+            </ul>
+            <p><em>The $S$ and $\neg S$ "resolve" or cancel out, leaving us with $F \lor T$</em></p>
+        </div>
+        
+        <h3>Worked Proof Example Using Multiple Rules</h3>
+        
+        <div class="success-box">
+            <strong>Problem:</strong> Prove $Q$ from premises $P \land (P \rightarrow Q)$
+            
+            <table style="margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Statement</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>$P \land (P \rightarrow Q)$</td>
+                        <td>Given (Premise)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>$P$</td>
+                        <td>Simplification from step 1</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>$P \rightarrow Q$</td>
+                        <td>Simplification from step 1</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>$Q$</td>
+                        <td>Modus Ponens using steps 2 and 3</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 10px;"><strong>Conclusion:</strong> $Q$ is proved! ✓</p>
+        </div>
+        
+        <div class="professor-note">
+            Let me give you another exercise to try: Prove $Q \rightarrow R$ from these premises:
+            <ol>
+                <li>$P \lor Q$</li>
+                <li>$P \rightarrow (Q \rightarrow R)$</li>
+                <li>$\neg P \lor (Q \rightarrow R)$</li>
+                <li>$Q$</li>
+            </ol>
+            Try to work through this step-by-step using the inference rules we've learned! Each step must be justified by a valid inference rule.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                <strong>Inference rules</strong> woh logical mechanisms hain jo hume premises se valid conclusions nikalne mein help karte hain. <strong>Modus Ponens</strong> kehta hai "agar P → Q aur P true hai, toh Q bhi true hoga". <strong>Modus Tollens</strong> reverse mein kaam karta hai - "agar P → Q aur Q false hai, toh P bhi false hai". <strong>Resolution</strong> bahut powerful rule hai jo complementary literals (P aur ¬P) ko cancel kar deta hai. Yeh sab rules cooking ke recipe ki tarah hain - sahi ingredients (premises) aur sahi steps (inference rules) follow karo, toh correct dish (conclusion) ban jayegi! AI systems in rules ka use karke automatically reasoning karte hain.
+            </p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Using Modus Ponens, what can you conclude from: "If it snows, school is closed" and "It is snowing"?
+                <div class="answer">
+                    Premise 1: $P \rightarrow Q$ (If it snows, school is closed)<br>
+                    Premise 2: $P$ (It is snowing)<br>
+                    Conclusion using Modus Ponens: $Q$ - <strong>School is closed</strong>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Apply Resolution to: $(A \lor B)$ and $(\neg A \lor C)$
+                <div class="answer">
+                    Using Resolution rule, we cancel $A$ and $\neg A$:<br>
+                    Conclusion: $B \lor C$
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What inference rule justifies: From "I have a pen and a notebook" to "I have a pen"?
+                <div class="answer">
+                    This uses the <strong>Simplification</strong> rule:<br>
+                    $P \land Q \Rightarrow P$
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Given "Either John is at home or at the library" and "John is not at home", where is John?
+                <div class="answer">
+                    This uses <strong>Disjunctive Syllogism</strong>:<br>
+                    Premise 1: $P \lor Q$ (home or library)<br>
+                    Premise 2: $\neg P$ (not at home)<br>
+                    Conclusion: $Q$ - <strong>John is at the library</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Inference rules allow us to derive new conclusions from existing premises using valid logical steps</li>
+                <li>Modus Ponens and Modus Tollens are fundamental rules for working with implications</li>
+                <li>Resolution is extremely powerful for automated theorem proving - it cancels complementary literals</li>
+                <li>Each inference step in a proof must be justified by a valid inference rule</li>
+                <li>Combining multiple inference rules allows us to build complex proofs</li>
+                <li>Valid arguments preserve truth: if premises are true, conclusion must be true</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 5: PROPOSITIONAL THEOREM PROVING
+         ============================================ -->
+    <section id="theorem-proving">
+        <h1>5. Propositional Theorem Proving</h1>
+        
+        <p><strong class="key-term">Theorem proving</strong> is the process of establishing the truth of a statement (theorem) from given premises using logical rules. It's like cooking a dish - you're given ingredients (premises) and recipes (logical rules), and you need to produce the desired dish (conclusion).</p>
+        
+        <div class="professor-note">
+            Theorem proving means certain statements will be given to us, then we have to prove a certain statement. It's like cooking - all the materials (ingredients) will be given to you, and you have to cook a dish. But that process follows logic - you can't put water on hot oil, that's not a rule you follow while cooking, right? Similarly, when we're proving theorems, we need to follow logical rules step by step to reach our conclusion.
+        </div>
+        
+        <p>To effectively do theorem proving, we need to understand <strong>logical equivalences</strong> - these are transformations that preserve the truth value of expressions and allow us to manipulate logical statements systematically.</p>
+
+        <h2 id="logical-equivalence">5.1 Logical Equivalence</h2>
+        
+        <p><strong class="key-term">Logical equivalence</strong> between two sentences means they have the same truth value in all possible scenarios.</p>
+        
+        <div class="warning-box">
+            <strong>Definition:</strong> Two sentences $P$ and $Q$ are logically equivalent (written $P \equiv Q$) if and only if:
+            <ol>
+                <li><strong>By Entailment:</strong> $P \vDash Q$ AND $Q \vDash P$ (they entail each other), OR</li>
+                <li><strong>By Truth Table:</strong> Their truth tables are identical for all possible truth value assignments</li>
+            </ol>
+        </div>
+        
+        <p>Notation: $P \equiv Q$ means "$P$ is logically equivalent to $Q$"</p>
+        
+        <div class="info-box">
+            <strong>Why is Logical Equivalence Important?</strong>
+            <ul>
+                <li>Allows us to substitute one expression for another without changing meaning</li>
+                <li>Simplifies complex logical expressions</li>
+                <li>Essential for theorem proving and logical manipulation</li>
+                <li>Forms the basis for many inference techniques</li>
+            </ul>
+        </div>
+
+        <h2 id="commutativity">5.2 Commutativity</h2>
+        
+        <p><strong class="key-term">Commutativity</strong> means we can interchange the order of operands without changing the result.</p>
+        
+        <div class="warning-box">
+            <strong>Commutative Laws:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$P \land Q \equiv Q \land P$$
+
+                $$P \lor Q \equiv Q \lor P$$
+            </p>
+        </div>
+        
+        <div class="professor-note">
+            Commutativity means we can interchange the sentences. You can check from the truth table also - if you write Q first and P after that, it should not change the truth values. The order doesn't matter for AND and OR operations.
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>"I am eating rice AND curry" ≡ "I am eating curry AND rice"</li>
+                <li>"It is Monday OR Tuesday" ≡ "It is Tuesday OR Monday"</li>
+            </ul>
+        </div>
+
+        <h2 id="associativity">5.3 Associativity</h2>
+        
+        <p><strong class="key-term">Associativity</strong> means we can change the grouping (brackets) without changing the result.</p>
+        
+        <div class="warning-box">
+            <strong>Associative Laws:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$(P \land Q) \land R \equiv P \land (Q \land R)$$
+
+                $$(P \lor Q) \lor R \equiv P \lor (Q \lor R)$$
+            </p>
+        </div>
+        
+        <div class="professor-note">
+            Associativity is about interchanging the brackets. Here we are doing the operation of these two first (pointing to first bracket), then here you could have done it different way also - you could have done this operation first, then come to this one. The result remains the same.
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <p>"(I study hard AND practice) AND review" ≡ "I study hard AND (practice AND review)"</p>
+            <p>Both mean all three things must be done; the grouping doesn't matter.</p>
+        </div>
+
+        <h2 id="double-negation">5.4 Double Negation Elimination</h2>
+        
+        <p><strong class="key-term">Double negation elimination</strong> states that two negations cancel each other out.</p>
+        
+        <div class="warning-box">
+            <strong>Double Negation Law:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\neg(\neg P) \equiv P$$
+            </p>
+            <p>"Not not P" is the same as "P"</p>
+        </div>
+        
+        <div class="professor-note">
+            Double negation elimination - the two negations cancel each other out. We will see in resolution also that negations can cancel out and elimination happens. This is very important for theorem proving.
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li>$\neg(\neg \text{"It is raining"}) \equiv \text{"It is raining"}$</li>
+                <li>"It is NOT true that it is NOT raining" = "It is raining"</li>
+            </ul>
+        </div>
+
+        <h2 id="contraposition">5.5 Contraposition</h2>
+        
+        <p><strong class="key-term">Contraposition</strong> allows us to reverse and negate both parts of an implication.</p>
+        
+        <div class="warning-box">
+            <strong>Contraposition Law:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$P \rightarrow Q \equiv \neg Q \rightarrow \neg P$$
+            </p>
+            <p>"If P then Q" is equivalent to "If not Q then not P"</p>
+        </div>
+        
+        <div class="professor-note">
+            Contraposition is very very important! Please try to keep this relation in mind. $P \rightarrow Q$ is equivalent to $\neg Q \rightarrow \neg P$. This is extremely useful in proofs.
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <ul>
+                <li><strong>Original:</strong> "If it rains, the ground is wet" ($P \rightarrow Q$)</li>
+                <li><strong>Contrapositive:</strong> "If the ground is NOT wet, then it is NOT raining" ($\neg Q \rightarrow \neg P$)</li>
+                <li>These are logically equivalent!</li>
+            </ul>
+        </div>
+
+        <h2 id="implication-elimination">5.6 Implication Elimination</h2>
+        
+        <p><strong class="key-term">Implication elimination</strong> converts an implication into a disjunction (OR). This is one of the MOST important equivalences!</p>
+        
+        <div class="warning-box">
+            <strong>Implication Elimination Law:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$P \rightarrow Q \equiv \neg P \lor Q$$
+            </p>
+            <p>"If P then Q" is equivalent to "Not P OR Q"</p>
+        </div>
+        
+        <div class="professor-note">
+            This is VERY VERY IMPORTANT! Please try to keep this relation in mind - you will be using it a lot when doing inference later on. Why is it called "elimination"? Because we are eliminating the implication symbol and replacing it with NOT and OR. Check the truth table yourself: truth table of $P \rightarrow Q$ and truth table of $\neg P \lor Q$ are exactly the same!
+        </div>
+        
+        <h3>Verification via Truth Table</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$Q$</th>
+                    <th>$P \rightarrow Q$</th>
+                    <th>$\neg P$</th>
+                    <th>$\neg P \lor Q$</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>F</td>
+                    <td>T</td>
+                </tr>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>F</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align: center;"><em>Notice columns 3 and 5 are identical! ✓</em></p>
+
+        <h2 id="de-morgans-law">5.7 De Morgan's Laws</h2>
+        
+        <p><strong class="key-term">De Morgan's Laws</strong> describe how negation distributes over AND and OR operations.</p>
+        
+        <div class="warning-box">
+            <strong>De Morgan's Laws:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\neg(P \land Q) \equiv \neg P \lor \neg Q$$
+
+                $$\neg(P \lor Q) \equiv \neg P \land \neg Q$$
+            </p>
+        </div>
+        
+        <div class="professor-note">
+            If you have done set theory, you know De Morgan's law - it's similar here also. When the NOT operation goes inside, the AND becomes OR, and OR becomes AND. Make sense? Please check for yourself using truth tables that these equivalences are true. This is a very very important rule!
+        </div>
+        
+        <h3>Pattern Recognition</h3>
+        <div class="info-box">
+            <strong>Key Pattern:</strong> When negation goes inside:
+            <ul>
+                <li>AND ($\land$) becomes OR ($\lor$)</li>
+                <li>OR ($\lor$) becomes AND ($\land$)</li>
+                <li>Each operand gets negated</li>
+            </ul>
+        </div>
+        
+        <h3>Examples</h3>
+        <div class="info-box">
+            <p><strong>Example 1:</strong> "It is NOT true that (I am happy AND healthy)"</p>
+            <p style="margin-left: 20px;">≡ "I am NOT happy OR I am NOT healthy"</p>
+            <p style="margin-left: 20px;">$\neg(H \land L) \equiv \neg H \lor \neg L$</p>
+            
+            <p style="margin-top: 15px;"><strong>Example 2:</strong> "It is NOT true that (today is Monday OR Tuesday)"</p>
+            <p style="margin-left: 20px;">≡ "Today is NOT Monday AND today is NOT Tuesday"</p>
+            <p style="margin-left: 20px;">$\neg(M \lor T) \equiv \neg M \land \neg T$</p>
+        </div>
+
+        <h2 id="distributivity">5.8 Distributivity</h2>
+        
+        <p><strong class="key-term">Distributivity</strong> describes how AND distributes over OR, and OR distributes over AND.</p>
+        
+        <div class="warning-box">
+            <strong>Distributive Laws:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R)$$
+
+                $$P \lor (Q \land R) \equiv (P \lor Q) \land (P \lor R)$$
+            </p>
+        </div>
+        
+        <div class="professor-note">
+            Distribution is about how AND is distributed over OR, or OR is distributed over AND. Please check for yourself that their truth tables are the same. This is very important for manipulating logical expressions.
+        </div>
+        
+        <h3>Analogy to Arithmetic</h3>
+        <div class="info-box">
+            <p>This is similar to multiplication distributing over addition in arithmetic:</p>
+            <p style="text-align: center;">$a \times (b + c) = (a \times b) + (a \times c)$</p>
+            <p>Similarly in logic:</p>
+            <p style="text-align: center;">$P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R)$</p>
+        </div>
+        
+        <h3>Example</h3>
+        <div class="info-box">
+            <p>"I will study hard AND (pass the exam OR learn something)"</p>
+            <p>≡ "(I study hard AND pass the exam) OR (I study hard AND learn something)"</p>
+        </div>
+
+        <h2 id="validity">5.9 Validity and Tautologies</h2>
+        
+        <p>A sentence is <strong class="key-term">valid</strong> if it is true in all possible models/interpretations. Valid sentences are also called <strong class="key-term">tautologies</strong>.</p>
+        
+        <div class="warning-box">
+            <strong>Definition:</strong> A sentence is valid/tautology if it is <strong>necessarily true</strong> - true under all possible truth value assignments.
+        </div>
+        
+        <h3>Classic Example</h3>
+        <div class="success-box">
+            <p style="text-align: center; font-size: 1.3em;">
+
+                $$P \lor \neg P$$
+            </p>
+            <p style="text-align: center;">This is ALWAYS true!</p>
+        </div>
+        
+        <div class="professor-note">
+            Take any weather of a day - "Either it will rain OR it will NOT rain." This is always true, right? In a day, either it will be raining or it is not raining. There's no third option! This will always be true, and these kinds of sentences are called tautologies. Valid sentences are necessarily true.
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>$P$</th>
+                    <th>$\neg P$</th>
+                    <th>$P \lor \neg P$</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td><strong style="color: green;">T</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align: center;"><em>Always TRUE regardless of P's value! ✓</em></p>
+        
+        <h3>Connection to Entailment</h3>
+        <div class="info-box">
+            <strong>Deduction Theorem:</strong> For any sentences $P$ and $Q$:
+            <p style="text-align: center;">$P \vDash Q$ if and only if $(P \rightarrow Q)$ is valid</p>
+            <p>This connects entailment with validity and is crucial for theorem proving!</p>
+        </div>
+
+        <h2 id="satisfiability">5.10 Satisfiability</h2>
+        
+        <p>A sentence is <strong class="key-term">satisfiable</strong> if it is true in at least one model (at least one truth value assignment makes it true).</p>
+        
+        <div class="warning-box">
+            <strong>Definition:</strong> A sentence is satisfiable if there exists at least one model where it evaluates to TRUE.
+        </div>
+        
+        <h3>Comparison: Validity vs Satisfiability</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Valid (Tautology)</th>
+                    <th>Satisfiable</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Requirement</strong></td>
+                    <td>True in <strong>ALL</strong> models</td>
+                    <td>True in <strong>AT LEAST ONE</strong> model</td>
+                </tr>
+                <tr>
+                    <td><strong>Example</strong></td>
+                    <td>$P \lor \neg P$ (always true)</td>
+                    <td>$P \land Q$ (true when both are true)</td>
+                </tr>
+                <tr>
+                    <td><strong>Opposite</strong></td>
+                    <td>Contradiction (always false)</td>
+                    <td>Unsatisfiable (never true)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            Satisfiability is a very very important concept! A sentence is satisfiable if it is true in, or satisfied by, some model. It doesn't have to be true in all models (that would be validity), just at least one model where it works out.
+        </div>
+        
+        <h3>Examples</h3>
+        <div class="info-box">
+            <p><strong>Satisfiable but not Valid:</strong> $P \land Q$</p>
+            <ul>
+                <li>TRUE when $P=T, Q=T$ (satisfiable ✓)</li>
+                <li>FALSE in other cases (not valid ✗)</li>
+            </ul>
+            
+            <p style="margin-top: 15px;"><strong>Valid (also satisfiable):</strong> $P \lor \neg P$</p>
+            <ul>
+                <li>TRUE in all cases (valid ✓)</li>
+                <li>Therefore also satisfiable ✓</li>
+            </ul>
+            
+            <p style="margin-top: 15px;"><strong>Unsatisfiable:</strong> $P \land \neg P$</p>
+            <ul>
+                <li>FALSE in all cases (contradiction)</li>
+                <li>Not satisfiable ✗</li>
+            </ul>
+        </div>
+
+        <h2 id="monotonicity">5.11 Monotonicity</h2>
+        
+        <p><strong class="key-term">Monotonicity</strong> states that adding more knowledge to a knowledge base doesn't invalidate previous conclusions.</p>
+        
+        <div class="warning-box">
+            <strong>Monotonicity Property:</strong>
+            <p style="text-align: center; font-size: 1.1em;">
+                If $KB \vDash P$, then $(KB \cup \{Q\}) \vDash P$
+            </p>
+            <p>If a knowledge base KB entails P, then adding any new sentence Q to KB will still entail P.</p>
+        </div>
+        
+        <div class="professor-note">
+            This is about enriching knowledge. Let's say we have a knowledge base KB, and from there we can imply P. Now if I add one more sentence Q to my knowledge base (enriching it), creating a new knowledge base, then this new knowledge base will also still imply P. When you enrich your knowledge, the implications that were already there will remain true - they don't change or disappear!
+        </div>
+        
+        <h3>Understanding Through Example</h3>
+        <div class="info-box">
+            <p><strong>Initial KB:</strong> "All humans are mortal" + "Socrates is human"</p>
+            <p><strong>Conclusion:</strong> "Socrates is mortal" ✓</p>
+            
+            <p style="margin-top: 15px;"><strong>After adding new fact:</strong> "All humans are mortal" + "Socrates is human" + "Socrates is a philosopher"</p>
+            <p><strong>Conclusion still holds:</strong> "Socrates is mortal" ✓</p>
+            
+            <p style="margin-top: 10px;"><em>Adding the new fact doesn't invalidate the original conclusion!</em></p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Summary of Important Equivalences</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Law</th>
+                        <th>Equivalence</th>
+                        <th>Importance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Double Negation</td>
+                        <td>$\neg(\neg P) \equiv P$</td>
+                        <td>⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Contraposition</td>
+                        <td>$P \rightarrow Q \equiv \neg Q \rightarrow \neg P$</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Implication Elimination</td>
+                        <td>$P \rightarrow Q \equiv \neg P \lor Q$</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>De Morgan's Laws</td>
+                        <td>$\neg(P \land Q) \equiv \neg P \lor \neg Q$</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td>Distributivity</td>
+                        <td>$P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R)$</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                <strong>Theorem proving</strong> mein hume logical equivalences ka use karke complex expressions ko simplify karna padta hai. <strong>Implication elimination</strong> ($P \rightarrow Q \equiv \neg P \lor Q$) sabse important rule hai - isse hum arrows ko hata kar OR aur NOT mein convert kar sakte hain. <strong>De Morgan's laws</strong> batate hain ki jab NOT andar jata hai toh AND ban jata hai OR, aur OR ban jata hai AND. <strong>Tautology</strong> wo sentence hai jo hamesha true hota hai (jaise $P \lor \neg P$), jabki <strong>satisfiable</strong> sentence kam se kam ek model mein true hona chahiye. <strong>Monotonicity</strong> kehti hai ki jab hum knowledge base mein nayi cheezein add karte hain, purane conclusions phir bhi valid rehte hain. Yeh sab concepts AI mein automated reasoning ke liye bahut zaroori hain!
+            </p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Apply implication elimination to: $(P \land Q) \rightarrow R$
+                <div class="answer">
+                    Using $P \rightarrow Q \equiv \neg P \lor Q$:<br>
+                    $(P \land Q) \rightarrow R \equiv \neg(P \land Q) \lor R$<br>
+                    Applying De Morgan's Law:<br>
+                    $\equiv (\neg P \lor \neg Q) \lor R$<br>
+                    $\equiv \neg P \lor \neg Q \lor R$
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Simplify: $\neg(P \lor \neg Q)$
+                <div class="answer">
+                    Using De Morgan's Law $\neg(P \lor Q) \equiv \neg P \land \neg Q$:<br>
+                    $\neg(P \lor \neg Q) \equiv \neg P \land \neg(\neg Q)$<br>
+                    Using Double Negation:<br>
+                    $\equiv \neg P \land Q$
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Show that $(P \rightarrow Q) \land (Q \rightarrow P)$ is equivalent to $P \leftrightarrow Q$
+                <div class="answer">
+                    By definition, biconditional $P \leftrightarrow Q$ means "$P$ implies $Q$ AND $Q$ implies $P$"<br>
+                    Therefore: $P \leftrightarrow Q \equiv (P \rightarrow Q) \land (Q \rightarrow P)$ ✓
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Is $P \land (P \rightarrow Q) \rightarrow Q$ a tautology? Verify.
+                <div class="answer">
+                    This represents the Modus Ponens rule. Let's check if it's always true:<br>
+                    For this to be FALSE, we need: $P \land (P \rightarrow Q)$ TRUE and $Q$ FALSE<br>
+                    If $P \land (P \rightarrow Q)$ is TRUE, then both $P$ and $(P \rightarrow Q)$ must be TRUE<br>
+                    But if $P$ is TRUE and $(P \rightarrow Q)$ is TRUE, then $Q$ MUST be TRUE (by definition of implication)<br>
+                    This contradicts our assumption that $Q$ is FALSE<br>
+                    Therefore, the expression is <strong>always TRUE - it's a TAUTOLOGY</strong> ✓
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Logical equivalences allow us to transform expressions while preserving truth</li>
+                <li>Implication elimination ($P \rightarrow Q \equiv \neg P \lor Q$) is critical for converting to CNF/DNF</li>
+                <li>De Morgan's Laws show how negation interacts with AND/OR operations</li>
+                <li>Tautologies are always true; satisfiable sentences are true in at least one model</li>
+                <li>Monotonicity ensures that adding knowledge doesn't invalidate previous conclusions</li>
+                <li>These equivalences are the foundation for automated theorem proving systems</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 6: COMPREHENSIVE MIND MAP
+         Visualizing connections between concepts
+         ============================================ -->
+    <section id="mind-map" class="mind-map">
+        <h2>6. 🧠 Comprehensive Mind Map</h2>
+        
+        <div class="mind-map-container">
+            <div class="central-node">
+                LOGICAL AGENTS
+            </div>
+            
+            <div class="branches">
+                <!-- Branch 1: Propositional Logic -->
+                <div class="branch">
+                    <h3>1. Propositional Logic</h3>
+                    <ul>
+                        <li>Atomic Sentences (Simple)</li>
+                        <li>Complex Sentences (Compound)</li>
+                        <li>Logical Connectives:
+                            <ul style="margin-left: 20px; list-style: circle;">
+                                <li>NOT ($\neg$)</li>
+                                <li>AND ($\land$)</li>
+                                <li>OR ($\lor$)</li>
+                                <li>IMPLIES ($\rightarrow$)</li>
+                                <li>IFF ($\leftrightarrow$)</li>
+                            </ul>
+                        </li>
+                        <li>Natural Language Translation</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 2: Truth Tables -->
+                <div class="branch">
+                    <h3>2. Truth Tables</h3>
+                    <ul>
+                        <li>Binary Values (T/F)</li>
+                        <li>$2^n$ combinations for $n$ variables</li>
+                        <li>NOT: Inverses value</li>
+                        <li>AND: All must be true</li>
+                        <li>OR: At least one true</li>
+                        <li>IMPLIES: False only when T→F</li>
+                        <li>IFF: Same truth values</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 3: Inference Rules -->
+                <div class="branch">
+                    <h3>3. Inference Rules</h3>
+                    <ul>
+                        <li>Modus Ponens: $P \rightarrow Q, P \vdash Q$</li>
+                        <li>Modus Tollens: $P \rightarrow Q, \neg Q \vdash \neg P$</li>
+                        <li>Hypothetical Syllogism</li>
+                        <li>Disjunctive Syllogism</li>
+                        <li>Addition & Simplification</li>
+                        <li>Conjunction</li>
+                        <li>Resolution (Key for automation)</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 4: Logical Equivalences -->
+                <div class="branch">
+                    <h3>4. Logical Equivalences</h3>
+                    <ul>
+                        <li>Commutativity</li>
+                        <li>Associativity</li>
+                        <li>Double Negation</li>
+                        <li>Contraposition</li>
+                        <li>Implication Elimination ⭐</li>
+                        <li>De Morgan's Laws ⭐</li>
+                        <li>Distributivity</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 5: Theorem Proving -->
+                <div class="branch">
+                    <h3>5. Theorem Proving</h3>
+                    <ul>
+                        <li>Valid Arguments</li>
+                        <li>Premises → Conclusion</li>
+                        <li>Step-by-step justification</li>
+                        <li>Using inference rules</li>
+                        <li>Using equivalences</li>
+                        <li>Automated reasoning</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 6: Key Concepts -->
+                <div class="branch">
+                    <h3>6. Key Properties</h3>
+                    <ul>
+                        <li>Validity (Tautologies)</li>
+                        <li>Satisfiability</li>
+                        <li>Entailment ($\vDash$)</li>
+                        <li>Logical Equivalence ($\equiv$)</li>
+                        <li>Monotonicity</li>
+                        <li>Deduction Theorem</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+            <h4 style="color: #856404; margin-top: 0;">🔗 Connections Between Concepts</h4>
+            <ul style="color: #856404;">
+                <li><strong>Truth Tables ↔ Logical Equivalence:</strong> Equivalences can be verified using truth tables</li>
+                <li><strong>Inference Rules ↔ Theorem Proving:</strong> Inference rules are the tools used in theorem proving</li>
+                <li><strong>Implication ↔ Entailment:</strong> $P \vDash Q$ iff $(P \rightarrow Q)$ is valid</li>
+                <li><strong>Resolution ↔ Automated Reasoning:</strong> Resolution is key for AI theorem provers</li>
+                <li><strong>Logical Agents ↔ All Concepts:</strong> All these concepts enable intelligent reasoning in AI systems</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER SECTION
+         ============================================ -->
+    <footer>
+        <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+    </footer>
+
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

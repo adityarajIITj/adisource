@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Plots for Grouped Data - Complete Lecture Notes</title>
+    
+    <!-- MathJax for mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #fcfcfc 0%, #e3e3e3 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #667eea;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .toc ul li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 10px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 25px 0 12px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .important-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #17a2b8;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+            transition: all 0.3s;
+        }
+        
+        .formula {
+            background: #f1f3f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px dashed #667eea;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .hinglish-summary h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .hinglish-summary p {
+            color: #333;
+            font-size: 1.05em;
+            line-height: 1.9;
+        }
+        
+        .practice-questions {
+            background: #e7f3ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .practice-questions h4 {
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .answer {
+            background: #d4edda;
+            padding: 15px;
+            margin: 10px 0 20px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .answer:before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .key-takeaways {
+            background: #f8d7da;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid #dc3545;
+        }
+        
+        .key-takeaways h4 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways ul li {
+            margin: 12px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .key-takeaways ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        .diagram-placeholder {
+            background: #e9ecef;
+            border: 3px dashed #667eea;
+            padding: 60px;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 10px;
+            color: #667eea;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        
+        .example-box {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .example-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .mind-map {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 40px;
+            font-size: 2.2em;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            transition: all 0.3s;
+        }
+        
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .branch h3 {
+            color: #667eea;
+            border: none;
+            padding: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .branch ul li {
+            padding-left: 20px;
+            position: relative;
+            margin: 8px 0;
+        }
+        
+        .branch ul li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #764ba2;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.6em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Box Plots for Grouped Data</h1>
+            <p class="subtitle">FSP Week 5 All lectures combined note</p>
+            <p class="subtitle"><strong>~ Armaan Kachhawa</strong></p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction to Box Plots</a></li>
+                <li><a href="#components">2. Components of a Box Plot</a></li>
+                <li><a href="#creating-single">3. Creating a Single Box Plot</a></li>
+                <li><a href="#grouped-data">4. Box Plots for Grouped Data</a></li>
+                <li><a href="#five-number-summary">5. The Five-Number Summary</a></li>
+                <li><a href="#practical-implementation">6. Practical Implementation in Google Sheets</a></li>
+                <li><a href="#interpretation">7. Interpreting Box Plots</a></li>
+                <li><a href="#insights">8. Drawing Insights from Multiple Box Plots</a></li>
+                <li><a href="#mind-map">9. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <section id="introduction">
+            <h2>1. Introduction to Box Plots</h2>
+            
+            <p>In Module 1, we explored various <span class="key-term">visualization tools</span> including line graphs, bar charts, histograms, and pie charts. In Module 2, we've been studying <span class="key-term">descriptive statistics</span> and learned about <span class="key-term">percentiles</span> and <span class="key-term">quartiles</span>. Now, we'll combine these concepts to understand a powerful visualization tool called <span class="key-term">box plots</span>.</p>
+            
+            <h3>What is a Box Plot?</h3>
+            
+            <p>A <span class="key-term">box plot</span> (also called a <span class="key-term">box-and-whisker plot</span> or <span class="key-term">candlestick plot</span>) is an excellent tool for visualizing and summarizing the distribution of <span class="key-term">continuous data</span>, which is a type of numerical data we've been primarily dealing with in this course.</p>
+            
+            <div class="important-box">
+                <strong>Why Box Plots Are Powerful:</strong>
+                <ul>
+                    <li>Provide a quick snapshot of data spread</li>
+                    <li>Show central tendency of the data</li>
+                    <li>Display variability in the dataset</li>
+                    <li>Identify potential outliers</li>
+                    <li>Compare multiple groups simultaneously</li>
+                </ul>
+            </div>
+            
+            <p>Box plots summarize data by showing its <span class="key-term">quartiles</span>, <span class="key-term">spread</span>, and potential <span class="key-term">outliers</span>.</p>
+            
+            <div class="professor-note">
+                Box plots are also called "candlestick plots," especially in Google Sheets. This name comes from their visual appearance, which resembles candles with wicks on both ends.
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Basic structure of a box plot showing box, whiskers, median line, and outliers]
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Box plot ek powerful visualization tool hai</strong> jo continuous numerical data ko summarize karta hai. Yeh <strong>quartiles, spread, aur outliers</strong> ko ek saath dikhata hai. Module 1 mein humne basic visualization tools seekhe the, aur Module 2 mein percentiles aur quartiles ke baare mein padha - ab hum in sab concepts ko combine karke box plots samjhenge. <strong>Box plots data ki central tendency, variability, aur unusual values ko ek glance mein dikhate hain</strong>, isliye yeh data analysis ke liye bahut useful hain.</p>
+            </div>
+        </section>
+
+        <section id="components">
+            <h2>2. Components of a Box Plot</h2>
+            
+            <p>Understanding the components of a box plot is crucial for interpreting data correctly. Let's break down each element:</p>
+            
+            <h3>2.1 The Box and Quartiles</h3>
+            
+            <p>The <span class="key-term">box</span> represents the <span class="key-term">Interquartile Range (IQR)</span> - the middle 50% of your data.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Symbol</th>
+                        <th>Description</th>
+                        <th>Percentile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Lower End of Box</strong></td>
+                        <td>$Q_1$</td>
+                        <td>First Quartile</td>
+                        <td>25th percentile</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solid Line Inside Box</strong></td>
+                        <td>$Q_2$ or $M$</td>
+                        <td>Median</td>
+                        <td>50th percentile</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Upper End of Box</strong></td>
+                        <td>$Q_3$</td>
+                        <td>Third Quartile</td>
+                        <td>75th percentile</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Height of Box</strong></td>
+                        <td>$IQR$</td>
+                        <td>Interquartile Range</td>
+                        <td>$Q_3 - Q_1$</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="formula">
+                <p><strong>Interquartile Range (IQR):</strong></p>
+
+                $$ IQR = Q_3 - Q_1 $$
+                <p style="margin-top: 10px; font-size: 0.9em;">This represents the middle 50% of all values</p>
+            </div>
+            
+            <h3>2.2 The Whiskers</h3>
+            
+            <p>The <span class="key-term">whiskers</span> are lines that extend from both ends of the box. They show the range of values where most of the data points lie.</p>
+            
+            <div class="important-box">
+                <strong>Whisker Calculation Rules:</strong>
+                <p>Whiskers extend to a range of <span class="key-term">1.5 times the IQR</span> from the quartiles.</p>
+            </div>
+            
+            <div class="formula">
+                <p><strong>Upper Whisker End:</strong></p>
+
+                $$ \text{Upper Fence} = Q_3 + 1.5 \times IQR $$
+                <br>
+                <p><strong>Lower Whisker End:</strong></p>
+
+                $$ \text{Lower Fence} = Q_1 - 1.5 \times IQR $$
+            </div>
+            
+            <div class="professor-note">
+                It's crucial to understand that whiskers don't always extend to the calculated fence values. They only go up to the actual data points within that range. If your data's maximum value is less than the upper fence, the whisker will only extend to that maximum value, not to the calculated fence.
+            </div>
+            
+            <h3>2.3 Mean Line (Optional)</h3>
+            
+            <p>Sometimes, a <span class="key-term">dashed horizontal line</span> inside the box shows the <span class="key-term">mean (average)</span> value. This helps compare the mean with the median to assess symmetry in the distribution.</p>
+            
+            <div class="important-box">
+                <strong>Note:</strong> Showing the mean line is not typical in all box plots. The solid line (median) is the standard representation.
+            </div>
+            
+            <h3>2.4 Outliers</h3>
+            
+            <p><span class="key-term">Outliers</span> are data points that fall outside the range of the whiskers. These are displayed as individual <span class="key-term">dots</span> or <span class="key-term">points</span> beyond the whiskers.</p>
+            
+            <div class="formula">
+                <p><strong>A data point is considered an outlier if:</strong></p>
+
+                $$ \text{Value} < Q_1 - 1.5 \times IQR \quad \text{or} \quad \text{Value} > Q_3 + 1.5 \times IQR $$
+            </div>
+            
+            <p>Outliers represent unusual or extreme values in your dataset. For example, in blood pressure data, they might indicate unusually high or low blood pressure readings for a given age group.</p>
+            
+            <div class="example-box">
+                <h4>🔍 Visual Example</h4>
+                <p>Imagine you're looking at a box plot of blood pressure by age group:</p>
+                <ul>
+                    <li>The <strong>box</strong> shows where the middle 50% of people's blood pressure readings fall</li>
+                    <li>The <strong>median line</strong> shows the typical blood pressure</li>
+                    <li>The <strong>whiskers</strong> show the normal range of variation</li>
+                    <li><strong>Dots beyond whiskers</strong> represent people with unusually high or low blood pressure</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Box plot ke main components hain:</strong> (1) <strong>Box</strong> jo middle 50% data (IQR) dikhata hai - iska lower end Q1 (25th percentile) aur upper end Q3 (75th percentile) hai, (2) <strong>Median line</strong> (solid) box ke andar jo Q2 (50th percentile) dikhati hai, (3) <strong>Whiskers</strong> jo 1.5×IQR tak extend karte hain - upper fence = Q3 + 1.5×IQR aur lower fence = Q1 - 1.5×IQR, aur (4) <strong>Outliers</strong> (dots) jo whiskers ke bahar hain. <strong>Important point:</strong> Whiskers calculated fences tak nahi, balki actual data points tak hi jaate hain jo us range mein hain.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>The box shows the middle 50% of data (IQR = Q3 - Q1)</li>
+                    <li>The median line divides the data into two equal halves</li>
+                    <li>Whiskers extend to 1.5 × IQR but only to actual data points</li>
+                    <li>Outliers are points beyond the whisker range</li>
+                    <li>IQR represents data variability - larger IQR means more spread</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="creating-single">
+            <h2>3. Creating a Single Box Plot</h2>
+            
+            <p>Let's learn how to create a box plot step-by-step using a practical example. This will help you understand both the calculation process and interpretation.</p>
+            
+            <h3>3.1 Example: Video Game Review Scores</h3>
+            
+            <div class="example-box">
+                <h4>📊 Scenario</h4>
+                <p>A new video game has been released, and 15 of your friends have played it and given review scores on a scale of 0-100. Let's visualize this data using a box plot.</p>
+                
+                <p><strong>Review Scores (15 players):</strong></p>
+                <p>73, 78, 78, 80, 82, 84, 85, 85, 86, 88, 90, 91, 92, 95, 99</p>
+            </div>
+            
+            <h3>3.2 Step 1: Calculate the Five-Number Summary</h3>
+            
+            <p>To plot a box plot, we need the <span class="key-term">five-number summary</span>:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Formula/Function</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Minimum (0th percentile)</strong></td>
+                        <td><code>=MIN(data_range)</code></td>
+                        <td>73</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q1 (25th percentile)</strong></td>
+                        <td><code>=PERCENTILE.EXC(data_range, 0.25)</code></td>
+                        <td>78</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Median (50th percentile)</strong></td>
+                        <td><code>=PERCENTILE.EXC(data_range, 0.5)</code></td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q3 (75th percentile)</strong></td>
+                        <td><code>=PERCENTILE.EXC(data_range, 0.75)</code></td>
+                        <td>92</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maximum (100th percentile)</strong></td>
+                        <td><code>=MAX(data_range)</code></td>
+                        <td>99</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>3.3 Step 2: Calculate IQR and Whisker Boundaries</h3>
+            
+            <div class="formula">
+                <p><strong>Interquartile Range:</strong></p>
+
+                $$ IQR = Q_3 - Q_1 = 92 - 78 = 14 $$
+            </div>
+            
+            <div class="formula">
+                <p><strong>Upper Fence (Upper Whisker Limit):</strong></p>
+
+                $$ Q_3 + 1.5 \times IQR = 92 + 1.5 \times 14 = 92 + 21 = 113 $$
+                
+                <p style="margin-top: 20px;"><strong>Lower Fence (Lower Whisker Limit):</strong></p>
+
+                $$ Q_1 - 1.5 \times IQR = 78 - 1.5 \times 14 = 78 - 21 = 57 $$
+            </div>
+            
+            <div class="professor-note">
+                Notice that our calculated lower fence is 57, but our minimum data value is 73. Similarly, the upper fence is 113, but our maximum value is only 99. This means the whiskers will extend only to 73 and 99 (the actual data points), not to the calculated fences. This also tells us there are NO outliers in this dataset since all values fall within the fence boundaries!
+            </div>
+            
+            <h3>3.4 Step 3: Visualize the Box Plot</h3>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Box plot for video game review scores showing:
+                - Vertical axis: Review Scores (0-100)
+                - Horizontal axis: Players
+                - Box from 78 to 92
+                - Median line at 85
+                - Lower whisker to 73
+                - Upper whisker to 99
+                - No outliers]
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Box Plot Element</th>
+                        <th>Position/Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lower whisker end</td>
+                        <td>73 (minimum actual value)</td>
+                    </tr>
+                    <tr>
+                        <td>Lower end of box (Q1)</td>
+                        <td>78</td>
+                    </tr>
+                    <tr>
+                        <td>Median line (Q2)</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Upper end of box (Q3)</td>
+                        <td>92</td>
+                    </tr>
+                    <tr>
+                        <td>Upper whisker end</td>
+                        <td>99 (maximum actual value)</td>
+                    </tr>
+                    <tr>
+                        <td>IQR (box height)</td>
+                        <td>14</td>
+                    </tr>
+                    <tr>
+                        <td>Outliers</td>
+                        <td>None</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>3.5 Interpretation of Results</h3>
+            
+            <div class="important-box">
+                <h4>What This Box Plot Tells Us:</h4>
+                <ul>
+                    <li><strong>High Median (85):</strong> Most reviewers rated the game highly, suggesting it's well-liked</li>
+                    <li><strong>Moderate IQR (14):</strong> Fairly moderate spread among the middle 50% of reviewers</li>
+                    <li><strong>No Outliers:</strong> Consistent set of scores - most players had similar experiences</li>
+                    <li><strong>Overall Assessment:</strong> The game is generally well-received with consistent positive feedback</li>
+                </ul>
+            </div>
+            
+            <h3>3.6 Example with an Outlier</h3>
+            
+            <p>Let's see what happens when we introduce an outlier to understand how box plots handle unusual values.</p>
+            
+            <div class="example-box">
+                <h4>🔄 Modified Dataset</h4>
+                <p>Adding one reviewer who gave a very low score of <strong>40</strong> to our previous dataset (now 16 players total).</p>
+            </div>
+            
+            <div class="professor-note">
+                When working with datasets for quartiles and box plots, the FIRST thing you should do is sort the data. This makes it much easier to identify outliers and understand the data distribution. In Google Sheets: Select data → Data → Sort range → Advanced range sorting → Choose column → Ascending/Descending order.
+            </div>
+            
+            <p><strong>Updated Five-Number Summary:</strong></p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Original Value</th>
+                        <th>New Value (with outlier)</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minimum</td>
+                        <td>73</td>
+                        <td style="background: #fff3cd;">40</td>
+                        <td>-33 (significantly lower)</td>
+                    </tr>
+                    <tr>
+                        <td>Q1</td>
+                        <td>78</td>
+                        <td>76.5</td>
+                        <td>-1.5 (slight decrease)</td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td>85</td>
+                        <td>84.5</td>
+                        <td>-0.5 (minimal change)</td>
+                    </tr>
+                    <tr>
+                        <td>Q3</td>
+                        <td>92</td>
+                        <td>91.5</td>
+                        <td>-0.5 (minimal change)</td>
+                    </tr>
+                    <tr>
+                        <td>Maximum</td>
+                        <td>99</td>
+                        <td>99</td>
+                        <td>No change</td>
+                    </tr>
+                    <tr>
+                        <td>IQR</td>
+                        <td>14</td>
+                        <td>15</td>
+                        <td>+1 (slight increase)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>New Fence Calculations:</strong></p>
+            
+            <div class="formula">
+
+                $$ \text{Lower Fence} = 76.5 - 1.5 \times 15 = 76.5 - 22.5 = 54 $$
+
+                $$ \text{Upper Fence} = 91.5 + 1.5 \times 15 = 91.5 + 22.5 = 114 $$
+            </div>
+            
+            <div class="important-box">
+                <strong>Identifying the Outlier:</strong>
+                <p>The value 40 is less than the lower fence (54), so it is classified as an <span class="key-term">outlier</span>.</p>
+                <p><strong>Critical Understanding:</strong> After sorting the data, we see that the next value after 40 is 73. This means the lower whisker will extend only to 73 (not to the calculated fence of 54), because 73 is the next actual data point within the acceptable range.</p>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Box plot with outlier showing:
+                - Box from 76.5 to 91.5
+                - Median line at 84.5
+                - Lower whisker to 73 (not to fence!)
+                - Upper whisker to 99
+                - One outlier dot at 40]
+            </div>
+            
+            <h3>3.7 Key Insights from the Outlier Example</h3>
+            
+            <div class="important-box">
+                <h4>🎓 Critical Learning Point</h4>
+                <p><strong>Despite having one outlier, notice that:</strong></p>
+                <ul>
+                    <li>The median changed only slightly (85 → 84.5)</li>
+                    <li>The spread (IQR) didn't change significantly (14 → 15)</li>
+                    <li>The overall positive reception of the game is still evident</li>
+                    <li>We can clearly visualize that only ONE person gave a very low score</li>
+                    <li>That one person's opinion doesn't change the overall assessment</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>This demonstrates the robustness of box plots:</strong> They clearly show outliers while not letting extreme values distort our understanding of the typical data distribution.</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Single box plot banane ke liye</strong> sabse pehle <strong>five-number summary</strong> chahiye: Min, Q1, Median, Q3, aur Max. Phir <strong>IQR = Q3 - Q1</strong> calculate karo. <strong>Whiskers ke fences</strong> hain: Lower fence = Q1 - 1.5×IQR aur Upper fence = Q3 + 1.5×IQR. <strong>Important:</strong> Whiskers actual data points tak hi jaate hain, calculated fences tak nahi. Jo values fences ke bahar hain, woh <strong>outliers</strong> hain. Video game example mein humne dekha ki 40 score ek outlier tha, lekin baaki sab 73-99 range mein the. <strong>Box plot ka advantage:</strong> Outliers clearly dikh jaate hain without affecting overall trend ki understanding.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Given the following dataset of test scores: 45, 67, 70, 72, 75, 78, 80, 82, 85, 88, 90, 95. Calculate the five-number summary.
+                </div>
+                <div class="answer">
+                    Min = 45, Q1 = 71 (using PERCENTILE.EXC), Median = 80, Q3 = 87.5, Max = 95
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Using the data from Q1, calculate the IQR and determine the fence boundaries for outliers.
+                </div>
+                <div class="answer">
+                    IQR = Q3 - Q1 = 87.5 - 71 = 16.5<br>
+                    Lower Fence = 71 - 1.5(16.5) = 71 - 24.75 = 46.25<br>
+                    Upper Fence = 87.5 + 1.5(16.5) = 87.5 + 24.75 = 112.25<br>
+                    Since 45 < 46.25, the value 45 is an outlier.
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> In a box plot, the median is positioned very close to Q1. What does this suggest about the data distribution?
+                </div>
+                <div class="answer">
+                    This suggests a right-skewed (positively skewed) distribution. The median being closer to Q1 means that the lower 50% of data is more compressed, while the upper 50% is more spread out, creating a longer tail on the right side of the distribution.
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Always start by calculating the five-number summary: Min, Q1, Median, Q3, Max</li>
+                    <li>IQR shows the spread of the middle 50% of data</li>
+                    <li>Whiskers extend to actual data points, not just calculated fences</li>
+                    <li>Outliers are clearly visible as separate points beyond whiskers</li>
+                    <li>Box plots are robust - outliers don't significantly affect the median or IQR</li>
+                    <li>Sort your data first to make calculations and verification easier</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="grouped-data">
+            <h2>4. Box Plots for Grouped Data</h2>
+            
+            <p>So far, we've learned to create a single box plot for one dataset. But what if we have data that can be divided into different categories or groups? For example, blood pressure data for different age groups (20s, 30s, 40s, etc.)? This is where <span class="key-term">grouped box plots</span> become incredibly powerful.</p>
+            
+            <h3>4.1 Understanding Grouped Data</h3>
+            
+            <p>Instead of having one continuous range of data (like age vs. blood pressure for all ages), we can divide the data into <span class="key-term">age groups</span> (20s, 30s, 40s, 50s, 60s, 70+) and create individual box plots for each group. This allows us to:</p>
+            
+            <ul>
+                <li>Compare distributions across different categories</li>
+                <li>Identify patterns and trends between groups</li>
+                <li>Spot differences in central tendency and variability</li>
+                <li>Detect outliers specific to each group</li>
+            </ul>
+            
+            <div class="professor-note">
+                When you have continuous data that needs to be grouped, you first need to convert it into categorical groups. For example, if you have age data ranging from 20 to 80, you would create groups like "20s" for ages 20-29, "30s" for ages 30-39, and so on. Each group then gets its own box plot for comparison.
+            </div>
+            
+            <h3>4.2 Example: Salary Distribution by Job Sector</h3>
+            
+            <p>Let's examine a practical example using hypothetical salary data across different job sectors.</p>
+            
+            <div class="example-box">
+                <h4>📊 Scenario</h4>
+                <p><strong>Sectors:</strong> Education, Finance, Healthcare, Retail, Tech</p>
+                <p><strong>Data:</strong> Salary distributions for employees in each sector</p>
+                <p><strong>Goal:</strong> Compare salary patterns across different industries</p>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Multiple box plots side by side showing salary distribution for Education, Finance, Healthcare, Retail, and Tech sectors with:
+                - Vertical axis: Salary (in thousands)
+                - Horizontal axis: Job sectors
+                - Each sector has its own box plot with distinct characteristics
+                - Some outliers visible in Finance and Tech
+                - Varying IQRs across sectors]
+            </div>
+            
+            <h3>4.3 What to Look for in Grouped Box Plots</h3>
+            
+            <p>When analyzing multiple box plots together, there are several key aspects to examine:</p>
+            
+            <h4>A. Position of the Median</h4>
+            
+            <p>The <span class="key-term">median position</span> tells us about typical salaries in each sector.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Observation</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Higher median line</td>
+                        <td>Higher typical salaries in that sector</td>
+                    </tr>
+                    <tr>
+                        <td>Lower median line</td>
+                        <td>Lower typical salaries in that sector</td>
+                    </tr>
+                    <tr>
+                        <td>Median at center of box</td>
+                        <td>Symmetric distribution</td>
+                    </tr>
+                    <tr>
+                        <td>Median near top of box</td>
+                        <td>Left-skewed distribution (tail on left)</td>
+                    </tr>
+                    <tr>
+                        <td>Median near bottom of box</td>
+                        <td>Right-skewed distribution (tail on right)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                In our salary example, Finance and Tech have the highest median values. This immediately tells us that typically, people in finance or tech sectors have higher salaries compared to education or retail.
+            </div>
+            
+            <h4>B. Interquartile Range (IQR) - Variability</h4>
+            
+            <p>The <span class="key-term">IQR (box height)</span> shows variability in the data.</p>
+            
+            <div class="important-box">
+                <strong>Understanding IQR in Context:</strong>
+                <ul>
+                    <li><strong>Large IQR (Wide Box):</strong> High variation in values - people have widely different experiences</li>
+                    <li><strong>Small IQR (Narrow Box):</strong> Low variation - more consistency in values</li>
+                </ul>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sector</th>
+                        <th>IQR Observation</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Education</td>
+                        <td>Very narrow box</td>
+                        <td>Low variability - salaries are quite consistent across education jobs</td>
+                    </tr>
+                    <tr>
+                        <td>Finance</td>
+                        <td>Medium to wide box</td>
+                        <td>Moderate variability - salaries vary based on position/experience</td>
+                    </tr>
+                    <tr>
+                        <td>Healthcare</td>
+                        <td>Medium box</td>
+                        <td>Moderate variation - different healthcare roles have different pay scales</td>
+                    </tr>
+                    <tr>
+                        <td>Retail</td>
+                        <td>Narrow box</td>
+                        <td>Low variability - retail salaries are fairly consistent</td>
+                    </tr>
+                    <tr>
+                        <td>Tech</td>
+                        <td>Medium box</td>
+                        <td>Less variability than finance, but more than retail</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>C. Median Position Within Box - Symmetry and Skewness</h4>
+            
+            <p>The position of the median line within the box reveals the <span class="key-term">distribution shape</span>:</p>
+            
+            <div class="formula">
+                <p><strong>Three Distribution Patterns:</strong></p>
+                <p>1. <strong>Symmetric:</strong> Median in center of box → Data evenly distributed around median</p>
+                <p>2. <strong>Left-Skewed:</strong> Median near top of box → Longer tail on left, most values on higher end</p>
+                <p>3. <strong>Right-Skewed:</strong> Median near bottom of box → Longer tail on right, most values on lower end</p>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Three side-by-side illustrations showing:
+                1. Symmetric distribution with bell curve and box plot (median centered)
+                2. Left-skewed distribution with curve and box plot (median near top)
+                3. Right-skewed distribution with curve and box plot (median near bottom)]
+            </div>
+            
+            <div class="professor-note">
+                Think of it from a "top view" perspective. If you're looking at a normal distribution curve from above, the box plot represents that distribution horizontally. When the median line is in the center, it means the distribution is balanced (symmetric) like a bell curve. When it shifts up or down in the box, it shows the distribution is skewed in that direction.
+            </div>
+            
+            <h4>D. Outliers</h4>
+            
+            <p><span class="key-term">Outliers</span> appear as individual dots beyond the whiskers and provide insights into exceptional cases:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sector</th>
+                        <th>Outlier Pattern</th>
+                        <th>Possible Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Education</td>
+                        <td>Outliers on both ends</td>
+                        <td>Few very high (administrators) and very low (part-time) positions</td>
+                    </tr>
+                    <tr>
+                        <td>Finance</td>
+                        <td>One high outlier</td>
+                        <td>Exceptionally high-paying positions like startup compensation or C-suite executives</td>
+                    </tr>
+                    <tr>
+                        <td>Healthcare</td>
+                        <td>Few outliers, closely located</td>
+                        <td>Specialist positions or administrative roles</td>
+                    </tr>
+                    <tr>
+                        <td>Retail</td>
+                        <td>Hardly any outliers</td>
+                        <td>Very consistent pay structure across positions</td>
+                    </tr>
+                    <tr>
+                        <td>Tech</td>
+                        <td>Two high outliers</td>
+                        <td>Senior architects, CTOs, or specialized AI/ML positions</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>4.4 Detailed Sector-by-Sector Analysis</h3>
+            
+            <div class="example-box">
+                <h4>📈 Education Sector</h4>
+                <ul>
+                    <li><strong>Median:</strong> Lower compared to other sectors</li>
+                    <li><strong>IQR:</strong> Very narrow - minimal variation</li>
+                    <li><strong>Outliers:</strong> Both high (administrators) and low (part-time teachers)</li>
+                    <li><strong>Insight:</strong> Education salaries are generally consistent but on the lower end, with few exceptional positions</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>💰 Finance Sector</h4>
+                <ul>
+                    <li><strong>Median:</strong> Among the highest</li>
+                    <li><strong>IQR:</strong> Moderate to high variability</li>
+                    <li><strong>Distribution:</strong> Nearly symmetric (median at center)</li>
+                    <li><strong>Outliers:</strong> One exceptional high outlier</li>
+                    <li><strong>Insight:</strong> Finance offers high salaries with good variation based on roles, and some exceptional positions exist</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>🏥 Healthcare Sector</h4>
+                <ul>
+                    <li><strong>Median:</strong> Medium range</li>
+                    <li><strong>IQR:</strong> Less than finance, moderate variation</li>
+                    <li><strong>Distribution:</strong> Slightly skewed toward higher values</li>
+                    <li><strong>Outliers:</strong> Few, closely located</li>
+                    <li><strong>Insight:</strong> Healthcare has moderate salaries with less variation than finance, suggesting more standardized pay scales</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>🛒 Retail Sector</h4>
+                <ul>
+                    <li><strong>Median:</strong> Lowest among all sectors</li>
+                    <li><strong>IQR:</strong> Very narrow - low variability</li>
+                    <li><strong>Outliers:</strong> Hardly any</li>
+                    <li><strong>Insight:</strong> Retail has the most consistent but lowest salaries, with very few exceptional positions</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>💻 Tech Sector</h4>
+                <ul>
+                    <li><strong>Median:</strong> Highest (tied with finance)</li>
+                    <li><strong>IQR:</strong> Moderate - less variation than finance</li>
+                    <li><strong>Outliers:</strong> Two significantly high outliers</li>
+                    <li><strong>Insight:</strong> Tech offers high salaries with moderate consistency, and exceptional positions (senior architects, specialized AI roles) can pay significantly more</li>
+                </ul>
+            </div>
+            
+            <h3>4.5 Reliability of Data - Variability Context</h3>
+            
+            <div class="professor-note">
+                Here's an important concept: The relationship between central tendency and variability affects data reliability. Let me explain with a different example - movie ratings.
+                
+                <br><br><strong>Example 1:</strong> A movie has 30% rating on Rotten Tomatoes with very low variation (narrow box). This means most people agree it's not good - this is a <strong>reliable</strong> rating.
+                
+                <br><br><strong>Example 2:</strong> A movie has 85% rating but very large variation (wide box). This means opinions are divided - this is a <strong>less reliable</strong> rating because people's experiences vary widely.
+                
+                <br><br><strong>Takeaway:</strong> Low variability + consistent median = More reliable data. High variability = Mixed opinions/experiences, less reliable overall assessment.
+            </div>
+            
+            <h3>4.6 Overall Pattern Recognition</h3>
+            
+            <p>When looking at grouped box plots, we can identify three main aspects:</p>
+            
+            <div class="important-box">
+                <h4>📊 Three Key Comparisons in Grouped Box Plots:</h4>
+                <ol>
+                    <li><strong>Medians:</strong> Compare typical values across groups</li>
+                    <li><strong>Variability (IQR):</strong> Compare consistency/spread in each group</li>
+                    <li><strong>Outliers:</strong> Identify exceptional cases and overall pattern excluding extremes</li>
+                </ol>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Grouped box plots mein multiple categories ko compare karte hain.</strong> Salary example mein Education, Finance, Healthcare, Retail aur Tech sectors ko compare kiya. <strong>Three main cheezein dekhni hain:</strong> (1) <strong>Median position</strong> - higher median matlab higher typical salary, median ka box ke andar position batata hai ki distribution symmetric hai ya skewed, (2) <strong>IQR (box height)</strong> - wide box = high variability, narrow box = consistent values, aur (3) <strong>Outliers</strong> - exceptional cases identify karte hain. <strong>Key insight:</strong> Finance aur Tech highest median salaries dikha rahe hain, Retail aur Education lowest hain. Education aur Retail mein narrow boxes hain (consistent salaries), jabki Finance mein more variation hai (role-based differences).</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> In a grouped box plot comparing exam scores across four classes, Class A has a narrow box with median at 85, while Class B has a wide box with median at 82. What does this tell you about the two classes?
+                </div>
+                <div class="answer">
+                    Class A: Students are performing consistently around 85 (low variability), suggesting uniform teaching quality or similar student preparation levels.<br>
+                    Class B: Students have varied performance (high variability) despite similar median, suggesting mixed preparation levels or learning outcomes. Class A's results are more reliable/consistent.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> If the median line in a box plot is positioned very close to Q3 (upper end of box), what type of distribution does this indicate? Provide a real-world example.
+                </div>
+                <div class="answer">
+                    This indicates a left-skewed (negatively skewed) distribution. The data has a longer tail on the left side, with most values concentrated on the higher end.<br>
+                    <strong>Real-world example:</strong> Retirement age data - most people retire around 60-65 (higher end), but some retire early at 50-55 (lower tail), creating a left skew.
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> You're comparing product ratings across three brands using box plots. Brand X has several outliers on the low end but a high median. What strategy would you recommend to the company?
+                </div>
+                <div class="answer">
+                    The high median shows most customers are satisfied, but low outliers indicate some customers had poor experiences. Strategy: Investigate the outlier cases to identify specific product defects or service issues, implement quality control measures, and improve customer service for edge cases. The brand is generally good but needs to address these exceptional negative experiences.
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Grouped box plots allow comparison of distributions across multiple categories</li>
+                    <li>Median position shows typical values - higher median = higher typical values</li>
+                    <li>IQR (box height) indicates variability - narrow box = consistent, wide box = varied</li>
+                    <li>Median position within box reveals distribution shape (symmetric or skewed)</li>
+                    <li>Outliers show exceptional cases without distorting overall pattern</li>
+                    <li>Low variability + consistent median = More reliable data</li>
+                    <li>Compare medians, variability, and outliers across groups for complete analysis</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="five-number-summary">
+            <h2>5. The Five-Number Summary</h2>
+            
+            <p>To create a box plot, whether for a single dataset or grouped data, you need what statisticians call the <span class="key-term">five-number summary</span>. This is the foundation of box plot construction.</p>
+            
+            <h3>5.1 What is the Five-Number Summary?</h3>
+            
+            <p>The <span class="key-term">five-number summary</span> consists of five critical statistics that completely describe the spread and distribution of your data:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Statistic</th>
+                        <th>Symbol</th>
+                        <th>Description</th>
+                        <th>Percentile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><strong>Minimum</strong></td>
+                        <td>Min</td>
+                        <td>Smallest value in dataset</td>
+                        <td>0th percentile</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><strong>First Quartile</strong></td>
+                        <td>$Q_1$</td>
+                        <td>25% of data falls below this value</td>
+                        <td>25th percentile</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Median</strong></td>
+                        <td>$Q_2$ or $M$</td>
+                        <td>Middle value; 50% below, 50% above</td>
+                        <td>50th percentile</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>Third Quartile</strong></td>
+                        <td>$Q_3$</td>
+                        <td>75% of data falls below this value</td>
+                        <td>75th percentile</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>Maximum</strong></td>
+                        <td>Max</td>
+                        <td>Largest value in dataset</td>
+                        <td>100th percentile</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="important-box">
+                <strong>Why is it called "Five-Number Summary"?</strong>
+                <p>These five numbers (Min, Q1, Q2, Q3, Max) provide a complete summary of your data's distribution. They tell you:</p>
+                <ul>
+                    <li>The <strong>range</strong> of your data (Min to Max)</li>
+                    <li>The <strong>center</strong> of your data (Median/Q2)</li>
+                    <li>The <strong>spread</strong> of the middle 50% (Q1 to Q3)</li>
+                    <li>How data is <strong>distributed</strong> across quartiles</li>
+                </ul>
+            </div>
+            
+            <h3>5.2 Additional Calculations for Box Plots</h3>
+            
+            <p>While the five-number summary is essential, we need a few more calculations to properly identify outliers and draw the whiskers:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Calculation</th>
+                        <th>Formula</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>IQR</strong></td>
+                        <td>$Q_3 - Q_1$</td>
+                        <td>Measures spread of middle 50% of data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.5 × IQR</strong></td>
+                        <td>$1.5 \times (Q_3 - Q_1)$</td>
+                        <td>Threshold for identifying outliers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lower Fence</strong></td>
+                        <td>$Q_1 - 1.5 \times IQR$</td>
+                        <td>Lower boundary for non-outliers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Upper Fence</strong></td>
+                        <td>$Q_3 + 1.5 \times IQR$</td>
+                        <td>Upper boundary for non-outliers</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The fences (lower and upper) are called "fences" because they act as boundaries. Values outside these fences are considered unusual or extreme (outliers). Think of them as the fence around your yard - anything outside the fence doesn't belong to the typical neighborhood pattern!
+            </div>
+            
+            <h3>5.3 For Grouped Data: Adding Group Labels</h3>
+            
+            <p>When you have <span class="key-term">continuous data distributed into groups</span>, you need to add one more element:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Min</th>
+                        <th>Q1</th>
+                        <th>Q2 (Median)</th>
+                        <th>Q3</th>
+                        <th>Max</th>
+                        <th>IQR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Group 1</strong></td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>Q3-Q1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Group 2</strong></td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>Q3-Q1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Group 3</strong></td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>value</td>
+                        <td>Q3-Q1</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>Each group needs its own five-number summary calculated separately.</p>
+            
+            <h3>5.4 Why These Specific Numbers?</h3>
+            
+            <div class="important-box">
+                <h4>🤔 Understanding the Logic Behind the Five-Number Summary</h4>
+                
+                <p><strong>Quartiles divide data into four equal parts:</strong></p>
+                <ul>
+                    <li><strong>Min to Q1:</strong> Bottom 25% of data</li>
+                    <li><strong>Q1 to Q2:</strong> Second 25% of data</li>
+                    <li><strong>Q2 to Q3:</strong> Third 25% of data</li>
+                    <li><strong>Q3 to Max:</strong> Top 25% of data</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Why 1.5 × IQR for outliers?</strong></p>
+                <p>This is a standard statistical convention. It's a balanced threshold that:</p>
+                <ul>
+                    <li>Identifies truly unusual values without being too strict</li>
+                    <li>Works well for most distributions</li>
+                    <li>Has been validated through statistical research</li>
+                    <li>Captures approximately 99.3% of data in normal distributions</li>
+                </ul>
+            </div>
+            
+            <h3>5.5 Complete Calculation Summary</h3>
+            
+            <div class="formula">
+                <h4 style="text-align: center; margin-bottom: 20px;">📐 Complete Box Plot Formula Set</h4>
+                
+                <p><strong>Five-Number Summary:</strong></p>
+
+                $$ \text{Min}, \quad Q_1, \quad Q_2 \text{ (Median)}, \quad Q_3, \quad \text{Max} $$
+                
+                <p style="margin-top: 20px;"><strong>Spread Calculation:</strong></p>
+
+                $$ IQR = Q_3 - Q_1 $$
+                
+                <p style="margin-top: 20px;"><strong>Fence Calculations:</strong></p>
+
+                $$ \text{Lower Fence} = Q_1 - 1.5 \times IQR $$
+
+                $$ \text{Upper Fence} = Q_3 + 1.5 \times IQR $$
+                
+                <p style="margin-top: 20px;"><strong>Outlier Identification:</strong></p>
+
+                $$ \text{Outlier if: } x < \text{Lower Fence} \text{ or } x > \text{Upper Fence} $$
+                
+                <p style="margin-top: 20px;"><strong>Whisker Endpoints:</strong></p>
+
+                $$ \text{Lower Whisker} = \text{min(actual data ≥ Lower Fence)} $$
+
+                $$ \text{Upper Whisker} = \text{max(actual data ≤ Upper Fence)} $$
+            </div>
+            
+            <div class="professor-note">
+                Remember: The fences are theoretical boundaries. The whiskers extend to the actual data points that fall within these boundaries, NOT to the fence values themselves. This is a common point of confusion - always check your actual data to see where the whiskers should end!
+            </div>
+            
+            <h3>5.6 Visual Representation of Five-Number Summary</h3>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Visual breakdown showing how five-number summary maps to box plot:
+                - Min → Lower whisker endpoint
+                - Q1 → Bottom of box
+                - Q2 → Median line inside box
+                - Q3 → Top of box
+                - Max → Upper whisker endpoint
+                With arrows connecting each statistic to its position on the box plot]
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Box plot banane ke liye five-number summary zaroori hai:</strong> Min (0th percentile), Q1 (25th percentile), Median/Q2 (50th percentile), Q3 (75th percentile), aur Max (100th percentile). <strong>Additionally,</strong> IQR = Q3 - Q1 calculate karna padta hai. <strong>Outliers identify karne ke liye fences calculate karte hain:</strong> Lower fence = Q1 - 1.5×IQR aur Upper fence = Q3 + 1.5×IQR. <strong>Important point:</strong> Fences sirf theoretical boundaries hain - whiskers actual data points tak hi extend hote hain jo fences ke andar hain. <strong>Grouped data ke liye</strong> har group ka alag se five-number summary calculate karna hota hai, tabhi multiple box plots side-by-side compare kar sakte hain.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Given the five-number summary: Min=15, Q1=22, Q2=30, Q3=38, Max=50. Calculate the IQR and both fences.
+                </div>
+                <div class="answer">
+                    IQR = Q3 - Q1 = 38 - 22 = 16<br>
+                    Lower Fence = 22 - 1.5(16) = 22 - 24 = -2<br>
+                    Upper Fence = 38 + 1.5(16) = 38 + 24 = 62<br>
+                    Since Min=15 > -2, no lower outliers. Since Max=50 < 62, no upper outliers.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why do we multiply IQR by 1.5 specifically to determine outliers? What would happen if we used 2.0 instead?
+                </div>
+                <div class="answer">
+                    The 1.5 multiplier is a statistical convention that balances sensitivity and specificity for outlier detection. It identifies unusual values without being too strict. If we used 2.0 instead, the fences would be farther from the box, making it harder for points to be classified as outliers - we'd miss some genuinely unusual values. Using 1.0 would make it too strict and flag too many points as outliers. 1.5 is the "Goldilocks" value - just right!
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> You have calculated Lower Fence = 20, but your minimum data value is 35. Where should the lower whisker end? Why?
+                </div>
+                <div class="answer">
+                    The lower whisker should end at 35 (the minimum actual data value), NOT at the calculated fence of 20. This is because whiskers only extend to actual data points that exist within the fence boundaries. Since there's no data between 20 and 35, the whisker goes only to the smallest actual data point (35). The fence at 20 just defines the boundary - any data below 20 would be an outlier, but since our min is 35, we have no outliers on the lower end.
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Five-number summary = Min, Q1, Q2 (Median), Q3, Max</li>
+                    <li>IQR = Q3 - Q1 measures the spread of middle 50% of data</li>
+                    <li>Fences = Q1 - 1.5×IQR (lower) and Q3 + 1.5×IQR (upper)</li>
+                    <li>Outliers are values outside the fence boundaries</li>
+                    <li>Whiskers extend to actual data points, not calculated fences</li>
+                    <li>For grouped data, calculate separate five-number summary for each group</li>
+                    <li>The five numbers completely describe your data's distribution</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="practical-implementation">
+            <h2>6. Practical Implementation in Google Sheets</h2>
+            
+            <p>Now let's learn how to actually create box plots using real data in Google Sheets. We'll work through a complete example from raw data to visualization.</p>
+            
+            <h3>6.1 Example Dataset: Age and Blood Pressure</h3>
+            
+            <div class="example-box">
+                <h4>📊 Scenario</h4>
+                <p><strong>Dataset:</strong> 500 people's age and blood pressure readings</p>
+                <p><strong>Goal:</strong> Create grouped box plots to compare blood pressure across different age groups</p>
+                <p><strong>Age Groups:</strong> 20s, 30s, 40s, 50s, 60s, 70+</p>
+            </div>
+            
+            <h3>6.2 Step 1: Create Age Groups Using IF Function</h3>
+            
+            <p>Our raw data has individual ages (e.g., 28, 35, 47). First, we need to convert these into categorical age groups.</p>
+            
+            <div class="professor-note">
+                Whenever you need to convert continuous numerical data into categories, the IF function in Google Sheets (or Excel) is your best friend. We'll use nested IF statements to check multiple conditions and assign appropriate group labels.
+            </div>
+            
+            <h4>Creating the Age Group Column</h4>
+            
+            <p><strong>Step-by-step process:</strong></p>
+            <ol>
+                <li>Insert a new column next to your Age column</li>
+                <li>Label it "Age Group"</li>
+                <li>In the first cell of the Age Group column, enter the following formula:</li>
+            </ol>
+            
+            <div class="formula">
+                <code style="display: block; text-align: left; padding: 15px; background: white; border-radius: 5px; font-size: 0.9em;">
+                =IF(A2<=29, "20s", IF(A2<=39, "30s", IF(A2<=49, "40s", IF(A2<=59, "50s", IF(A2<=69, "60s", "70+")))))
+                </code>
+            </div>
+            
+            <p><strong>How this formula works:</strong></p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condition</th>
+                        <th>Output</th>
+                        <th>Age Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IF A2 ≤ 29</td>
+                        <td>"20s"</td>
+                        <td>20-29 years</td>
+                    </tr>
+                    <tr>
+                        <td>ELSE IF A2 ≤ 39</td>
+                        <td>"30s"</td>
+                        <td>30-39 years</td>
+                    </tr>
+                    <tr>
+                        <td>ELSE IF A2 ≤ 49</td>
+                        <td>"40s"</td>
+                        <td>40-49 years</td>
+                    </tr>
+                    <tr>
+                        <td>ELSE IF A2 ≤ 59</td>
+                        <td>"50s"</td>
+                        <td>50-59 years</td>
+                    </tr>
+                    <tr>
+                        <td>ELSE IF A2 ≤ 69</td>
+                        <td>"60s"</td>
+                        <td>60-69 years</td>
+                    </tr>
+                    <tr>
+                        <td>ELSE (A2 > 69)</td>
+                        <td>"70+"</td>
+                        <td>70 and above</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>After creating the formula:</strong></p>
+            <ol start="4">
+                <li>Click and drag the formula down to apply it to all 500 rows</li>
+                <li>Verify a few entries: age 28 → "20s", age 64 → "60s", age 75 → "70+"</li>
+            </ol>
+            
+            <div class="important-box">
+                <strong>⚠️ Important: Always Sort Your Data!</strong>
+                <p>When working with quartiles and box plots, <span class="key-term">always sort your data first</span>. This makes it much easier to identify outliers and verify calculations.</p>
+                <p><strong>How to sort in Google Sheets:</strong></p>
+                <ol>
+                    <li>Select your entire data range</li>
+                    <li>Go to <strong>Data → Sort range</strong></li>
+                    <li>Choose <strong>Advanced range sorting options</strong></li>
+                    <li>Check "Data has header row"</li>
+                    <li>Sort by: Blood Pressure (or Age Group)</li>
+                    <li>Order: Ascending or Descending</li>
+                </ol>
+            </div>
+            
+            <h3>6.3 Step 2: Create Five-Number Summary for Each Group</h3>
+            
+            <p>Now we need to calculate the five-number summary for each age group. We'll use Google Sheets functions combined with the FILTER function.</p>
+            
+            <h4>Method 1: Manual Filtering (Beginner-Friendly)</h4>
+            
+            <ol>
+                <li><strong>Select your data range</strong> and click <strong>Create a filter</strong> (button in toolbar)</li>
+                <li><strong>Click the filter icon</strong> on the Age Group column</li>
+                <li><strong>Uncheck "Select all"</strong> then check only <strong>"20s"</strong></li>
+                <li>You now see only 20s group data (e.g., 89 entries)</li>
+                <li><strong>Calculate statistics</strong> for this filtered data</li>
+            </ol>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Formula</th>
+                        <th>Example for 20s Group</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Min</td>
+                        <td><code>=MIN(B:B)</code></td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Q1</td>
+                        <td><code>=PERCENTILE.EXC(B:B, 0.25)</code></td>
+                        <td>98</td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td><code>=PERCENTILE.EXC(B:B, 0.5)</code></td>
+                        <td>105</td>
+                    </tr>
+                    <tr>
+                        <td>Q3</td>
+                        <td><code>=PERCENTILE.EXC(B:B, 0.75)</code></td>
+                        <td>112</td>
+                    </tr>
+                    <tr>
+                        <td>Max</td>
+                        <td><code>=MAX(B:B)</code></td>
+                        <td>135</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>Repeat this process for 30s, 40s, 50s, 60s, and 70+ groups.</p>
+            
+            <h4>Method 2: Using FILTER Function (Advanced, Recommended)</h4>
+            
+            <p>A more efficient approach uses the <span class="key-term">FILTER function</span> to programmatically filter data.</p>
+            
+            <div class="formula">
+                <p><strong>Example: Calculating Min for 20s group</strong></p>
+                <code style="display: block; text-align: left; padding: 15px; background: white; border-radius: 5px;">
+                =MIN(FILTER(B:B, C:C="20s"))
+                </code>
+                <p style="margin-top: 10px; font-size: 0.9em;">This filters blood pressure (column B) where age group (column C) equals "20s", then finds the minimum.</p>
+            </div>
+            
+            <div class="important-box">
+                <h4>Complete Formula Set for One Group (20s):</h4>
+                <ul>
+                    <li><strong>Min:</strong> <code>=MIN(FILTER(B:B, C:C="20s"))</code></li>
+                    <li><strong>Q1:</strong> <code>=PERCENTILE.INC(FILTER(B:B, C:C="20s"), 0.25)</code></li>
+                    <li><strong>Median:</strong> <code>=PERCENTILE.INC(FILTER(B:B, C:C="20s"), 0.5)</code></li>
+                    <li><strong>Q3:</strong> <code>=PERCENTILE.INC(FILTER(B:B, C:C="20s"), 0.75)</code></li>
+                    <li><strong>Max:</strong> <code>=MAX(FILTER(B:B, C:C="20s"))</code></li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Important note about FILTER expressions:</strong> You cannot simply copy-paste these formulas and change the percentile values. The FILTER function must be written separately for each calculation because you need to individually update each formula range. It's recommended to write each formula individually rather than trying to expand them horizontally in Excel.
+            </div>
+            
+            <h3>6.4 Step 3: Calculate IQR and Fence Values</h3>
+            
+            <p>Once you have Q1 and Q3 for each group, calculate additional metrics:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Formula</th>
+                        <th>Example (20s group)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IQR</td>
+                        <td><code>=Q3_cell - Q1_cell</code></td>
+                        <td>=112 - 98 = 14</td>
+                    </tr>
+                    <tr>
+                        <td>1.5 × IQR</td>
+                        <td><code>=1.5 * IQR_cell</code></td>
+                        <td>=1.5 × 14 = 21</td>
+                    </tr>
+                    <tr>
+                        <td>Lower Fence</td>
+                        <td><code>=Q1_cell - 1.5*IQR_cell</code></td>
+                        <td>=98 - 21 = 77</td>
+                    </tr>
+                    <tr>
+                        <td>Upper Fence</td>
+                        <td><code>=Q3_cell + 1.5*IQR_cell</code></td>
+                        <td>=112 + 21 = 133</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>These formulas CAN be extended horizontally</strong> across other groups since they reference cells rather than using FILTER.</p>
+            
+            <h3>6.5 Step 4: Verify Whisker Endpoints and Outliers</h3>
+            
+            <div class="professor-note">
+                This is the critical verification step that many people skip! You must compare your calculated fences with your actual data to determine:<br>
+                1. Where the whiskers actually end (at actual data points, not fences)<br>
+                2. Which values are outliers (outside the fences)
+            </div>
+            
+            <p><strong>For the 20s group example:</strong></p>
+            <ul>
+                <li>Lower Fence = 77, but Min = 85 → Lower whisker ends at 85 (no lower outliers)</li>
+                <li>Upper Fence = 133, but Max = 135 → 135 is an outlier! Upper whisker ends at next highest value ≤ 133</li>
+            </ul>
+            
+            <p>To find the actual whisker endpoints, <strong>sort the filtered group data</strong> and look for:</p>
+            <ul>
+                <li><strong>Lower whisker:</strong> Smallest value ≥ Lower Fence</li>
+                <li><strong>Upper whisker:</strong> Largest value ≤ Upper Fence</li>
+            </ul>
+            
+            <h3>6.6 Step 5: Create the Box Plot Visualization</h3>
+            
+            <h4>Option A: Google Sheets Candlestick Chart</h4>
+            
+            <ol>
+                <li>Create a summary table with columns: Group, Min, Q1, Q2, Q3, Max</li>
+                <li>Select this data range</li>
+                <li>Go to <strong>Insert → Chart</strong></li>
+                <li>In Chart Editor, select <strong>Candlestick Chart</strong></li>
+                <li>Under Setup tab, ensure:
+                    <ul>
+                        <li>"Switch rows/columns" is unchecked (groups on X-axis)</li>
+                        <li>Data range includes your five-number summary</li>
+                    </ul>
+                </li>
+                <li>Customize in the "Customize" tab (colors, axis labels, title)</li>
+            </ol>
+            
+            <div class="important-box">
+                <strong>⚠️ Limitation of Google Sheets:</strong>
+                <p>Google Sheets candlestick charts don't easily show individual outliers or median/mean lines clearly. For better visualization with outlier display, consider using specialized statistical tools.</p>
+            </div>
+            
+            <h4>Option B: Using DataTab (Recommended for Complete Box Plots)</h4>
+            
+            <p>DataTab is a free online statistics calculator that creates professional box plots with all elements.</p>
+            
+            <ol>
+                <li>Copy your data (Age Group and Blood Pressure columns) from Google Sheets</li>
+                <li>Go to <strong>DataTab.net</strong> (statistics calculator)</li>
+                <li>Paste your data into the DataTab interface</li>
+                <li>DataTab automatically categorizes:
+                    <ul>
+                        <li><strong>Blood Pressure:</strong> Metric (numerical) data</li>
+                        <li><strong>Age Group:</strong> Nominal (categorical) data</li>
+                    </ul>
+                </li>
+                <li>Scroll down to visualization options</li>
+                <li>Select <strong>Box Plot</strong></li>
+                <li>Choose variables (Blood Pressure by Age Group)</li>
+            </ol>
+            
+            <div class="professor-note">
+                DataTab creates professional box plots that show:<br>
+                • All five-number summary points clearly marked<br>
+                • Whiskers with correct endpoints<br>
+                • Individual outlier points<br>
+                • Mean line (if desired)<br>
+                • Proper scaling and labels<br><br>
+                
+                It's especially useful for educational purposes and presentations because it displays all components clearly, making it easy to explain to audiences.
+            </div>
+            
+            <h3>6.7 Complete Example: 30s Age Group Verification</h3>
+            
+            <p>Let's walk through a complete verification for the 30s age group:</p>
+            
+            <div class="example-box">
+                <h4>🔍 30s Group Data</h4>
+                <table>
+                    <tr><td><strong>Min</strong></td><td>94</td></tr>
+                    <tr><td><strong>Q1</strong></td><td>112</td></tr>
+                    <tr><td><strong>Median</strong></td><td>120</td></tr>
+                    <tr><td><strong>Q3</strong></td><td>127</td></tr>
+                    <tr><td><strong>Max</strong></td><td>150</td></tr>
+                    <tr><td><strong>IQR</strong></td><td>127 - 112 = 15</td></tr>
+                    <tr><td><strong>Lower Fence</strong></td><td>112 - 1.5(15) = 89.5</td></tr>
+                    <tr><td><strong>Upper Fence</strong></td><td>127 + 1.5(15) = 149.5</td></tr>
+                </table>
+            </div>
+            
+            <p><strong>Step-by-step verification:</strong></p>
+            
+            <ol>
+                <li><strong>Check lower outliers:</strong> Min = 94, which is > 89.5 (Lower Fence)
+                    <ul>
+                        <li>No values below 89.5</li>
+                        <li>After sorting, we see: 85, 87 are outliers, next value is 94</li>
+                        <li><strong>Lower whisker ends at 94</strong></li>
+                        <li><strong>Outliers: 85, 87</strong></li>
+                    </ul>
+                </li>
+                
+                <li><strong>Check upper outliers:</strong> Max = 150, which is > 149.5 (Upper Fence)
+                    <ul>
+                        <li>150 is an outlier!</li>
+                        <li>After sorting descending, we see: 150, 149, 148...</li>
+                        <li>Next value ≤ 149.5 is 148</li>
+                        <li><strong>Upper whisker ends at 148</strong></li>
+                        <li><strong>Outlier: 150</strong></li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <p>This matches exactly what DataTab shows when you input the data!</p>
+            
+            <div class="diagram-placeholder">
+                [Insert screenshot: DataTab box plot for 30s group showing:
+                - Box from 112 to 127
+                - Median line at 120
+                - Lower whisker to 94
+                - Upper whisker to 148
+                - Lower outliers at 85, 87
+                - Upper outlier at 150
+                - Clear labels for all components]
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Google Sheets mein box plot banane ke steps:</strong> (1) <strong>Age Group column banao</strong> nested IF function se - ages ko "20s", "30s" etc. categories mein convert karo, (2) <strong>Data sort karo</strong> - quartiles aur outliers easily identify karne ke liye, (3) <strong>FILTER function use karke</strong> har group ka five-number summary calculate karo - MIN, Q1, Median, Q3, MAX, (4) <strong>IQR aur fences calculate karo</strong> - IQR = Q3-Q1, Lower fence = Q1-1.5×IQR, Upper fence = Q3+1.5×IQR, (5) <strong>Actual data check karke whisker endpoints verify karo</strong> - whiskers calculated fences tak nahi, balki actual data points tak jaate hain, aur (6) <strong>Candlestick chart insert karo</strong> Google Sheets mein ya DataTab use karo better visualization ke liye.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Write the nested IF formula to categorize ages into groups: "Teens" (13-19), "Young Adult" (20-35), "Adult" (36-60), "Senior" (61+).
+                </div>
+                <div class="answer">
+                    <code>=IF(A2<=19, "Teens", IF(A2<=35, "Young Adult", IF(A2<=60, "Adult", "Senior")))</code><br>
+                    This assumes age is in cell A2. Drag down to apply to all rows.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> You've calculated Upper Fence = 145 for a group, and your sorted data shows: ...138, 140, 142, 146, 148, 152. Where does the upper whisker end, and which values are outliers?
+                </div>
+                <div class="answer">
+                    Upper whisker ends at 142 (the largest value ≤ 145).<br>
+                    Outliers are: 146, 148, 152 (all values > 145).
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> When should you use DataTab instead of Google Sheets for box plots? List at least three scenarios.
+                </div>
+                <div class="answer">
+                    Use DataTab when:<br>
+                    1. You need to clearly display individual outliers as separate points<br>
+                    2. Creating educational materials or presentations where all components must be visible<br>
+                    3. You want automatic statistical summaries alongside visualizations<br>
+                    4. Google Sheets charts aren't clearly showing whisker endpoints<br>
+                    5. You need professional-looking plots with proper statistical notation
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Use nested IF statements to convert continuous data into categorical groups</li>
+                    <li>Always sort data before calculating quartiles and identifying outliers</li>
+                    <li>FILTER function + statistical functions = efficient group calculations</li>
+                    <li>Verify whisker endpoints by checking actual data against calculated fences</li>
+                    <li>Google Sheets candlestick charts work but have limitations</li>
+                    <li>DataTab provides professional, complete box plot visualizations</li>
+                    <li>Each group needs separate five-number summary calculations</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="interpretation">
+            <h2>7. Interpreting Box Plots</h2>
+            
+            <p>Creating box plots is only half the skill - the real value comes from <span class="key-term">interpreting</span> what they tell us about our data. Let's develop a systematic approach to reading and understanding box plots.</p>
+            
+            <h3>7.1 The Systematic Interpretation Framework</h3>
+            
+            <p>When analyzing box plots, follow this structured approach:</p>
+            
+            <div class="important-box">
+                <h4>📋 Five-Step Interpretation Framework</h4>
+                <ol>
+                    <li><strong>Identify the Median</strong> - What's the typical/central value?</li>
+                    <li><strong>Assess the IQR</strong> - How spread out is the middle 50%?</li>
+                    <li><strong>Check Median Position</strong> - Is the distribution symmetric or skewed?</li>
+                    <li><strong>Examine Whiskers</strong> - What's the full range of typical values?</li>
+                    <li><strong>Spot Outliers</strong> - Are there unusual or extreme cases?</li>
+                </ol>
+            </div>
+            
+            <h3>7.2 Step-by-Step: Interpreting Individual Box Plots</h3>
+            
+            <h4>Step 1: Reading the Median</h4>
+            
+            <p>The <span class="key-term">median line</span> (solid line inside the box) is your starting point.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Median Value</th>
+                        <th>Context</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>High median (relative to scale)</td>
+                        <td>Test scores: 85/100</td>
+                        <td>Most students performed well</td>
+                    </tr>
+                    <tr>
+                        <td>Low median (relative to scale)</td>
+                        <td>Product ratings: 2.5/5</td>
+                        <td>Typical customer is dissatisfied</td>
+                    </tr>
+                    <tr>
+                        <td>Middle median</td>
+                        <td>Blood pressure: 120 mmHg</td>
+                        <td>Typical reading is at normal range</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The median is more robust than the mean because it's not affected by outliers. In the video game example, even with one person giving a score of 40 (outlier), the median only changed from 85 to 84.5 - barely noticeable! This stability makes box plots excellent for datasets with outliers.
+            </div>
+            
+            <h4>Step 2: Evaluating IQR (Box Height)</h4>
+            
+            <p>The <span class="key-term">height of the box</span> tells you about variability:</p>
+            
+            <div class="formula">
+                <p><strong>IQR Size Interpretation:</strong></p>
+
+                $$ \text{Large IQR} \rightarrow \text{High variability} \rightarrow \text{Inconsistent experiences} $$
+
+                $$ \text{Small IQR} \rightarrow \text{Low variability} \rightarrow \text{Consistent experiences} $$
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>IQR Characteristic</th>
+                        <th>Visual Appearance</th>
+                        <th>Real-World Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Very Narrow Box</strong></td>
+                        <td>Box looks like a thin line</td>
+                        <td>Very consistent data - most values similar (e.g., standardized salaries in education)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Narrow Box</strong></td>
+                        <td>Short box height</td>
+                        <td>Good consistency - moderate variation (e.g., retail salaries)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Medium Box</strong></td>
+                        <td>Moderate box height</td>
+                        <td>Moderate variation - some diversity in values (e.g., healthcare salaries)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wide Box</strong></td>
+                        <td>Tall box height</td>
+                        <td>High variation - diverse experiences (e.g., finance salaries ranging from entry to senior)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4>🎯 Practical Example: Video Game Reviews</h4>
+                <p><strong>Scenario:</strong> IQR = 14 points (on a 0-100 scale)</p>
+                <p><strong>Interpretation:</strong> This is a fairly moderate spread. The middle 50% of reviewers' scores only varied by 14 points, suggesting relatively consistent opinions. Most players had similar experiences with the game.</p>
+                <p><strong>Contrast:</strong> If IQR were 40 points, it would indicate very mixed opinions - some loved it, others hated it, making the overall rating less reliable.</p>
+            </div>
+            
+            <h4>Step 3: Analyzing Median Position (Symmetry vs. Skewness)</h4>
+            
+            <p>Where the median sits <em>within</em> the box reveals distribution shape:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Median Position</th>
+                        <th>Distribution Type</th>
+                        <th>Visual Appearance</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Center of box</strong></td>
+                        <td>Symmetric</td>
+                        <td>Median line divides box equally</td>
+                        <td>Data evenly distributed around median; balanced distribution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Near top of box</strong></td>
+                        <td>Left-skewed (negative)</td>
+                        <td>More space below median</td>
+                        <td>Most values on higher end, with a few lower outliers pulling the distribution left</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Near bottom of box</strong></td>
+                        <td>Right-skewed (positive)</td>
+                        <td>More space above median</td>
+                        <td>Most values on lower end, with a few higher values stretching the distribution right</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Three box plots side-by-side showing:
+                1. Symmetric - median in center
+                2. Left-skewed - median near Q3
+                3. Right-skewed - median near Q1
+                Each with corresponding distribution curve shown above]
+            </div>
+            
+            <div class="professor-note">
+                Think of it from a "top-down view" of a distribution curve:<br><br>
+                
+                <strong>Symmetric distribution:</strong> Like a bell curve - the median is at the peak, and values spread equally on both sides. The box plot shows this with the median line in the center.<br><br>
+                
+                <strong>Left-skewed:</strong> The "tail" is on the left (lower values). Most data is concentrated on the higher end, so the median shifts up toward Q3.<br><br>
+                
+                <strong>Right-skewed:</strong> The "tail" is on the right (higher values). Most data is concentrated on the lower end, so the median shifts down toward Q1.
+            </div>
+            
+            <h4>Step 4: Understanding Whiskers</h4>
+            
+            <p>The <span class="key-term">whiskers</span> show the full range of "typical" values (non-outliers):</p>
+            
+            <ul>
+                <li><strong>Long whiskers:</strong> Wide range of acceptable values - data spreads far from the box</li>
+                <li><strong>Short whiskers:</strong> Narrow range - most data clustered near the quartiles</li>
+                <li><strong>Asymmetric whiskers:</strong> One whisker much longer than the other - skewness indicator</li>
+            </ul>
+            
+            <div class="important-box">
+                <strong>Whisker Length Interpretation:</strong>
+                <p>Whisker length = 1.5 × IQR in each direction (theoretically)</p>
+                <p>Actual whisker extends only to real data points within that range</p>
+                <p><strong>Long whiskers + small box:</strong> Most data is concentrated in middle, but acceptable range is wide</p>
+                <p><strong>Short whiskers + large box:</strong> Data is spread across the middle 50%, but few extreme values</p>
+            </div>
+            
+            <h4>Step 5: Identifying and Interpreting Outliers</h4>
+            
+            <p><span class="key-term">Outliers</span> (dots beyond whiskers) require careful interpretation:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Outlier Pattern</th>
+                        <th>Possible Meaning</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>No outliers</strong></td>
+                        <td>Consistent data; all values within expected range</td>
+                        <td>Video game reviews (original dataset): Everyone had similar experiences</td>
+                    </tr>
+                    <tr>
+                        <td><strong>One low outlier</strong></td>
+                        <td>One exceptional negative case</td>
+                        <td>Video game reviews (modified): One person had a very different (negative) experience</td>
+                    </tr>
+                    <tr>
+                        <td><strong>One high outlier</strong></td>
+                        <td>One exceptional positive case</td>
+                        <td>Salaries: C-suite executive or startup equity compensation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multiple outliers on one side</strong></td>
+                        <td>Subgroup with different characteristics</td>
+                        <td>Blood pressure: People with specific health conditions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outliers on both sides</strong></td>
+                        <td>Two distinct subgroups or measurement errors</td>
+                        <td>Education salaries: Administrators (high) vs. part-time teachers (low)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                <strong>Critical thinking about outliers:</strong> Don't just dismiss them! Ask:<br>
+                • Are these data entry errors or real values?<br>
+                • Do outliers represent a distinct subgroup?<br>
+                • Should we investigate these cases further?<br>
+                • Do outliers change our overall conclusion?<br><br>
+                
+                In the video game example, the outlier (score of 40) didn't change the overall conclusion that the game is well-liked, but it might prompt investigation: Did that player encounter a game-breaking bug? Different platform? Personal preference mismatch?
+            </div>
+            
+            <h3>7.3 Complete Interpretation Example: Age and Blood Pressure</h3>
+            
+            <p>Let's apply the framework to interpret blood pressure across age groups:</p>
+            
+            <div class="example-box">
+                <h4>🩺 20s Age Group (Blood Pressure)</h4>
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li><strong>Median:</strong> ~105 mmHg - within normal range</li>
+                    <li><strong>IQR:</strong> Large variation compared to other age groups</li>
+                    <li><strong>Position:</strong> Median slightly toward lower end (right-skewed)</li>
+                    <li><strong>Whiskers:</strong> Moderate length</li>
+                    <li><strong>Outliers:</strong> None significant</li>
+                </ul>
+                <p><strong>Interpretation:</strong> Young adults (20s) generally have healthy blood pressure, but there's considerable variation possibly due to diverse lifestyles (fitness enthusiasts vs. sedentary), stress levels, and early health habits forming.</p>
+            </div>
+            
+            <div class="example-box">
+                <h4>💪 30s Age Group (Blood Pressure)</h4>
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li><strong>Median:</strong> ~120 mmHg - normal range, slightly higher than 20s</li>
+                    <li><strong>IQR:</strong> Narrowest among all age groups (very small box)</li>
+                    <li><strong>Position:</strong> Median almost centered (symmetric)</li>
+                    <li><strong>Whiskers:</strong> Short</li>
+                    <li><strong>Outliers:</strong> Few (85, 87 on low end; 150 on high end)</li>
+                </ul>
+                <p><strong>Interpretation:</strong> 30s show the MOST consistent blood pressure readings. This age group likely has established routines, stable lifestyles, and most haven't yet developed age-related health issues. The few outliers represent exceptional cases (perhaps athletes or individuals with specific conditions).</p>
+            </div>
+            
+            <div class="example-box">
+                <h4>⚠️ 40s Age Group (Blood Pressure)</h4>
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li><strong>Median:</strong> ~122 mmHg - highest median among all groups</li>
+                    <li><strong>IQR:</strong> Quite large (wide box)</li>
+                    <li><strong>Position:</strong> Median toward lower end (right-skewed)</li>
+                    <li><strong>Whiskers:</strong> Long on upper end</li>
+                    <li><strong>Outliers:</strong> Only one, but notable</li>
+                </ul>
+                <p><strong>Interpretation:</strong> 40s show elevated typical blood pressure with HIGH variation. While most people in their 40s have blood pressure on the lower end of the box (around 122), there's a significant subgroup with higher readings, creating the wide IQR. This could reflect the onset of age-related blood pressure increases, varying at different rates depending on lifestyle, genetics, and preventive care.</p>
+            </div>
+            
+            <div class="example-box">
+                <h4>🔍 50s, 60s, and 70+ Age Groups</h4>
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li><strong>50s:</strong> Large IQR, median around 125, significant variation</li>
+                    <li><strong>60s:</strong> Median not centered, distribution slightly skewed</li>
+                    <li><strong>70+:</strong> Very large variation, multiple outliers, median elevated</li>
+                </ul>
+                <p><strong>Interpretation:</strong> As age increases, blood pressure generally rises (higher medians) AND variation increases (wider IQRs). This reflects accumulating health differences - some maintain healthy lifestyles while others develop conditions. The increasing outliers suggest more people developing hypertension or other cardiovascular issues.</p>
+            </div>
+            
+            <h3>7.4 Comparative Insights: Looking Across Multiple Box Plots</h3>
+            
+            <p>When comparing multiple box plots side-by-side, look for <span class="key-term">patterns and trends</span>:</p>
+            
+            <div class="important-box">
+                <h4>🔬 Cross-Group Analysis Questions:</h4>
+                <ol>
+                    <li><strong>Trend in medians:</strong> Are medians increasing, decreasing, or stable across groups?</li>
+                    <li><strong>Trend in variability:</strong> Is IQR growing, shrinking, or consistent?</li>
+                    <li><strong>Outlier patterns:</strong> Do certain groups have more outliers?</li>
+                    <li><strong>Symmetry changes:</strong> Does distribution shape change across groups?</li>
+                    <li><strong>Overlap between groups:</strong> Do boxes/whiskers overlap significantly?</li>
+                </ol>
+            </div>
+            
+            <p><strong>Blood Pressure Example - Overall Trends:</strong></p>
+            <ul>
+                <li>✅ <strong>Median increases</strong> with age (20s: 105 → 70+: ~130)</li>
+                <li>✅ <strong>Variability increases</strong> with age (narrow box in 30s → wide boxes in 60s-70s)</li>
+                <li>✅ <strong>More outliers</strong> in older age groups</li>
+                <li>✅ <strong>Distributions become more skewed</strong> in older groups</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Box plot interpret karne ke 5 steps hain:</strong> (1) <strong>Median dekho</strong> - typical value kya hai, high median = higher typical values, (2) <strong>IQR dekho (box height)</strong> - narrow box = consistent data, wide box = high variation, (3) <strong>Median ki position box ke andar</strong> - center = symmetric, top ke paas = left-skewed, bottom ke paas = right-skewed, (4) <strong>Whiskers ki length</strong> - typical values ka range dikhati hai, aur (5) <strong>Outliers identify karo</strong> - unusual cases jo investigate karni chahiye. <strong>Blood pressure example mein:</strong> 30s age group sabse consistent hai (narrow box), 40s+ mein variation badhta hai (wide boxes), aur older age groups mein median aur outliers dono increase hote hain, jo age-related health changes ko reflect karta hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> A box plot of customer satisfaction scores shows: Median at 4.5/5, very narrow box (IQR=0.5), short whiskers, no outliers. What does this tell you about customer satisfaction?
+                </div>
+                <div class="answer">
+                    This indicates VERY HIGH and CONSISTENT customer satisfaction:<br>
+                    • High median (4.5/5) = most customers are very satisfied<br>
+                    • Narrow IQR = almost all customers have similar positive experiences<br>
+                    • No outliers = no dissatisfied customers or anomalies<br>
+                    • Short whiskers = even the full range is narrow<br>
+                    <strong>Overall:</strong> Excellent, reliable product/service with consistent quality.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Two products A and B have box plots: Product A has median 4.0, IQR=2.0; Product B has median 4.0, IQR=0.5. Both have the same median rating. Which product is more reliable? Why?
+                </div>
+                <div class="answer">
+                    <strong>Product B is more reliable.</strong><br>
+                    Both have the same typical rating (median 4.0), but:<br>
+                    • Product A: IQR=2.0 means the middle 50% of ratings range from 3.0-5.0 (varied opinions)<br>
+                    • Product B: IQR=0.5 means the middle 50% of ratings range from 3.75-4.25 (consistent opinions)<br>
+                    <strong>Product B has low variability,</strong> meaning most customers agree it's good (reliable rating). Product A has high variability, meaning mixed experiences (less reliable - might be good for you or might not).
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> A box plot shows the median very close to Q3 (top of box), with a long lower whisker. Describe this distribution and provide a real-world example.
+                </div>
+                <div class="answer">
+                    This is a <strong>left-skewed (negatively skewed) distribution</strong>:<br>
+                    • Most values concentrated on the higher end (median near Q3)<br>
+                    • Long lower whisker indicates a tail extending toward lower values<br>
+                    • Few lower values pull the distribution left<br><br>
+                    
+                    <strong>Real-world example:</strong> Exam scores in an easy test - most students score 80-95 (clustered high), but a few students who didn't prepare score 40-60 (long tail on left), creating left skew. The median would be near the top of the box (around 85-90).
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Use the five-step framework: Median → IQR → Position → Whiskers → Outliers</li>
+                    <li>Median shows typical value; IQR shows consistency/variability</li>
+                    <li>Median position within box reveals distribution symmetry or skewness</li>
+                    <li>Narrow box = consistent data (reliable); Wide box = varied data (less reliable)</li>
+                    <li>Outliers need investigation - they may reveal important insights</li>
+                    <li>Compare multiple box plots to identify trends and patterns</li>
+                    <li>Box plots are robust to outliers - median doesn't change much</li>
+                    <li>Always consider context when interpreting - same pattern means different things in different domains</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="insights">
+            <h2>8. Drawing Insights from Multiple Box Plots</h2>
+            
+            <p>The real power of box plots emerges when comparing multiple groups. This section focuses on extracting meaningful insights and making data-driven decisions from grouped box plots.</p>
+            
+            <h3>8.1 Three Dimensions of Comparison</h3>
+            
+            <p>When analyzing multiple box plots together, systematically compare three key dimensions:</p>
+            
+            <div class="important-box">
+                <h4>📊 Three-Dimensional Analysis Framework</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>What to Compare</th>
+                            <th>What It Reveals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Medians</strong></td>
+                            <td>Compare median values across groups</td>
+                            <td>Which groups have higher/lower typical values</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Variability</strong></td>
+                            <td>Compare IQR (box heights) across groups</td>
+                            <td>Which groups are more consistent vs. varied</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Outliers</strong></td>
+                            <td>Compare outlier patterns and frequencies</td>
+                            <td>Which groups have exceptional cases; overall pattern excluding extremes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>8.2 Practical Application: Movie Ratings Example</h3>
+            
+            <div class="professor-note">
+                Let me explain with a different example to solidify understanding. Instead of salaries, imagine these are movie ratings from different genres on Rotten Tomatoes (0-100 scale). The same interpretation principles apply to any domain!
+            </div>
+            
+            <div class="example-box">
+                <h4>🎬 Scenario: Movie Ratings by Genre</h4>
+                <p><strong>Genres:</strong> Action, Comedy, Drama, Horror, Sci-Fi</p>
+                <p><strong>Data:</strong> Audience ratings (0-100) for 100 movies in each genre</p>
+            </div>
+            
+            <h4>Dimension 1: Comparing Medians</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genre</th>
+                        <th>Median Rating</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Drama</td>
+                        <td>75</td>
+                        <td>Typically highly rated; audiences generally appreciate well-made dramas</td>
+                    </tr>
+                    <tr>
+                        <td>Comedy</td>
+                        <td>70</td>
+                        <td>Generally liked; humor appeals to most audiences</td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>65</td>
+                        <td>Moderate ratings; action films are popular but not always critically acclaimed</td>
+                    </tr>
+                    <tr>
+                        <td>Sci-Fi</td>
+                        <td>60</td>
+                        <td>Mixed reception; sci-fi can be polarizing</td>
+                    </tr>
+                    <tr>
+                        <td>Horror</td>
+                        <td>50</td>
+                        <td>Often poorly rated; niche genre with specific audience</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Insight:</strong> Drama and Comedy genres tend to receive higher ratings on average, while Horror struggles with mainstream appeal.</p>
+            
+            <h4>Dimension 2: Comparing Variability</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genre</th>
+                        <th>IQR</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Drama</td>
+                        <td>15 (narrow)</td>
+                        <td>Consistent ratings - if it's a drama, it's likely well-received</td>
+                    </tr>
+                    <tr>
+                        <td>Horror</td>
+                        <td>40 (wide)</td>
+                        <td>Highly variable - some horror films are loved, others hated</td>
+                    </tr>
+                    <tr>
+                        <td>Sci-Fi</td>
+                        <td>35 (wide)</td>
+                        <td>Polarizing genre - sci-fi can be brilliant or terrible</td>
+                    </tr>
+                    <tr>
+                        <td>Comedy</td>
+                        <td>20 (moderate)</td>
+                        <td>Moderate consistency - humor is somewhat subjective</td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>25 (moderate)</td>
+                        <td>Moderate variation - quality varies by budget and execution</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Insights:</strong></p>
+            <ul>
+                <li><strong>Drama (narrow IQR + high median):</strong> Most reliable genre - consistently good ratings</li>
+                <li><strong>Horror (wide IQR + low median):</strong> Least reliable - risky genre with unpredictable quality</li>
+                <li><strong>Sci-Fi (wide IQR + medium median):</strong> Hit-or-miss - can be amazing or disappointing</li>
+            </ul>
+            
+            <h4>Dimension 3: Analyzing Outliers</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genre</th>
+                        <th>Outlier Pattern</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Drama</td>
+                        <td>Few outliers, mostly high</td>
+                        <td>Occasional masterpiece; rare bombs</td>
+                    </tr>
+                    <tr>
+                        <td>Horror</td>
+                        <td>Multiple outliers on both ends</td>
+                        <td>Genre has cult classics (high outliers) and notorious failures (low outliers)</td>
+                    </tr>
+                    <tr>
+                        <td>Sci-Fi</td>
+                        <td>Several high outliers</td>
+                        <td>Groundbreaking films like "Inception" or "Interstellar" transcend the genre</td>
+                    </tr>
+                    <tr>
+                        <td>Comedy</td>
+                        <td>Few low outliers</td>
+                        <td>Some comedies completely miss the mark with audiences</td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>Moderate outliers on both ends</td>
+                        <td>Blockbusters (high) vs. low-budget failures (low)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                <strong>The Reliability Concept Revisited:</strong><br><br>
+                
+                Remember from earlier: <strong>Low median + Low variation = Reliably bad</strong> (e.g., Horror with median 50 and narrow IQR would mean "consistently mediocre")<br><br>
+                
+                <strong>High median + Low variation = Reliably good</strong> (e.g., Drama with median 75 and narrow IQR means "consistently excellent")<br><br>
+                
+                <strong>Medium median + High variation = Unreliable</strong> (e.g., Sci-Fi with median 60 and wide IQR means "unpredictable - could be great or terrible")<br><br>
+                
+                This relationship between central tendency and variability is crucial for assessing reliability and making decisions!
+            </div>
+            
+            <h3>8.3 Decision-Making Framework Using Box Plots</h3>
+            
+            <p>Box plots aren't just for description - they guide <span class="key-term">decision-making</span>. Here's how to use them strategically:</p>
+            
+            <div class="example-box">
+                <h4>🎯 Business Decision Example: Which Job Sector to Enter?</h4>
+                
+                <p>Using the salary distribution box plots from earlier:</p>
+                
+                <p><strong>If you prioritize HIGH INCOME:</strong></p>
+                <ul>
+                    <li>Choose: <strong>Finance or Tech</strong> (highest medians)</li>
+                    <li>Finance has higher variability → potential for exceptional salaries (outliers)</li>
+                    <li>Tech has moderate variability → more predictable high income</li>
+                </ul>
+                
+                <p><strong>If you prioritize STABILITY/CONSISTENCY:</strong></p>
+                <ul>
+                    <li>Choose: <strong>Education or Retail</strong> (narrowest IQRs)</li>
+                    <li>Education has slightly higher median than Retail</li>
+                    <li>Both offer predictable, consistent salaries with few surprises</li>
+                </ul>
+                
+                <p><strong>If you want BALANCED approach:</strong></p>
+                <ul>
+                    <li>Choose: <strong>Healthcare</strong> (moderate median + moderate IQR)</li>
+                    <li>Decent salary without extreme variation</li>
+                    <li>Reasonable career progression opportunities</li>
+                </ul>
+            </div>
+            
+            <h3>8.4 Common Patterns and What They Mean</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pattern Across Groups</th>
+                        <th>Visual Appearance</th>
+                        <th>Interpretation</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Rising Medians</strong></td>
+                        <td>Median lines progressively higher</td>
+                        <td>Increasing trend across groups</td>
+                        <td>Blood pressure increases with age</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Widening Boxes</strong></td>
+                        <td>IQR grows progressively</td>
+                        <td>Increasing variability/diversity</td>
+                        <td>Income inequality grows over time</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Converging Boxes</strong></td>
+                        <td>IQR becomes narrower</td>
+                        <td>Standardization or homogenization</td>
+                        <td>Product quality improves with manufacturing standards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Increasing Outliers</strong></td>
+                        <td>More dots in later groups</td>
+                        <td>More exceptional cases emerging</td>
+                        <td>Health complications increase in older age groups</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Overlapping Boxes</strong></td>
+                        <td>Boxes overlap significantly</td>
+                        <td>Groups not very different</td>
+                        <td>Minimal difference between two products</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Non-overlapping Boxes</strong></td>
+                        <td>Clear gaps between boxes</td>
+                        <td>Groups distinctly different</td>
+                        <td>Clear performance difference between teams</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>8.5 Advanced Interpretation: The Complete Picture</h3>
+            
+            <p>Let's synthesize everything with the blood pressure example:</p>
+            
+            <div class="example-box">
+                <h4>🩺 Complete Blood Pressure Analysis Across Age Groups</h4>
+                
+                <p><strong>Overall Trends Observed:</strong></p>
+                <ol>
+                    <li><strong>Progressive median increase:</strong> 20s (~105) → 30s (~120) → 40s (~122) → 50s (~125) → 60s (~128) → 70+ (~130)</li>
+                    <li><strong>Variable IQR pattern:</strong> 20s (large) → 30s (smallest) → 40s+ (progressively larger)</li>
+                    <li><strong>Increasing outliers:</strong> Few in younger groups → More in older groups</li>
+                </ol>
+                
+                <p><strong>Comprehensive Interpretation:</strong></p>
+                
+                <p><span class="key-term">Age 20s:</span> Young adults show healthy blood pressure but with high variation. This variability likely reflects diverse lifestyles - some are very active (lower readings), others sedentary (higher readings). Lifestyle hasn't yet solidified into long-term patterns.</p>
+                
+                <p><span class="key-term">Age 30s:</span> The MOST consistent age group (narrowest IQR). People have established routines and stable lifestyles. Most haven't developed age-related issues yet. This represents the "golden age" of cardiovascular health consistency. The few outliers are truly exceptional cases (athletes or early health problems).</p>
+                
+                <p><span class="key-term">Age 40s:</span> Median jumps to 122 with WIDE variation. This is the "divergence decade" - some people maintain healthy lifestyles (lower end of box), while others begin experiencing age-related increases (upper end). The right-skewed distribution (median near bottom) shows most are still on the healthier side, but a significant subgroup is shifting higher.</p>
+                
+                <p><span class="key-term">Age 50s, 60s, 70+:</span> Progressive increases in both median and IQR. Health trajectories have diverged significantly - some maintain excellent cardiovascular health through exercise and diet (lower outliers), while others develop hypertension and related conditions (upper outliers and high box). The increasing number of outliers reflects the growing health heterogeneity in older populations.</p>
+                
+                <p><strong>Actionable Insights:</strong></p>
+                <ul>
+                    <li>Healthcare providers should focus prevention efforts in the 40s when divergence begins</li>
+                    <li>Consistency in 30s suggests this is the optimal time to establish healthy habits</li>
+                    <li>High variation in older groups necessitates personalized treatment approaches</li>
+                    <li>Outliers warrant individual investigation and targeted interventions</li>
+                </ul>
+            </div>
+            
+            <h3>8.6 Pitfalls to Avoid</h3>
+            
+            <div class="important-box">
+                <h4>⚠️ Common Interpretation Mistakes</h4>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mistake</th>
+                            <th>Why It's Wrong</th>
+                            <th>Correct Approach</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ignoring outliers</strong></td>
+                            <td>Outliers often contain valuable insights</td>
+                            <td>Investigate outliers - they may reveal important subgroups or issues</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Assuming causation</strong></td>
+                            <td>Box plots show correlation, not causation</td>
+                            <td>Blood pressure increases WITH age, but age isn't the only cause</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Over-interpreting small differences</strong></td>
+                            <td>Minor median differences may not be meaningful</td>
+                            <td>Check if boxes overlap - overlap suggests groups may be similar</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Focusing only on medians</strong></td>
+                            <td>Variability is equally important</td>
+                            <td>Always consider IQR - reliability matters as much as central value</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forgetting context</strong></td>
+                            <td>Same pattern means different things in different domains</td>
+                            <td>Always interpret within the specific context of your data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Multiple box plots ko compare karne ke teen dimensions hain:</strong> (1) <strong>Medians compare karo</strong> - konse groups mein typical values higher/lower hain, (2) <strong>Variability (IQR) compare karo</strong> - narrow box = consistent/reliable, wide box = varied/unpredictable, aur (3) <strong>Outliers ka pattern dekho</strong> - kaun se groups mein exceptional cases zyada hain. <strong>Movie ratings example mein:</strong> Drama genre mein high median + narrow IQR = reliably good (trustworthy ratings), Horror mein low median + wide IQR = unreliable (hit-or-miss quality). <strong>Blood pressure example ka complete insight:</strong> 30s sabse consistent (narrowest IQR), 40s mein divergence shuru (wide IQR), aur older ages mein median aur variation dono badhte hain jo diverse health trajectories ko reflect karta hai. <strong>Key principle:</strong> High consistency + good central value = reliable/trustworthy; High variation = unpredictable/investigate further.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Three smartphone brands have box plots of customer ratings: Brand A (median 4.5, IQR 0.3), Brand B (median 4.0, IQR 1.5), Brand C (median 4.5, IQR 1.0). Which brand should you buy if you want consistent quality? Which is riskier?
+                </div>
+                <div class="answer">
+                    <strong>Buy Brand A</strong> - Highest median (4.5) AND lowest IQR (0.3) means excellent and consistent quality. Almost all customers have similar positive experiences.<br><br>
+                    <strong>Brand B is riskiest</strong> - Moderate median (4.0) with high IQR (1.5) means very unpredictable quality. Some units are great, others are problematic. Even though Brand C has the same median as A, its higher IQR (1.0) makes it less reliable than Brand A.
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> A company's employee satisfaction scores across departments show: HR (median 7, IQR 2), Sales (median 6, IQR 4), Engineering (median 8, IQR 1). As a manager, which department needs immediate attention and why?
+                </div>
+                <div class="answer">
+                    <strong>Sales department needs immediate attention.</strong><br>
+                    • Lowest median (6) = lower typical satisfaction<br>
+                    • Highest IQR (4) = huge variation in experiences<br>
+                    • This combination suggests inconsistent management or work conditions<br>
+                    • Some employees are satisfied while others are very dissatisfied<br><br>
+                    
+                    <strong>Action needed:</strong> Investigate the high variation - identify what's making some Sales employees happy and others unhappy. There may be specific managers, territories, or policies creating the disparity.
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Box plots of test scores across three teaching methods show overlapping boxes for Methods A and B, but Method C's box is completely above both. What does this tell you about effectiveness?
+                </div>
+                <div class="answer">
+                    <strong>Method C is clearly superior:</strong><br>
+                    • Non-overlapping box means even C's worst performers (Q1) score higher than most A/B students<br>
+                    • Clear, statistically meaningful difference in effectiveness<br><br>
+                    
+                    <strong>Methods A and B are similar:</strong><br>
+                    • Overlapping boxes mean their performance ranges are similar<br>
+                    • No clear winner between A and B - choose based on other factors (cost, time, resources)<br><br>
+                    
+                    <strong>Decision:</strong> Implement Method C if feasible, as it demonstrably produces better outcomes.
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Compare three dimensions: Medians, Variability (IQR), and Outliers</li>
+                    <li>High median + Low IQR = Reliable and good (ideal scenario)</li>
+                    <li>Low median + Low IQR = Reliably poor (consistent but bad)</li>
+                    <li>High median + High IQR = Potentially great but unpredictable (risky)</li>
+                    <li>Look for trends: rising medians, widening/narrowing boxes, increasing outliers</li>
+                    <li>Overlapping boxes = groups similar; Non-overlapping = clearly different</li>
+                    <li>Always investigate outliers - they often reveal important insights</li>
+                    <li>Context matters - interpret patterns within your specific domain</li>
+                    <li>Use box plots for decision-making, not just description</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mind-map">
+            <div class="mind-map">
+                <h2>9. Comprehensive Mind Map</h2>
+                
+                <div class="mind-map-container">
+                    <div class="central-node">
+                        BOX PLOTS FOR GROUPED DATA
+                    </div>
+                    
+                    <div class="branches">
+                        <div class="branch">
+                            <h3>📊 What Are Box Plots?</h3>
+                            <ul>
+                                <li>Also called box-and-whisker plots or candlestick plots</li>
+                                <li>Visualization tool for continuous data</li>
+                                <li>Show quartiles, spread, and outliers</li>
+                                <li>Provide quick snapshot of distribution</li>
+                                <li>Excellent for comparing multiple groups</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🔧 Key Components</h3>
+                            <ul>
+                                <li><strong>Box:</strong> IQR (Q3 - Q1), middle 50%</li>
+                                <li><strong>Q1:</strong> 25th percentile (lower end of box)</li>
+                                <li><strong>Q2/Median:</strong> 50th percentile (solid line)</li>
+                                <li><strong>Q3:</strong> 75th percentile (upper end of box)</li>
+                                <li><strong>Whiskers:</strong> Extend to 1.5×IQR from quartiles</li>
+                                <li><strong>Outliers:</strong> Dots beyond whiskers</li>
+                                <li><strong>Mean (optional):</strong> Dashed line</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>📐 Five-Number Summary</h3>
+                            <ul>
+                                <li><strong>Min:</strong> 0th percentile (smallest value)</li>
+                                <li><strong>Q1:</strong> 25th percentile</li>
+                                <li><strong>Median:</strong> 50th percentile</li>
+                                <li><strong>Q3:</strong> 75th percentile</li>
+                                <li><strong>Max:</strong> 100th percentile (largest value)</li>
+                                <li>Required for plotting box plots</li>
+                                <li>Completely describes distribution</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🔢 Key Formulas</h3>
+                            <ul>
+                                <li><strong>IQR:</strong> Q3 - Q1</li>
+                                <li><strong>Lower Fence:</strong> Q1 - 1.5×IQR</li>
+                                <li><strong>Upper Fence:</strong> Q3 + 1.5×IQR</li>
+                                <li><strong>Outlier:</strong> x < Lower Fence or x > Upper Fence</li>
+                                <li><strong>Lower Whisker:</strong> min(data ≥ Lower Fence)</li>
+                                <li><strong>Upper Whisker:</strong> max(data ≤ Upper Fence)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>💻 Google Sheets Implementation</h3>
+                            <ul>
+                                <li><strong>Create groups:</strong> Nested IF statements</li>
+                                <li><strong>Filter data:</strong> FILTER function or manual</li>
+                                <li><strong>Calculate stats:</strong> MIN, MAX, PERCENTILE.EXC/INC</li>
+                                <li><strong>Sort data:</strong> Essential for verification</li>
+                                <li><strong>Verify whiskers:</strong> Check actual data vs. fences</li>
+                                <li><strong>Visualize:</strong> Candlestick chart or DataTab</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🔍 Interpretation Framework</h3>
+                            <ul>
+                                <li><strong>Step 1:</strong> Identify median (typical value)</li>
+                                <li><strong>Step 2:</strong> Assess IQR (variability/consistency)</li>
+                                <li><strong>Step 3:</strong> Check position (symmetry/skewness)</li>
+                                <li><strong>Step 4:</strong> Examine whiskers (typical range)</li>
+                                <li><strong>Step 5:</strong> Spot outliers (exceptional cases)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>📈 IQR Interpretation</h3>
+                            <ul>
+                                <li><strong>Narrow box:</strong> Low variability, consistent data</li>
+                                <li><strong>Wide box:</strong> High variability, diverse data</li>
+                                <li><strong>Small IQR:</strong> Reliable, similar experiences</li>
+                                <li><strong>Large IQR:</strong> Unpredictable, mixed experiences</li>
+                                <li>Measures middle 50% spread</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>↔️ Distribution Symmetry</h3>
+                            <ul>
+                                <li><strong>Median centered:</strong> Symmetric distribution</li>
+                                <li><strong>Median near Q3:</strong> Left-skewed (negative)</li>
+                                <li><strong>Median near Q1:</strong> Right-skewed (positive)</li>
+                                <li>Position reveals distribution shape</li>
+                                <li>Compare with whisker lengths</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🎯 Outlier Insights</h3>
+                            <ul>
+                                <li><strong>No outliers:</strong> Consistent, expected range</li>
+                                <li><strong>Few outliers:</strong> Exceptional cases</li>
+                                <li><strong>Many outliers:</strong> Subgroups or data issues</li>
+                                <li><strong>One-sided outliers:</strong> Directional extremes</li>
+                                <li><strong>Both-sided outliers:</strong> Multiple subgroups</li>
+                                <li>Always investigate - may reveal insights</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🔄 Comparing Multiple Groups</h3>
+                            <ul>
+                                <li><strong>Dimension 1:</strong> Compare medians (typical values)</li>
+                                <li><strong>Dimension 2:</strong> Compare IQRs (variability)</li>
+                                <li><strong>Dimension 3:</strong> Compare outliers (patterns)</li>
+                                <li>Look for trends across groups</li>
+                                <li>Check for overlapping boxes</li>
+                                <li>Identify distinct patterns</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>✅ Reliability Assessment</h3>
+                            <ul>
+                                <li><strong>High median + Low IQR:</strong> Reliably good ✓</li>
+                                <li><strong>Low median + Low IQR:</strong> Reliably poor</li>
+                                <li><strong>High median + High IQR:</strong> Unpredictable (risky)</li>
+                                <li><strong>Low median + High IQR:</strong> Unreliable (worst)</li>
+                                <li>Consistency matters for decisions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>💡 Key Advantages</h3>
+                            <ul>
+                                <li>Robust to outliers (median-based)</li>
+                                <li>Show multiple statistics simultaneously</li>
+                                <li>Easy comparison across groups</li>
+                                <li>Identify outliers visually</li>
+                                <li>Reveal distribution shape</li>
+                                <li>Space-efficient visualization</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🎓 Practical Applications</h3>
+                            <ul>
+                                <li><strong>Healthcare:</strong> Blood pressure by age</li>
+                                <li><strong>Business:</strong> Salary by sector/department</li>
+                                <li><strong>Education:</strong> Test scores by teaching method</li>
+                                <li><strong>Product:</strong> Ratings comparison</li>
+                                <li><strong>Finance:</strong> Returns across portfolios</li>
+                                <li><strong>Quality:</strong> Manufacturing consistency</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>⚠️ Common Pitfalls</h3>
+                            <ul>
+                                <li>Ignoring outliers (investigate them!)</li>
+                                <li>Assuming causation from correlation</li>
+                                <li>Over-interpreting small differences</li>
+                                <li>Focusing only on medians (IQR matters!)</li>
+                                <li>Forgetting context (domain-specific)</li>
+                                <li>Not verifying whisker endpoints</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🛠️ Best Practices</h3>
+                            <ul>
+                                <li>Always sort data first</li>
+                                <li>Verify calculations manually</li>
+                                <li>Check whiskers against actual data</li>
+                                <li>Use DataTab for complete visualizations</li>
+                                <li>Interpret within context</li>
+                                <li>Consider both median and IQR</li>
+                                <li>Investigate all outliers</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h3>🌟 Key Insights</h3>
+                            <ul>
+                                <li>Whiskers go to actual data, not fences</li>
+                                <li>1.5×IQR is conventional outlier threshold</li>
+                                <li>Box represents middle 50% of data</li>
+                                <li>Median is robust to outliers</li>
+                                <li>IQR measures consistency/reliability</li>
+                                <li>Position reveals symmetry</li>
+                                <li>Multiple dimensions needed for complete picture</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; border-radius: 10px;">
+            <h3 style="margin-bottom: 15px;">📚 End of Lecture Notes</h3>
+            <p style="font-size: 1.1em; margin: 10px 0;">Module 02 Continued - Box Plots for Grouped Data</p>
+            <p style="font-size: 0.95em; margin: 10px 0;">Foundations of Statistics & Probability</p>
+            <p style="font-size: 0.9em; margin-top: 20px; font-style: italic;">
+                "Box plots transform complex data distributions into clear, actionable insights.<br>
+                Master them, and you master the art of comparative data analysis."
+            </p>
+            <p style="font-size: 0.85em; margin-top: 25px; opacity: 0.9;">
+                These comprehensive notes combine lecture slides and complete transcripts from all three video lectures.<br>
+                Generated with detailed explanations, examples, and practice questions for complete understanding.
+            </p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 4: Numerical Optimization - Convexity and Gradient Descent</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+            padding-left: 15px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #8e44ad;
+            margin-top: 25px;
+        }
+        h4 {
+            color: #e67e22;
+            margin-top: 20px;
+        }
+        .toc {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .toc h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border: none;
+            padding: 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .key-term {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #856404;
+        }
+        .definition {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196f3;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .theorem {
+            background-color: #f3e5f5;
+            padding: 15px;
+            border-left: 4px solid #9c27b0;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .example {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-left: 4px solid #4caf50;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .professor-note {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .hinglish-summary {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border: 2px dashed #4169e1;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #2c3e50;
+        }
+        .practice-questions {
+            background-color: #fff5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .key-takeaways {
+            background-color: #f0fff0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+        .algorithm {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #6c757d;
+        }
+        .mind-map {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .mind-node {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .mind-subnode {
+            background-color: #27ae60;
+            font-size: 0.9em;
+        }
+        .diagram-placeholder {
+            background-color: #f8f9fa;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lecture 4: Numerical Optimization<br>Convexity and Gradient Descent Algorithm</h1>
+        
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">1. Overview</a></li>
+                <li><a href="#review">2. Review of Lecture 3</a></li>
+                <li><a href="#convexity-intro">3. Introduction to Convexity</a></li>
+                <li><a href="#convex-sets">4. Convex Sets</a></li>
+                <li><a href="#convex-functions">5. Convex Functions</a></li>
+                <li><a href="#first-order">6. First-Order Characterization of Convexity</a></li>
+                <li><a href="#second-order">7. Second-Order Characterization of Convexity</a></li>
+                <li><a href="#positive-definite">8. Positive Definite and Semidefinite Matrices</a></li>
+                <li><a href="#convexity-applications">9. Applications of Convexity in Data Science</a></li>
+                <li><a href="#numerical-schemes">10. Numerical Schemes for Optimization</a></li>
+                <li><a href="#gradient-descent">11. Gradient Descent Algorithm</a></li>
+                <li><a href="#mind-map">12. Mind Map</a></li>
+            </ul>
+        </div>
+
+        <section id="overview">
+            <h2>1. Overview</h2>
+            <p>Welcome to <span class="key-term">Lecture 4 on numerical optimization</span>. Today we will cover several important topics:</p>
+            <ul>
+                <li><strong>Review</strong> of concepts from Lecture 3</li>
+                <li><strong>Convexity</strong> - one of the most important concepts in optimization</li>
+                <li><strong>Convex sets and convex functions</strong></li>
+                <li><strong>First-order and second-order characterization</strong> of convexity</li>
+                <li><strong>Gradient descent algorithm</strong> - a fundamental numerical method</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Convexity is such a big topic that it can be taught in a semester-long course. That's how important convexity is in optimization!
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Aaj hum convexity ke baare mein padhenge, jo optimization mein bahut important concept hai. Ye ensure karta hai ki local minimum global minimum ho jaaye. Saath mein gradient descent algorithm bhi seekhenge jo practical problems solve karne ke liye use hota hai.
+            </div>
+        </section>
+
+        <section id="review">
+            <h2>2. Review of Lecture 3</h2>
+            
+            <h3>2.1 First Order Necessary Condition: Fermat's Rule</h3>
+            <div class="definition">
+                <strong>Fermat's Rule:</strong> If a function $f$ is differentiable at point $x^*$ and $x^*$ is a local optimizer, then:
+
+                $$\nabla f(x^*) = 0$$
+                <p>This is a <span class="key-term">necessary condition</span> but not sufficient.</p>
+            </div>
+
+            <h3>2.2 Second Order Hessian Condition</h3>
+            <div class="definition">
+                For a twice differentiable function $f$:
+                <ul>
+                    <li><strong>Necessary condition:</strong> If $x^*$ is a local minimizer, then $\nabla^2 f(x^*) \succeq 0$ (positive semidefinite)</li>
+                    <li><strong>Sufficient condition:</strong> If $\nabla f(x^*) = 0$ and $\nabla^2 f(x^*) \succ 0$ (positive definite), then $x^*$ is a local minimizer</li>
+                </ul>
+            </div>
+
+            <h3>2.3 Positive Definiteness of Matrices</h3>
+            <div class="definition">
+                For an $n \times n$ matrix $A$:
+                <ul>
+                    <li><strong>Positive semidefinite ($A \succeq 0$):</strong> $x^T A x \geq 0$ for all $x \in \mathbb{R}^n$</li>
+                    <li><strong>Positive definite ($A \succ 0$):</strong> $x^T A x > 0$ for all $x \neq 0$</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Pichle lecture mein humne dekha ki optimization problems solve karne ke liye first-order (gradient zero) aur second-order (Hessian positive definite) conditions use karte hain. Lekin ye sirf local optimality guarantee karte hain, global nahi.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Fermat's rule gives necessary conditions for optimality</li>
+                    <li>Second-order conditions can provide sufficiency</li>
+                    <li>Positive definiteness is crucial for characterizing matrix properties</li>
+                    <li>These conditions are generally local, not global</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="convexity-intro">
+            <h2>3. Why Convexity?</h2>
+            
+            <p>In general optimization problems:</p>
+            <ul>
+                <li><span class="key-term">Local minima may not be global</span></li>
+                <li><span class="key-term">First order conditions may not be sufficient</span></li>
+            </ul>
+
+            <p>But for <span class="key-term">convex problems</span>, we have amazing properties:</p>
+            <ul>
+                <li><strong>Every local minimum is global</strong></li>
+                <li><strong>First order conditions are sufficient</strong></li>
+            </ul>
+
+            <div class="example">
+                <strong>Machine Learning Applications:</strong>
+                Many ML problems are convex:
+                <ul>
+                    <li>Linear regression</li>
+                    <li>Logistic regression</li>
+                    <li>Support Vector Machines (SVMs)</li>
+                </ul>
+                This is why these algorithms work so efficiently!
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Comparison of convex vs non-convex functions showing local vs global minima]
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> The idea why these algorithms work very nicely is because you have convexity in the background. Many machine learning problems are convex functions, and that's why you can solve them very efficiently.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Convexity ka matlab hai ki jo bhi local minimum mile, woh global minimum hoga. Isliye machine learning algorithms itne fast aur efficiently kaam karte hain kyunki ye convex problems hain.
+            </div>
+        </section>
+
+        <section id="convex-sets">
+            <h2>4. Convex Sets</h2>
+
+            <div class="definition">
+                <strong>Definition:</strong> A set $C \subseteq \mathbb{R}^n$ is <span class="key-term">convex</span> if for all $x, y \in C$ and $\theta \in [0,1]$:
+
+                $$\theta x + (1-\theta)y \in C$$
+            </div>
+
+            <p><strong>Intuitive Understanding:</strong> A set is convex if whenever you take any two points in the set and draw a line between them, <span class="key-term">the entire line segment lies within the set</span>.</p>
+
+            <h3>4.1 Examples of Convex Sets</h3>
+            <table>
+                <tr>
+                    <th>Convex Sets</th>
+                    <th>Non-Convex Sets</th>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>Discs (filled circles)</li>
+                            <li>Rectangles (with interior)</li>
+                            <li>Ellipses</li>
+                            <li>Half-spaces</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Only boundaries of shapes</li>
+                            <li>C-shaped regions</li>
+                            <li>Stars</li>
+                            <li>Crescents</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> We ourselves are not convex! If you take a point from your ear to shoulder and draw a line, it's not part of our body. Most objects in nature are non-convex, but convexity plays a very important role in optimization.
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Examples of convex and non-convex sets with line segments]
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Convex set woh hota hai jismein koi bhi do points ko join karne par pure line segment set ke andar hi rahe. Jaise circle, rectangle ye sab convex sets hain, lekin star shape ya crescent non-convex hain.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Convex sets preserve line segments between any two points</li>
+                    <li>Common geometric shapes like circles and rectangles are convex</li>
+                    <li>Boundary-only sets are typically non-convex</li>
+                    <li>Convexity is fundamental for optimization theory</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="convex-functions">
+            <h2>5. Convex Functions</h2>
+
+            <div class="definition">
+                <strong>Definition:</strong> A function $f: \mathbb{R}^n \to \mathbb{R}$ is <span class="key-term">convex</span> if for all $x, y$ and $\theta \in [0,1]$:
+
+                $$f(\theta x + (1-\theta)y) \leq \theta f(x) + (1-\theta)f(y)$$
+            </div>
+
+            <p><strong>Geometric Interpretation:</strong> For any two points on the graph, <span class="key-term">the line segment connecting them lies above the graph</span>. The function has a "bowl" shape.</p>
+
+            <div class="definition">
+                <strong>Concave Function:</strong> A function $f$ is concave if $-f$ is convex. Concave functions have a "cap" or inverted bowl shape.
+            </div>
+
+            <h3>5.1 Examples of Convex Functions</h3>
+            
+            <table>
+                <tr>
+                    <th>Function</th>
+                    <th>Expression</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Quadratic</td>
+                    <td>$f(x) = x^2$</td>
+                    <td>Basic convex function</td>
+                </tr>
+                <tr>
+                    <td>Norm squared</td>
+                    <td>$f(x) = \|x\|_2^2 = x_1^2 + x_2^2 + \ldots + x_n^2$</td>
+                    <td>Convex in $n$ variables</td>
+                </tr>
+                <tr>
+                    <td>Exponential</td>
+                    <td>$f(x) = e^x$</td>
+                    <td>Strictly convex</td>
+                </tr>
+                <tr>
+                    <td>Log-sum-exp</td>
+                    <td>$f(x) = \log(\sum_{i=1}^n e^{x_i})$</td>
+                    <td>Important in ML</td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th>Non-Convex Functions</th>
+                    <th>Expression</th>
+                </tr>
+                <tr>
+                    <td>Negative quadratic</td>
+                    <td>$f(x) = -x^2$</td>
+                </tr>
+                <tr>
+                    <td>Sine function</td>
+                    <td>$f(x) = \sin(x)$</td>
+                </tr>
+            </table>
+
+            <h3>5.2 General Quadratic Functions</h3>
+            
+            <div class="theorem">
+                <strong>Important Result:</strong> For a general quadratic function:
+
+                $$f(x) = \frac{1}{2}x^T A x + b^T x + c$$
+                where $A \in \mathbb{R}^{n \times n}$ is symmetric, $b \in \mathbb{R}^n$, and $c \in \mathbb{R}$.
+                
+                <p><span class="key-term">$f$ is convex if and only if $A \succeq 0$ (positive semidefinite)</span></p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> This quadratic function is very, very important and we will see the least squares problem is based on this function. The entire least squares problem can be expressed as a quadratic function.
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Convex function (bowl shape) vs Non-convex function with multiple local minima]
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Convex function ka matlab hai bowl shape jaisa function jo neeche ki taraf curve karta hai. Agar koi bhi do points ko join karein toh line hamesha graph ke upar rahegi. Quadratic functions convex tabhi hote hain jab matrix A positive semidefinite ho.
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                <ol>
+                    <li><strong>Show that $f(x) = \max(0, 1-x)$ is convex.</strong>
+                        <br><em>Answer:</em> Use the definition of convexity and the fact that max function preserves convexity.
+                    </li>
+                    <li><strong>Prove/disprove: $f(x) = x^3$ is convex.</strong>
+                        <br><em>Answer:</em> $f''(x) = 6x$, which is negative for $x < 0$, so not convex on entire real line.
+                    </li>
+                    <li><strong>Show least squares loss is convex in $w$.</strong>
+                        <br><em>Answer:</em> $f(w) = \|Xw - y\|^2 = w^T X^T X w - 2y^T X w + \|y\|^2$. Since $X^T X \succeq 0$, the function is convex.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Convex functions have bowl-like shapes with line segments above the graph</li>
+                    <li>Quadratic functions are convex when their defining matrix is positive semidefinite</li>
+                    <li>Many important functions in machine learning are convex</li>
+                    <li>Convexity ensures no local minima other than global minima</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="first-order">
+            <h2>6. First-Order Characterization of Convexity</h2>
+
+            <div class="theorem">
+                <strong>First-Order Characterization Theorem:</strong> A differentiable function $f$ is convex if and only if:
+
+                $$f(y) \geq f(x) + \nabla f(x)^T (y-x) \quad \forall x,y$$
+                
+                <p>This is called the <span class="key-term">gradient inequality</span> or <span class="key-term">first-order condition for convexity</span>.</p>
+            </div>
+
+            <h3>6.1 Geometric Interpretation</h3>
+            <p>This condition means that <span class="key-term">the function always lies above its first-order linear approximation</span> (tangent line). The tangent line provides a global underestimator for the function.</p>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Convex function with tangent line showing f(y) ≥ f(x) + ∇f(x)ᵀ(y-x)]
+            </div>
+
+            <h3>6.2 Important Implications</h3>
+
+            <div class="theorem">
+                <strong>Implication 1 - Local Solutions are Global:</strong>
+                <p>If $x^*$ is a local minimizer of a differentiable convex function, then it is also a global minimizer.</p>
+                
+                <strong>Proof:</strong> Since $x^*$ is a local minimizer, $\nabla f(x^*) = 0$. From the gradient inequality:
+
+                $$f(y) \geq f(x^*) + \nabla f(x^*)^T (y-x^*) = f(x^*) + 0 = f(x^*)$$
+                for all $y$, proving global optimality.
+            </div>
+
+            <div class="theorem">
+                <strong>Implication 2 - First Order Conditions are Sufficient:</strong>
+                <p>For a differentiable convex function, if $\nabla f(x^*) = 0$, then $x^*$ is a global minimizer.</p>
+                
+                <strong>Proof:</strong> Same as above - the gradient inequality directly gives $f(y) \geq f(x^*)$ for all $y$.
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Just by knowing this inequality (gradient inequality for convex functions), I can prove those two important facts. This is a very easy proof for differentiable functions!
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> First-order condition kehta hai ki convex function hamesha apni tangent line ke upar hota hai. Iska matlab hai ki agar gradient zero hai kisi point par, toh woh point global minimum hai, sirf local nahi.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Gradient inequality is fundamental for convex functions</li>
+                    <li>Linear approximation provides global lower bound</li>
+                    <li>Local minima automatically become global minima</li>
+                    <li>First-order conditions are both necessary and sufficient</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="second-order">
+            <h2>7. Second-Order Characterization of Convexity</h2>
+
+            <div class="theorem">
+                <strong>Second-Order Characterization Theorem:</strong> If $f$ is twice differentiable, then $f$ is convex if and only if:
+
+                $$\nabla^2 f(x) \succeq 0 \quad \forall x$$
+                
+                <p>The <span class="key-term">Hessian matrix must be positive semidefinite</span> everywhere.</p>
+            </div>
+
+            <h3>7.1 Connection to Quadratic Functions</h3>
+            <p>For a general quadratic function $f(x) = \frac{1}{2}x^T A x + b^T x + c$:</p>
+            <ul>
+                <li>$\nabla f(x) = Ax + b$</li>
+                <li>$\nabla^2 f(x) = A$</li>
+            </ul>
+            
+            <p>Therefore, <span class="key-term">the quadratic function is convex if and only if $A \succeq 0$</span>.</p>
+
+            <h3>7.2 Geometric Interpretation of Hessian Shapes</h3>
+            
+            <table>
+                <tr>
+                    <th>Hessian Property</th>
+                    <th>Shape Description</th>
+                    <th>Function Behavior</th>
+                </tr>
+                <tr>
+                    <td>Positive definite ($\succ 0$)</td>
+                    <td>Bowl up</td>
+                    <td>Strictly convex</td>
+                </tr>
+                <tr>
+                    <td>Positive semidefinite ($\succeq 0$)</td>
+                    <td>Bowl up (may be flat)</td>
+                    <td>Convex</td>
+                </tr>
+                <tr>
+                    <td>Negative definite ($\prec 0$)</td>
+                    <td>Bowl down / Cap</td>
+                    <td>Strictly concave</td>
+                </tr>
+                <tr>
+                    <td>Indefinite</td>
+                    <td>Saddle shape</td>
+                    <td>Neither convex nor concave</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <strong>Example Analysis:</strong>
+                Consider $f(x,y) = 8x + 12y + x^2 - 2y^2$
+                
+                <p><strong>Gradient:</strong> $\nabla f(x,y) = \begin{pmatrix} 8 + 2x \\ 12 - 4y \end{pmatrix}$</p>
+                
+                <p><strong>Hessian:</strong> $\nabla^2 f(x,y) = \begin{pmatrix} 2 & 0 \\ 0 & -4 \end{pmatrix}$</p>
+                
+                <p><strong>Analysis:</strong> Since the Hessian has one positive eigenvalue (2) and one negative eigenvalue (-4), it is indefinite. Therefore, the function is neither convex nor concave.</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Indefinite matrices can have different behaviors in different directions - in one direction it can be up (bowl shape), in another direction it can be down. That's the meaning of indefiniteness.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Second-order condition kehta hai ki convex function ka Hessian matrix positive semidefinite hona chahiye. Agar Hessian positive definite hai toh strictly convex, negative definite hai toh concave, aur indefinite hai toh saddle point jaisa shape hota hai.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Hessian positive semidefiniteness characterizes convexity</li>
+                    <li>Quadratic functions are convex when their defining matrix is PSD</li>
+                    <li>Hessian shape determines local curvature behavior</li>
+                    <li>Indefinite Hessian creates saddle points</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="positive-definite">
+            <h2>8. Positive Definite and Semidefinite Matrices</h2>
+
+            <h3>8.1 Eigenvalue Method</h3>
+            <div class="definition">
+                <strong>Eigenvalue Definition:</strong> For a square matrix $A$ (n×n), a scalar $\lambda$ is an <span class="key-term">eigenvalue</span> if there exists a non-zero vector $x$ such that:
+
+                $$Ax = \lambda x$$
+                The vector $x$ is called the corresponding <span class="key-term">eigenvector</span>.
+            </div>
+
+            <div class="theorem">
+                <strong>Eigenvalue Criteria:</strong>
+                <ul>
+                    <li><strong>Positive semidefinite:</strong> All eigenvalues $\geq 0$</li>
+                    <li><strong>Positive definite:</strong> All eigenvalues $> 0$</li>
+                </ul>
+            </div>
+
+            <h3>8.2 Computing Eigenvalues</h3>
+            <p>To find eigenvalues of matrix $A$:</p>
+            <ol>
+                <li>Form the characteristic polynomial: $\det(A - \lambda I) = 0$</li>
+                <li>Solve for $\lambda$</li>
+            </ol>
+
+            <div class="example">
+                <strong>Example:</strong> For matrix $A = \begin{pmatrix} 2 & 3 \\ 4 & 5 \end{pmatrix}$
+                
+                <p>Characteristic polynomial: $\det\begin{pmatrix} 2-\lambda & 3 \\ 4 & 5-\lambda \end{pmatrix} = (2-\lambda)(5-\lambda) - 12 = 0$</p>
+                
+                <p>This gives $\lambda^2 - 7\lambda - 2 = 0$</p>
+            </div>
+
+            <h3>8.3 Trace and Determinant Method (2×2 matrices)</h3>
+            
+            <div class="theorem">
+                <strong>For 2×2 matrices only:</strong>
+                <ul>
+                    <li><strong>Positive semidefinite iff:</strong> $\text{trace}(A) \geq 0$ and $\det(A) \geq 0$</li>
+                    <li><strong>Positive definite iff:</strong> $\text{trace}(A) > 0$ and $\det(A) > 0$</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <strong>Examples:</strong>
+                <table>
+                    <tr>
+                        <th>Matrix</th>
+                        <th>Trace</th>
+                        <th>Determinant</th>
+                        <th>Classification</th>
+                    </tr>
+                    <tr>
+                        <td>$\begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}$</td>
+                        <td>5 > 0</td>
+                        <td>6 > 0</td>
+                        <td>Positive definite</td>
+                    </tr>
+                    <tr>
+                        <td>$\begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$</td>
+                        <td>2 > 0</td>
+                        <td>0 = 0</td>
+                        <td>Positive semidefinite</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>8.4 Principal Minors Method</h3>
+            <div class="theorem">
+                <strong>Principal Minors Criterion:</strong> A matrix is positive definite if and only if all its <span class="key-term">principal minors</span> are positive.
+                
+                <p>For a 4×4 matrix $A$, the principal minors are:</p>
+                <ul>
+                    <li>$M_1 = A_{11}$</li>
+                    <li>$M_2 = \det\begin{pmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{pmatrix}$</li>
+                    <li>$M_3 = \det\begin{pmatrix} A_{11} & A_{12} & A_{13} \\ A_{21} & A_{22} & A_{23} \\ A_{31} & A_{32} & A_{33} \end{pmatrix}$</li>
+                    <li>$M_4 = \det(A)$</li>
+                </ul>
+            </div>
+
+            <h3>8.5 Diagonally Dominant Matrices</h3>
+            <div class="definition">
+                <strong>Diagonally Dominant Matrix:</strong> A matrix where each diagonal element is greater than the sum of absolute values of other elements in its row:
+
+                $$|A_{ii}| > \sum_{j \neq i} |A_{ij}|$$
+                
+                <p>If all diagonal entries are positive, then the matrix is positive definite.</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Positive definite does not mean positive entries! The name can be misleading. It's about the quadratic form $x^T A x$, not the individual matrix entries.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Matrix positive definite hai ya nahi, ye check karne ke different ways hain - eigenvalues dekhna, 2×2 ke liye trace aur determinant check karna, ya principal minors dekh sakte hain. Ye sab numerical optimization mein bahut important hai.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Multiple methods exist to check positive definiteness</li>
+                    <li>Eigenvalue method is most general but computationally intensive</li>
+                    <li>Trace and determinant work only for 2×2 matrices</li>
+                    <li>Principal minors provide systematic approach for larger matrices</li>
+                    <li>Diagonally dominant matrices with positive diagonal are positive definite</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="convexity-applications">
+            <h2>9. Applications of Convexity in Data Science</h2>
+
+            <p>Convexity plays a crucial role in machine learning because many fundamental algorithms rely on <span class="key-term">convex loss functions</span>.</p>
+
+            <h3>9.1 Least Squares Regression</h3>
+            <div class="example">
+                <strong>Problem:</strong> Given data matrix $X \in \mathbb{R}^{m \times n}$ and target vector $y \in \mathbb{R}^m$, find weights $w$ to minimize:
+
+                
+                $$f(w) = \|Xw - y\|_2^2 = (Xw - y)^T(Xw - y)$$
+                
+                <p><strong>Convexity:</strong> This is a quadratic function in $w$ with Hessian $\nabla^2 f(w) = 2X^T X \succeq 0$, so it's convex.</p>
+            </div>
+
+            <h3>9.2 Logistic Regression</h3>
+            <div class="example">
+                <strong>Problem:</strong> For binary classification with data $\{(x_i, y_i)\}_{i=1}^n$ where $y_i \in \{-1, +1\}$:
+
+                
+                $$f(w) = \sum_{i=1}^n \log(1 + e^{-y_i w^T x_i})$$
+                
+                <p><strong>Convexity:</strong> This is a convex log-loss function, ensuring global optimality.</p>
+            </div>
+
+            <h3>9.3 Support Vector Machines (SVMs)</h3>
+            <div class="example">
+                <strong>Problem:</strong> For binary classification using hinge loss:
+
+                
+                $$L(w) = \sum_{i=1}^n \max(0, 1 - y_i w^T x_i)$$
+                
+                <p><strong>Convexity:</strong> Hinge loss is convex, making SVMs tractable to solve.</p>
+            </div>
+
+            <h3>9.4 Role of Convexity in Optimization</h3>
+            <ul>
+                <li><strong>Guarantees global optimality</strong></li>
+                <li><strong>Enables efficient algorithms</strong> (gradient methods, Newton's method)</li>
+                <li><strong>Provides duality results</strong></li>
+                <li><strong>Ensures convergence</strong> of many algorithms</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> We have to minimize some of these functions in data science. Toward the later part of the course, we will probably try with some of these functions to see how to actually minimize them using the algorithms we learn.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Data science mein jitne bhi major algorithms hain - linear regression, logistic regression, SVM - ye sab convex functions use karte hain. Isliye ye algorithms itne fast aur reliable hain kyunki convexity guarantee karta hai ki local minimum hi global minimum hoga.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Major ML algorithms rely on convex loss functions</li>
+                    <li>Least squares is quadratic and convex</li>
+                    <li>Logistic regression uses convex log-loss</li>
+                    <li>SVMs employ convex hinge loss</li>
+                    <li>Convexity enables efficient and reliable optimization</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="numerical-schemes">
+            <h2>10. Numerical Schemes for Optimization</h2>
+
+            <h3>10.1 Why Numerical Methods?</h3>
+            <p>Our main aim is to find <span class="key-term">critical points</span> where $\nabla f(x) = 0$. However:</p>
+            <ul>
+                <li>Analytical solutions are often <span class="key-term">impossible</span> for nonlinear equations</li>
+                <li>Even convex optimization problems may lack closed-form solutions</li>
+            </ul>
+
+            <div class="example">
+                <strong>Example:</strong> Consider $f(x) = (x-1)e^x - x$
+                
+                <p>Setting $f'(x) = 0$ gives $xe^x = 1$, which cannot be solved analytically.</p>
+            </div>
+
+            <h3>10.2 Iterative Approach</h3>
+            <p>Numerical schemes are <span class="key-term">iterative methods</span> that:</p>
+            <ol>
+                <li>Start from an arbitrary initial guess $x_0$</li>
+                <li>Check if current point satisfies optimality conditions</li>
+                <li>If not, move to a "better" point that decreases the function value</li>
+                <li>Repeat until convergence (within tolerance)</li>
+            </ol>
+
+            <div class="algorithm">
+                <strong>General Iterative Framework:</strong>
+                <pre>
+1. Initialize: x⁰, tolerance ε, k = 0
+2. While ||∇f(xᵏ)|| > ε:
+   a. Check if xᵏ satisfies stopping criteria
+   b. If not, find direction to move
+   c. Choose step size
+   d. Update: xᵏ⁺¹ = xᵏ + αₖdₖ
+   e. k = k + 1
+3. Output: xᵏ as approximate critical point
+                </pre>
+            </div>
+
+            <h3>10.3 Line Search Methods</h3>
+            <p><span class="key-term">Line search algorithms</span> work by:</p>
+            <ol>
+                <li><strong>Choose direction $d_k$:</strong> Find a direction where function decreases</li>
+                <li><strong>Choose step size $\alpha_k$:</strong> Determine how far to move in that direction</li>
+            </ol>
+
+            <div class="definition">
+                <strong>Descent Direction:</strong> A direction $d_k$ is a descent direction if:
+
+                $$\nabla f(x_k)^T d_k < 0$$
+                
+                <p>This ensures the function decreases when moving in direction $d_k$.</p>
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Contour plot showing line search iterations with different directions and step sizes]
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> All the numerical schemes work this way - you start with a point, and if it's not already a solution, you move to improve the function value. The key difference between algorithms is how you choose to move from one iteration to another.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Numerical methods isliye chahiye kyunki analytical solution milna mushkil hai. Hum iterative approach use karte hain - ek point se start karte hain, direction choose karte hain, step size decide karte hain, aur better point par move karte hain. Ye process tab tak repeat karte hain jab tak convergence na mil jaaye.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Analytical solutions are often impossible for optimization problems</li>
+                    <li>Iterative methods provide practical solution approach</li>
+                    <li>Line search methods require direction and step size choices</li>
+                    <li>Descent directions guarantee function value improvement</li>
+                    <li>Convergence depends on tolerance and stopping criteria</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="gradient-descent">
+            <h2>11. Gradient Descent Algorithm</h2>
+
+            <h3>11.1 The Algorithm</h3>
+            <div class="definition">
+                <strong>Gradient Descent:</strong> A line search method where the direction is chosen as:
+
+                $$d_k = -\nabla f(x_k)$$
+                
+                <p>This is also called the <span class="key-term">steepest descent method</span>.</p>
+            </div>
+
+            <div class="algorithm">
+                <strong>Gradient Descent Algorithm:</strong>
+                <pre>
+1. Initialize: x⁰, tolerance ε, k = 0
+2. While ||∇f(xᵏ)|| > ε:
+   a. Direction: dₖ = -∇f(xᵏ)
+   b. Step-size: Choose αₖ such that f(xᵏ + αₖdₖ) < f(xᵏ)
+   c. Update: xᵏ⁺¹ = xᵏ + αₖdₖ = xᵏ - αₖ∇f(xᵏ)
+   d. k = k + 1
+3. Output: xᵏ as critical point
+                </pre>
+            </div>
+
+            <h3>11.2 Why Gradient Direction?</h3>
+            <div class="theorem">
+                <strong>Steepest Descent Property:</strong> The negative gradient direction $-\nabla f(x)$ gives the steepest rate of decrease among all unit directions.
+                
+                <p>Mathematically: $-\frac{\nabla f(x)}{\|\nabla f(x)\|}$ minimizes the directional derivative $\nabla f(x)^T d$ over all unit vectors $d$.</p>
+            </div>
+
+            <div class="theorem">
+                <strong>Descent Property:</strong> If $\nabla f(x_k) \neq 0$, then $d_k = -\nabla f(x_k)$ is a descent direction because:
+
+                $$\nabla f(x_k)^T d_k = \nabla f(x_k)^T (-\nabla f(x_k)) = -\|\nabla f(x_k)\|^2 < 0$$
+            </div>
+
+            <h3>11.3 Step Size Selection</h3>
+            <p>Common approaches for choosing step size $\alpha_k$:</p>
+            <ul>
+                <li><strong>Constant step size:</strong> $\alpha_k = \alpha$ (fixed)</li>
+                <li><strong>Line search:</strong> Optimize $\alpha_k$ to minimize $f(x_k - \alpha_k \nabla f(x_k))$</li>
+                <li><strong>Adaptive methods:</strong> Adjust based on progress</li>
+            </ul>
+
+            <h3>11.4 Example: Manual Calculation</h3>
+            <div class="example">
+                <strong>Function:</strong> $f(x_1, x_2) = x_1 - x_2 + 2x_1x_2 + 2x_1^2 + x_2^2$
+                
+                <p><strong>Gradient:</strong> $\nabla f(x_1, x_2) = \begin{pmatrix} 1 + 2x_2 + 4x_1 \\ -1 + 2x_1 + 2x_2 \end{pmatrix}$</p>
+                
+                <p><strong>Hessian:</strong> $\nabla^2 f(x_1, x_2) = \begin{pmatrix} 4 & 2 \\ 2 & 2 \end{pmatrix}$ (positive definite)</p>
+                
+                <p><strong>True solution:</strong> $x^* = \begin{pmatrix} -1 \\ 1.5 \end{pmatrix}$</p>
+                
+                <p><strong>Gradient descent with $\alpha = 1$:**</p>
+                <table>
+                    <tr>
+                        <th>Iteration</th>
+                        <th>$x_k$</th>
+                        <th>$\nabla f(x_k)$</th>
+                        <th>$d_k = -\nabla f(x_k)$</th>
+                        <th>$x_{k+1}$</th>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>$(0, 0)$</td>
+                        <td>$(1, -1)$</td>
+                        <td>$(-1, 1)$</td>
+                        <td>$(-1, 1)$</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>$(-1, 1)$</td>
+                        <td>$(-1, -1)$</td>
+                        <td>$(1, 1)$</td>
+                        <td>$(0, 2)$</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>$(0, 2)$</td>
+                        <td>$(5, 3)$</td>
+                        <td>$(-5, -3)$</td>
+                        <td>...</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>11.5 Implementation Considerations</h3>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Doing manual calculation is not feasible. We need to resort to programming. I showed you how it looks when you run it on Google Colab - you have to get familiar with writing codes for gradient descent from scratch.
+            </div>
+
+            <p><strong>Key implementation points:</strong></p>
+            <ul>
+                <li>Define function and gradient computations</li>
+                <li>Choose appropriate tolerance (e.g., $10^{-6}$ or $10^{-7}$)</li>
+                <li>Experiment with different step sizes</li>
+                <li>Monitor convergence behavior</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> You can see that maybe $\alpha = 1$ doesn't work well - it might give errors or not converge. A smaller step size like $\alpha = 0.2$ might work better. How to determine the right step size is a question we'll discuss further.
+            </div>
+
+            <div class="hinglish-summary">
+                <strong>Hinglish Summary:</strong> Gradient descent sabse basic aur important optimization algorithm hai. Ye negative gradient direction mein move karta hai kyunki wahan function sabse fast decrease hota hai. Step size choose karna crucial hai - zyada bada ho toh diverge kar sakta hai, zyada chhota ho toh slow convergence hoga.
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                <ol>
+                    <li><strong>Implement gradient descent for $f(x) = x^4 - 3x^3 + 2x^2$</strong>
+                        <br><em>Answer:</em> $f'(x) = 4x^3 - 9x^2 + 4x$, start with initial guess and iterate.
+                    </li>
+                    <li><strong>Why might constant step size fail for some functions?</strong>
+                        <br><em>Answer:</em> If step size is too large, it can overshoot and diverge. If too small, convergence is very slow.
+                    </li>
+                    <li><strong>Show that gradient descent decreases function value in each iteration.</strong>
+                        <br><em>Answer:</em> For small enough $\alpha$, Taylor expansion shows $f(x - \alpha\nabla f(x)) < f(x)$.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Gradient descent uses negative gradient as search direction</li>
+                    <li>It's the steepest descent method among all possible directions</li>
+                    <li>Step size selection is crucial for convergence</li>
+                    <li>Implementation requires careful numerical considerations</li>
+                    <li>Works well for convex functions with global convergence guarantees</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mind-map">
+            <h2>12. Mind Map: Numerical Optimization</h2>
+            <div class="mind-map">
+                <div class="mind-node">Numerical Optimization</div>
+                <br>
+                <div class="mind-node mind-subnode">Convexity</div>
+                <div class="mind-node mind-subnode">Gradient Descent</div>
+                <div class="mind-node mind-subnode">Matrix Analysis</div>
+                <br>
+                <div class="mind-node mind-subnode">Convex Sets</div>
+                <div class="mind-node mind-subnode">First-Order Conditions</div>
+                <div class="mind-node mind-subnode">Line Search</div>
+                <div class="mind-node mind-subnode">Eigenvalues</div>
+                <br>
+                <div class="mind-node mind-subnode">Convex Functions</div>
+                <div class="mind-node mind-subnode">Second-Order Conditions</div>
+                <div class="mind-node mind-subnode">Step Size</div>
+                <div class="mind-node mind-subnode">Positive Definite</div>
+                <br>
+                <div class="mind-node mind-subnode">Applications in ML</div>
+                <div class="mind-node mind-subnode">Global Optimality</div>
+                <div class="mind-node mind-subnode">Convergence</div>
+                <div class="mind-node mind-subnode">Hessian Matrix</div>
+            </div>
+
+            <h3>Connections Between Concepts:</h3>
+            <ul>
+                <li><strong>Convexity → Global Optimality:</strong> Convex functions ensure local minima are global</li>
+                <li><strong>First-Order Conditions → Gradient Descent:</strong> Gradient information drives the algorithm</li>
+                <li><strong>Positive Definiteness → Convexity:</strong> Hessian PSD characterizes convex functions</li>
+                <li><strong>Line Search → Step Size:</strong> Determines how far to move in chosen direction</li>
+                <li><strong>Machine Learning → Convex Optimization:</strong> Many ML problems are convex</li>
+            </ul>
+        </section>
+
+        <div style="margin-top: 50px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+            <h3>📚 Recommended Reading</h3>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> There are very nice books you should refer to:
+                <ul>
+                    <li><strong>Amir Beck</strong> - "First-Order Methods in Optimization" and "Introduction to Nonlinear Optimization"</li>
+                    <li><strong>Nocedal and Wright</strong> - "Numerical Optimization"</li>
+                </ul>
+                You can refer to the first or second chapter of Amir Beck for convexity concepts, and both books discuss gradient descent methods.
+            </div>
+        </div>
+
+        
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

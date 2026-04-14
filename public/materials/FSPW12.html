@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 04: Confidence Interval for Proportions - Complete Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #ffffff 0%, #e7e7e7 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        
+        .toc a {
+            display: block;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            background: #3498db;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        section {
+            padding: 40px 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h2 {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            position: relative;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #34495e;
+            margin: 25px 0 15px 0;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .formula-box {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .step-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .step-box h4 {
+            color: #856404;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .step-box ol {
+            margin-left: 20px;
+        }
+        
+        .step-box li {
+            margin-bottom: 10px;
+        }
+        
+        .example-box {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .example-box h3 {
+            color: #155724;
+            margin-top: 0;
+        }
+        
+        .insight-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .insight-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px dashed #e17055;
+        }
+        
+        .hinglish-summary h3 {
+            color: #2d3436;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            font-style: italic;
+            color: #636e72;
+        }
+        
+        .practice-questions {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .practice-questions h3 {
+            color: #0984e3;
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #0984e3;
+        }
+        
+        .question strong {
+            color: #2d3436;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f2f6;
+            border-radius: 5px;
+            border-left: 3px solid #00b894;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            color: #2d3436;
+        }
+        
+        .key-takeaways h3 {
+            color: #2d3436;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .key-takeaways li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.5em;
+            color: #00b894;
+            font-weight: bold;
+        }
+        
+        .mind-map {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .mind-map svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+        }
+        
+        .visual-placeholder {
+            background: #ffeaa7;
+            border: 2px dashed #e17055;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #2d3436;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-top: 5px solid #3498db;
+        }
+        
+        .footer-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-text {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .footer-author {
+            font-size: 1.2em;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            section {
+                padding: 25px 15px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.7em;
+            }
+            
+            .toc ul {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Module 04: Confidence Interval for Proportions</h1>
+            <p class="subtitle">A Comprehensive Guide to Understanding and Applying Proportional Confidence Intervals</p>
+        </header>
+
+        <nav class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#learning-outcomes">Learning Outcomes</a></li>
+                <li><a href="#standard-error-proportions">Standard Error for Proportions</a></li>
+                <li><a href="#example-1">Example 1: Vaccine Effectiveness Study</a></li>
+                <li><a href="#example-2">Example 2: Poverty Rate Analysis</a></li>
+                <li><a href="#example-3">Example 3: Gender Pay Gap Investigation</a></li>
+                <li><a href="#mind-map">Conceptual Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <section id="learning-outcomes">
+            <h2>🎯 Learning Outcomes</h2>
+            <p>By the end of this module, you will be able to:</p>
+            <ul style="margin-left: 20px; margin-top: 15px;">
+                <li>Explain the meaning of <span class="key-term">standard error of a proportion</span> and interpret it as a measure of <span class="key-term">sampling variability</span> in real-world context</li>
+                <li>Construct confidence intervals using the standard error of proportions as well as for means</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h3>📝 Hinglish Summary</h3>
+                <p>Iss module mein hum seekhenge proportions ke liye confidence interval kaise banate hain. Basically, agar aapko koi percentage ya hisaab chahiye jaise vaccine kitna effective hai ya kitne log poverty mein hain, toh woh kaise estimate karte hain with confidence. Bahut hi kaam ka topic hai real life mein policy making aur business decisions ke liye!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h3>🤔 Practice Questions</h3>
+                <div class="question">
+                    <strong>Q1:</strong> What is the main difference between standard error for means and standard error for proportions?
+                    <div class="answer">
+                        <strong>Answer:</strong> For means, SE uses sample standard deviation (s/√n) and may use t-statistic when σ is unknown. For proportions, SE uses the formula √(p̂(1-p̂)/n) derived from binomial distribution and always uses z-statistic because we're dealing with categorical data (present/absent) rather than continuous measurements.
+                    </div>
+                </div>
+                <div class="question">
+                    <strong>Q2:</strong> Why can't we use the t-statistic for proportions?
+                    <div class="answer">
+                        <strong>Answer:</strong> The t-statistic is used when estimating population standard deviation from sample data for means. Proportions are based on binomial distribution (success/failure), where the standard error formula already accounts for variability. The sampling distribution of proportions follows a normal distribution for large samples, making z-statistic appropriate.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>Standard error for proportions measures how much sample proportions vary from the true population proportion</li>
+                    <li>Always use z-statistic (not t-statistic) when constructing confidence intervals for proportions</li>
+                    <li>The formula SE = √(p̂(1-p̂)/n) comes from binomial distribution principles</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="standard-error-proportions">
+            <h2>📏 Standard Error for Proportions</h2>
+            
+            <p>A <span class="key-term">proportion</span> is a fraction of the sample with a certain characteristic. For example, if 120 out of 200 students pass an exam, the sample proportion p̂ is 0.6.</p>
+            
+            <div class="formula-box">
+                <strong>Standard Error Formula:</strong>
+                <div class="formula">
+                    $$SE = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$
+                </div>
+                <p style="text-align: center; margin-top: 15px;">
+                    Where:<br>
+                    <span class="key-term">p̂</span> = sample proportion<br>
+                    <span class="key-term">n</span> = sample size
+                </p>
+            </div>
+
+            <p>The <span class="key-term">standard error (SE)</span> tells us how much variation we should expect in sample proportions if we repeated sampling many times. It measures the spread of sample proportions around the true population proportion.</p>
+
+            <div class="visual-placeholder">
+                [Insert diagram: Sampling distribution of proportions showing spread around true population proportion]
+            </div>
+
+            <p>Professor mentioned in class: The numerator p̂(1-p̂) actually comes from the <span class="key-term">binomial distribution</span>. In binomial scenarios, we only have two outcomes - characteristic present or absent, success or failure. This is fundamentally different from mean calculations where we deal with continuous values and need to worry about whether population standard deviation (σ) is known or unknown.</p>
+
+            <p>Here's the key insight: <strong>smaller SE means more precise estimates; larger SE means less stable estimates with more variability</strong>. This is true for both proportions and means.</p>
+
+            <div class="formula-box">
+                <strong>Confidence Interval Formula for Proportions:</strong>
+                <div class="formula">
+                    $$CI = \hat{p} \pm (z^* \times SE)$$
+                </div>
+                <p style="text-align: center; margin-top: 15px;">
+                    Where <span class="key-term">z*</span> = critical value from standard normal distribution
+                </p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h3>📝 Hinglish Summary</h3>
+                <p>Proportion matlab hisaab - jaise kitne students pass hue, kitne logon ko vaccine kaam kiya. Standard error batata hai ki agar baar baar sample loge toh kitna difference aayega results mein. Formula simple hai: p̂(1-p̂)/n ka square root. Yeh binomial distribution se aata hai kyunki sirf do outcomes hain - hua ya nahi hua. Chhota SE matlab precise estimate, bada SE matlab zyada uncertainty!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h3>🤔 Practice Questions</h3>
+                <div class="question">
+                    <strong>Q1:</strong> If p̂ = 0.8 and n = 100, what is the standard error?
+                    <div class="answer">
+                        <strong>Answer:</strong> SE = √(0.8 × 0.2 / 100) = √0.0016 = 0.04. This means we'd expect sample proportions to typically vary by about 4 percentage points from the true population proportion.
+                    </div>
+                </div>
+                <div class="question">
+                    <strong>Q2:</strong> Why does the standard error formula for proportions not require sample standard deviation?
+                    <div class="answer">
+                        <strong>Answer:</strong> Proportions are derived from categorical data (success/failure), so variability is captured by p̂(1-p̂), which represents inherent binomial variance. Unlike continuous data, we don't calculate standard deviation from individual values.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>SE formula for proportions uses p̂(1-p̂)/n, derived from binomial distribution</li>
+                    <li>No need for sample standard deviation s in proportional SE calculations</li>
+                    <li>Interpret SE magnitude inversely: smaller = more precise, larger = more variable</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="example-1">
+            <h2>💉 Example 1: Vaccine Effectiveness Study</h2>
+            
+            <div class="example-box">
+                <h3>Problem Statement</h3>
+                <p>A sample of 200 children is observed in a vaccination trial. Out of them, 150 develop immunity. Construct a 95% confidence interval for the true vaccine effectiveness (population proportion).</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Step-by-Step Solution:</h4>
+                <ol>
+                    <li><strong>Find the sample proportion (p̂):</strong>
+                        <div class="formula">
+                            $$\hat{p} = \frac{150}{200} = 0.75$$
+                        </div>
+                        <p>This means 75% of the sample developed immunity.</p>
+                    </li>
+                    
+                    <li><strong>Calculate the standard error (SE):</strong>
+                        <div class="formula">
+                            $$SE = \sqrt{\frac{0.75 \times 0.25}{200}} = \sqrt{0.0009375} \approx 0.0306$$
+                        </div>
+                        <p>This tells us that if we repeated this trial many times, sample proportions would typically vary by about 3 percentage points.</p>
+                    </li>
+                    
+                    <li><strong>Find the critical value (z*):</strong>
+                        <p>For 95% confidence, z* = 1.96. Professor mentioned in class: This value comes from the standard normal distribution where 95% of the area lies between -1.96 and +1.96 standard deviations from the mean.</p>
+                    </li>
+                    
+                    <li><strong>Calculate margin of error (ME):</strong>
+                        <div class="formula">
+                            $$ME = z^* \times SE = 1.96 \times 0.0306 \approx 0.06$$
+                        </div>
+                        <p>Our estimate could be off by about 6 percentage points in either direction.</p>
+                    </li>
+                    
+                    <li><strong>Construct confidence interval:</strong>
+                        <div class="formula">
+                            $$CI = 0.75 \pm 0.06 = [0.69, 0.81]$$
+                        </div>
+                        <p>We are 95% confident that the true vaccine effectiveness is between 69% and 81%.</p>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="insight-box">
+                <h4>🔍 Real-World Insight</h4>
+                <p>Since the <strong>entire confidence interval (69% to 81%) is above 50%</strong>, and WHO typically sets a threshold of 50% for vaccine effectiveness, we can conclude that this vaccine meets WHO standards. This is how confidence intervals help in making regulatory decisions!</p>
+            </div>
+
+            <div class="visual-placeholder">
+                [Insert diagram: Confidence interval visualization showing sample proportion 0.75 with margin of error ±0.06]
+            </div>
+
+            <div class="hinglish-summary">
+                <h3>📝 Hinglish Summary</h3>
+                <p>200 bacchon mein se 150 ko immunity mili, matlab p̂ = 0.75. SE nikala toh 0.0306 aaya. 95% confidence ke liye z* = 1.96. Final CI nikla 69% se 81%. Matlab hum 95% sure hain ki asli effectiveness iss range mein hai. Kyunki poora interval 50% se upar hai, WHO ke standards meet karta hai. Simple decision making!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h3>🤔 Practice Questions</h3>
+                <div class="question">
+                    <strong>Q1:</strong> If only 140 out of 200 children developed immunity, how would the confidence interval change?
+                    <div class="answer">
+                        <strong>Answer:</strong> p̂ = 0.7, SE = √(0.7×0.3/200) = 0.0324, ME = 0.0635, CI = [0.6365, 0.7635]. The interval would be slightly wider and shifted left, but still above 50%.
+                    </div>
+                </div>
+                <div class="question">
+                    <strong>Q2:</strong> How would increasing sample size to 500 affect the confidence interval width?
+                    <div class="answer">
+                        <strong>Answer:</strong> Larger n reduces SE (SE = √(0.75×0.25/500) = 0.0194), which reduces ME. The CI would become narrower: [0.712, 0.788], giving us more precise estimate.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>Always check if the entire CI meets the required threshold before making decisions</li>
+                    <li>Real-world standards (like WHO's 50%) provide clear decision boundaries</li>
+                    <li>Sample size directly impacts precision - larger samples = narrower intervals</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="example-2">
+            <h2>🏠 Example 2: Poverty Rate Analysis</h2>
+            
+            <div class="example-box">
+                <h3>Problem Statement</h3>
+                <p>A national survey of 1,000 households finds that 160 are below the poverty line. Construct a 99% confidence interval for the poverty proportion. Can a policymaker claim that poverty has been reduced below 14%?</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Step-by-Step Solution:</h4>
+                <ol>
+                    <li><strong>Find the sample proportion (p̂):</strong>
+                        <div class="formula">
+                            $$\hat{p} = \frac{160}{1000} = 0.16$$
+                        </div>
+                        <p>The survey shows 16% poverty rate in the sample.</p>
+                    </li>
+                    
+                    <li><strong>Calculate the standard error (SE):</strong>
+                        <div class="formula">
+                            $$SE = \sqrt{\frac{0.16 \times 0.84}{1000}} = \sqrt{0.0001344} \approx 0.0116$$
+                        </div>
+                    </li>
+                    
+                    <li><strong>Find the critical value (z*):</strong>
+                        <p>For 99% confidence, we need z* = 2.576. Professor mentioned in class: This requires finding the z-value where 99.5% of area lies to the left (cumulative probability). In z-tables, this corresponds to approximately 2.58. Using software gives the more precise value of 2.576. Remember, for 99% CI, the tails have 0.5% each (total 1%), so we look for 0.995 in the z-table.</p>
+                    </li>
+                    
+                    <li><strong>Calculate margin of error (ME):</strong>
+                        <div class="formula">
+                            $$ME = 2.576 \times 0.0116 \approx 0.03$$
+                        </div>
+                    </li>
+                    
+                    <li><strong>Construct confidence interval:</strong>
+                        <div class="formula">
+                            $$CI = 0.16 \pm 0.03 = [0.13, 0.19]$$
+                        </div>
+                        <p>We are 99% confident that the true poverty rate is between 13% and 19%.</p>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="insight-box">
+                <h4>🔍 Policy Decision Insight</h4>
+                <p><strong>No, the policymaker cannot claim poverty is below 14%</strong> because the confidence interval [13%, 19%] includes values above 14%. Since the interval contains 14% and higher values, the data doesn't provide sufficient evidence to support the claim. The policy hasn't achieved statistical significance yet.</p>
+            </div>
+
+            <div class="visual-placeholder">
+                [Insert diagram: Z-curve showing 99% confidence interval with tails of 0.5% each]
+            </div>
+
+            <div class="hinglish-summary">
+                <h3>📝 Hinglish Summary</h3>
+                <p>1000 gharon mein se 160 poverty line se neeche, matlab p̂ = 0.16. 99% confidence ke liye z* = 2.576 (z-table mein 0.995 cumulative probability dekho). CI nikla 13% se 19%. Ab policymaker keh nahi sakta ki poverty 14% se kam hai kyunki interval mein 14% se zyada values bhi hain. Data support nahi karta claim ko - policy abhi fail hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h3>🤔 Practice Questions</h3>
+                <div class="question">
+                    <strong>Q1:</strong> If the survey found 140 poor households out of 1000, could the policymaker claim poverty below 14% at 99% confidence?
+                    <div class="answer">
+                        <strong>Answer:</strong> p̂ = 0.14, SE = 0.011, ME = 0.028, CI = [0.112, 0.168]. Since the entire interval is below 14%? No, it includes 14% and values above it. Actually 14% is the upper bound, so the claim would still be questionable. If CI was [0.10, 0.13], then yes.
+                    </div>
+                </div>
+                <div class="question">
+                    <strong>Q2:</strong> How would changing to 95% confidence affect the conclusion?
+                    <div class="answer">
+                        <strong>Answer:</strong> At 95% confidence, z* = 1.96, ME = 0.0227, CI = [0.1373, 0.1827]. Still includes values above 14%, so conclusion remains the same. Higher confidence = wider interval = more uncertainty.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>99% confidence requires z* ≈ 2.576 (not 1.96 for 95%)</li>
+                    <li>Higher confidence levels produce wider intervals, making claims harder to prove</li>
+                    <li>Check if the claim value lies entirely outside the CI before making statistical claims</li>
+                    <li>Policy decisions require statistical rigor - gut feelings aren't enough!</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="example-3">
+            <h2>💰 Example 3: Gender Pay Gap Investigation</h2>
+            
+            <div class="example-box">
+                <h3>Problem Statement</h3>
+                <p>In a company sample of 60 men and 60 women, the mean salary difference (men – women) is $4,000 with a standard deviation of $6,000. Construct a 95% confidence interval for the mean pay gap. Is there significant pay disparity?</p>
+            </div>
+
+            <div class="visual-placeholder">
+                [Insert diagram: Flowchart distinguishing when to use proportion CI vs mean CI]
+            </div>
+
+            <p><strong>Important Note:</strong> This example deals with <span class="key-term">mean difference</span>, not proportions! Professor mentioned in class: This is a crucial distinction. We're comparing average salaries (continuous values), not the proportion of people with some characteristic. Therefore, we use the t-statistic approach we learned earlier for means, not the z-statistic for proportions.</p>
+
+            <div class="step-box">
+                <h4>Step-by-Step Solution:</h4>
+                <ol>
+                    <li><strong>Identify the parameter:</strong>
+                        <p>Mean difference in salary = $4,000 (this is our X̄)</p>
+                    </li>
+                    
+                    <li><strong>Calculate standard error:</strong>
+                        <div class="formula">
+                            $$SE = \frac{s}{\sqrt{n}} = \frac{6000}{\sqrt{60}} = \frac{6000}{7.746} \approx 774.6$$
+                        </div>
+                        <p>Note: We're using sample standard deviation because population σ is unknown.</p>
+                    </li>
+                    
+                    <li><strong>Find the critical value (t*):</strong>
+                        <p>Degrees of freedom = n - 1 = 59. For 95% confidence, t* ≈ 2.00 (from t-table). Professor mentioned in class: With df=59, the t-value is very close to the z-value of 1.96, but we must use t-distribution for means when σ is unknown.</p>
+                    </li>
+                    
+                    <li><strong>Calculate margin of error (ME):</strong>
+                        <div class="formula">
+                            $$ME = 2.00 \times 774.6 \approx 1549$$
+                        </div>
+                    </li>
+                    
+                    <li><strong>Construct confidence interval:</strong>
+                        <div class="formula">
+                            $$CI = 4000 \pm 1549 = [\$2,451, \$5,549]$$
+                        </div>
+                        <p>We are 95% confident that the true average pay gap is between $2,451 and $5,549.</p>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="insight-box">
+                <h4>🔍 HR Policy Insight</h4>
+                <p><strong>Yes, there is statistically significant pay disparity!</strong> Since the <strong>entire confidence interval ($2,451 to $5,549) is above $0</strong>, we can conclude with 95% confidence that a real pay gap exists. The company must address this pay inequality to avoid legal issues and promote fairness. Zero is not contained in the interval, so we reject the null hypothesis of no difference.</p>
+            </div>
+
+            <div class="formula-box">
+                <strong>Decision Rule:</strong>
+                <p style="text-align: center; font-weight: bold;">
+                    If CI for mean difference includes 0 → No significant difference<br>
+                    If CI for mean difference excludes 0 → Statistically significant difference
+                </p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h3>📝 Hinglish Summary</h3>
+                <p>Yeh example mean difference ka hai - proportions ka nahi! 60 men aur 60 women ka average difference $4000 hai. SE = 6000/√60 ≈ 775. df = 59, toh t* ≈ 2.00. CI nikla $2451 se $5549. Kyunki poora interval $0 se upar hai, matlab zero nahin hai andar, toh pay gap pakka hai! Company ko action lena padega, nahin toh lawsuit ho sakta hai. Bahut important distinction hai - proportions ke liye z, means ke liye t!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h3>🤔 Practice Questions</h3>
+                <div class="question">
+                    <strong>Q1:</strong> If the mean difference was $2,000 with CI [$500, $3,500], what would you conclude?
+                    <div class="answer">
+                        <strong>Answer:</strong> Since the entire interval is above $0 (does not include zero), there is still a statistically significant pay gap, though smaller in magnitude. The company still needs to address the disparity.
+                    </div>
+                </div>
+                <div class="question">
+                    <strong>Q2:</strong> If the CI was [-$500, $1,500], what does this indicate?
+                    <div class="answer">
+                        <strong>Answer:</strong> This interval includes $0, meaning we cannot conclude there's a significant pay gap. Zero being in the CI suggests any observed difference could be due to random variation. No statistical evidence of discrimination.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>Use t-statistic for means, z-statistic for proportions</li>
+                    <li>Degrees of freedom = n - 1 for mean confidence intervals</li>
+                    <li>If CI for difference includes zero, there's no statistically significant difference</li>
+                    <li>Entire CI above zero indicates significant positive difference; below zero indicates significant negative difference</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mind-map">
+            <h2>🗺️ Conceptual Mind Map</h2>
+            <div class="mind-map">
+                <svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect width="800" height="600" fill="#f8f9fa" rx="10"/>
+                    
+                    <!-- Main Topic -->
+                    <circle cx="400" cy="300" r="80" fill="#3498db" stroke="#2c3e50" stroke-width="3"/>
+                    <text x="400" y="295" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Confidence</text>
+                    <text x="400" y="315" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Intervals</text>
+                    
+                    <!-- Branch 1: For Proportions -->
+                    <line x1="320" y1="240" x2="150" y2="100" stroke="#e74c3c" stroke-width="3"/>
+                    <rect x="50" y="60" width="200" height="80" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                    <text x="150" y="85" text-anchor="middle" fill="white" font-size="14" font-weight="bold">For Proportions</text>
+                    <text x="150" y="105" text-anchor="middle" fill="white" font-size="12">p̂ ± (z* × SE)</text>
+                    <text x="150" y="125" text-anchor="middle" fill="white" font-size="12">Use z-statistic</text>
+                    
+                    <!-- Sub-branches for Proportions -->
+                    <line x1="150" y1="140" x2="80" y2="200" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="20" y="180" width="120" height="40" rx="5" fill="#f39c12"/>
+                    <text x="80" y="205" text-anchor="middle" fill="white" font-size="10">SE = √(p̂(1-p̂)/n)</text>
+                    
+                    <line x1="150" y1="140" x2="150" y2="200" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="100" y="200" width="100" height="40" rx="5" fill="#f39c12"/>
+                    <text x="150" y="225" text-anchor="middle" fill="white" font-size="10">Critical Value</text>
+                    
+                    <line x1="150" y1="140" x2="220" y2="200" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="180" y="200" width="120" height="40" rx="5" fill="#f39c12"/>
+                    <text x="240" y="225" text-anchor="middle" fill="white" font-size="10">Interpretation</text>
+                    
+                    <!-- Branch 2: For Means -->
+                    <line x1="480" y1="240" x2="650" y2="100" stroke="#27ae60" stroke-width="3"/>
+                    <rect x="550" y="60" width="200" height="80" rx="10" fill="#27ae60" stroke="#229954" stroke-width="2"/>
+                    <text x="650" y="85" text-anchor="middle" fill="white" font-size="14" font-weight="bold">For Means</text>
+                    <text x="650" y="105" text-anchor="middle" fill="white" font-size="12">X̄ ± (t* × SE)</text>
+                    <text x="650" y="125" text-anchor="middle" fill="white" font-size="12">Use t-statistic</text>
+                    
+                    <!-- Sub-branches for Means -->
+                    <line x1="650" y1="140" x2="580" y2="200" stroke="#27ae60" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="520" y="180" width="120" height="40" rx="5" fill="#2ecc71"/>
+                    <text x="580" y="205" text-anchor="middle" fill="white" font-size="10">SE = s/√n</text>
+                    
+                    <line x1="650" y1="140" x2="650" y2="200" stroke="#27ae60" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="600" y="200" width="100" height="40" rx="5" fill="#2ecc71"/>
+                    <text x="650" y="225" text-anchor="middle" fill="white" font-size="10">df = n-1</text>
+                    
+                    <line x1="650" y1="140" x2="720" y2="200" stroke="#27ae60" stroke-width="2" stroke-dasharray="5,5"/>
+                    <rect x="660" y="200" width="120" height="40" rx="5" fill="#2ecc71"/>
+                    <text x="720" y="225" text-anchor="middle" fill="white" font-size="10">Check Zero</text>
+                    
+                    <!-- Branch 3: Key Concepts -->
+                    <line x1="360" y1="380" x2="200" y2="500" stroke="#9b59b6" stroke-width="3"/>
+                    <rect x="100" y="460" width="200" height="80" rx="10" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+                    <text x="200" y="485" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Key Concepts</text>
+                    <text x="200" y="505" text-anchor="middle" fill="white" font-size="12">Sampling Variability</text>
+                    <text x="200" y="525" text-anchor="middle" fill="white" font-size="12">Margin of Error</text>
+                    
+                    <!-- Branch 4: Applications -->
+                    <line x1="440" y1="380" x2="600" y2="500" stroke="#e67e22" stroke-width="3"/>
+                    <rect x="500" y="460" width="200" height="80" rx="10" fill="#e67e22" stroke="#d35400" stroke-width="2"/>
+                    <text x="600" y="485" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Applications</text>
+                    <text x="600" y="505" text-anchor="middle" fill="white" font-size="12">Public Health</text>
+                    <text x="600" y="525" text-anchor="middle" fill="white" font-size="12">Policy Making</text>
+                    
+                    <!-- Legend -->
+                    <rect x="50" y="550" width="700" height="40" rx="5" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1"/>
+                    <text x="70" y="570" font-size="10" font-weight="bold">Legend:</text>
+                    <circle cx="150" cy="565" r="5" fill="#e74c3c"/><text x="160" y="570" font-size="10">Proportions (z-test)</text>
+                    <circle cx="280" cy="565" r="5" fill="#27ae60"/><text x="290" y="570" font-size="10">Means (t-test)</text>
+                    <circle cx="410" cy="565" r="5" fill="#9b59b6"/><text x="420" y="570" font-size="10">Core Concepts</text>
+                    <circle cx="540" cy="565" r="5" fill="#e67e22"/><text x="550" y="570" font-size="10">Real-World Use</text>
+                    <text x="680" y="570" font-size="9" font-style="italic">← Interconnected Concepts →</text>
+                </svg>
+            </div>
+            
+            <p style="text-align: center; margin-top: 20px; font-style: italic; color: #7f8c8d;">
+                This mind map shows the central role of confidence intervals, branching into two main paths (proportions vs means), 
+                with key concepts and applications connecting them. The purple and orange branches show how theoretical concepts 
+                apply to real-world decision making in healthcare, policy, and business.
+            </p>
+        </section>
+
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

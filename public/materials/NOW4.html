@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 5: Numerical Optimization - Least Squares and Step Length</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #667eea;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #764ba2;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #764ba2;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "📝 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        
+        .hinglish-summary::before {
+            content: "🇮🇳 Hinglish Summary: ";
+            font-weight: bold;
+            color: #667eea;
+            font-style: normal;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .equation-box {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            overflow-x: auto;
+        }
+        
+        .practice-questions {
+            background: #e7f3ff;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .practice-questions h3 {
+            color: #2196F3;
+            margin-top: 0;
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #c8e6c9;
+            border-radius: 5px;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .key-takeaways {
+            background: #f3e5f5;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #9c27b0;
+        }
+        
+        .key-takeaways h3 {
+            color: #9c27b0;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            margin-top: 15px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+        
+        .diagram-placeholder {
+            background: #e3f2fd;
+            border: 2px dashed #2196F3;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #1976d2;
+            font-weight: 500;
+        }
+        
+        code {
+            background: #2d2d2d;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 40px;
+            margin: 40px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .mind-map-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .mind-map-node h3 {
+            color: white;
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+        }
+        
+        .mind-map-node ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .mind-map-node li {
+            margin: 8px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lecture 5: Numerical Optimization</h1>
+            <h1>~ Armaan Kachhawa </h1>
+            <p class="subtitle">Least Squares Problem & Step Length Selection</p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">1. Overview</a></li>
+                <li><a href="#review">2. Review of Lecture 4</a></li>
+                <li><a href="#linear-regression">3. Linear Regression: Basic Example</a></li>
+                <li><a href="#least-squares">4. Least Squares Problem</a>
+                    <ul style="margin-left: 20px;">
+                        <li><a href="#one-variable">4.1 One Variable Linear Fit</a></li>
+                        <li><a href="#vectorization">4.2 Vectorization</a></li>
+                        <li><a href="#matrix-form">4.3 Matrix Form</a></li>
+                        <li><a href="#gradient-derivation">4.4 Gradient Derivation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#gradient-descent">5. Gradient Descent for Least Squares</a></li>
+                <li><a href="#implementation">6. Implementation Example</a></li>
+                <li><a href="#step-length">7. Step Length Selection</a>
+                    <ul style="margin-left: 20px;">
+                        <li><a href="#lipschitz">7.1 Lipschitz Functions and Gradients</a></li>
+                        <li><a href="#constant-step">7.2 Constant Step Length</a></li>
+                        <li><a href="#line-search">7.3 Exact vs Inexact Line Search</a></li>
+                        <li><a href="#backtracking">7.4 Backtracking Line Search</a></li>
+                    </ul>
+                </li>
+                <li><a href="#wolfe-conditions">8. Armijo and Wolfe's Conditions</a></li>
+                <li><a href="#zoutendijk">9. Zoutendijk's Theorem</a></li>
+                <li><a href="#code-examples">10. Complete Code Examples</a></li>
+            </ul>
+        </div>
+        
+        <!-- Section 1: Overview -->
+        <section id="overview">
+            <h2>1. Overview</h2>
+            <p>Welcome to Lecture 5 on Numerical Optimization! In this lecture, we will explore three fundamental topics that are essential for understanding modern optimization algorithms and machine learning:</p>
+            
+            <ul style="margin-left: 40px; margin-top: 15px;">
+                <li><strong>Review:</strong> Quick recap of convex functions and gradient descent from Lecture 4</li>
+                <li><strong>Least Squares Problem:</strong> Understanding how to fit models to data using optimization</li>
+                <li><strong>Step Length Selection:</strong> Learning how to choose appropriate step sizes for convergence</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor emphasized that this lecture bridges theory and practice. We'll see how gradient descent, which we learned as a theoretical algorithm, can be practically implemented to solve real-world data science problems like linear regression.
+            </div>
+            
+            <div class="hinglish-summary">
+                Is lecture mein hum teen important cheezein seekhenge. Pehle, lecture 4 ka quick revision karenge jismein convex functions aur gradient descent tha. Phir least squares problem samjhenge - yeh wo problem hai jismein hum data ko best fit karne ki koshish karte hain. Aur last mein, step length selection - yani algorithm mein har step mein kitna aage badhna chahiye. Ye sab machine learning ke liye bahut zaroori hai!
+            </div>
+        </section>
+        
+        <!-- Section 2: Review -->
+        <section id="review">
+            <h2>2. Review of Lecture 4</h2>
+            
+            <h3>Key Concepts from Previous Lecture</h3>
+            
+            <p>In Lecture 4, we established the foundational concepts necessary for understanding optimization algorithms. Let's review these critical topics:</p>
+            
+            <h4>2.1 Convex Functions and Convex Sets</h4>
+            <p>A <span class="key-term">convex function</span> is a function where any line segment connecting two points on the function lies above or on the function itself. Mathematically, for a function $f: \mathbb{R}^n \to \mathbb{R}$, convexity means:</p>
+            
+            <div class="equation-box">
+
+                $$f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda)f(y), \quad \forall x,y \in \text{domain}(f), \lambda \in [0,1]$$
+            </div>
+            
+            <h4>2.2 First Order Condition of Convexity</h4>
+            <p>For a differentiable convex function, the <span class="key-term">first order condition</span> provides a powerful characterization:</p>
+            
+            <div class="equation-box">
+
+                $$f(y) \geq f(x) + \nabla f(x)^T(y - x), \quad \forall x, y$$
+            </div>
+            
+            <p><strong>Important Consequence:</strong> For convex functions, any local minimizer is also a global minimizer. This means if we find a point where $\nabla f(x^*) = 0$, that point is the global minimum!</p>
+            
+            <div class="professor-note">
+                The professor stressed that this is why convex optimization is so powerful - finding a local minimum guarantees we've found the best solution overall. This property doesn't hold for non-convex functions, where we might get stuck in local minima.
+            </div>
+            
+            <h4>2.3 Second Order Condition of Convexity</h4>
+            <p>For twice-differentiable functions, convexity can be characterized using the <span class="key-term">Hessian matrix</span>:</p>
+            
+            <div class="equation-box">
+
+                $$f \text{ is convex} \iff \nabla^2 f(x) \succeq 0, \quad \forall x$$
+            </div>
+            
+            <p>The notation $\nabla^2 f(x) \succeq 0$ means the Hessian is <span class="key-term">positive semidefinite</span>.</p>
+            
+            <h4>2.4 Quadratic Functions and Positive Definiteness</h4>
+            <p>A general <span class="key-term">quadratic function</span> in $n$ variables has the form:</p>
+            
+            <div class="equation-box">
+
+                $$f(w) = \frac{1}{2}w^T A w - b^T w + c$$
+            </div>
+            
+            <p>where $A$ is an $n \times n$ symmetric matrix. The convexity of this function depends on the matrix $A$:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Matrix Property</th>
+                        <th>Condition</th>
+                        <th>Function Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Positive Definite (PD)</strong></td>
+                        <td>$w^T A w > 0$ for all $w \neq 0$</td>
+                        <td>Strictly convex (unique minimizer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Positive Semidefinite (PSD)</strong></td>
+                        <td>$w^T A w \geq 0$ for all $w$</td>
+                        <td>Convex (may have multiple minimizers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Negative Definite</strong></td>
+                        <td>$w^T A w < 0$ for all $w \neq 0$</td>
+                        <td>Strictly concave (unique maximizer)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>2.5 Gradient Descent Algorithm</h4>
+            <p>The <span class="key-term">gradient descent</span> algorithm is one of the first and most fundamental machine learning algorithms. The iterative update rule is:</p>
+            
+            <div class="equation-box">
+
+                $$w^{(k+1)} = w^{(k)} - \alpha \nabla f(w^{(k)})$$
+            </div>
+            
+            <p>where:</p>
+            <ul style="margin-left: 40px; margin-top: 10px;">
+                <li>$w^{(k)}$ is the current iterate</li>
+                <li>$\alpha$ is the <span class="key-term">step size</span> (also called <span class="key-term">learning rate</span> in machine learning)</li>
+                <li>$\nabla f(w^{(k)})$ is the gradient at the current point</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained that gradient descent is essentially a "greedy" algorithm - at each step, we move in the direction of steepest descent (negative gradient direction). The algorithm says: "I don't know where the minimum is, but I know which direction makes the function decrease most rapidly right now, so let me go that way!"
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Review</h3>
+                <ul>
+                    <li><strong>Convex functions have no local minima</strong> - any critical point is globally optimal</li>
+                    <li><strong>First order condition:</strong> Gradient zero implies local minimum for convex functions</li>
+                    <li><strong>Second order condition:</strong> Positive semidefinite Hessian characterizes convexity</li>
+                    <li><strong>Quadratic functions</strong> are convex when their matrix $A$ is positive semidefinite</li>
+                    <li><strong>Gradient descent</strong> is the foundation of most machine learning optimization algorithms</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Lecture 4 mein humne convex functions seekhe the. Convex function wo hai jismein koi local minimum nahi hota - agar ek minimum mil gaya toh wo global minimum hai, matlab sabse best solution hai! Hum convexity ko do tareekon se check kar sakte hain: pehla, first order condition jismein gradient zero hona chahiye minimum par; doosra, second order condition jismein Hessian matrix positive semidefinite honi chahiye. Quadratic functions ek special case hai jo convex hote hain jab unka matrix positive semidefinite ho. Aur sabse important, humne gradient descent algorithm seekha jo machine learning ka foundation hai!
+            </div>
+        </section>
+        
+        <!-- Section 3: Linear Regression Basic Example -->
+        <section id="linear-regression">
+            <h2>3. Linear Regression: Basic Example</h2>
+            
+            <p>Let's understand the motivation behind the least squares problem with a practical example from real estate.</p>
+            
+            <h3>The Housing Price Problem</h3>
+            
+            <p>Imagine you have data about house sizes and their corresponding prices. You want to predict the price of a new house based on its size. After plotting the data, you observe that there seems to be a <span class="key-term">linear relationship</span> between size and price.</p>
+            
+            <div class="equation-box">
+
+                $$\text{price}(p) = \alpha \cdot \text{size}(s) + \beta$$
+            </div>
+            
+            <p>where:</p>
+            <ul style="margin-left: 40px;">
+                <li>$\alpha$ is the <span class="key-term">slope</span> - represents how much price increases per unit size</li>
+                <li>$\beta$ is the <span class="key-term">intercept</span> - represents the base price when size is zero</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained that in reality, house prices depend on many factors - 24/7 water supply, location, amenities, etc. But for simplicity, we're considering only one parameter (size) to understand the core concept. This is a standard simplification in teaching machine learning - start with simple cases and gradually add complexity.
+            </div>
+            
+            <h3>The Central Question: Which Line to Choose?</h3>
+            
+            <p>Given a dataset of house sizes and prices, there are infinitely many lines we could draw. But which one is the <strong>best</strong>? We need a criterion to define "best".</p>
+            
+            <p>The most common approach is to choose the line that minimizes the <span class="key-term">prediction error</span>. Specifically, we want the <span class="key-term">least error in prediction</span>.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot showing house size vs price with multiple possible fitting lines, highlighting the concept of prediction error]
+            </div>
+            
+            <h3>Defining Error</h3>
+            
+            <p>There are multiple ways to define error, but one of the most mathematically convenient and widely used is the <span class="key-term">squared error</span>:</p>
+            
+            <div class="equation-box">
+
+                $$\text{Error for one data point} = (\text{Actual Value} - \text{Predicted Value})^2$$
+            </div>
+            
+            <p>Why square the error? Several reasons:</p>
+            <ul style="margin-left: 40px; margin-top: 10px;">
+                <li><strong>Positive values:</strong> Squaring ensures all errors are positive (avoiding cancellation)</li>
+                <li><strong>Penalizes large errors:</strong> Large errors are penalized more heavily than small ones</li>
+                <li><strong>Mathematical convenience:</strong> Squared terms lead to differentiable functions</li>
+                <li><strong>Statistical interpretation:</strong> Relates to maximum likelihood estimation under Gaussian noise</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor mentioned that this approach of using squared errors gives rise to the name "least squares" - we're literally finding the parameters that give us the least sum of squared errors!
+            </div>
+            
+            <div class="hinglish-summary">
+                Linear regression ka basic idea yeh hai ki agar humein kuch data points milte hain (jaise ghar ka size aur price), toh hum ek line fit karna chahte hain jo sabse achha prediction de. Lekin infinitely many lines ho sakti hain - toh best kaun si hai? Hum wo line choose karte hain jo sabse kam error de. Error ko measure karne ke liye hum squared error use karte hain - actual value aur predicted value ka difference leke square karte hain. Is approach ko "least squares" kehte hain kyunki hum squared errors ka sum minimize kar rahe hain.
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Linear Regression Basics</h3>
+                <ul>
+                    <li><strong>Linear relationship:</strong> Model assumes $y = \alpha x + \beta$ relationship</li>
+                    <li><strong>Goal:</strong> Find best $\alpha$ (slope) and $\beta$ (intercept)</li>
+                    <li><strong>Criterion:</strong> Minimize prediction error across all data points</li>
+                    <li><strong>Error metric:</strong> Squared error is standard due to mathematical and statistical properties</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 4: Least Squares Problem -->
+        <section id="least-squares">
+            <h2>4. Least Squares Problem</h2>
+            
+            <h3 id="one-variable">4.1 One Variable Linear Fit</h3>
+            
+            <p>Let's formalize the least squares problem mathematically. Suppose we have $m$ data points: $(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)$.</p>
+            
+            <p>We want to fit a line to this data:</p>
+            
+            <div class="equation-box">
+
+                $$\hat{y}_i = w_0 + w_1 x_i$$
+            </div>
+            
+            <p>where:</p>
+            <ul style="margin-left: 40px;">
+                <li>$\hat{y}_i$ is the <span class="key-term">predicted value</span> for data point $i$</li>
+                <li>$y_i$ is the <span class="key-term">actual value</span> (ground truth)</li>
+                <li>$w_0$ is the intercept parameter</li>
+                <li>$w_1$ is the slope parameter</li>
+                <li>$x_i$ is the input feature (independent variable)</li>
+            </ul>
+            
+            <h4>Loss Function</h4>
+            
+            <p>The <span class="key-term">loss function</span> (also called objective function or cost function) measures the total prediction error:</p>
+            
+            <div class="equation-box">
+
+                $$L(w_0, w_1) = \sum_{i=1}^{m} (y_i - (w_0 + w_1 x_i))^2$$
+            </div>
+            
+            <p>This is a function of the parameters $w_0$ and $w_1$ (the $x_i$ and $y_i$ are fixed data). Our goal is to find the values of $w_0$ and $w_1$ that minimize $L$.</p>
+            
+            <div class="professor-note">
+                The professor emphasized: "What do you know? You know $y_i$ and you know $x_i$ - these are your data. What you DON'T know is $w_0$ and $w_1$ - these are your variables that you want to find. So this loss function is really a function of $w_0$ and $w_1$, not of $x$ and $y$!"
+            </div>
+            
+            <h3 id="vectorization">4.2 Vectorization</h3>
+            
+            <p>To work with this problem more efficiently, especially when we have many features, we use <span class="key-term">vectorization</span>. This allows us to express the problem using linear algebra.</p>
+            
+            <h4>Vector Representation</h4>
+            
+            <p>Define augmented vectors:</p>
+            
+            <div class="equation-box">
+
+                $$x_i = \begin{bmatrix} 1 \\ x_i \end{bmatrix}, \quad w = \begin{bmatrix} w_0 \\ w_1 \end{bmatrix}$$
+            </div>
+            
+            <p>The "1" in the first position is a trick to incorporate the intercept term. Now the prediction becomes a simple dot product:</p>
+            
+            <div class="equation-box">
+
+                $$\hat{y}_i = x_i^T w = \begin{bmatrix} 1 & x_i \end{bmatrix} \begin{bmatrix} w_0 \\ w_1 \end{bmatrix} = 1 \cdot w_0 + x_i \cdot w_1 = w_0 + w_1 x_i$$
+            </div>
+            
+            <div class="professor-note">
+                The professor clarified: "You might get confused by the notation. Think of it this way - by adding a '1' as the first component, we can write the intercept term $w_0$ and the slope term $w_1 x_i$ in a unified way as a dot product. This '1' is like a default feature that everything has!"
+            </div>
+            
+            <h3 id="matrix-form">4.3 Matrix Form</h3>
+            
+            <p>Now we <span class="key-term">stack</span> all data points into matrices and vectors:</p>
+            
+            <div class="equation-box">
+
+                $$X = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_m \end{bmatrix}, \quad y = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_m \end{bmatrix}, \quad w = \begin{bmatrix} w_0 \\ w_1 \end{bmatrix}$$
+            </div>
+            
+            <p>The matrix $X$ has dimensions $m \times 2$ (m data points, 2 features including the intercept). The prediction vector is:</p>
+            
+            <div class="equation-box">
+
+                $$\hat{y} = Xw = \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_m \end{bmatrix} \begin{bmatrix} w_0 \\ w_1 \end{bmatrix} = \begin{bmatrix} w_0 + w_1 x_1 \\ w_0 + w_1 x_2 \\ \vdots \\ w_0 + w_1 x_m \end{bmatrix}$$
+            </div>
+            
+            <p>Each component $\hat{y}_i = w_0 + w_1 x_i$ is exactly our prediction for the $i$-th data point!</p>
+            
+            <h4>Loss Function in Matrix Form</h4>
+            
+            <p>The loss function can now be written compactly using the <span class="key-term">Euclidean norm</span>:</p>
+            
+            <div class="equation-box">
+
+                $$L(w) = \|Xw - y\|^2$$
+            </div>
+            
+            <p>where $\|v\|^2 = v_1^2 + v_2^2 + \cdots + v_m^2$ is the squared norm of vector $v$.</p>
+            
+            <div class="professor-note">
+                The professor worked through a detailed example to show why this matrix form is equivalent to the sum of squared errors. The key insight is that the norm of a vector is defined as the sum of squares of its components. So $(y_1 - \hat{y}_1)^2 + (y_2 - \hat{y}_2)^2 + \cdots = \|y - \hat{y}\|^2 = \|y - Xw\|^2$.
+            </div>
+            
+            <h4>Gradient of Least Squares</h4>
+            
+            <p>Using matrix calculus, we can compute the gradient:</p>
+            
+            <div class="equation-box">
+
+                $$\nabla_w L(w) = 2X^T(Xw - y)$$
+            </div>
+            
+            <p>Setting the gradient to zero (first-order optimality condition):</p>
+            
+            <div class="equation-box">
+
+                $$X^T Xw = X^T y$$
+            </div>
+            
+            <p>This is called the <span class="key-term">normal equation</span>. If $X^T X$ is invertible, we have a unique solution:</p>
+            
+            <div class="equation-box">
+
+                $$w^* = (X^T X)^{-1} X^T y$$
+            </div>
+            
+            <p>This is the famous <span class="key-term">least squares solution</span>!</p>
+            
+            <div class="professor-note">
+                The professor noted: "Not all least squares problems have a unique solution. But there's a very nice result - if you have sufficiently many data points (more data than features) and the data points are not just repetitions (they are linearly independent), then in most cases the least squares problem will have a unique solution."
+            </div>
+            
+            <h3 id="gradient-derivation">4.4 How to Derive the Gradient</h3>
+            
+            <p>Let's understand <strong>why</strong> the gradient has this form through a concrete example.</p>
+            
+            <p>Consider a simple $2 \times 2$ example:</p>
+            
+            <div class="equation-box">
+
+                $$X = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad w = \begin{bmatrix} w_0 \\ w_1 \end{bmatrix}, \quad y = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix}$$
+            </div>
+            
+            <p>Then:</p>
+            
+            <div class="equation-box">
+
+                $$Xw - y = \begin{bmatrix} w_0 + 2w_1 - y_1 \\ 3w_0 + 4w_1 - y_2 \end{bmatrix}$$
+            </div>
+            
+            <p>The squared norm is:</p>
+            
+            <div class="equation-box">
+
+                $$\|Xw - y\|^2 = (w_0 + 2w_1 - y_1)^2 + (3w_0 + 4w_1 - y_2)^2$$
+            </div>
+            
+            <p>Now compute partial derivatives:</p>
+            
+            <div class="equation-box">
+
+                $$\frac{\partial L}{\partial w_0} = 2(w_0 + 2w_1 - y_1) \cdot 1 + 2(3w_0 + 4w_1 - y_2) \cdot 3$$
+
+                
+                $$\frac{\partial L}{\partial w_1} = 2(w_0 + 2w_1 - y_1) \cdot 2 + 2(3w_0 + 4w_1 - y_2) \cdot 4$$
+            </div>
+            
+            <p>The gradient vector is:</p>
+            
+            <div class="equation-box">
+
+                $$\nabla L = \begin{bmatrix} \frac{\partial L}{\partial w_0} \\ \frac{\partial L}{\partial w_1} \end{bmatrix} = 2 \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} \begin{bmatrix} w_0 + 2w_1 - y_1 \\ 3w_0 + 4w_1 - y_2 \end{bmatrix}$$
+            </div>
+            
+            <p>Notice that $\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = X^T$! And the second vector is exactly $Xw - y$. Therefore:</p>
+            
+            <div class="equation-box">
+
+                $$\nabla L = 2X^T(Xw - y)$$
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized: "You have to get habituated with these linear algebra calculations. They are very simple - just matrix-vector multiplication. But they appear again and again in optimization and machine learning, so practice them!"
+            </div>
+            
+            <h3>Generalization to Multiple Features</h3>
+            
+            <p>The least squares problem generalizes naturally to multiple features. Instead of one independent variable $x$, we might have $n$ features $x_1, x_2, \ldots, x_n$:</p>
+            
+            <div class="equation-box">
+
+                $$f(x) = \alpha_1 x_1 + \alpha_2 x_2 + \cdots + \alpha_n x_n + \beta$$
+            </div>
+            
+            <p>This is called a <span class="key-term">linear function</span> (or <span class="key-term">affine function</span> when the constant $\beta$ is included). The loss function becomes:</p>
+            
+            <div class="equation-box">
+
+                $$L(w) = \frac{1}{2m} \sum_{i=1}^{m} (y_i - w^T x_i)^2$$
+            </div>
+            
+            <p>where $w$ contains all parameters (including the intercept, achieved by adding a "1" feature to each $x_i$). The factor $\frac{1}{2m}$ is often added for mathematical convenience (the $\frac{1}{2}$ cancels with the 2 from differentiation).</p>
+            
+            <p>The gradient is still:</p>
+            
+            <div class="equation-box">
+
+                $$\nabla_w L(w) = -\frac{1}{m} X^T(y - Xw) = \frac{1}{m} X^T(Xw - y)$$
+            </div>
+            
+            <div class="professor-note">
+                The professor explained: "Notice the minus sign. Some books write the loss as $\|y - Xw\|^2$ and some as $\|Xw - y\|^2$. Both are equivalent because $\|v\|^2 = \|-v\|^2$ (the norm of a vector and its negative are the same). But the gradient will have opposite signs. Just be consistent in your implementation!"
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Least Squares Problem</h3>
+                <ul>
+                    <li><strong>Loss function:</strong> $L(w) = \|Xw - y\|^2$ measures total squared error</li>
+                    <li><strong>Gradient:</strong> $\nabla L(w) = 2X^T(Xw - y)$ gives direction of steepest ascent</li>
+                    <li><strong>Normal equation:</strong> $X^T Xw = X^T y$ gives closed-form solution when invertible</li>
+                    <li><strong>Closed-form solution:</strong> $w^* = (X^T X)^{-1} X^T y$ (when $X^T X$ is invertible)</li>
+                    <li><strong>Vectorization:</strong> Adding "1" as first feature incorporates intercept elegantly</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Least squares problem ko mathematically represent karne ke liye hum linear algebra use karte hain. Agar humein $m$ data points hain $(x_i, y_i)$, toh hum ek line fit karna chahte hain $\hat{y}_i = w_0 + w_1 x_i$. Loss function $L(w_0, w_1)$ sabhi squared errors ka sum hai. Isko efficiently calculate karne ke liye hum matrix form use karte hain: $L(w) = \|Xw - y\|^2$. Gradient calculate karke $2X^T(Xw - y)$ milta hai. Agar hum gradient ko zero set karein, toh hum "normal equation" $X^T Xw = X^T y$ milta hai. Agar $X^T X$ invertible hai, toh direct solution mil jata hai: $w^* = (X^T X)^{-1} X^T y$. Yeh closed-form solution hai!
+            </div>
+            
+            <div class="practice-questions">
+                <h3>Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Given data points $(1, 2), (2, 4), (3, 5)$, set up the matrix $X$ and vector $y$ for the least squares problem.
+                    <div class="answer">
+
+                        $$X = \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}, \quad y = \begin{bmatrix} 2 \\ 4 \\ 5 \end{bmatrix}$$
+                        The first column of $X$ is all ones (for the intercept term), and the second column contains the $x$ values.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why do we square the errors instead of using absolute values?
+                    <div class="answer">
+                        <ol>
+                            <li><strong>Differentiability:</strong> $x^2$ is differentiable everywhere, but $|x|$ is not differentiable at $x=0$</li>
+                            <li><strong>Penalizes large errors more:</strong> Squared error grows quadratically</li>
+                            <li><strong>Statistical interpretation:</strong> Corresponds to maximum likelihood under Gaussian noise assumption</li>
+                            <li><strong>Computational convenience:</strong> Leads to closed-form solutions for linear problems</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> What does it mean for the least squares problem to have a unique solution?
+                    <div class="answer">
+                        A unique solution exists when $X^T X$ is invertible, which typically happens when:
+                        <ul>
+                            <li>Number of data points $m \geq$ number of features $n$</li>
+                            <li>The columns of $X$ are linearly independent (data points are not redundant)</li>
+                        </ul>
+                        When unique solution exists, there is exactly one set of parameters $w^*$ that minimizes the loss function.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Gradient Descent Implementation -->
+        <section id="gradient-descent">
+            <h2>5. Gradient Descent for Least Squares</h2>
+            
+            <p>Now that we understand the least squares problem mathematically, let's see how to solve it using <span class="key-term">gradient descent</span>.</p>
+            
+            <h3>The Algorithm</h3>
+            
+            <p>Gradient descent is an iterative algorithm that starts from an initial guess and repeatedly moves in the direction opposite to the gradient:</p>
+            
+            <div class="equation-box">
+
+                $$w^{(k+1)} = w^{(k)} - \alpha \nabla L(w^{(k)})$$
+
+                
+                $$w^{(k+1)} = w^{(k)} - \alpha \cdot \frac{1}{m} X^T(Xw^{(k)} - y)$$
+            </div>
+            
+            <p>where:</p>
+            <ul style="margin-left: 40px;">
+                <li>$w^{(k)}$ is the parameter vector at iteration $k$</li>
+                <li>$\alpha$ is the <span class="key-term">learning rate</span> (step size)</li>
+                <li>$\nabla L(w^{(k)})$ is the gradient at iteration $k$</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained: "In machine learning, we call $\alpha$ the 'learning rate' because it controls how fast our algorithm 'learns' from the data. A large learning rate means big steps (fast learning but risk of overshooting), while a small learning rate means small steps (slow but steady learning)."
+            </div>
+            
+            <h3>Algorithmic Steps</h3>
+            
+            <p>Here's the complete gradient descent algorithm for least squares:</p>
+            
+            <pre><code><strong>Algorithm: Gradient Descent for Least Squares</strong>
+
+<strong>Input:</strong> 
+  - Data matrix X (m × n)
+  - Target vector y (m × 1)
+  - Learning rate α
+  - Maximum iterations max_iter
+  - Tolerance ε (for stopping criterion)
+
+<strong>Initialize:</strong> w⁽⁰⁾ randomly or as zero vector
+
+<strong>For</strong> k = 0, 1, 2, ..., max_iter:
+    1. Compute predictions: ŷ = Xw⁽ᵏ⁾
+    2. Compute error: e = ŷ - y = Xw⁽ᵏ⁾ - y
+    3. Compute gradient: ∇L = (1/m) Xᵀe
+    4. Update parameters: w⁽ᵏ⁺¹⁾ = w⁽ᵏ⁾ - α∇L
+    5. <strong>Check convergence:</strong>
+       - If ‖∇L‖ < ε, stop (gradient is small enough)
+       - If k ≥ max_iter, stop (reached maximum iterations)
+
+<strong>Output:</strong> w⁽ᵏ⁾ (final parameter vector)</code></pre>
+            
+            <h3>Stopping Criteria</h3>
+            
+            <p>There are multiple ways to decide when to stop the algorithm:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Condition</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient Norm</strong></td>
+                        <td>$\|\nabla L(w^{(k)})\| < \varepsilon$</td>
+                        <td>Gradient is close to zero (near critical point)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parameter Change</strong></td>
+                        <td>$\|w^{(k+1)} - w^{(k)}\| < \varepsilon$</td>
+                        <td>Parameters are barely changing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Function Change</strong></td>
+                        <td>$|L(w^{(k+1)}) - L(w^{(k)})| < \varepsilon$</td>
+                        <td>Loss function is barely decreasing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maximum Iterations</strong></td>
+                        <td>$k \geq \text{max\_iter}$</td>
+                        <td>Reached computational budget</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor recommended: "In practice, use a combination of stopping criteria. For example, stop if either the gradient norm is small OR you've reached maximum iterations. This prevents the algorithm from running forever if it doesn't converge."
+            </div>
+            
+            <h3>Why Use Gradient Descent Instead of Closed-Form Solution?</h3>
+            
+            <p>You might ask: "If we have a closed-form solution $w^* = (X^T X)^{-1} X^T y$, why bother with gradient descent?"</p>
+            
+            <p>The professor addressed this important question:</p>
+            
+            <div class="professor-note">
+                "Solving the least squares problem finally boils down to solving a system of linear equations. There are well-known algorithms for solving linear systems. So you might ask: why don't we just solve the system directly? The idea is that when you have a VERY LARGE dataset, solving this linear system might be very computationally expensive. The system may be very high dimensional, and solving it may not be very easy. So we resort to iterative schemes - numerical schemes like gradient descent. These optimization algorithms give us efficient iterative schemes that can handle large-scale problems."
+            </div>
+            
+            <p>Practical considerations:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Computational Cost</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Closed-form</strong><br>$(X^T X)^{-1} X^T y$</td>
+                        <td>$O(n^3 + mn^2)$<br>(matrix inversion + multiplication)</td>
+                        <td>Small datasets, few features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gradient Descent</strong></td>
+                        <td>$O(kmn)$ per iteration<br>($k$ = number of iterations)</td>
+                        <td>Large datasets, many features, streaming data</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Gradient Descent</h3>
+                <ul>
+                    <li><strong>Iterative method:</strong> Starts from initial guess and improves step by step</li>
+                    <li><strong>Update rule:</strong> $w^{(k+1)} = w^{(k)} - \alpha \nabla L(w^{(k)})$</li>
+                    <li><strong>Learning rate $\alpha$:</strong> Controls step size; critical for convergence</li>
+                    <li><strong>Stopping criteria:</strong> Multiple options - gradient norm, iteration count, etc.</li>
+                    <li><strong>Scalability:</strong> Better than closed-form for large-scale problems</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Gradient descent ek iterative algorithm hai jo least squares problem solve karta hai. Yeh kisi initial guess se start karta hai aur har step mein gradient ke opposite direction mein move karta hai. Update rule hai: $w^{(k+1)} = w^{(k)} - \alpha \nabla L(w^{(k)})$. Yahan $\alpha$ ko "learning rate" kehte hain jo step size control karta hai. Algorithm tab stop hota hai jab ya toh gradient bahut chhota ho jaye (critical point ke paas) ya fixed number of iterations complete ho jayein. Closed-form solution $(X^T X)^{-1} X^T y$ directly calculate karna computational expensive ho sakta hai jab data bahut bada ho, isliye gradient descent ka use karte hain jo scalable hai!
+            </div>
+        </section>
+        
+        <!-- Section 6: Implementation Example -->
+        <section id="implementation">
+            <h2>6. Implementation Example</h2>
+            
+            <h3>Illustrative Dataset</h3>
+            
+            <p>Let's look at two example datasets to understand how gradient descent works in practice:</p>
+            
+            <h4>Dataset 1: Perfect Linear Relationship</h4>
+            
+            <div class="equation-box">
+
+                $$X = \{-1, 0, 1, 4\}, \quad y = \{2, 5, 8, 17\}$$
+                <p style="margin-top: 10px;"><strong>True relationship:</strong> $y = 3x + 5$</p>
+            </div>
+            
+            <p>In this case, there exists a perfect linear relationship. All points lie exactly on the line $y = 3x + 5$. We expect our algorithm to recover this relationship.</p>
+            
+            <h4>Dataset 2: Noisy Data</h4>
+            
+            <div class="equation-box">
+
+                $$X = \{1, 2, 3, 4\}, \quad y = \{2, 4, 5, 4\}$$
+                <p style="margin-top: 10px;"><strong>True relationship:</strong> Not known (data contains noise)</p>
+            </div>
+            
+            <p>In this case, the points do NOT lie on a perfect line. Our goal is to find the line that best fits the data in the least squares sense.</p>
+            
+            <h3>Python Implementation (Code Walkthrough)</h3>
+            
+            <div class="professor-note">
+                The professor demonstrated the implementation in Google Colab. Here's a walkthrough of the code with detailed explanations.
+            </div>
+            
+            <h4>Method 1: Direct Solution Using Linear Algebra</h4>
+            
+            <pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Dataset 1: Perfect linear relationship y = 3x + 5
+X_data1 = np.array([-1, 0, 1, 4])
+y_data1 = np.array([2, 5, 8, 17])
+
+# Create design matrix (add column of ones for intercept)
+X1 = np.column_stack([np.ones(len(X_data1)), X_data1])
+# X1 = [[1, -1],
+#       [1,  0],
+#       [1,  1],
+#       [1,  4]]
+
+# Solve using linear algebra: w = (X^T X)^(-1) X^T y
+w_solution1 = np.linalg.solve(X1.T @ X1, X1.T @ y_data1)
+print(f"Solution for Dataset 1: {w_solution1}")  # Output: [5. 3.]
+
+# This means: intercept = 5, slope = 3
+# Recovered line: y = 3x + 5 ✓ Perfect!</code></pre>
+            
+            <div class="professor-note">
+                The professor explained: "For small systems, you can use <code>np.linalg.solve</code> to directly solve the normal equation $X^T X w = X^T y$. Since there's a true relationship $y = 3x + 5$ in the first dataset, the machine reports the same: solution vector is [5, 3], which means intercept=5 and slope=3!"
+            </div>
+            
+            <h4>Method 2: Gradient Descent with Constant Step Size</h4>
+            
+            <pre><code>def gradient_descent(X, y, alpha=0.05, epochs=1000, tol=1e-6):
+    """
+    Gradient descent for least squares
+    
+    Parameters:
+    - X: design matrix (m x n)
+    - y: target vector (m x 1)
+    - alpha: learning rate
+    - epochs: maximum iterations
+    - tol: tolerance for stopping criterion
+    """
+    m, n = X.shape
+    w = np.zeros(n)  # Initialize parameters to zero
+    
+    for epoch in range(epochs):
+        # Compute predictions
+        y_pred = X @ w
+        
+        # Compute error
+        error = y_pred - y
+        
+        # Compute gradient: (1/m) X^T (Xw - y)
+        gradient = (1/m) * X.T @ error
+        
+        # Update parameters
+        w = w - alpha * gradient
+        
+        # Check convergence
+        if np.linalg.norm(gradient) < tol:
+            print(f"Converged at epoch {epoch}")
+            break
+    
+    return w
+
+# Dataset 2: Noisy data
+X_data2 = np.array([1, 2, 3, 4])
+y_data2 = np.array([2, 4, 5, 4])
+X2 = np.column_stack([np.ones(len(X_data2)), X_data2])
+
+# Try different learning rates
+print("Testing different learning rates:")
+
+# Small learning rate - WORKS but needs many iterations
+w_small = gradient_descent(X2, y_data2, alpha=0.05, epochs=500)
+print(f"α=0.05, 500 epochs: w = {w_small}")
+
+# Moderate learning rate - WORKS well
+w_moderate = gradient_descent(X2, y_data2, alpha=0.2, epochs=300)
+print(f"α=0.2, 300 epochs: w = {w_moderate}")
+
+# Large learning rate - MAY DIVERGE!
+try:
+    w_large = gradient_descent(X2, y_data2, alpha=0.7, epochs=500)
+    print(f"α=0.7, 500 epochs: w = {w_large}")
+except:
+    print("α=0.7: DIVERGED! (overflow error)")</code></pre>
+            
+            <div class="professor-note">
+                The professor demonstrated live: "Look what happens when I change the step size! With α=0.05, it converges nicely but needs many iterations. With α=0.2, it still converges and is faster. But with α=0.3 or α=0.7, you get completely different results or even errors! This shows that step size is VERY important. Even for this small, well-behaved problem, choosing the wrong step size can cause divergence!"
+            </div>
+            
+            <h3>Observations from Implementation</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learning Rate (α)</th>
+                        <th>Behavior</th>
+                        <th>Iterations Needed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>0.05</strong></td>
+                        <td>✓ Converges smoothly</td>
+                        <td>~1000 iterations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>0.15</strong></td>
+                        <td>✓ Converges faster</td>
+                        <td>~500 iterations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>0.2</strong></td>
+                        <td>✓ Good convergence</td>
+                        <td>~300 iterations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>0.3</strong></td>
+                        <td>⚠ Unstable</td>
+                        <td>May not converge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>0.7</strong></td>
+                        <td>✗ Diverges (overflow)</td>
+                        <td>N/A - fails</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                "This is a very small problem with a nice convex function, but you see that just depending on the step size, your algorithm may converge or may diverge! That's why step size selection is VERY, VERY important. You cannot just pick any random number!"
+            </div>
+            
+            <div class="hinglish-summary">
+                Implementation mein humne do datasets test kiye. Pehle dataset mein perfect linear relationship thi ($y = 3x + 5$), toh algorithm ne exactly wohi solution recover kar liya. Doosre dataset mein noise tha, lekin algorithm ne still best fit line nikali. Sabse important discovery: learning rate $\alpha$ ka choice bahut crucial hai! Chhota $\alpha$ (jaise 0.05) slowly converge karta hai lekin safe hai. Bada $\alpha$ (jaise 0.2) fast converge kar sakta hai. Lekin bahut bada $\alpha$ (jaise 0.7) algorithm ko diverge kar deta hai - overflow error aa jata hai! Yeh choti si problem hai phir bhi step size itna important hai!
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Implementation</h3>
+                <ul>
+                    <li><strong>Small learning rate:</strong> Safe but slow convergence</li>
+                    <li><strong>Moderate learning rate:</strong> Balanced - reasonably fast and stable</li>
+                    <li><strong>Large learning rate:</strong> Risk of oscillation or divergence</li>
+                    <li><strong>Problem-specific:</strong> Optimal learning rate depends on the problem</li>
+                    <li><strong>Monitoring:</strong> Always check convergence behavior and loss decrease</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What happens if the learning rate is exactly zero?
+                    <div class="answer">
+                        If $\alpha = 0$, the update rule becomes $w^{(k+1)} = w^{(k)} - 0 \cdot \nabla L = w^{(k)}$. The parameters never change - the algorithm doesn't learn anything! It just stays at the initial point forever.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why does Dataset 1 have a closed-form solution that matches exactly, but Dataset 2 doesn't?
+                    <div class="answer">
+                        Dataset 1 has a perfect linear relationship - all points lie exactly on the line $y = 3x + 5$. Therefore, the least squares solution perfectly recovers this line with zero error. Dataset 2 has noise/randomness - no single line passes through all points. The least squares solution finds the best compromise that minimizes total squared error.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Can you visualize what "oscillation" means when the learning rate is too large?
+                    <div class="answer">
+                        Imagine the loss function as a valley. With a good learning rate, you walk down the valley smoothly. With a large learning rate, you take huge steps and jump from one side of the valley to the other, overshooting the minimum each time. This creates an oscillating pattern. If steps are too large, you might even jump completely out of the valley (divergence)!
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 7: Step Length Selection -->
+        <section id="step-length">
+            <h2>7. Step Length Selection</h2>
+            
+            <p>The previous section showed that step size matters. But how do we choose it systematically? This section explores different strategies for selecting step length.</p>
+            
+            <h3>Why Step Length Matters</h3>
+            
+            <p>Simply ensuring descent at each iteration is <strong>not enough</strong> for practical algorithms. Consider this pathological example:</p>
+            
+            <div class="equation-box">
+
+                $$f(x) = x^2, \quad x_k = (-1)^k \left(1 + \frac{1}{2^k}\right), \quad \text{so } x_0 = \frac{3}{2}, x_1 = -\frac{5}{4}, x_2 = \frac{9}{8}, \ldots$$
+            </div>
+            
+            <p>Even though $f(x_k)$ is decreasing at each step, the sequence oscillates and converges very slowly! The step sizes $\alpha_k = 1 + \frac{1}{2^k}$ are not chosen well.</p>
+            
+            <div class="professor-note">
+                The professor explained: "For the simple function $f(x) = x^2$, we know the solution is $x^* = 0$. But if you choose a constant step size and just alternate between positive and negative values, you can make a sequence that descends but oscillates and takes forever to converge. Just ensuring descent is not enough - we need GOOD choices of step length!"
+            </div>
+            
+            <h3>Popular Choices for Step Length</h3>
+            
+            <p>There are three main strategies:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Description</th>
+                        <th>Pros & Cons</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. Constant Step Length</strong></td>
+                        <td>$\alpha_k = \alpha$ (fixed for all iterations)</td>
+                        <td>✓ Simple<br>✗ Problem-dependent<br>✗ May not converge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Exact Line Search</strong></td>
+                        <td>$\alpha_k = \arg\min_{\alpha > 0} f(x_k + \alpha d_k)$</td>
+                        <td>✓ Optimal descent<br>✗ Expensive (solves sub-optimization)<br>✗ Often impractical</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Inexact Line Search</strong></td>
+                        <td>Find $\alpha_k$ satisfying certain conditions<br>(Armijo, Wolfe, Backtracking)</td>
+                        <td>✓ Efficient<br>✓ Guarantees convergence<br>✓ Practical</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 id="lipschitz">7.1 Lipschitz Functions and Gradients</h3>
+            
+            <p>Before diving into step length selection methods, we need to understand an important class of functions.</p>
+            
+            <h4>Lipschitz Function</h4>
+            
+            <p>A function $F: \mathbb{R}^n \to \mathbb{R}^m$ is <span class="key-term">Lipschitz continuous</span> with Lipschitz constant $L$ if:</p>
+            
+            <div class="equation-box">
+
+                $$\|F(x) - F(y)\| \leq L\|x - y\|, \quad \forall x, y \in \mathbb{R}^n$$
+            </div>
+            
+            <p><strong>Intuition:</strong> The function cannot change "too fast" - the rate of change is bounded by $L$. This is a stronger condition than continuity.</p>
+            
+            <div class="professor-note">
+                "You may think this looks like continuity - if $x$ and $y$ are close, then $F(x)$ and $F(y)$ are close. But Lipschitz is STRONGER! In continuity, the 'closeness' can vary at different points. But in Lipschitz, you have ONE CONSTANT $L$ that works everywhere. The ratio $\frac{\|F(x) - F(y)\|}{\|x - y\|}$ is always bounded by $L$."
+            </div>
+            
+            <h4>Lipschitz Gradient (L-smoothness)</h4>
+            
+            <p>A differentiable function $f: \mathbb{R}^d \to \mathbb{R}$ has an <span class="key-term">L-Lipschitz gradient</span> (or is <span class="key-term">L-smooth</span>) if:</p>
+            
+            <div class="equation-box">
+
+                $$\|\nabla f(x) - \nabla f(y)\| \leq L\|x - y\|, \quad \forall x, y$$
+            </div>
+            
+            <p><strong>Intuition:</strong> The gradient cannot change too rapidly - it's a "smooth" function without sharp turns.</p>
+            
+            <h4>Equivalent Characterization: Descent Lemma</h4>
+            
+            <p>Lipschitz gradient is equivalent to the following upper bound (called the <span class="key-term">descent lemma</span> or <span class="key-term">smoothness inequality</span>):</p>
+            
+            <div class="equation-box">
+
+                $$f(y) \leq f(x) + \nabla f(x)^T(y - x) + \frac{L}{2}\|y - x\|^2, \quad \forall x, y$$
+            </div>
+            
+            <p>This says: the function is upper-bounded by its linear approximation plus a quadratic term!</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Function $f$ sandwiched between linear lower bound (from convexity) and quadratic upper bound (from Lipschitz gradient)]
+            </div>
+            
+            <h3>Why Lipschitz Gradient Matters for Gradient Descent</h3>
+            
+            <p>If $f$ has L-Lipschitz gradient, then we get powerful guarantees:</p>
+            
+            <h4>1. Safe Global Step Size</h4>
+            
+            <p>If we choose $\alpha \leq \frac{1}{L}$, then the gradient descent update is guaranteed to be a descent step:</p>
+            
+            <div class="equation-box">
+
+                $$f(x_{k+1}) \leq f(x_k) - \frac{\alpha}{2}\|\nabla f(x_k)\|^2$$
+            </div>
+            
+            <p><strong>Proof sketch:</strong> Apply the descent lemma with $y = x_k - \alpha \nabla f(x_k)$.</p>
+            
+            <h4>2. Convergence Rate for Convex Functions</h4>
+            
+            <p>For convex $f$ with L-Lipschitz gradient, using $\alpha = \frac{1}{L}$, gradient descent achieves:</p>
+            
+            <div class="equation-box">
+
+                $$f(x_k) - f(x^*) \leq \frac{L\|x_0 - x^*\|^2}{2k}$$
+            </div>
+            
+            <p>This is called <span class="key-term">sublinear convergence</span> at rate $O(1/k)$.</p>
+            
+            <div class="professor-note">
+                "This is HUGE! If you know the Lipschitz constant $L$, you immediately know a safe step size: $\alpha = 1/L$. And you even know how many iterations you need to get a certain accuracy! For example, to get error less than $\varepsilon$, you need approximately $k = \frac{L\|x_0 - x^*\|^2}{2\varepsilon}$ iterations."
+            </div>
+            
+            <h3 id="constant-step">7.2 Examples: Computing Lipschitz Constants</h3>
+            
+            <h4>Example 1: 1D Quadratic</h4>
+            
+            <p>Consider $f(x) = \frac{a}{2}x^2 - bx$ with $a > 0$.</p>
+            
+            <p>Gradient: $\nabla f(x) = ax - b$</p>
+            
+            <p>Lipschitz constant:</p>
+            <div class="equation-box">
+
+                $$|\nabla f(x) - \nabla f(y)| = |ax - ay| = a|x - y| \implies L = a$$
+            </div>
+            
+            <p><strong>Safe step size:</strong> $\alpha \leq \frac{1}{a}$</p>
+            
+            <p><strong>Numerical example:</strong> Take $a = 4, b = 2$, starting from $x_0 = 0$.</p>
+            
+            <ul style="margin-left: 40px;">
+                <li>True solution: $x^* = \frac{b}{a} = \frac{2}{4} = \frac{1}{2}$</li>
+                <li>Safe step: $\alpha \leq \frac{1}{4}$</li>
+                <li>With $\alpha = \frac{1}{4}$: 
+
+                    $$x_{k+1} = x_k - \frac{1}{4}(4x_k - 2) = x_k - x_k + \frac{1}{2} = \frac{1}{2} + \frac{1}{2}x_k$$
+                    This converges linearly to $x^* = \frac{1}{2}$!
+                </li>
+                <li>With $\alpha > \frac{1}{4}$: Iterates oscillate or diverge!</li>
+            </ul>
+            
+            <h4>Example 2: Multivariate Quadratic</h4>
+            
+            <p>Consider $f(w) = \frac{1}{2}w^T A w - b^T w$ with $A \succeq 0$ (positive semidefinite).</p>
+            
+            <p>Gradient: $\nabla f(w) = Aw - b$</p>
+            
+            <p>Lipschitz constant:</p>
+            <div class="equation-box">
+
+                $$\|\nabla f(w) - \nabla f(z)\| = \|A(w - z)\| \leq \|A\| \cdot \|w - z\|$$
+            </div>
+            
+            <p>where $\|A\| = \lambda_{\max}(A)$ is the <span class="key-term">spectral norm</span> (largest eigenvalue of $A$).</p>
+            
+            <p>Therefore: $L = \lambda_{\max}(A)$</p>
+            
+            <p><strong>Safe step size:</strong> $\alpha \leq \frac{1}{\lambda_{\max}(A)}$</p>
+            
+            <div class="professor-note">
+                "For quadratic functions, calculating the Lipschitz constant means finding the maximum eigenvalue of the matrix $A$. This gives you the safe step size automatically. But there's a catch - for very large matrices, computing the maximum eigenvalue is itself computationally expensive! That's why we need methods like backtracking that don't require knowing $L$ explicitly."
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Lipschitz Functions</h3>
+                <ul>
+                    <li><strong>Lipschitz function:</strong> Change rate bounded by constant $L$</li>
+                    <li><strong>Lipschitz gradient (L-smoothness):</strong> Gradient change rate bounded by $L$</li>
+                    <li><strong>Descent lemma:</strong> Upper bound on function using quadratic approximation</li>
+                    <li><strong>Safe step size:</strong> $\alpha \leq 1/L$ guarantees descent</li>
+                    <li><strong>Convergence rate:</strong> $O(1/k)$ for convex functions with Lipschitz gradient</li>
+                    <li><strong>Quadratic example:</strong> $L = \lambda_{\max}(A)$ for $f(w) = \frac{1}{2}w^T A w - b^T w$</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Lipschitz functions wo hote hain jinka change rate bounded hota hai ek constant $L$ se. Agar function ka gradient Lipschitz hai (yani L-smooth hai), toh bohot fayde hain! Pehla, hum safe step size nikal sakte hain: $\alpha \leq 1/L$. Matlab agar $L$ pata hai toh sahi step size mil jata hai. Doosra, convergence rate bhi pata chal jata hai - $O(1/k)$ rate se converge hoga. Quadratic functions ke liye $L$ nikalna easy hai - maximum eigenvalue of matrix $A$ hi $L$ hai. Lekin badi matrices ke liye eigenvalue calculate karna bhi expensive hai, isliye practical methods like backtracking use karte hain!
+            </div>
+            
+            <h3 id="line-search">7.3 Exact vs Inexact Line Search</h3>
+            
+            <h4>Exact Line Search</h4>
+            
+            <p>In <span class="key-term">exact line search</span>, at each iteration we solve:</p>
+            
+            <div class="equation-box">
+
+                $$\alpha_k = \arg\min_{\alpha > 0} f(x_k + \alpha d_k)$$
+            </div>
+            
+            <p>where $d_k$ is the search direction (for gradient descent, $d_k = -\nabla f(x_k)$).</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Contour plot showing current point $x_k$, search direction $d_k$, and the line $x_k + \alpha d_k$ with the optimal $\alpha_k$ marked]
+            </div>
+            
+            <p><strong>Intuition:</strong> Move along the search direction as far as the function keeps decreasing. Stop exactly at the minimum along that line.</p>
+            
+            <p><strong>Problem:</strong> This requires solving an optimization problem (minimize $f$ along a line) at every iteration! To solve an optimization problem, you need to solve optimization sub-problems.</p>
+            
+            <div class="professor-note">
+                "Exact line search sounds great - you're making the best possible progress in your chosen direction! But here's the issue: calculating this exact $\alpha_k$ means solving another optimization problem. It's a 1D optimization problem, but still, it requires work. For most functions, there's no closed-form solution. You'd need another numerical method to find the minimizer. So you're using optimization to solve optimization - it becomes slow and impractical!"
+            </div>
+            
+            <h4>Inexact Line Search</h4>
+            
+            <p><span class="key-term">Inexact line search</span> methods don't find the exact minimizer along the line. Instead, they find an $\alpha_k$ that satisfies certain <strong>conditions</strong> that guarantee:</p>
+            
+            <ul style="margin-left: 40px; margin-top: 10px;">
+                <li>Sufficient decrease in the function value</li>
+                <li>The step is not too small (makes reasonable progress)</li>
+            </ul>
+            
+            <p>The most popular inexact line search conditions are:</p>
+            <ul style="margin-left: 40px;">
+                <li><strong>Armijo condition</strong> (sufficient decrease)</li>
+                <li><strong>Wolfe conditions</strong> (Armijo + curvature condition)</li>
+                <li><strong>Backtracking</strong> (practical implementation of Armijo)</li>
+            </ul>
+            
+            <h3 id="wolfe-conditions">7.4 Armijo and Wolfe's Conditions</h3>
+            
+            <h4>Armijo Condition (Sufficient Decrease)</h4>
+            
+            <p>Choose $\alpha_k$ such that:</p>
+            
+            <div class="equation-box">
+
+                $$f(x_k + \alpha_k d_k) \leq f(x_k) + c_1 \alpha_k \langle \nabla f(x_k), d_k \rangle$$
+            </div>
+            
+            <p>where $c_1 \in (0, 1)$ (typically $c_1 = 10^{-4}$ or $0.0001$).</p>
+            
+            <p><strong>Interpretation:</strong></p>
+            <ul style="margin-left: 40px;">
+                <li>Left side: Actual function value after taking step</li>
+                <li>Right side: Expected value based on linear approximation, scaled by $c_1$</li>
+                <li>We require the actual decrease to be at least a fraction $c_1$ of the predicted decrease</li>
+            </ul>
+            
+            <p>Since $d_k$ is a descent direction, $\langle \nabla f(x_k), d_k \rangle < 0$ (negative). So the right side is smaller than $f(x_k)$, and we're requiring sufficient decrease.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Graph showing $f(x_k + \alpha d_k)$ as a function of $\alpha$, with the Armijo condition line and acceptable region marked]
+            </div>
+            
+            <h4>Curvature Condition (Wolfe)</h4>
+            
+            <p>The second Wolfe condition ensures we don't stop at a point where the slope is still very negative (we could make more progress):</p>
+            
+            <div class="equation-box">
+
+                $$\langle \nabla f(x_k + \alpha_k d_k), d_k \rangle \geq c_2 \langle \nabla f(x_k), d_k \rangle$$
+            </div>
+            
+            <p>where $c_2 \in (c_1, 1)$ (typically $c_2 = 0.9$).</p>
+            
+            <p><strong>Interpretation:</strong> The gradient at the new point (in the search direction) should not be too negative. If it's very negative, we could keep going further.</p>
+            
+            <h4>Wolfe Conditions (Combined)</h4>
+            
+            <p>The <span class="key-term">Wolfe conditions</span> combine both:</p>
+            
+            <div class="equation-box">
+                <p><strong>1. Armijo (Sufficient Decrease):</strong></p>
+
+                $$f(x_{k+1}) \leq f(x_k) + c_1 \alpha_k \langle \nabla f(x_k), d_k \rangle$$
+                
+                <p><strong>2. Curvature:</strong></p>
+
+                $$\langle \nabla f(x_{k+1}), d_k \rangle \geq c_2 \langle \nabla f(x_k), d_k \rangle$$
+            </div>
+            
+            <p>These conditions ensure:</p>
+            <ul style="margin-left: 40px;">
+                <li>Sufficient progress (not too small steps)</li>
+                <li>Not too large steps (don't overshoot)</li>
+                <li>Convergence guarantees (see Zoutendijk's theorem)</li>
+            </ul>
+            
+            <div class="professor-note">
+                "You don't need to understand all the mathematical details. The main message is: instead of finding the EXACT minimum along a line, we just need to find a step size that satisfies these two simple conditions. This is much more practical! The first condition (Armijo) says 'decrease enough', and the second says 'don't stop when you can still make good progress'."
+            </div>
+            
+            <div class="hinglish-summary">
+                Exact line search mein har step pe ek optimization problem solve karna padta hai - wo slow aur impractical hai. Isliye hum inexact line search use karte hain. Yahan hum exact minimum nahi dhundte, bas aise step size dhundte hain jo kuch conditions satisfy kare. Armijo condition kehta hai ki function value mein "sufficient decrease" hona chahiye - matlab kaafi achha improvement hona chahiye. Wolfe conditions mein ek doosri condition bhi hai (curvature condition) jo ensure karti hai ki hum bahut jaldi stop na karein. Yeh dono conditions together ensure karte hain ki algorithm properly converge ho!
+            </div>
+        </section>
+        
+        <!-- Section 8: Zoutendijk's Theorem -->
+        <section id="zoutendijk">
+            <h2>8. Zoutendijk's Theorem</h2>
+            
+            <p>This theorem provides powerful convergence guarantees for gradient descent with Wolfe conditions.</p>
+            
+            <h3>The Theorem</h3>
+            
+            <div class="equation-box">
+                <p><strong>Theorem (Zoutendijk):</strong></p>
+                <p>Let $f: \mathbb{R}^n \to \mathbb{R}$ be a continuously differentiable function which is bounded below. Assume that $\nabla f$ is Lipschitz continuous with constant $L$:</p>
+
+                $$\|\nabla f(x) - \nabla f(y)\| \leq L\|x - y\|, \quad \forall x, y$$
+                
+                <p>If we generate a sequence of iterations using any descent direction $d_k$ and step size $\alpha_k$ satisfying Wolfe's conditions, then:</p>
+
+                $$\sum_{k=0}^{\infty} \cos^2\theta_k \|\nabla f(x_k)\|^2 < \infty$$
+                
+                <p>where $\theta_k$ is the angle between $-\nabla f(x_k)$ and $d_k$:</p>
+
+                $$\cos\theta_k = \frac{-\langle \nabla f(x_k), d_k \rangle}{\|\nabla f(x_k)\| \|d_k\|}$$
+            </div>
+            
+            <h3>What Does This Mean?</h3>
+            
+            <p>The theorem has a subtle but powerful implication:</p>
+            
+            <div class="professor-note">
+                "You need not go into all the mathematical details very deeply, but try to understand what this is saying. The series $\sum \cos^2\theta_k \|\nabla f(x_k)\|^2 < \infty$ converges (it's finite). What does that mean? If an infinite sum is finite, the terms must go to zero! So eventually, either $\cos^2\theta_k \to 0$ (bad - directions becoming perpendicular to gradient) OR $\|\nabla f(x_k)\|^2 \to 0$ (good - gradient vanishing)."
+            </div>
+            
+            <p><strong>Key implications:</strong></p>
+            
+            <ul style="margin-left: 40px; margin-top: 15px;">
+                <li>If we maintain good descent directions (bounded away from perpendicular), then $\|\nabla f(x_k)\| \to 0$</li>
+                <li>For gradient descent: $d_k = -\nabla f(x_k)$, so $\cos\theta_k = 1$ (perfect alignment)</li>
+                <li>This guarantees: $\|\nabla f(x_k)\| \to 0$ (convergence to critical point)</li>
+                <li><strong>Independent of starting point</strong> - works from any initial $x_0$!</li>
+            </ul>
+            
+            <h3>Practical Importance</h3>
+            
+            <p>Zoutendijk's theorem tells us:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condition</th>
+                        <th>Guarantee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lipschitz gradient $f$</td>
+                        <td>Function is smooth</td>
+                    </tr>
+                    <tr>
+                        <td>Descent direction $d_k$</td>
+                        <td>Make progress at each step</td>
+                    </tr>
+                    <tr>
+                        <td>Wolfe conditions on $\alpha_k$</td>
+                        <td>Step sizes are reasonable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RESULT</strong></td>
+                        <td><strong>$\nabla f(x_k) \to 0$ (converge to critical point)</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                "This is a VERY powerful result! It says: if you have a Lipschitz gradient function, and you apply ANY descent algorithm (not just gradient descent), and you choose step sizes satisfying Wolfe's conditions, then it will CONVERGE - regardless of where you start! The generated sequence will go to a point where the gradient vanishes. This is independent of your starting point - that's amazing!"
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Zoutendijk's Theorem</h3>
+                <ul>
+                    <li><strong>Applies to any descent method</strong> - not just gradient descent</li>
+                    <li><strong>Requires:</strong> Lipschitz gradient + Wolfe conditions</li>
+                    <li><strong>Guarantees:</strong> Convergence to critical point ($\nabla f = 0$)</li>
+                    <li><strong>Starting point independent</strong> - works from anywhere</li>
+                    <li><strong>Practical value:</strong> Justifies using Wolfe-based line searches</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Zoutendijk's theorem ek bahut powerful result hai! Yeh kehta hai: agar aapka function smooth hai (Lipschitz gradient), aur aap koi bhi descent algorithm use kar rahe ho (gradient descent ya koi aur), aur step sizes Wolfe conditions satisfy kar rahe hain, toh algorithm DEFINITELY converge karega! Matlab gradient zero ho jayega aur aap critical point pe pahunch jayenge. Sabse important baat - yeh starting point se independent hai! Chahe aap kahan se shuru karein, algorithm converge ho jayega. Yeh result practically justify karta hai ki Wolfe conditions based line search methods kyun itne popular hain!
+            </div>
+        </section>
+        
+        <!-- Section 9: Backtracking Line Search -->
+        <section id="backtracking">
+            <h2>9. Backtracking Line Search</h2>
+            
+            <p>While Wolfe conditions provide theoretical guarantees, implementing the curvature condition in practice can be difficult. <span class="key-term">Backtracking line search</span> is a practical method that only uses the Armijo condition.</p>
+            
+            <h3>The Backtracking Algorithm</h3>
+            
+            <p>The idea is beautifully simple:</p>
+            
+            <pre><code><strong>Algorithm: Backtracking Line Search</strong>
+
+<strong>Input:</strong>
+  - Current point x_k
+  - Search direction d_k (typically d_k = -∇f(x_k))
+  - Initial step size α > 0 (e.g., α = 1)
+  - Reduction factor ρ ∈ (0,1) (typically ρ = 0.8)
+  - Armijo constant c₁ ∈ (0,1) (typically c₁ = 10⁻⁴)
+
+<strong>Initialize:</strong> α ← initial value
+
+<strong>While</strong> f(x_k + α d_k) > f(x_k) + c₁ α ∇f(x_k)ᵀ d_k:
+    α ← ρ × α    // Reduce step size
+<strong>EndWhile</strong>
+
+<strong>Output:</strong> α (the accepted step size)</code></pre>
+            
+            <h3>How It Works</h3>
+            
+            <p><strong>Step-by-step explanation:</strong></p>
+            
+            <ol style="margin-left: 40px; margin-top: 15px;">
+                <li><strong>Start with large step:</strong> Initialize $\alpha$ to some value (often $\alpha = 1$)</li>
+                <li><strong>Check Armijo condition:</strong> Does this $\alpha$ give sufficient decrease?</li>
+                <li><strong>If yes:</strong> Accept this $\alpha$ and proceed with the update</li>
+                <li><strong>If no:</strong> Reduce $\alpha$ by factor $\rho$ (e.g., $\alpha \leftarrow 0.8\alpha$) and check again</li>
+                <li><strong>Repeat:</strong> Keep reducing until Armijo condition is satisfied</li>
+            </ol>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Visualization of backtracking - starting with large α, repeatedly reducing until Armijo line is crossed]
+            </div>
+            
+            <h3>Why Backtracking Works</h3>
+            
+            <div class="professor-note">
+                "The beauty of backtracking is that we KNOW there exists some step size that will satisfy the Armijo condition. Why? Because $d_k$ is a descent direction - meaning the function DOES decrease if we move in that direction. Maybe our initial step size is too large and overshoots, but by continuously reducing it, we'll eventually hit a range where it works. The algorithm finds this range automatically!"
+            </div>
+            
+            <p><strong>Key properties:</strong></p>
+            
+            <ul style="margin-left: 40px; margin-top: 15px;">
+                <li><strong>Always terminates:</strong> Will eventually find acceptable $\alpha$ (guaranteed by descent direction)</li>
+                <li><strong>Adaptive:</strong> Automatically adjusts to problem geometry</li>
+                <li><strong>Efficient:</strong> Usually accepts step on first or second try for well-behaved functions</li>
+                <li><strong>Safe:</strong> Never takes steps that don't decrease the function</li>
+                <li><strong>Doesn't require $L$:</strong> No need to compute Lipschitz constant!</li>
+            </ul>
+            
+            <h3>Theoretical Guarantee</h3>
+            
+            <p>One can show that:</p>
+            
+            <div class="equation-box">
+                <p><strong>Theorem:</strong> Zoutendijk's theorem is valid for algorithms using backtracking line search.</p>
+                <p>Moreover, backtracking implicitly finds step sizes that respect the Lipschitz constant: the accepted $\alpha$ will satisfy $\alpha \geq \min\{1, \frac{\rho}{L}\}$.</p>
+            </div>
+            
+            <p>This means backtracking <strong>automatically discovers</strong> safe step sizes without needing to explicitly compute $L$!</p>
+            
+            <h3>Typical Parameter Values</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Typical Value</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>$\alpha$ (initial)</td>
+                        <td>1.0</td>
+                        <td>Start optimistically</td>
+                    </tr>
+                    <tr>
+                        <td>$\rho$</td>
+                        <td>0.5 - 0.9</td>
+                        <td>Reduction factor (0.8 is common)</td>
+                    </tr>
+                    <tr>
+                        <td>$c_1$</td>
+                        <td>$10^{-4}$</td>
+                        <td>Armijo constant (close to 0)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Implementation Example</h3>
+            
+            <pre><code>def backtracking_line_search(f, grad_f, x, d, alpha_init=1.0, rho=0.8, c1=1e-4):
+    """
+    Backtracking line search
+    
+    Parameters:
+    - f: objective function
+    - grad_f: gradient function
+    - x: current point
+    - d: search direction
+    - alpha_init: initial step size
+    - rho: reduction factor
+    - c1: Armijo constant
+    
+    Returns:
+    - alpha: accepted step size
+    """
+    alpha = alpha_init
+    fx = f(x)
+    grad_fx = grad_f(x)
+    descent_condition = c1 * np.dot(grad_fx, d)
+    
+    # Keep reducing alpha until Armijo condition is satisfied
+    while f(x + alpha * d) > fx + alpha * descent_condition:
+        alpha *= rho
+    
+    return alpha
+
+def gradient_descent_backtracking(f, grad_f, x0, tol=1e-6, max_iter=1000):
+    """
+    Gradient descent with backtracking line search
+    """
+    x = x0.copy()
+    
+    for k in range(max_iter):
+        grad = grad_f(x)
+        
+        # Check convergence
+        if np.linalg.norm(grad) < tol:
+            print(f"Converged at iteration {k}")
+            break
+        
+        # Search direction (negative gradient)
+        d = -grad
+        
+        # Backtracking line search
+        alpha = backtracking_line_search(f, grad_f, x, d)
+        
+        # Update
+        x = x + alpha * d
+    
+    return x</code></pre>
+            
+            <div class="professor-note">
+                The professor demonstrated: "Look at the results with backtracking! We don't need to worry about choosing the learning rate anymore. The algorithm automatically finds good step sizes. Even for our simple quadratic problem, if we use backtracking, it converges nicely without us having to manually tune the step size. This is the real power - backtracking makes gradient descent PRACTICAL!"
+            </div>
+            
+            <h3>Comparison: Constant vs Backtracking</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Constant Step Size</th>
+                        <th>Backtracking</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tuning Required</strong></td>
+                        <td>✗ Must manually find good $\alpha$</td>
+                        <td>✓ Automatic - just set $\rho, c_1$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence</strong></td>
+                        <td>✗ May diverge if $\alpha$ wrong</td>
+                        <td>✓ Guaranteed with proper conditions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adaptivity</strong></td>
+                        <td>✗ Fixed for all iterations</td>
+                        <td>✓ Adapts to local geometry</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computational Cost</strong></td>
+                        <td>Low (one function evaluation)</td>
+                        <td>Slightly higher (multiple evaluations)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Practical Use</strong></td>
+                        <td>Simple problems, known $L$</td>
+                        <td>General problems, unknown $L$</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Backtracking</h3>
+                <ul>
+                    <li><strong>Simple idea:</strong> Start with large step, reduce until Armijo condition satisfied</li>
+                    <li><strong>No manual tuning:</strong> Automatically finds good step sizes</li>
+                    <li><strong>Adaptive:</strong> Adjusts to problem geometry at each iteration</li>
+                    <li><strong>Guaranteed termination:</strong> Will always find acceptable step</li>
+                    <li><strong>Practical:</strong> Easy to implement, works well in practice</li>
+                    <li><strong>Standard parameters:</strong> $\rho = 0.8, c_1 = 10^{-4}$ work for most problems</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Backtracking line search ek bahut practical method hai step size choose karne ke liye. Idea simple hai: bade step size se start karo (jaise $\alpha = 1$), phir check karo ki Armijo condition satisfy ho rahi hai ya nahi. Agar nahi, toh step size ko reduce karo (jaise $\alpha \leftarrow 0.8\alpha$) aur phir se check karo. Yeh tab tak repeat karo jab tak condition satisfy na ho jaye. Backtracking ki sabse badi strength yeh hai ki yeh AUTOMATIC hai - aapko manually step size tune karne ki zaroorat nahi! Algorithm khud sahi step size dhoond leta hai. Har iteration mein yeh problem ke local geometry ke according adapt kar leta hai. Isliye backtracking gradient descent ko practical banata hai!
+            </div>
+            
+            <div class="practice-questions">
+                <h3>Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Why do we typically start with $\alpha = 1$ in backtracking?
+                    <div class="answer">
+                        Starting with $\alpha = 1$ is optimistic - we try to take the largest step possible first. This is especially useful for quasi-Newton methods where the search direction is carefully computed. If $\alpha = 1$ works (satisfies Armijo), we save computational cost. If not, backtracking will reduce it to an acceptable value.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> What happens if $\rho$ is very close to 1 (e.g., $\rho = 0.99$)?
+                    <div class="answer">
+                        If $\rho \approx 1$, the reduction is very small at each backtracking step. This means:
+                        <ul>
+                            <li><strong>Pro:</strong> More precise step size (closer to optimal)</li>
+                            <li><strong>Con:</strong> More backtracking iterations needed (more function evaluations)</li>
+                        </ul>
+                        Typical value $\rho = 0.8$ balances these tradeoffs.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Can backtracking fail to find an acceptable step size?
+                    <div class="answer">
+                        Theoretically, no! If $d_k$ is truly a descent direction (i.e., $\nabla f(x_k)^T d_k < 0$), then for sufficiently small $\alpha$, the Armijo condition WILL be satisfied (by continuity of $f$). Backtracking will eventually find such an $\alpha$. In practice, if backtracking takes many iterations, it might indicate:
+                        <ul>
+                            <li>Numerical precision issues</li>
+                            <li>Very flat region of the function</li>
+                            <li>Bug in gradient computation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 10: Complete Code Examples -->
+        <section id="code-examples">
+            <h2>10. Complete Code Examples</h2>
+            
+            <h3>Example 1: Linear Regression with Backtracking</h3>
+            
+            <pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Dataset 2: Noisy data
+X_data = np.array([1, 2, 3, 4])
+y_data = np.array([2, 4, 5, 4])
+
+# Create design matrix
+X = np.column_stack([np.ones(len(X_data)), X_data])
+y = y_data
+
+def loss(w, X, y):
+    """Compute least squares loss"""
+    return 0.5 * np.sum((X @ w - y)**2)
+
+def gradient(w, X, y):
+    """Compute gradient of least squares loss"""
+    m = len(y)
+    return (1/m) * X.T @ (X @ w - y)
+
+def backtracking_line_search(f, grad, x, d, alpha_init=1.0, rho=0.8, c1=1e-4):
+    """Backtracking line search"""
+    alpha = alpha_init
+    fx = f(x)
+    grad_fx = grad(x)
+    descent = c1 * np.dot(grad_fx, d)
+    
+    while f(x + alpha * d) > fx + alpha * descent:
+        alpha *= rho
+    
+    return alpha
+
+def gradient_descent_backtracking(X, y, tol=1e-6, max_iter=1000):
+    """Gradient descent with backtracking for linear regression"""
+    w = np.zeros(X.shape[1])
+    history = {'loss': [], 'grad_norm': [], 'alpha': []}
+    
+    for k in range(max_iter):
+        # Compute gradient
+        grad = gradient(w, X, y)
+        grad_norm = np.linalg.norm(grad)
+        
+        # Store history
+        history['loss'].append(loss(w, X, y))
+        history['grad_norm'].append(grad_norm)
+        
+        # Check convergence
+        if grad_norm < tol:
+            print(f"✓ Converged at iteration {k}")
+            print(f"  Final gradient norm: {grad_norm:.2e}")
+            print(f"  Final loss: {loss(w, X, y):.4f}")
+            break
+        
+        # Search direction
+        d = -grad
+        
+        # Backtracking line search
+        alpha = backtracking_line_search(
+            lambda w: loss(w, X, y),
+            lambda w: gradient(w, X, y),
+            w, d
+        )
+        
+        history['alpha'].append(alpha)
+        
+        # Update
+        w = w + alpha * d
+    
+    return w, history
+
+# Run gradient descent with backtracking
+print("=" * 60)
+print("GRADIENT DESCENT WITH BACKTRACKING")
+print("=" * 60)
+w_final, history = gradient_descent_backtracking(X, y)
+
+print(f"\n✓ Final solution: w = {w_final}")
+print(f"  Interpretation: y = {w_final[1]:.4f}x + {w_final[0]:.4f}")
+
+# Compare with closed-form solution
+w_closed = np.linalg.solve(X.T @ X, X.T @ y)
+print(f"\n✓ Closed-form solution: w = {w_closed}")
+print(f"  Difference: {np.linalg.norm(w_final - w_closed):.2e}")
+
+# Visualization
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+# Plot 1: Data and fitted line
+axes[0, 0].scatter(X_data, y_data, s=100, c='red', label='Data', zorder=3)
+x_line = np.linspace(0, 5, 100)
+y_line = w_final[0] + w_final[1] * x_line
+axes[0, 0].plot(x_line, y_line, 'b-', linewidth=2, label=f'Fitted: y={w_final[1]:.2f}x+{w_final[0]:.2f}')
+axes[0, 0].set_xlabel('x')
+axes[0, 0].set_ylabel('y')
+axes[0, 0].set_title('Linear Regression Fit')
+axes[0, 0].legend()
+axes[0, 0].grid(True, alpha=0.3)
+
+# Plot 2: Loss convergence
+axes[0, 1].semilogy(history['loss'])
+axes[0, 1].set_xlabel('Iteration')
+axes[0, 1].set_ylabel('Loss (log scale)')
+axes[0, 1].set_title('Loss Convergence')
+axes[0, 1].grid(True, alpha=0.3)
+
+# Plot 3: Gradient norm convergence
+axes[1, 0].semilogy(history['grad_norm'])
+axes[1, 0].set_xlabel('Iteration')
+axes[1, 0].set_ylabel('Gradient Norm (log scale)')
+axes[1, 0].set_title('Gradient Norm Convergence')
+axes[1, 0].grid(True, alpha=0.3)
+
+# Plot 4: Step sizes
+axes[1, 1].plot(history['alpha'], 'o-')
+axes[1, 1].set_xlabel('Iteration')
+axes[1, 1].set_ylabel('Step Size (α)')
+axes[1, 1].set_title('Adaptive Step Sizes')
+axes[1, 1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('gradient_descent_analysis.png', dpi=150, bbox_inches='tight')
+print("\n✓ Visualization saved as 'gradient_descent_analysis.png'")
+plt.show()</code></pre>
+            
+            <h3>Example 2: General Function Optimization</h3>
+            
+            <pre><code># Optimize f(x1, x2) = (x1 - x2) + 2x1*x2 + 2x1² + x2²
+
+def f_general(x):
+    """Objective function"""
+    x1, x2 = x
+    return (x1 - x2) + 2*x1*x2 + 2*x1**2 + x2**2
+
+def grad_f_general(x):
+    """Gradient of objective function"""
+    x1, x2 = x
+    df_dx1 = 1 + 2*x2 + 4*x1
+    df_dx2 = -1 + 2*x1 + 2*x2
+    return np.array([df_dx1, df_dx2])
+
+# Initial point
+x0 = np.array([0.0, 0.0])
+
+# Run gradient descent with backtracking
+x = x0.copy()
+tol = 1e-6
+max_iter = 1000
+history = []
+
+print("=" * 60)
+print("GENERAL FUNCTION OPTIMIZATION")
+print("=" * 60)
+print(f"Function: f(x1,x2) = (x1-x2) + 2x1*x2 + 2x1² + x2²")
+print(f"Starting point: {x0}")
+
+for k in range(max_iter):
+    grad = grad_f_general(x)
+    grad_norm = np.linalg.norm(grad)
+    
+    history.append({'x': x.copy(), 'f': f_general(x), 'grad_norm': grad_norm})
+    
+    if grad_norm < tol:
+        print(f"\n✓ Converged at iteration {k}")
+        break
+    
+    # Descent direction
+    d = -grad
+    
+    # Backtracking
+    alpha = backtracking_line_search(f_general, grad_f_general, x, d)
+    
+    # Update
+    x = x + alpha * d
+
+print(f"\n✓ Final solution: x = {x}")
+print(f"  Function value: f(x) = {f_general(x):.6f}")
+print(f"  Gradient norm: {grad_norm:.2e}")
+
+# Analytical solution: solve ∇f = 0
+# df/dx1 = 1 + 2x2 + 4x1 = 0
+# df/dx2 = -1 + 2x1 + 2x2 = 0
+# Solution: x1 = -1, x2 = 1.5
+x_analytical = np.array([-1.0, 1.5])
+print(f"\n✓ Analytical solution: x = {x_analytical}")
+print(f"  Difference: {np.linalg.norm(x - x_analytical):.2e}")</code></pre>
+            
+            <div class="professor-note">
+                The professor demonstrated all these code examples live and explained: "With backtracking, you see the algorithm converges beautifully! You don't have to worry about choosing the step size manually. The final solution matches the analytical solution almost exactly. And notice how the step sizes adapt - they're not constant. Sometimes the algorithm takes larger steps, sometimes smaller, depending on the local geometry. This adaptivity is the key to making gradient descent practical!"
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways - Implementation</h3>
+                <ul>
+                    <li><strong>Backtracking is practical:</strong> Easy to implement, works reliably</li>
+                    <li><strong>Standard parameters work:</strong> $\rho = 0.8, c_1 = 10^{-4}$ are good defaults</li>
+                    <li><strong>Monitor convergence:</strong> Track loss, gradient norm, step sizes</li>
+                    <li><strong>Visualization helps:</strong> Plot trajectories to understand algorithm behavior</li>
+                    <li><strong>Compare methods:</strong> Validate against closed-form solutions when available</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Complete code examples mein humne dekha ki kaise backtracking line search implement karte hain. Linear regression ke liye aur general functions ke liye dono examples diye gaye. Code mein important parts hain: loss function, gradient computation, backtracking procedure, aur convergence monitoring. Sabse important lesson: backtracking ke saath gradient descent bahut reliable ban jata hai! Step sizes automatically adapt hote hain problem ke according. Hum loss, gradient norm, aur step sizes ko track karte hain convergence check karne ke liye. Visualization se hum algorithm ka behavior clearly samajh sakte hain. Final solution analytical solution se almost exactly match karta hai!
+            </div>
+        </section>
+        
+        <!-- Mind Map Section -->
+        <div class="mind-map">
+            <h2>🧠 Comprehensive Mind Map</h2>
+            <div class="mind-map-container">
+                <div class="mind-map-node">
+                    <h3>📚 Lecture 4 Review</h3>
+                    <ul>
+                        <li>Convex Functions</li>
+                        <li>First Order Condition</li>
+                        <li>Second Order Condition</li>
+                        <li>Quadratic Functions</li>
+                        <li>Positive Definiteness</li>
+                        <li>Gradient Descent Basics</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>📊 Least Squares</h3>
+                    <ul>
+                        <li>Linear Regression</li>
+                        <li>Loss Function: $\|Xw-y\|^2$</li>
+                        <li>Gradient: $X^T(Xw-y)$</li>
+                        <li>Normal Equation</li>
+                        <li>Closed-form Solution</li>
+                        <li>Vectorization</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>🔄 Gradient Descent</h3>
+                    <ul>
+                        <li>Iterative Algorithm</li>
+                        <li>Update: $w := w - \alpha\nabla L$</li>
+                        <li>Learning Rate $\alpha$</li>
+                        <li>Stopping Criteria</li>
+                        <li>Implementation</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>📏 Step Length</h3>
+                    <ul>
+                        <li>Constant Step Size</li>
+                        <li>Exact Line Search</li>
+                        <li>Inexact Line Search</li>
+                        <li>Problem-dependent</li>
+                        <li>Critical for Convergence</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>📐 Lipschitz Functions</h3>
+                    <ul>
+                        <li>Bounded Change Rate</li>
+                        <li>L-smooth Functions</li>
+                        <li>Descent Lemma</li>
+                        <li>Safe Step: $\alpha \leq 1/L$</li>
+                        <li>Convergence Rate: $O(1/k)$</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>✅ Wolfe Conditions</h3>
+                    <ul>
+                        <li>Armijo (Sufficient Decrease)</li>
+                        <li>Curvature Condition</li>
+                        <li>Together: Wolfe</li>
+                        <li>Convergence Guarantee</li>
+                        <li>Zoutendijk's Theorem</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>⬅️ Backtracking</h3>
+                    <ul>
+                        <li>Start Large, Reduce</li>
+                        <li>Armijo Only</li>
+                        <li>Automatic Adaptation</li>
+                        <li>Easy Implementation</li>
+                        <li>Practical Method</li>
+                    </ul>
+                </div>
+                
+                <div class="mind-map-node">
+                    <h3>💻 Implementation</h3>
+                    <ul>
+                        <li>Python/NumPy</li>
+                        <li>Design Matrix $X$</li>
+                        <li>Gradient Computation</li>
+                        <li>Backtracking Procedure</li>
+                        <li>Convergence Monitoring</li>
+                        <li>Visualization</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                <h3 style="margin-top: 0;">🔗 Key Connections</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Convexity → Gradient Descent:</strong> Convex functions ensure local minima are global</li>
+                    <li><strong>Least Squares → Linear Regression:</strong> Fitting lines to data is an optimization problem</li>
+                    <li><strong>Lipschitz Gradient → Step Size:</strong> L-smoothness provides safe step size bound</li>
+                    <li><strong>Wolfe Conditions → Convergence:</strong> Proper line search ensures convergence (Zoutendijk)</li>
+                    <li><strong>Backtracking → Practice:</strong> Makes gradient descent practical without tuning</li>
+                    <li><strong>Theory → Implementation:</strong> Mathematical guarantees translate to working code</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Final Summary -->
+        <section style="margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px;">
+            <h2 style="color: white; border-bottom: 3px solid white;">📝 Final Summary</h2>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                In this comprehensive lecture, we explored the <strong>least squares problem</strong> and its solution using <strong>gradient descent</strong>, focusing particularly on the critical issue of <strong>step length selection</strong>. We began with a review of convex optimization concepts, then dove into linear regression as a practical application of least squares. The key insight is that model fitting can be formulated as an optimization problem: minimize $\|Xw - y\|^2$.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                We learned that while closed-form solutions exist (via the normal equation), <strong>gradient descent provides a scalable iterative alternative</strong> for large-scale problems. The critical challenge is choosing appropriate step sizes: too small means slow convergence, too large causes divergence.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong>Lipschitz gradient functions</strong> provide theoretical guarantees - they give us safe step size bounds ($\alpha \leq 1/L$) and convergence rates ($O(1/k)$). However, computing the Lipschitz constant $L$ is often impractical. This motivates <strong>inexact line search methods</strong>, particularly the <strong>Armijo and Wolfe conditions</strong>, which ensure convergence without requiring explicit knowledge of $L$.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                The <strong>backtracking line search</strong> emerges as the practical hero of this story - it automatically adapts step sizes using only the Armijo condition, making gradient descent robust and easy to implement. Zoutendijk's theorem provides the theoretical backing, guaranteeing convergence for any descent method using proper line search, regardless of starting point.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong>Key Takeaway:</strong> The combination of gradient descent + backtracking line search gives us a powerful, practical, and theoretically sound algorithm for solving optimization problems, particularly in machine learning applications like linear regression. This foundation extends to more complex models and larger-scale problems in modern AI.
+            </p>
+        </section>
+        
+        <!-- Footer -->
+        <footer style="margin-top: 50px; padding: 30px; text-align: center; border-top: 3px solid #667eea;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

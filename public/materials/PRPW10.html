@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 10: K-Means Clustering and Unsupervised Learning - Pattern Recognition Principles</title>
+    
+    <!-- MathJax for Mathematical Notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        /* ========================================
+           GLOBAL STYLES & RESET
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        /* ========================================
+           MAIN CONTAINER
+           ======================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* ========================================
+           HEADER SECTION
+           ======================================== */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 4px solid #3498db;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .lecture-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+        
+        /* ========================================
+           TABLE OF CONTENTS
+           ======================================== */
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        
+        .toc a:hover {
+            color: #e74c3c;
+            padding-left: 10px;
+        }
+        
+        .toc ul ul {
+            padding-left: 30px;
+            margin-top: 8px;
+        }
+        
+        .toc ul ul li {
+            font-size: 0.95em;
+        }
+        
+        /* ========================================
+           SECTION HEADINGS
+           ======================================== */
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.6em;
+            margin: 35px 0 20px 0;
+            padding-left: 15px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        /* ========================================
+           CONTENT STYLES
+           ======================================== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong, .key-term {
+            color: #e74c3c;
+            font-weight: 600;
+            background: #ffe5e5;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        em {
+            color: #16a085;
+            font-style: italic;
+        }
+        
+        /* ========================================
+           LISTS
+           ======================================== */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        /* ========================================
+           TABLES
+           ======================================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background: #e3f2fd;
+            transition: background 0.3s ease;
+        }
+        
+        /* ========================================
+           CODE BLOCKS
+           ======================================== */
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 25px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        pre code {
+            background: none;
+            color: #ecf0f1;
+            padding: 0;
+        }
+        
+        /* ========================================
+           SPECIAL BOXES
+           ======================================== */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #9c27b0;
+            font-style: normal;
+        }
+        
+        /* ========================================
+           HINGLISH SUMMARY
+           ======================================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border: 3px dashed #d63031;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+            text-align: center;
+            border: none;
+            padding: 0;
+        }
+        
+        .hinglish-summary p {
+            color: #2d3436;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+        
+        /* ========================================
+           DIAGRAM PLACEHOLDER
+           ======================================== */
+        .diagram-placeholder {
+            background: #ecf0f1;
+            border: 3px dashed #95a5a6;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            border-radius: 10px;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+        
+        /* ========================================
+           PRACTICE QUESTIONS
+           ======================================== */
+        .practice-section {
+            background: #fff9e6;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 2px solid #f39c12;
+        }
+        
+        .practice-section h4 {
+            color: #f39c12;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .question strong {
+            color: #e67e22;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .answer {
+            background: #d5f4e6;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .answer:before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        /* ========================================
+           KEY TAKEAWAYS
+           ======================================== */
+        .key-takeaways {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 3px solid #6c5ce7;
+        }
+        
+        .key-takeaways h4 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+            border: none;
+            padding: 0;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 10px 10px 40px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .key-takeaways li:before {
+            content: "✦";
+            position: absolute;
+            left: 15px;
+            color: #6c5ce7;
+            font-size: 1.3em;
+        }
+        
+        /* ========================================
+           ALGORITHM BOX
+           ======================================== */
+        .algorithm-box {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .algorithm-box h4 {
+            color: #3498db;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.4em;
+        }
+        
+        .algorithm-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        
+        .algorithm-step strong {
+            color: #2c3e50;
+            background: none;
+        }
+        
+        /* ========================================
+           MIND MAP
+           ======================================== */
+        .mindmap {
+            margin: 50px 0;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .branch h3 {
+            color: #3498db;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.3em;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .branch li {
+            padding: 8px 0;
+            color: #34495e;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .branch li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        /* ========================================
+           FOOTER
+           ======================================== */
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 3px solid #3498db;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+        
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .toc a {
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================
+             HEADER SECTION
+             ======================================== -->
+        <header>
+            <h1>Pattern Recognition Principles</h1>
+            <div class="subtitle">Lecture 10: K-Means Clustering & Unsupervised Learning</div>
+            <div class="lecture-info">
+                <strong>Created By:</strong>Armaan Kachhawa <br>
+            </div>
+        </header>
+        
+        <!-- ========================================
+             TABLE OF CONTENTS
+             ======================================== -->
+        <nav class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap: K-NN Algorithm</a></li>
+                <li><a href="#introduction">2. Introduction to Unsupervised Learning</a>
+                    <ul>
+                        <li><a href="#supervised-vs-unsupervised">2.1 Supervised vs Unsupervised Learning</a></li>
+                        <li><a href="#real-world-examples">2.2 Real-World Examples</a></li>
+                    </ul>
+                </li>
+                <li><a href="#kmeans">3. K-Means Clustering Algorithm</a>
+                    <ul>
+                        <li><a href="#kmeans-intuition">3.1 Intuitive Understanding (Pizza Delivery Example)</a></li>
+                        <li><a href="#kmeans-algorithm">3.2 K-Means Algorithm Steps</a></li>
+                        <li><a href="#kmeans-demo">3.3 Visual Demonstration</a></li>
+                    </ul>
+                </li>
+                <li><a href="#choosing-k">4. Determining Optimal Number of Clusters (K)</a>
+                    <ul>
+                        <li><a href="#elbow-method">4.1 The Elbow Method</a></li>
+                    </ul>
+                </li>
+                <li><a href="#initialization">5. Cluster Center Initialization</a>
+                    <ul>
+                        <li><a href="#initialization-problem">5.1 The Initialization Problem</a></li>
+                        <li><a href="#kmeans-plusplus">5.2 K-Means++ Algorithm</a></li>
+                    </ul>
+                </li>
+                <li><a href="#advantages">6. Advantages of K-Means</a></li>
+                <li><a href="#complexity">7. Time Complexity Analysis</a></li>
+                <li><a href="#worked-example">8. Worked Out Example (1D Data)</a></li>
+                <li><a href="#limitations">9. Limitations of K-Means</a></li>
+                <li><a href="#implementation">10. Python Implementation</a></li>
+                <li><a href="#summary">11. Summary & Key Takeaways</a></li>
+                <li><a href="#mindmap">12. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+        
+        <!-- ========================================
+             SECTION 1: RECAP
+             ======================================== -->
+        <section id="recap">
+            <h2>1. Recap: K-NN Algorithm</h2>
+            
+            <p>Before diving into unsupervised learning, let's quickly recall the <strong>K-Nearest Neighbors (K-NN)</strong> algorithm we studied in previous lectures.</p>
+            
+            <div class="info-box">
+                <h4>K-NN Quick Recap</h4>
+                <p><strong>K-NN</strong> is a simple distance-based algorithm used for <strong>classification</strong>. The algorithm works by:</p>
+                <ul>
+                    <li>Finding the top <em>K</em> nearest neighbors to a sample point</li>
+                    <li>Assigning the label based on the <strong>majority vote</strong> of these neighbors' labels</li>
+                    <li>Using distance metrics (Euclidean, Manhattan, etc.) to determine "nearness"</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized that K-NN is a supervised learning technique that requires labeled data for classification tasks like handwritten digit recognition.
+            </div>
+            
+            <h3>Drawbacks of K-NN</h3>
+            <ul>
+                <li><strong>Computational Cost:</strong> Must compute distances to all training samples for each prediction</li>
+                <li><strong>Memory Requirements:</strong> Needs to store entire training dataset</li>
+                <li><strong>Sensitivity to K:</strong> Choice of K significantly affects performance</li>
+                <li><strong>Curse of Dimensionality:</strong> Performance degrades in high-dimensional spaces</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    Pichli lectures mein humne K-NN algorithm dekha tha jo ki ek supervised learning technique hai. Isme hum data points ke labels already jaante hain aur classification karne ke liye K nearest neighbors dekhte hain aur majority vote se label assign karte hain. Lekin iske kuch drawbacks bhi hain jaise computational cost zyada hai aur memory bhi zyada lagti hai. Ab hum aage unsupervised learning dekhenge jahan labels nahi hote!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 2: UNSUPERVISED LEARNING
+             ======================================== -->
+        <section id="introduction">
+            <h2>2. Introduction to Unsupervised Learning</h2>
+            
+            <h3 id="supervised-vs-unsupervised">2.1 Supervised vs Unsupervised Learning</h3>
+            
+            <p>As the name suggests, <strong>unsupervised learning</strong> is not supervised—there is no supervisor or supervision involved!</p>
+            
+            <div class="info-box">
+                <h4>📖 Definition: Unsupervised Learning</h4>
+                <p>
+                    <strong>Unsupervised learning</strong> is a type of machine learning in which the model is trained on <strong>unlabeled data</strong>—i.e., data without predefined categories, output labels, or known classifications. The algorithm tries to discover <strong>hidden patterns</strong>, <strong>structures</strong>, or <strong>relationships</strong> within the data on its own.
+                </p>
+            </div>
+            
+            <h4>Mathematical Representation</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learning Type</th>
+                        <th>Data Given</th>
+                        <th>Mathematical Notation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Supervised Learning</strong></td>
+                        <td>Features + Labels</td>
+                        <td>$\{(x_i, y_i)\}_{i=1}^{n}$ where $x_i \in \mathbb{R}^d$ and $y_i$ is the class label</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unsupervised Learning</strong></td>
+                        <td>Features Only (No Labels)</td>
+                        <td>$\{x_i\}_{i=1}^{n}$ where $x_i \in \mathbb{R}^d$</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The professor explained: "In supervised learning, we give data samples along with class labels (like 'this is class A' or 'this is class B'). In unsupervised learning, we only give the data samples without any labels. You might be surprised—what can we do with just data? But this is the beauty of unsupervised learning! We can discover patterns and group similar data points together."
+            </div>
+            
+            <h3 id="real-world-examples">2.2 Real-World Examples of Unsupervised Learning</h3>
+            
+            <h4>Example 1: Photo Clustering</h4>
+            
+            <p>Consider the photographs in your mobile phone's photo album. Suppose you have a collection of images and want to group them into different categories to make searching more efficient.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Collection of sunset images and forest images]
+            </div>
+            
+            <p>When the data is given to us, we don't know the labels of these images. However, by visually analyzing them, we can identify that:</p>
+            <ul>
+                <li>Some images belong to the <strong>"sunset" type</strong></li>
+                <li>Some images belong to the <strong>"forest" type</strong></li>
+            </ul>
+            
+            <p>An unsupervised algorithm can automatically <strong>cluster</strong> these images into different groups based on visual similarity—without us telling it what category each image belongs to!</p>
+            
+            <div class="success-box">
+                <strong>Key Insight:</strong> Even without labels, clustering techniques can identify patterns and group similar items together, making organization and search more efficient.
+            </div>
+            
+            <h4 id="document-clustering">Example 2: Document Clustering</h4>
+            
+            <p>When you read news articles online (e.g., on BBC.com), you often see <strong>"Related Articles"</strong> in the sidebar. How does the website know which articles are related?</p>
+            
+            <div class="professor-note">
+                The professor explained: "If you're reading a news article about politics in India, the related news articles are also about politics in India. If you're reading about cricket, the related articles are also about cricket. This is called document clustering."
+            </div>
+            
+            <p>Document clustering works by:</p>
+            <ol>
+                <li>Representing each article using techniques like <strong>Bag of Words</strong></li>
+                <li>Finding articles with similar word distributions</li>
+                <li>Grouping similar articles together</li>
+                <li>Displaying related articles to readers</li>
+            </ol>
+            
+            <div class="info-box">
+                <h4>Bag of Words Representation</h4>
+                <p>In Bag of Words, a document is represented by the frequency of words it contains. Articles with similar word frequencies are considered similar and grouped together.</p>
+            </div>
+            
+            <h4>Why Unsupervised Learning is Valuable</h4>
+            
+            <ul>
+                <li><strong>Cost-Effective:</strong> No need to manually label thousands or millions of data points</li>
+                <li><strong>Pattern Discovery:</strong> Can reveal hidden structures we might not have known existed</li>
+                <li><strong>Scalability:</strong> Works with massive unlabeled datasets readily available</li>
+                <li><strong>Automatic Organization:</strong> Groups data without human intervention</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    Unsupervised learning mein hume sirf data milta hai, labels nahi milte. Jaise mobile mein photos ko automatically group karna ya news articles ko related articles ke saath dikhana—yeh sab unsupervised learning ka kamal hai. Isme algorithm khud se patterns dhundta hai aur similar cheezein ko ek saath group kar deta hai. Yeh bahut useful hai kyunki humein har ek data point ko manually label nahi karna padta, jo ki bahut costly aur time-consuming hota!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 3: K-MEANS CLUSTERING
+             ======================================== -->
+        <section id="kmeans">
+            <h2>3. K-Means Clustering Algorithm</h2>
+            
+            <p>Now let's explore one of the most popular unsupervised learning algorithms: <strong>K-Means Clustering</strong>.</p>
+            
+            <h4>Understanding the Name</h4>
+            <ul>
+                <li><strong>Clustering:</strong> Grouping similar data points together</li>
+                <li><strong>K:</strong> A hyperparameter (similar to K in K-NN) that specifies the number of clusters</li>
+                <li><strong>Means:</strong> Refers to computing the average (mean) of data points</li>
+            </ul>
+            
+            <div class="info-box">
+                <strong>Definition:</strong> K-Means is an iterative algorithm that groups data into K clusters by repeatedly assigning points to the nearest cluster center and updating those centers based on the mean of assigned points.
+            </div>
+            
+            <h3 id="kmeans-intuition">3.1 Intuitive Understanding: The Pizza Delivery Example</h3>
+            
+            <p>Before diving into the mathematical formulation, let's understand K-Means through a real-world example involving IIT Jodhpur campus.</p>
+            
+            <div class="professor-note">
+                The professor used the IIT Jodhpur campus layout to explain K-Means: "Many of you might not be aware, but IIT Jodhpur campus is divided by a highway—some part is on one side and the majority is on the other side. Let's use this to understand clustering!"
+            </div>
+            
+            <h4>Problem Statement</h4>
+            <p>A pizza outlet wants to open <strong>two stores</strong> on the IIT Jodhpur campus. Their goal is to <strong>minimize travel time</strong> for pizza delivery to all customers.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: IIT Jodhpur campus map with highway division]
+            </div>
+            
+            <h4>Step-by-Step Solution Using K-Means Logic</h4>
+            
+            <div class="algorithm-step">
+                <strong>Step 1: Random Initialization</strong><br>
+                The pizza company randomly opens two stores at arbitrary locations on campus.
+            </div>
+            
+            <div class="algorithm-step">
+                <strong>Step 2: Assignment Phase</strong><br>
+                Based on GPS locations of customer orders (from hostels, C-type quarters, etc.), each customer is assigned to the <strong>nearest store</strong> based on proximity and road connectivity.
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Initial store locations with customer orders color-coded by assigned store]
+            </div>
+            
+            <div class="algorithm-step">
+                <strong>Step 3: Update Phase</strong><br>
+                The company realizes they can reduce travel time by moving stores closer to where most orders come from. They calculate the <strong>average GPS location</strong> of all customers assigned to each store and relocate the stores to these average positions.
+            </div>
+            
+            <div class="algorithm-step">
+                <strong>Step 4: Iteration</strong><br>
+                This process repeats—reassign customers to nearest stores, then move stores to average customer locations—until the store locations stabilize and stop moving significantly.
+            </div>
+            
+            <div class="success-box">
+                <h4>🎯 Key Insight</h4>
+                <p>This is exactly how K-Means works! The pizza stores are the <strong>cluster centers</strong>, customers are the <strong>data points</strong>, and the algorithm iteratively optimizes locations to minimize distances.</p>
+            </div>
+            
+            <h3 id="kmeans-algorithm">3.2 K-Means Algorithm: Formal Steps</h3>
+            
+            <p>Now let's formalize the K-Means algorithm mathematically:</p>
+            
+            <h4>Given Data</h4>
+            <p>We have $m$ data points (features): $\{x_1, x_2, \ldots, x_m\}$ where each $x_i \in \mathbb{R}^n$ (n-dimensional feature vectors).</p>
+            <p><strong>Important:</strong> There are <em>no labels</em> provided!</p>
+            
+            <div class="algorithm-box">
+                <h4>K-Means Algorithm</h4>
+                
+                <div class="algorithm-step">
+                    <strong>Input:</strong>
+                    <ul>
+                        <li>Dataset $\{x_1, x_2, \ldots, x_m\}$ where $x_i \in \mathbb{R}^n$</li>
+                        <li>Number of clusters $K$ (hyperparameter)</li>
+                    </ul>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Initialize:</strong>
+                    <ul>
+                        <li>Randomly select $K$ cluster centers: $\mu_1, \mu_2, \ldots, \mu_K$</li>
+                        <li>These can be randomly chosen data points or random points in feature space</li>
+                    </ul>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Do (Repeat until convergence):</strong>
+                    <ol>
+                        <li><strong>Assignment Step:</strong> For each data point $x_i$, compute distance to all cluster centers and assign it to the nearest cluster:
+
+                            $$c_i = \arg\min_{j} \|x_i - \mu_j\|^2$$
+                            where $c_i$ is the cluster assignment for point $i$
+                        </li>
+                        <li><strong>Update Step:</strong> Recompute each cluster center as the mean of all points assigned to that cluster:
+
+                            $$\mu_j = \frac{1}{|C_j|} \sum_{x_i \in C_j} x_i$$
+                            where $C_j$ is the set of points assigned to cluster $j$
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Until:</strong>
+                    <ul>
+                        <li>Cluster centers $\mu_j$ do not change (or change very minimally)</li>
+                        <li>Or maximum number of iterations is reached</li>
+                    </ul>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Return:</strong>
+                    <ul>
+                        <li>Final cluster centers: $\mu_1, \mu_2, \ldots, \mu_K$ (also called <strong>centroids</strong>)</li>
+                        <li>Cluster assignments for all data points</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="professor-note">
+                The professor emphasized: "This algorithm is beautifully simple! It's just a few lines of code. You initialize centers randomly, compute distances, reassign points, recompute means, and repeat until convergence. That's it!"
+            </div>
+            
+            <h3 id="kmeans-demo">3.3 K-Means Visual Demonstration</h3>
+            
+            <p>Let's walk through a visual example with three clusters of 2D data points.</p>
+            
+            <h4>Initial Setup</h4>
+            <div class="diagram-placeholder">
+                [Insert diagram: Three distinct groups of 2D points (green, yellow, purple clusters)]
+            </div>
+            
+            <p>We can visually see three groups of points. Let's set $K = 3$ and initialize three cluster centers: $\mu_1$, $\mu_2$, $\mu_3$.</p>
+            
+            <h4>Iteration 1: Initial Assignment</h4>
+            
+            <div class="algorithm-step">
+                <strong>Step 1:</strong> Calculate distance from each point to all three centers ($\mu_1$, $\mu_2$, $\mu_3$).
+            </div>
+            
+            <div class="algorithm-step">
+                <strong>Step 2:</strong> Assign each point to nearest center:
+                <ul>
+                    <li>Points closest to $\mu_1$ → <span style="color: green;">Green</span></li>
+                    <li>Points closest to $\mu_2$ → <span style="color: #f39c12;">Yellow</span></li>
+                    <li>Points closest to $\mu_3$ → <span style="color: purple;">Purple</span></li>
+                </ul>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Points colored by initial cluster assignment]
+            </div>
+            
+            <h4>Iteration 1: Update Centers</h4>
+            
+            <div class="algorithm-step">
+                <strong>Step 3:</strong> Compute mean of each color group:
+                <ul>
+                    <li>$\mu_1$ = mean of all green points</li>
+                    <li>$\mu_2$ = mean of all yellow points</li>
+                    <li>$\mu_3$ = mean of all purple points</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                "Notice that the purple center might shift significantly because there are many points on one side and fewer on the other. The yellow center might also shift a little bit."
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Updated cluster centers after computing means]
+            </div>
+            
+            <h4>Iteration 2: Reassignment</h4>
+            
+            <p>After the centers move, some points that were yellow might now be closer to the purple center, so they get reassigned to purple.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Points reassigned based on new center positions]
+            </div>
+            
+            <h4>Iteration 2: Update Centers Again</h4>
+            
+            <p>We recompute the center for each cluster based on the new assignments. This causes the purple center to move even further.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Centers updated again]
+            </div>
+            
+            <h4>Convergence</h4>
+            
+            <p>After this iteration, if we compute the cluster means again, they will <strong>not change</strong> (or change very minimally). This is where we stop and declare:</p>
+            
+            <div class="success-box">
+                <strong>Result:</strong> The data has been successfully clustered into three groups with final centers $\mu_1$, $\mu_2$, and $\mu_3$.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    K-Means algorithm bahut simple hai! Pehle hum K cluster centers randomly choose karte hain. Fir har data point ko uske sabse paas wale center ke cluster mein assign karte hain. Uske baad har cluster ka mean (average) calculate karke centers ko update karte hain. Yeh process tab tak repeat karte hain jab tak centers stable nahi ho jaate. Pizza delivery example mein pizza stores ko customers ke average location pe move karna—yahi K-Means ka logic hai!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 4: CHOOSING K
+             ======================================== -->
+        <section id="choosing-k">
+            <h2>4. Determining the Optimal Number of Clusters (K)</h2>
+            
+            <p>One critical question arises: <strong>How do we decide the value of K?</strong></p>
+            
+            <div class="warning-box">
+                <strong>Challenge:</strong> In high-dimensional data, we cannot visualize the clusters. So how do we determine the optimal number of clusters?
+            </div>
+            
+            <h3 id="elbow-method">4.1 The Elbow Method</h3>
+            
+            <p>The <strong>Elbow Method</strong> is a popular technique to choose the optimal number of clusters $K$ in K-Means. The name comes from the shape of the graph, which resembles an elbow.</p>
+            
+            <div class="info-box">
+                <h4>📊 The Elbow Method Process</h4>
+                <ol>
+                    <li><strong>Run K-Means for different values of K</strong> (e.g., $K = 1, 2, 3, \ldots, 10$)</li>
+                    <li><strong>Compute WCSS (Within-Cluster Sum of Squares)</strong> for each K</li>
+                    <li><strong>Plot K vs WCSS</strong></li>
+                    <li><strong>Look for the "elbow point"</strong> where WCSS starts decreasing slowly</li>
+                </ol>
+            </div>
+            
+            <h4>What is WCSS (Within-Cluster Sum of Squares)?</h4>
+            
+            <p>WCSS measures how <strong>compact</strong> the clusters are. It calculates the variance of points within each cluster:</p>
+
+            
+            $$\text{WCSS} = \sum_{j=1}^{K} \sum_{x_i \in C_j} \|x_i - \mu_j\|^2$$
+            
+            <p>Where:</p>
+            <ul>
+                <li>$K$ = number of clusters</li>
+                <li>$C_j$ = set of points in cluster $j$</li>
+                <li>$\mu_j$ = centroid of cluster $j$</li>
+                <li>$x_i$ = individual data point</li>
+            </ul>
+            
+            <div class="professor-note">
+                "WCSS measures how spread out the points are within each cluster. Ideally, each cluster should be very compact—points should be close to their cluster center. Lower WCSS means better, more compact clusters."
+            </div>
+            
+            <h4>Interpreting the Elbow Plot</h4>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Elbow plot showing WCSS vs K, with elbow at K=3]
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>K Value</th>
+                        <th>WCSS</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>K = 1</td>
+                        <td>Very High</td>
+                        <td>All points in one cluster → high variance</td>
+                    </tr>
+                    <tr>
+                        <td>K = 2</td>
+                        <td>High</td>
+                        <td>WCSS drops significantly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>K = 3</strong></td>
+                        <td><strong>Moderate</strong></td>
+                        <td><strong>Elbow point! Optimal K</strong></td>
+                    </tr>
+                    <tr>
+                        <td>K = 4, 5, 6...</td>
+                        <td>Low (slight decrease)</td>
+                        <td>WCSS decreases slowly → overfitting</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="success-box">
+                <h4>🎯 Choosing K at the Elbow</h4>
+                <p>The <strong>elbow point</strong> is where WCSS stops decreasing rapidly and starts decreasing slowly. At this point ($K = 3$ in the example above), we've captured most of the data structure without over-segmenting.</p>
+            </div>
+            
+            <h4>Why the Elbow Point is Optimal</h4>
+            
+            <ul>
+                <li><strong>Before the elbow (K too small):</strong> Clusters are too large and not well-defined → underfitting</li>
+                <li><strong>At the elbow:</strong> Good balance between cluster compactness and number of clusters</li>
+                <li><strong>After the elbow (K too large):</strong> Minimal improvement in WCSS, risk of overfitting and creating meaningless clusters</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    K ka value decide karna mushkil hai especially jab data high-dimensional ho. Elbow method isme help karta hai—hum alag-alag K values ke liye K-Means run karte hain (1, 2, 3, ... 10) aur har ek ke liye WCSS (Within-Cluster Sum of Squares) calculate karte hain. WCSS batata hai ki cluster ke andar points kitne spread out hain. Jab hum K vs WCSS plot karte hain, ek elbow (koni) dikhayi deti hai. Yahi optimal K hai! Iss point ke baad WCSS bahut kam decrease hota hai, matlab extra clusters banana useless ho jata hai.
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 5: INITIALIZATION
+             ======================================== -->
+        <section id="initialization">
+            <h2>5. Cluster Center Initialization</h2>
+            
+            <h3 id="initialization-problem">5.1 The Initialization Problem</h3>
+            
+            <p>While we mentioned that cluster centers can be initialized randomly, this approach has a significant drawback: <strong>different initializations may lead to different results!</strong></p>
+            
+            <div class="warning-box">
+                <h4>⚠️ Problem: Poor Initialization Can Lead to Bad Clustering</h4>
+                <p>Initialization matters! Even with the correct value of K, poor initialization can result in suboptimal clustering that gets stuck in local minima.</p>
+            </div>
+            
+            <h4>Example: Poor vs Good Initialization</h4>
+            
+            <p>Consider this scenario with three visible clusters:</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Three distinct clusters of data points]
+            </div>
+            
+            <p><strong>Scenario 1: Poor Initialization</strong></p>
+            <p>If we initialize all three centers close together (e.g., all in one region):</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Three centers initialized close together, leading to poor clustering]
+            </div>
+            
+            <div class="professor-note">
+                "See what happens? All these points become green, while there's just a small blue region and a small yellow region. The clustering is bad! And this clustering will be stable—it won't improve even after iterations because it's stuck in a local minimum."
+            </div>
+            
+            <p><strong>Scenario 2: Good Initialization</strong></p>
+            <p>If we initialize centers well-distributed across the data:</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Three centers initialized across the data, leading to good clustering]
+            </div>
+            
+            <div class="success-box">
+                <strong>Result:</strong> The algorithm converges to the natural three clusters, correctly identifying the data structure!
+            </div>
+            
+            <h3 id="kmeans-plusplus">5.2 K-Means++ Algorithm</h3>
+            
+            <p>To address the initialization problem, we use <strong>K-Means++</strong>, a smarter initialization method that considers the data distribution.</p>
+            
+            <div class="info-box">
+                <h4>📌 K-Means++ Initialization</h4>
+                <p>K-Means++ is not guaranteed to find the global optimum, but it's a heuristic that significantly improves the chances of good clustering by spreading out initial centers.</p>
+            </div>
+            
+            <div class="algorithm-box">
+                <h4>K-Means++ Initialization Steps</h4>
+                
+                <div class="algorithm-step">
+                    <strong>Step 1: Choose First Center Randomly</strong>
+                    <ul>
+                        <li>Select a random point from the dataset as the first center $\mu_1$</li>
+                        <li>The only requirement: it must be one of the actual data points</li>
+                        <li>This first center is completely random</li>
+                    </ul>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Step 2: Choose Subsequent Centers Based on Distance</strong>
+                    <ul>
+                        <li>For the next center, choose a point with a <strong>higher likelihood of being far</strong> from the first center</li>
+                        <li>Sample from a probability distribution proportional to the <strong>square of distance</strong> from the first center:
+
+                            $$P(x) \propto \min_{j < i} \|x - \mu_j\|^2$$
+                        </li>
+                        <li><strong>Key idea:</strong> Points farther from existing centers have higher probability of being selected</li>
+                    </ul>
+                </div>
+                
+                <div class="algorithm-step">
+                    <strong>Step 3: Repeat for All K Centers</strong>
+                    <ul>
+                        <li>For each remaining center, sample based on distance from the <strong>nearest existing center</strong></li>
+                        <li>Points farther from their closest center have a higher chance of being selected</li>
+                        <li>Continue until all K centers are initialized</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h4>Why K-Means++ Works Better</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Random Initialization</th>
+                        <th>K-Means++ Initialization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Can place all centers close together</td>
+                        <td>Spreads centers across data space</td>
+                    </tr>
+                    <tr>
+                        <td>Ignores data distribution</td>
+                        <td>Considers data distribution</td>
+                    </tr>
+                    <tr>
+                        <td>High risk of poor clustering</td>
+                        <td>Better chance of finding good clusters</td>
+                    </tr>
+                    <tr>
+                        <td>May require many restarts</td>
+                        <td>Often works well on first try</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                "The important point is: Points farther from their closest center have a higher chance of being selected. If you do it like this, the chances of getting better clusters increases significantly. It's not guaranteed yet, but this heuristic at least looks into the data distribution and tries to initialize intelligently."
+            </div>
+            
+            <h4>Mathematical Formulation</h4>
+            
+            <p>For choosing the $i$-th center $\mu_i$, the probability of selecting point $x$ is:</p>
+
+            
+            $$P(x) = \frac{D(x)^2}{\sum_{x' \in X} D(x')^2}$$
+            
+            <p>Where $D(x) = \min_{j < i} \|x - \mu_j\|$ is the distance from $x$ to the nearest already-chosen center.</p>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    Random initialization ka ek bada problem hai—kabhi-kabhi sab centers ek jagah cluster ho jaate hain aur clustering kharab ho jaati hai. Isko solve karne ke liye K-Means++ algorithm use karte hain. Isme pehla center randomly choose hota hai, lekin uske baad jo centers choose karte hain wo data distribution ko dekhte hain. Jo points already chosen centers se door hain, unhe select hone ki probability zyada hoti hai. Isse centers data ke across spread out hote hain aur clustering bahut better ho jaati hai!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 6: ADVANTAGES
+             ======================================== -->
+        <section id="advantages">
+            <h2>6. Advantages of K-Means</h2>
+            
+            <p>Despite some limitations, K-Means remains one of the most widely used clustering algorithms due to its numerous advantages:</p>
+            
+            <div class="key-takeaways">
+                <h4>✨ Key Advantages of K-Means</h4>
+                <ul>
+                    <li><strong>Simplicity:</strong> Easy to understand and implement—even beginners can write K-Means from scratch with just a few lines of code</li>
+                    
+                    <li><strong>Efficiency:</strong> Computationally fast, especially on large datasets. The algorithm converges quickly in most cases</li>
+                    
+                    <li><strong>Scalability:</strong> Works well with large datasets and even high-dimensional data (though performance may degrade in very high dimensions)</li>
+                    
+                    <li><strong>Interpretability:</strong> Provides clear cluster centroids which can be analyzed and understood. Each cluster has a representative center point</li>
+                    
+                    <li><strong>Versatility:</strong> Can be adapted with variations (like K-Means++) to improve performance and address specific challenges</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                "K-Means is beautifully simple! It's just distance calculations and mean computation. Someone can write it from scratch easily. Which algorithm can you say that about? It's practical, fast, and works reasonably well for many real-world applications!"
+            </div>
+            
+            <h4>Comparison with Other Clustering Methods</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>K-Means</th>
+                        <th>Hierarchical Clustering</th>
+                        <th>DBSCAN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Complexity</strong></td>
+                        <td>✅ Low</td>
+                        <td>⚠️ Moderate</td>
+                        <td>⚠️ Moderate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Speed</strong></td>
+                        <td>✅ Fast</td>
+                        <td>❌ Slow</td>
+                        <td>⚠️ Moderate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>✅ Excellent</td>
+                        <td>❌ Poor</td>
+                        <td>⚠️ Moderate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Need to Specify K</strong></td>
+                        <td>❌ Yes</td>
+                        <td>✅ No</td>
+                        <td>✅ No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cluster Shape</strong></td>
+                        <td>⚠️ Spherical only</td>
+                        <td>✅ Any shape</td>
+                        <td>✅ Any shape</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    K-Means ke bahut saare advantages hain! Sabse badi baat—yeh bahut simple hai, koi bhi easily samajh sakta hai aur implement kar sakta hai. Yeh bahut fast hai, large datasets pe bhi jaldi run ho jata hai. High-dimensional data pe bhi kaam karta hai. Cluster centroids bhi clear milte hain jo analyze karne mein aasani hoti hai. Aur variations jaise K-Means++ se isko aur better banaya ja sakta hai. Isliye yeh industry mein itna popular hai!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 7: TIME COMPLEXITY
+             ======================================== -->
+        <section id="complexity">
+            <h2>7. Time Complexity Analysis</h2>
+            
+            <p>Understanding the computational complexity of K-Means helps us know when it's appropriate to use and what to expect in terms of performance.</p>
+            
+            <h4>Breaking Down the Time Complexity</h4>
+            
+            <div class="info-box">
+                <h4>Components of K-Means Computation</h4>
+                <ol>
+                    <li><strong>Distance Computation:</strong> For each data point, compute distance to each of the K cluster centers</li>
+                    <li><strong>Assignment:</strong> Assign each point to nearest cluster (find minimum distance)</li>
+                    <li><strong>Update:</strong> Recompute cluster centers as mean of assigned points</li>
+                    <li><strong>Iterations:</strong> Repeat until convergence</li>
+                </ol>
+            </div>
+            
+            <h4>Mathematical Analysis</h4>
+            
+            <p><strong>Per Iteration Time Complexity:</strong></p>
+            
+            <ul>
+                <li>$n$ = number of data points</li>
+                <li>$K$ = number of clusters</li>
+                <li>$d$ = dimensionality of each data point</li>
+            </ul>
+            
+            <p><strong>Step 1: Distance Computation</strong></p>
+            <p>For each of $n$ points, compute distance to each of $K$ centers:</p>
+            <ul>
+                <li>Number of distance computations = $n \times K$</li>
+                <li>Each distance computation in $d$ dimensions takes $O(d)$ time</li>
+                <li><strong>Total:</strong> $O(n \times K \times d)$</li>
+            </ul>
+            
+            <p><strong>Step 2: Assignment</strong></p>
+            <p>Finding the minimum distance among K clusters for each point: $O(n \times K)$</p>
+            
+            <p><strong>Step 3: Update Centers</strong></p>
+            <p>Computing mean of points in each cluster: $O(n \times d)$</p>
+            
+            <div class="algorithm-box">
+                <h4>Overall Time Complexity</h4>
+                <p><strong>Per Iteration:</strong> $O(n \times K \times d)$</p>
+                <p><strong>Total (with $I$ iterations):</strong> $$\boxed{O(I \times n \times K \times d)}$$</p>
+                
+                <p>Where:</p>
+                <ul>
+                    <li>$I$ = number of iterations until convergence (typically small)</li>
+                    <li>$n$ = number of data points</li>
+                    <li>$K$ = number of clusters (usually small and constant)</li>
+                    <li>$d$ = dimensionality of data</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                "K is usually small and constant, so it doesn't make much difference. The complexity increases with larger data size (n) and higher dimensions (d). But for most practical applications, K-Means is reasonably fast!"
+            </div>
+            
+            <h4>Practical Implications</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Factor</th>
+                        <th>Effect on Runtime</th>
+                        <th>Mitigation Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Large n (many points)</strong></td>
+                        <td>Linear increase</td>
+                        <td>Use mini-batch K-Means, sampling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large K (many clusters)</strong></td>
+                        <td>Linear increase</td>
+                        <td>Use hierarchical methods, choose K wisely</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large d (high dimensions)</strong></td>
+                        <td>Linear increase</td>
+                        <td>Use dimensionality reduction (PCA) first</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Many iterations (I)</strong></td>
+                        <td>Linear increase</td>
+                        <td>Good initialization (K-Means++), set max iterations</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="success-box">
+                <h4>✅ Why K-Means is Still Fast</h4>
+                <ul>
+                    <li>K is typically small (2-20)</li>
+                    <li>Number of iterations $I$ is usually small (often < 50)</li>
+                    <li>Operations are simple arithmetic (no complex computations)</li>
+                    <li>Highly parallelizable (distance computations can be done in parallel)</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    K-Means ka time complexity $O(I \times n \times K \times d)$ hai jahan $I$ iterations hai, $n$ data points hain, $K$ clusters hain, aur $d$ dimensions hain. Har iteration mein har point ke liye har cluster se distance calculate karte hain jo $O(n \times K \times d)$ time leta hai. Practically K chhota hota hai aur iterations bhi kam hote hain, isliye K-Means bahut fast hai. Lekin agar data points bahut zyada hain ya dimensions bahut high hain, tab thoda slow ho sakta hai.
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 8: WORKED EXAMPLE
+             ======================================== -->
+        <section id="worked-example">
+            <h2>8. Worked Out Example: K-Means on 1D Data</h2>
+            
+            <p>Let's work through a complete example step-by-step to solidify our understanding of the K-Means algorithm.</p>
+            
+            <h4>Problem Setup</h4>
+            
+            <div class="info-box">
+                <strong>Given Data (1D):</strong>
+                <ul>
+                    <li>Four data points: $A = 1, B = 2, C = 5, D = 6$</li>
+                    <li>Number of clusters: $K = 2$</li>
+                    <li>Initial centers: $\mu_1 = 2, \mu_2 = 6$ (randomly initialized)</li>
+                    <li>Distance metric: Manhattan distance (absolute difference)</li>
+                </ul>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Number line showing points A(1), B(2), C(5), D(6) and initial centers μ₁(2), μ₂(6)]
+            </div>
+            
+            <h3>Iteration 1: Assignment Step</h3>
+            
+            <p><strong>Step 1:</strong> Compute distances from each point to both centers</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Point</th>
+                        <th>Value</th>
+                        <th>Distance to μ₁ (2)</th>
+                        <th>Distance to μ₂ (6)</th>
+                        <th>Assigned to</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>A</strong></td>
+                        <td>1</td>
+                        <td>$|1 - 2| = 1$</td>
+                        <td>$|1 - 6| = 5$</td>
+                        <td>μ₁ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B</strong></td>
+                        <td>2</td>
+                        <td>$|2 - 2| = 0$</td>
+                        <td>$|2 - 6| = 4$</td>
+                        <td>μ₁ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>C</strong></td>
+                        <td>5</td>
+                        <td>$|5 - 2| = 3$</td>
+                        <td>$|5 - 6| = 1$</td>
+                        <td>μ₂ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>D</strong></td>
+                        <td>6</td>
+                        <td>$|6 - 2| = 4$</td>
+                        <td>$|6 - 6| = 0$</td>
+                        <td>μ₂ (closer)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-step">
+                <strong>Result after Assignment:</strong>
+                <ul>
+                    <li><strong>Cluster 1 ($\mu_1$):</strong> $\{A, B\} = \{1, 2\}$</li>
+                    <li><strong>Cluster 2 ($\mu_2$):</strong> $\{C, D\} = \{5, 6\}$</li>
+                </ul>
+            </div>
+            
+            <h3>Iteration 1: Update Step</h3>
+            
+            <p><strong>Step 2:</strong> Recompute cluster centers as the mean of assigned points</p>
+            
+            <div class="algorithm-step">
+                <strong>New μ₁:</strong> Mean of cluster 1 = $\frac{A + B}{2} = \frac{1 + 2}{2} = \frac{3}{2} = 1.5$
+            </div>
+            
+            <div class="algorithm-step">
+                <strong>New μ₂:</strong> Mean of cluster 2 = $\frac{C + D}{2} = \frac{5 + 6}{2} = \frac{11}{2} = 5.5$
+            </div>
+            
+            <div class="success-box">
+                <strong>Updated Centers:</strong> $\mu_1 = 1.5, \mu_2 = 5.5$
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Number line showing updated centers μ₁(1.5) and μ₂(5.5)]
+            </div>
+            
+            <h3>Iteration 2: Assignment Step</h3>
+            
+            <p><strong>Step 3:</strong> Compute distances again with updated centers</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Point</th>
+                        <th>Value</th>
+                        <th>Distance to μ₁ (1.5)</th>
+                        <th>Distance to μ₂ (5.5)</th>
+                        <th>Assigned to</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>A</strong></td>
+                        <td>1</td>
+                        <td>$|1 - 1.5| = 0.5$</td>
+                        <td>$|1 - 5.5| = 4.5$</td>
+                        <td>μ₁ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B</strong></td>
+                        <td>2</td>
+                        <td>$|2 - 1.5| = 0.5$</td>
+                        <td>$|2 - 5.5| = 3.5$</td>
+                        <td>μ₁ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>C</strong></td>
+                        <td>5</td>
+                        <td>$|5 - 1.5| = 3.5$</td>
+                        <td>$|5 - 5.5| = 0.5$</td>
+                        <td>μ₂ (closer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>D</strong></td>
+                        <td>6</td>
+                        <td>$|6 - 1.5| = 4.5$</td>
+                        <td>$|6 - 5.5| = 0.5$</td>
+                        <td>μ₂ (closer)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-step">
+                <strong>Result after Assignment:</strong>
+                <ul>
+                    <li><strong>Cluster 1 ($\mu_1$):</strong> $\{A, B\} = \{1, 2\}$ (unchanged!)</li>
+                    <li><strong>Cluster 2 ($\mu_2$):</strong> $\{C, D\} = \{5, 6\}$ (unchanged!)</li>
+                </ul>
+            </div>
+            
+            <h3>Convergence Check</h3>
+            
+            <div class="success-box">
+                <h4>✅ Algorithm Has Converged!</h4>
+                <p>The cluster assignments have not changed. The centers remain stable at $\mu_1 = 1.5$ and $\mu_2 = 5.5$. We can stop here.</p>
+            </div>
+            
+            <h4>Final Result</h4>
+            
+            <div class="key-takeaways">
+                <h4>Final Clustering</h4>
+                <ul>
+                    <li><strong>Cluster 1:</strong> Points {1, 2} with center at 1.5</li>
+                    <li><strong>Cluster 2:</strong> Points {5, 6} with center at 5.5</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                "This is how K-Means works! In this example we saw just 1D data, but the exact same process applies to 2D, 3D, or any high-dimensional data. Just compute distances, assign to nearest center, update centers, and repeat until convergence."
+            </div>
+            
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What would happen if we initialized with $\mu_1 = 1$ and $\mu_2 = 2$ instead?
+                    <div class="answer">
+                        With $\mu_1 = 1$ and $\mu_2 = 2$, initially points A and B would likely cluster separately. However, after the first update, the centers would move and eventually converge to similar positions as before (around 1.5 and 5.5), demonstrating that good algorithms are somewhat robust to initialization, though K-Means++ would still be preferred.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> How many iterations did K-Means require in this example?
+                    <div class="answer">
+                        K-Means converged after just 2 iterations (one assignment-update cycle). This is typical for simple, well-separated data. Complex data may require more iterations.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Calculate the WCSS (Within-Cluster Sum of Squares) for the final clustering.
+                    <div class="answer">
+                        WCSS = $[(1-1.5)^2 + (2-1.5)^2] + [(5-5.5)^2 + (6-5.5)^2]$ <br>
+                        = $[0.25 + 0.25] + [0.25 + 0.25]$ <br>
+                        = $0.5 + 0.5 = 1.0$
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    Is example mein humne 1D data pe K-Means step-by-step dekha. Chaar points the: 1, 2, 5, 6. Pehle randomly 2 aur 6 ko centers banaya. Fir har point ka distance dono centers se nikala aur jo center paas tha usme assign kar diya. Points 1 aur 2 pehle cluster mein gaye aur 5, 6 doosre cluster mein. Fir dono clusters ka mean calculate kiya—1.5 aur 5.5. Next iteration mein dekha ki assignments change nahi hui, matlab algorithm converge ho gaya! Final clusters: {1, 2} aur {5, 6} with centers 1.5 aur 5.5.
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 9: LIMITATIONS
+             ======================================== -->
+        <section id="limitations">
+            <h2>9. Limitations of K-Means</h2>
+            
+            <p>While K-Means is powerful and widely used, it's important to understand its limitations to know when to use alternative methods.</p>
+            
+            <h3>Major Limitations</h3>
+            
+            <div class="warning-box">
+                <h4>⚠️ 1. Cannot Handle Non-Spherical Clusters</h4>
+                <p>K-Means assumes clusters are roughly <strong>spherical</strong> (circular in 2D) with similar sizes. It struggles with other shapes.</p>
+            </div>
+            
+            <h4>Example: Concentric Circles</h4>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Two concentric circular patterns of data points]
+            </div>
+            
+            <div class="professor-note">
+                "Look at this data—there are clearly two clusters in two circular patterns. A human can easily see this. But K-Means will not be able to find these clusters! It will divide the data incorrectly because it only uses distance computations, which favor spherical shapes."
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ 2. Requires Specifying K A Priori</h4>
+                <p>You must decide the number of clusters before running the algorithm. While methods like the Elbow Method help, they're not always reliable.</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ 3. Sensitive to Initialization</h4>
+                <p>Different random initializations can lead to different final clusterings. Poor initialization may result in suboptimal solutions (local minima).</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ 4. Sensitive to Outliers</h4>
+                <p>Since K-Means uses mean calculation, outliers can significantly pull cluster centers away from the true center of the majority of points.</p>
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ 5. Curse of Dimensionality</h4>
+                <p>In very high-dimensional spaces, the concept of "distance" becomes less meaningful. All points tend to become equidistant from each other, making clustering less effective.</p>
+            </div>
+            
+            <div class="professor-note">
+                "In high dimensions, distance metrics themselves are not very meaningful because of the curse of dimensionality. This is a fundamental problem in machine learning that affects many distance-based algorithms."
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ 6. Assumes Clusters Have Similar Sizes</h4>
+                <p>K-Means tends to create clusters of roughly equal size, even when the natural clusters in the data have very different sizes.</p>
+            </div>
+            
+            <h4>When NOT to Use K-Means</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data Characteristic</th>
+                        <th>K-Means Performance</th>
+                        <th>Alternative Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Non-spherical clusters</td>
+                        <td>❌ Poor</td>
+                        <td>DBSCAN, Spectral Clustering</td>
+                    </tr>
+                    <tr>
+                        <td>Unknown number of clusters</td>
+                        <td>⚠️ Requires estimation</td>
+                        <td>Hierarchical Clustering, DBSCAN</td>
+                    </tr>
+                    <tr>
+                        <td>Clusters of vastly different sizes</td>
+                        <td>❌ Poor</td>
+                        <td>DBSCAN, Gaussian Mixture Models</td>
+                    </tr>
+                    <tr>
+                        <td>Noisy data with many outliers</td>
+                        <td>❌ Poor</td>
+                        <td>DBSCAN, K-Medoids</td>
+                    </tr>
+                    <tr>
+                        <td>Very high-dimensional data</td>
+                        <td>⚠️ May degrade</td>
+                        <td>Dimensionality reduction + K-Means</td>
+                    </tr>
+                    <tr>
+                        <td>Well-separated spherical clusters</td>
+                        <td>✅ Excellent</td>
+                        <td>K-Means is great!</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Mitigation Strategies</h4>
+            
+            <ul>
+                <li><strong>For initialization issues:</strong> Use K-Means++ or run multiple times with different random seeds</li>
+                <li><strong>For outliers:</strong> Use K-Medoids instead of K-Means (uses medians instead of means)</li>
+                <li><strong>For unknown K:</strong> Try Elbow Method, Silhouette Analysis, or use hierarchical methods</li>
+                <li><strong>For non-spherical clusters:</strong> Use DBSCAN or Spectral Clustering</li>
+                <li><strong>For high dimensions:</strong> Apply PCA or other dimensionality reduction first</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    K-Means ke kuch limitations bhi hain. Pehla—yeh sirf spherical (gol) clusters ke saath achha kaam karta hai, agar data circular patterns mein ho jaise concentric circles, tab yeh fail ho jata hai. Doosra—humein K pehle se batana padta hai jo mushkil hai. Teesra—initialization se results change ho sakte hain. Chautha—outliers se problem hoti hai. Paanchwaan—bahut high dimensions mein distance meaningful nahi rehta. Lekin agar data well-separated aur spherical hai, tab K-Means bahut powerful hai!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 10: PYTHON IMPLEMENTATION
+             ======================================== -->
+        <section id="implementation">
+            <h2>10. Python Implementation</h2>
+            
+            <p>Let's see how to implement K-Means in Python using the popular scikit-learn library.</p>
+            
+            <h3>Step 1: Import Necessary Libraries</h3>
+            
+            <pre><code class="language-python"># Import required libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+</code></pre>
+            
+            <div class="info-box">
+                <strong>Libraries Used:</strong>
+                <ul>
+                    <li><strong>numpy:</strong> For numerical computations</li>
+                    <li><strong>matplotlib.pyplot:</strong> For data visualization</li>
+                    <li><strong>sklearn.datasets.make_blobs:</strong> To generate toy datasets</li>
+                    <li><strong>sklearn.cluster.KMeans:</strong> The K-Means clustering implementation</li>
+                </ul>
+            </div>
+            
+            <h3>Step 2: Generate Toy Dataset</h3>
+            
+            <pre><code class="language-python"># Generate synthetic data with 3 clusters
+X, y_true = make_blobs(
+    n_samples=300,        # 300 data points
+    centers=3,            # 3 natural clusters
+    cluster_std=0.60,     # Standard deviation of clusters
+    random_state=42       # For reproducibility
+)
+
+# Visualize the generated data
+plt.scatter(X[:, 0], X[:, 1], s=50)
+plt.title("Generated Data")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.show()
+</code></pre>
+            
+            <div class="professor-note">
+                "We're using make_blobs to generate 300 points with 3 natural clusters. This is 2D data, so we can easily visualize it. The cluster_std controls how spread out each cluster is."
+            </div>
+            
+            <h3>Step 3: Initialize and Fit K-Means</h3>
+            
+            <pre><code class="language-python"># Initialize K-Means with K=3 and K-Means++ initialization
+kmeans = KMeans(
+    n_clusters=3,           # Number of clusters (K=3)
+    init='k-means++',       # Use K-Means++ initialization
+    random_state=42         # For reproducibility
+)
+
+# Fit K-Means to the data
+kmeans.fit(X)
+
+# Get cluster centers and labels
+centers = kmeans.cluster_centers_
+labels = kmeans.labels_
+
+print("Cluster Centers:")
+print(centers)
+</code></pre>
+            
+            <div class="info-box">
+                <h4>Key Parameters:</h4>
+                <ul>
+                    <li><strong>n_clusters:</strong> Number of clusters K (must be specified)</li>
+                    <li><strong>init:</strong> Initialization method ('k-means++' is recommended, 'random' is another option)</li>
+                    <li><strong>random_state:</strong> For reproducibility</li>
+                </ul>
+            </div>
+            
+            <h3>Step 4: Visualize the Clustering Result</h3>
+            
+            <pre><code class="language-python"># Visualize clusters with different colors
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=50, cmap='viridis')
+
+# Plot cluster centers as red crosses
+plt.scatter(centers[:, 0], centers[:, 1], 
+            c='red', s=200, alpha=0.75, marker='X', 
+            label='Centroids')
+
+plt.title("K-Means Clustering Result")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.legend()
+plt.show()
+</code></pre>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot showing three colored clusters with red X markers for centroids]
+            </div>
+            
+            <h3>Step 5: Finding Optimal K Using Elbow Method</h3>
+            
+            <pre><code class="language-python"># Calculate WCSS for different values of K
+wcss = []
+k_range = range(1, 11)
+
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', random_state=42)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)  # inertia_ is the WCSS
+
+# Plot the Elbow curve
+plt.plot(k_range, wcss, marker='o', linestyle='--')
+plt.title('Elbow Method for Optimal K')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('WCSS (Within-Cluster Sum of Squares)')
+plt.grid(True)
+plt.show()
+</code></pre>
+            
+            <div class="professor-note">
+                "The kmeans.inertia_ attribute gives us the WCSS directly. We run K-Means for K from 1 to 10 and plot the WCSS values. Look for the elbow—in this case, it should be at K=3 since we generated data with 3 clusters!"
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Elbow plot showing WCSS decreasing with K, elbow at K=3]
+            </div>
+            
+            <h3>Complete Code Example</h3>
+            
+            <pre><code class="language-python"># Complete K-Means implementation example
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+
+# 1. Generate data
+X, y_true = make_blobs(n_samples=300, centers=3, 
+                       cluster_std=0.60, random_state=42)
+
+# 2. Initialize and fit K-Means
+kmeans = KMeans(n_clusters=3, init='k-means++', random_state=42)
+kmeans.fit(X)
+
+# 3. Get results
+centers = kmeans.cluster_centers_
+labels = kmeans.labels_
+
+# 4. Visualize
+plt.figure(figsize=(12, 5))
+
+# Original data
+plt.subplot(1, 2, 1)
+plt.scatter(X[:, 0], X[:, 1], s=50)
+plt.title("Original Data")
+
+# Clustered data
+plt.subplot(1, 2, 2)
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=50, cmap='viridis')
+plt.scatter(centers[:, 0], centers[:, 1], c='red', 
+            s=200, alpha=0.75, marker='X')
+plt.title("K-Means Clustering (K=3)")
+
+plt.tight_layout()
+plt.show()
+
+# 5. Elbow method
+wcss = []
+for k in range(1, 11):
+    km = KMeans(n_clusters=k, init='k-means++', random_state=42)
+    km.fit(X)
+    wcss.append(km.inertia_)
+
+plt.plot(range(1, 11), wcss, marker='o')
+plt.title('Elbow Method')
+plt.xlabel('Number of Clusters')
+plt.ylabel('WCSS')
+plt.show()
+
+print(f"Cluster Centers:\n{centers}")
+print(f"Number of iterations: {kmeans.n_iter_}")
+</code></pre>
+            
+            <div class="key-takeaways">
+                <h4>Key Implementation Points</h4>
+                <ul>
+                    <li>Always use <strong>init='k-means++'</strong> for better initialization</li>
+                    <li>Use <strong>kmeans.inertia_</strong> to get WCSS for Elbow Method</li>
+                    <li>Visualize results to verify clustering makes sense</li>
+                    <li>Try multiple random_state values to check stability</li>
+                    <li>For large datasets, consider <strong>MiniBatchKMeans</strong> for faster computation</li>
+                </ul>
+            </div>
+            
+            <div class="practice-section">
+                <h4>💡 Practice Exercises</h4>
+                
+                <div class="question">
+                    <strong>Exercise 1:</strong> Modify the code to use K=4 instead of K=3. What happens to the clustering?
+                    <div class="answer">
+                        With K=4, one of the natural clusters will be split into two sub-clusters. This demonstrates overfitting—we're forcing more clusters than naturally exist in the data.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Exercise 2:</strong> What is the attribute to access the number of iterations K-Means took to converge?
+                    <div class="answer">
+                        Use <code>kmeans.n_iter_</code> to get the number of iterations until convergence.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Exercise 3:</strong> How would you predict which cluster a new data point belongs to?
+                    <div class="answer">
+                        Use <code>kmeans.predict(new_point)</code> where new_point has the same shape as training data. Example: <code>kmeans.predict([[1, 2]])</code>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>
+                    Python mein K-Means implement karna bahut easy hai sklearn library ke saath. Pehle numpy aur matplotlib import karo, fir make_blobs se toy data generate karo. KMeans class ka object banao aur n_clusters=3 aur init='k-means++' set karo. Fir fit() method se data pe train karo. kmeans.cluster_centers_ se centroids mil jayenge aur kmeans.labels_ se har point ka cluster label. Visualization ke liye matplotlib use karo. Elbow method ke liye 1 se 10 tak K ke liye WCSS (kmeans.inertia_) plot karo aur elbow point dekho!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 11: SUMMARY
+             ======================================== -->
+        <section id="summary">
+            <h2>11. Summary & Key Takeaways</h2>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Main Takeaways from This Lecture</h4>
+                <ul>
+                    <li><strong>Unsupervised Learning:</strong> Works with unlabeled data to discover hidden patterns and structures. Useful for data organization, pattern discovery, and reducing annotation costs.</li>
+                    
+                    <li><strong>K-Means Algorithm:</strong> An iterative clustering method that assigns points to nearest centers and updates centers based on assigned points. Simple yet powerful for many applications.</li>
+                    
+                    <li><strong>Algorithm Steps:</strong> (1) Initialize K centers randomly or using K-Means++, (2) Assign each point to nearest center, (3) Update centers as mean of assigned points, (4) Repeat until convergence.</li>
+                    
+                    <li><strong>Choosing K:</strong> Use the Elbow Method by plotting WCSS vs K and finding the "elbow point" where WCSS stops decreasing rapidly.</li>
+                    
+                    <li><strong>Initialization Matters:</strong> K-Means++ significantly improves results by intelligently spreading initial centers across the data space based on distance distribution.</li>
+                    
+                    <li><strong>Advantages:</strong> Simple to understand and implement, computationally efficient, scalable to large datasets, provides interpretable cluster centroids.</li>
+                    
+                    <li><strong>Limitations:</strong> Requires specifying K a priori, sensitive to initialization and outliers, assumes spherical clusters, may struggle in very high dimensions.</li>
+                    
+                    <li><strong>Time Complexity:</strong> $O(I \times n \times K \times d)$ where I is iterations, n is data points, K is clusters, d is dimensions. Practically fast for reasonable values.</li>
+                    
+                    <li><strong>Implementation:</strong> Easy to implement using sklearn's KMeans class. Always use init='k-means++', visualize results, and verify with Elbow Method.</li>
+                    
+                    <li><strong>Practical Tips:</strong> Visualize clusters when possible, try multiple initializations, apply dimensionality reduction for high-dimensional data, consider alternatives (DBSCAN, Hierarchical) for non-spherical clusters.</li>
+                </ul>
+            </div>
+            
+            <h3>What's Next?</h3>
+            
+            <div class="info-box">
+                <strong>Next Lecture Preview:</strong> In the next lectures, we'll continue with unsupervised learning and explore <strong>dimensionality reduction</strong> techniques like Principal Component Analysis (PCA). These methods help us reduce high-dimensional data while preserving important information.
+            </div>
+            
+            <div class="professor-note">
+                "Today we've covered the fundamentals of unsupervised learning and K-Means clustering. You now understand how algorithms can find patterns in unlabeled data! We've seen the algorithm, implementation, advantages, and limitations. The next lectures will focus on dimensionality reduction. Thank you!"
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Complete Lecture Hinglish Summary</h4>
+                <p>
+                    Aaj ke lecture mein humne unsupervised learning start kiya jo ki bina labels ke data se patterns dhundhta hai. Sabse popular unsupervised algorithm K-Means clustering dekha—jo data points ko K groups mein divide karta hai. Algorithm bahut simple hai: randomly K centers choose karo, har point ko nearest center ke cluster mein dalo, fir centers update karo (mean leke), aur repeat karo jab tak stable na ho jaye. K choose karne ke liye Elbow Method use karte hain jahan WCSS plot karke elbow point dekhte hain. Initialization important hai isliye K-Means++ use karte hain jo intelligently centers spread karta hai. K-Means fast aur simple hai lekin spherical clusters ke liye best kaam karta hai. Python mein sklearn library se easily implement ho jata hai. Next lecture mein dimensionality reduction dekhenge!
+                </p>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             SECTION 12: MIND MAP
+             ======================================== -->
+        <section id="mindmap" class="mindmap">
+            <h2>12. Comprehensive Mind Map</h2>
+            
+            <div class="mindmap-container">
+                <div class="central-node">
+                    K-Means Clustering & Unsupervised Learning
+                </div>
+                
+                <div class="branches">
+                    <!-- Branch 1: Unsupervised Learning -->
+                    <div class="branch">
+                        <h3>🔍 Unsupervised Learning</h3>
+                        <ul>
+                            <li>No labels provided</li>
+                            <li>Discovers hidden patterns</li>
+                            <li>Examples:
+                                <ul style="margin-top: 5px;">
+                                    <li>Photo clustering</li>
+                                    <li>Document clustering</li>
+                                    <li>Customer segmentation</li>
+                                </ul>
+                            </li>
+                            <li>Cost-effective (no annotation)</li>
+                            <li>Scalable to large datasets</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 2: K-Means Algorithm -->
+                    <div class="branch">
+                        <h3>⚙️ K-Means Algorithm</h3>
+                        <ul>
+                            <li>Initialize K centers</li>
+                            <li>Assign points to nearest center</li>
+                            <li>Update centers (compute means)</li>
+                            <li>Repeat until convergence</li>
+                            <li>Return final centroids</li>
+                            <li>Time: $O(I × n × K × d)$</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 3: Choosing K -->
+                    <div class="branch">
+                        <h3>📊 Determining K</h3>
+                        <ul>
+                            <li>Elbow Method</li>
+                            <li>Plot K vs WCSS</li>
+                            <li>Look for elbow point</li>
+                            <li>WCSS = Within-Cluster Sum of Squares</li>
+                            <li>Balance compactness & cluster count</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 4: Initialization -->
+                    <div class="branch">
+                        <h3>🎯 Initialization</h3>
+                        <ul>
+                            <li>Random initialization problems</li>
+                            <li>K-Means++ solution</li>
+                            <li>First center: random</li>
+                            <li>Next centers: probabilistic based on distance</li>
+                            <li>Spreads centers intelligently</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 5: Advantages -->
+                    <div class="branch">
+                        <h3>✅ Advantages</h3>
+                        <ul>
+                            <li>Simple & intuitive</li>
+                            <li>Fast & efficient</li>
+                            <li>Scalable to large data</li>
+                            <li>Interpretable centroids</li>
+                            <li>Easy to implement</li>
+                            <li>Adaptable (K-Means++)</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 6: Limitations -->
+                    <div class="branch">
+                        <h3>⚠️ Limitations</h3>
+                        <ul>
+                            <li>Requires K a priori</li>
+                            <li>Sensitive to initialization</li>
+                            <li>Assumes spherical clusters</li>
+                            <li>Sensitive to outliers</li>
+                            <li>Curse of dimensionality</li>
+                            <li>Equal-size cluster bias</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 7: Implementation -->
+                    <div class="branch">
+                        <h3>💻 Python Implementation</h3>
+                        <ul>
+                            <li>sklearn.cluster.KMeans</li>
+                            <li>n_clusters parameter</li>
+                            <li>init='k-means++'</li>
+                            <li>fit() method</li>
+                            <li>cluster_centers_</li>
+                            <li>labels_</li>
+                            <li>inertia_ (WCSS)</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 8: Applications -->
+                    <div class="branch">
+                        <h3>🌟 Real-World Applications</h3>
+                        <ul>
+                            <li>Customer segmentation</li>
+                            <li>Image compression</li>
+                            <li>Document organization</li>
+                            <li>Anomaly detection</li>
+                            <li>Recommendation systems</li>
+                            <li>Market basket analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 25px; background: #e8f5e9; border-radius: 10px; border-left: 5px solid #4caf50;">
+                <h4 style="color: #2e7d32; margin-bottom: 15px;">🔗 Concept Connections</h4>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin: 10px 0;">• <strong>K-Means ↔ K-NN:</strong> Both use K parameter, but K-Means is unsupervised (clustering) while K-NN is supervised (classification)</li>
+                    <li style="margin: 10px 0;">• <strong>Initialization ↔ Final Result:</strong> K-Means++ initialization leads to better convergence and avoids local minima</li>
+                    <li style="margin: 10px 0;">• <strong>WCSS ↔ Optimal K:</strong> Lower WCSS indicates compact clusters, but elbow point prevents overfitting</li>
+                    <li style="margin: 10px 0;">• <strong>Distance Metric ↔ Cluster Shape:</strong> Euclidean distance assumption leads to spherical cluster bias</li>
+                    <li style="margin: 10px 0;">• <strong>Dimensionality ↔ Performance:</strong> High dimensions affect distance meaningfulness (curse of dimensionality)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ========================================
+             FOOTER
+             ======================================== -->
+        <footer>
+           <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

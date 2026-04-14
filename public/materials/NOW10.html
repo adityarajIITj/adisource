@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Vector Machines (SVM) - Numerical Examples Lecture Notes</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* ===== HEADER STYLES ===== */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* ===== TABLE OF CONTENTS ===== */
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        
+        .toc .sub-item {
+            margin-left: 20px;
+            font-size: 0.95em;
+        }
+        
+        /* ===== MAIN CONTENT SECTIONS ===== */
+        section {
+            background: white;
+            padding: 35px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        
+        h3 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            padding-left: 15px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        h4 {
+            color: #495057;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        
+        /* ===== TEXT STYLES ===== */
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1.05em;
+        }
+        
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #764ba2;
+            font-style: italic;
+        }
+        
+        /* ===== SPECIAL BOXES ===== */
+        .key-concept {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-left: 5px solid #667eea;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        
+        .key-concept h4 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            display: block;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .hinglish-summary h4 {
+            color: #1976d2;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .hinglish-summary p {
+            color: #0d47a1;
+            font-style: italic;
+        }
+        
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ===== PRACTICE QUESTIONS ===== */
+        .practice-questions {
+            background: #f1f8e9;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #8bc34a;
+        }
+        
+        .practice-questions h4 {
+            color: #558b2f;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #8bc34a;
+        }
+        
+        .question strong {
+            color: #558b2f;
+        }
+        
+        .answer {
+            background: #e8f5e9;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #66bb6a;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        /* ===== KEY TAKEAWAYS ===== */
+        .key-takeaways {
+            background: #fce4ec;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #e91e63;
+        }
+        
+        .key-takeaways h4 {
+            color: #c2185b;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            border-bottom: 1px solid #f8bbd0;
+        }
+        
+        .key-takeaways li:last-child {
+            border-bottom: none;
+        }
+        
+        .key-takeaways li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: #e91e63;
+            font-size: 1.2em;
+        }
+        
+        /* ===== DIAGRAM PLACEHOLDER ===== */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border: 2px dashed #ff9800;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #e65100;
+            font-style: italic;
+        }
+        
+        /* ===== MATHEMATICAL EQUATIONS ===== */
+        .equation-box {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        
+        /* ===== CODE/FORMULA BLOCKS ===== */
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        /* ===== MIND MAP ===== */
+        .mind-map {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 40px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #2196f3;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .branch h3 {
+            color: #1976d2;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.3em;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .branch li {
+            padding: 8px 0;
+            color: #0d47a1;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .branch li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #2196f3;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            header p {
+                font-size: 1em;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ===== SCROLL BEHAVIOR ===== */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER SECTION ===== -->
+    <header>
+        <h1>📊 Support Vector Machines: Numerical Examples</h1>
+        <p>Numerical Optimization - Lecture Notes</p>
+        <p style="font-size: 0.9em; opacity: 0.8;">~ By Armaan Kachhawa</p>
+    </header>
+
+    <!-- ===== TABLE OF CONTENTS ===== -->
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#recap">1. Recap: Support Vector Machine Problem</a></li>
+            <li><a href="#svm-formulation">2. SVM Mathematical Formulation</a>
+                <ul class="sub-item">
+                    <li><a href="#original-problem">2.1 Original Problem Statement</a></li>
+                    <li><a href="#final-formulation">2.2 Final SVM Formulation</a></li>
+                </ul>
+            </li>
+            <li><a href="#geometric-intuition">3. Geometric Intuition for Optimal Hyperplane</a>
+                <ul class="sub-item">
+                    <li><a href="#margin-concept">3.1 Understanding Margin</a></li>
+                    <li><a href="#perpendicular-bisector">3.2 Perpendicular Bisector Principle</a></li>
+                </ul>
+            </li>
+            <li><a href="#example1">4. Example 1: Two Points (0,0) and (2,2)</a>
+                <ul class="sub-item">
+                    <li><a href="#example1-geometric">4.1 Geometric Solution</a></li>
+                    <li><a href="#example1-optimization">4.2 Optimization Solution</a></li>
+                </ul>
+            </li>
+            <li><a href="#example2">5. Example 2: Multiple Points on X-axis</a>
+                <ul class="sub-item">
+                    <li><a href="#example2-setup">5.1 Problem Setup: {(1,0), (2,0)} vs {(4,0), (5,0)}</a></li>
+                    <li><a href="#example2-solution">5.2 Finding the Optimal Separator</a></li>
+                </ul>
+            </li>
+            <li><a href="#conclusion">6. Conclusion and Next Steps</a></li>
+        </ul>
+    </div>
+
+    <!-- ===== SECTION 1: RECAP ===== -->
+    <section id="recap">
+        <h2>1. Recap: Support Vector Machine Problem</h2>
+        
+        <div class="key-concept">
+            <h4>What is the Support Vector Machine (SVM) Problem?</h4>
+            <p>
+                The <strong>Support Vector Machine problem</strong> deals with classifying two distinct classes of data points. 
+                Given a dataset where points can be separated by a hyperplane, the objective is to find the <strong>optimal 
+                hyperplane</strong> that not only separates the two classes but also maximizes the <strong>margin</strong> 
+                (safety distance) between them.
+            </p>
+        </div>
+
+        <p>
+            Imagine we have data about tumors - some are <strong>malignant</strong> and others are <strong>benign</strong>. 
+            The features might include characteristics like <em>size</em> and <em>reactivity</em>. Our goal is to find 
+            a hyperplane (in 2D, this is simply a line) that:
+        </p>
+
+        <ul style="margin-left: 30px;">
+            <li style="margin: 10px 0;">✓ Separates one class of points on one side of the hyperplane</li>
+            <li style="margin: 10px 0;">✓ Keeps the other class on the opposite side</li>
+            <li style="margin: 10px 0;">✓ Maximizes the margin (minimum distance from the hyperplane to any point)</li>
+        </ul>
+
+        <div class="professor-note">
+            The concept of margin acts as a "safety margin." If a new, unseen point arrives, having a larger margin 
+            minimizes the chance of misclassification. This is the core idea behind SVM's robustness.
+        </div>
+
+        <h3>Understanding Margin</h3>
+        
+        <p>
+            The <strong>margin</strong> is defined by taking the distance of all points from the separating hyperplane 
+            for both classes, then identifying the <strong>minimum distance</strong>. Our optimization goal is to 
+            <strong>maximize this minimum distance</strong>.
+        </p>
+
+        <div class="equation-box">
+            <p style="text-align: center;">
+                Distance from point \( x_i \) to hyperplane \( w^T x = b \):
+            </p>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                \[ \text{Distance} = \frac{|w^T x_i - b|}{\|w\|} \]
+            </p>
+        </div>
+
+        <p>
+            Where:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>\( w \) is the normal vector to the hyperplane</li>
+            <li>\( b \) is the bias term</li>
+            <li>\( \|w\| \) is the norm (length) of vector \( w \)</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                SVM ka basic problem yeh hai ki hume do different classes ke data points ko separate karna hai ek hyperplane 
+                se. Lekin sirf separate karna hi kaafi nahi hai - hume aise hyperplane chahiye jo maximum margin de. Margin 
+                matlab safety distance, jisse nayi point aane par misclassification ka chance kam ho jaye. Formula simple 
+                hai: point se hyperplane tak ki distance ko calculate karo aur sabse minimum distance ko maximize karo.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 2: SVM FORMULATION ===== -->
+    <section id="svm-formulation">
+        <h2>2. SVM Mathematical Formulation</h2>
+
+        <h3 id="original-problem">2.1 Original Problem Statement</h3>
+
+        <p>
+            Consider we have been given two sets of points:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li><strong>Class 1:</strong> \( \{x_1, x_2, \ldots, x_m\} \) (represented by circles ○)</li>
+            <li><strong>Class 2:</strong> \( \{x_{m+1}, x_{m+2}, \ldots, x_{m+p}\} \) (represented by crosses ×)</li>
+        </ul>
+
+        <p>
+            All points belong to \( \mathbb{R}^n \) (n-dimensional space).
+        </p>
+
+        <div class="equation-box">
+            <h4>Original Optimization Problem:</h4>
+            <p style="text-align: center; font-size: 1.1em;">
+
+                \[
+                \begin{aligned}
+                \text{maximize} \quad & \min_{i=1,2,\ldots,m+p} \frac{|w^T x_i - b|}{\|w\|} \\
+                \text{subject to} \quad & w^T x_i \leq b, \quad i = 1, 2, \ldots, m \\
+                & w^T x_i \geq b, \quad i = m+1, \ldots, m+p
+                \end{aligned}
+                \]
+            </p>
+        </div>
+
+        <p>
+            This formulation states that we want to <strong>maximize</strong> the <strong>minimum distance</strong> 
+            of all points from the hyperplane, while ensuring that:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>All points of Class 1 lie on one side of the hyperplane (\( w^T x_i \leq b \))</li>
+            <li>All points of Class 2 lie on the other side (\( w^T x_i \geq b \))</li>
+        </ul>
+
+        <h3 id="final-formulation">2.2 Final SVM Formulation</h3>
+
+        <p>
+            The original problem looks complicated, but through mathematical simplification, we can reformulate 
+            it into a more tractable <strong>quadratic optimization problem</strong>:
+        </p>
+
+        <div class="equation-box">
+            <h4>Final SVM Formulation:</h4>
+            <p style="text-align: center; font-size: 1.1em;">
+
+                \[
+                \begin{aligned}
+                \text{minimize} \quad & \|w\|^2 \\
+                \text{subject to} \quad & w^T x_i \leq b - 1, \quad i = 1, 2, \ldots, m \\
+                & w^T x_i \geq b + 1, \quad i = m+1, \ldots, m+p
+                \end{aligned}
+                \]
+            </p>
+        </div>
+
+        <div class="professor-note">
+            The constraints have changed from \( w^T x_i \leq b \) to \( w^T x_i \leq b - 1 \) and from 
+            \( w^T x_i \geq b \) to \( w^T x_i \geq b + 1 \). This reformulation removes the "max-min" 
+            term and converts the problem into a standard quadratic programming problem.
+        </div>
+
+        <h3>Understanding the Formulation</h3>
+
+        <p>
+            <strong>What is \( \|w\|^2 \)?</strong>
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>For 2 variables: \( \|w\|^2 = w_1^2 + w_2^2 \)</li>
+            <li>For 3 variables: \( \|w\|^2 = w_1^2 + w_2^2 + w_3^2 \)</li>
+            <li>For n variables: \( \|w\|^2 = w_1^2 + w_2^2 + \cdots + w_n^2 \)</li>
+        </ul>
+
+        <p>
+            This is a <strong>quadratic function</strong>, which makes the problem convex and easier to solve 
+            using standard optimization techniques.
+        </p>
+
+        <h3>Alternative Combined Form</h3>
+
+        <p>
+            Sometimes the constraints are written in a combined form using labels \( y_i \):
+        </p>
+
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[ y_i(w^T x_i - b) \geq 1, \quad \text{for all } i \]
+            </p>
+            <p style="text-align: center;">
+                where \( y_i = \begin{cases} +1 & \text{if } x_i \text{ belongs to Class 2} \\ -1 & \text{if } x_i \text{ belongs to Class 1} \end{cases} \)
+            </p>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                SVM ka mathematical formulation bahut simple ho jata hai simplification ke baad. Original problem mein 
+                max-min term tha jo complicated tha. Final formulation mein hume bas \(\|w\|^2\) ko minimize karna hai, 
+                jo ek quadratic function hai. Constraints bhi change ho gaye - ab hume ensure karna hai ki ek class ke 
+                points \(w^T x_i \leq b-1\) satisfy karein aur doosri class ke points \(w^T x_i \geq b+1\) follow karein. 
+                Yeh ek standard optimization problem ban gaya jo solve karna aasan hai.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 3: GEOMETRIC INTUITION ===== -->
+    <section id="geometric-intuition">
+        <h2>3. Geometric Intuition for Optimal Hyperplane</h2>
+
+        <h3 id="margin-concept">3.1 Understanding Margin</h3>
+
+        <p>
+            Before diving into mathematical solutions, let's develop a <strong>geometric intuition</strong> for 
+            what the optimal separating hyperplane should look like.
+        </p>
+
+        <div class="key-concept">
+            <h4>Key Insight: Maximum Margin Principle</h4>
+            <p>
+                The highest safety margin between two classes is achieved when the separating hyperplane is positioned 
+                such that it is <strong>equidistant</strong> from the nearest points of both classes.
+            </p>
+        </div>
+
+        <h3 id="perpendicular-bisector">3.2 Perpendicular Bisector Principle</h3>
+
+        <p>
+            Consider two points from different classes. The optimal separating line should:
+        </p>
+
+        <ol style="margin-left: 30px; line-height: 2;">
+            <li><strong>Pass through the midpoint</strong> of the line segment joining the two closest points from different classes</li>
+            <li><strong>Be perpendicular</strong> to the line segment joining these points</li>
+        </ol>
+
+        <div class="professor-note">
+            Why must it pass through the midpoint? If the separating line is closer to one point than the other, 
+            the minimum distance gets reduced. We're trying to maximize the minimum distance, so the line should 
+            be balanced - equidistant from both points.
+        </div>
+
+        <h3>Why Perpendicular?</h3>
+
+        <p>
+            This can be proven using the <strong>Pythagorean theorem</strong>:
+        </p>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Triangle showing perpendicular distance vs. oblique distance]<br>
+            Any non-perpendicular line through the midpoint will have a shorter perpendicular distance<br>
+            because the hypotenuse is always longer than either of the other sides in a right triangle.
+        </div>
+
+        <p>
+            If you draw any other line through the midpoint that is <em>not</em> perpendicular to the joining segment, 
+            the perpendicular distance from either point to this line will be less than the perpendicular distance 
+            to the perpendicular bisector. This follows from the fact that in a right triangle, the hypotenuse 
+            (the direct distance from point to midpoint) is longer than either of the perpendicular sides.
+        </p>
+
+        <h3>Important Note on Separability</h3>
+
+        <p>
+            Not all lines maximize distance - they must also <strong>separate</strong> the two classes. 
+            For example, a line parallel to the y-axis might be very far from both points, but if both 
+            points are on the same side of the line, it's not a valid separator.
+        </p>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Geometric Principles</h4>
+            <ul>
+                <li>The optimal hyperplane maximizes the minimum distance to all points</li>
+                <li>It passes through the midpoint of the closest points from different classes</li>
+                <li>It is perpendicular to the line joining these closest points</li>
+                <li>The line must separate the two classes (one class on each side)</li>
+                <li>This geometric intuition holds for any number of dimensions</li>
+            </ul>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                Geometric intuition se samajhein to optimal separating line ko midpoint se pass hona chahiye aur 
+                perpendicular hona chahiye. Why? Kyunki agar line kisi ek point ke zyada paas hai to minimum distance 
+                kam ho jayega. Aur agar line perpendicular nahi hai to Pythagoras theorem se pata chalta hai ki 
+                perpendicular distance kam hoga. Basically, ek balanced position chahiye jo dono classes se maximum 
+                possible distance maintain kare. Yeh principle har dimension mein work karta hai, chahe 2D ho ya higher dimensions.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 4: EXAMPLE 1 ===== -->
+    <section id="example1">
+        <h2>4. Example 1: Two Points (0,0) and (2,2)</h2>
+
+        <h3 id="example1-geometric">4.1 Geometric Solution</h3>
+
+        <p>
+            Let's work through a concrete example to understand how the SVM formulation works in practice.
+        </p>
+
+        <div class="key-concept">
+            <h4>Problem Setup</h4>
+            <p>
+                We have two points:
+            </p>
+            <ul style="margin-left: 30px;">
+                <li><strong>Class 1:</strong> Point (0, 0)</li>
+                <li><strong>Class 2:</strong> Point (2, 2)</li>
+            </ul>
+            <p>
+                Find the hyperplane \( w_1 x + w_2 y = b \) that separates them with the highest margin.
+            </p>
+        </div>
+
+        <h4>Step 1: Exploring Different Separating Lines</h4>
+
+        <p>
+            Let's first consider lines <strong>parallel to the y-axis</strong> (of the form \( x = c \)):
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Line</th>
+                    <th>Distance from (0,0)</th>
+                    <th>Distance from (2,2)</th>
+                    <th>Minimum Distance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>\( x = 1.5 \)</td>
+                    <td>1.5</td>
+                    <td>0.5</td>
+                    <td>0.5</td>
+                </tr>
+                <tr>
+                    <td>\( x = 1.25 \)</td>
+                    <td>1.25</td>
+                    <td>0.75</td>
+                    <td>0.75</td>
+                </tr>
+                <tr>
+                    <td>\( x = 1 \)</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td><strong>1</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Among lines parallel to the y-axis, \( x = 1 \) gives the best margin of <strong>1 unit</strong>.
+        </p>
+
+        <h4>Step 2: Can We Do Better?</h4>
+
+        <p>
+            Now let's try a line with a different orientation. Consider the line \( x + y = 1 \):
+        </p>
+
+        <div class="equation-box">
+            <p><strong>Distance from (0,0) to line \( x + y = 1 \):</strong></p>
+            <p style="text-align: center;">
+
+                \[ d_1 = \frac{|0 + 0 - 1|}{\sqrt{1^2 + 1^2}} = \frac{1}{\sqrt{2}} \approx 0.707 \]
+            </p>
+            
+            <p><strong>Distance from (2,2) to line \( x + y = 1 \):</strong></p>
+            <p style="text-align: center;">
+
+                \[ d_2 = \frac{|2 + 2 - 1|}{\sqrt{1^2 + 1^2}} = \frac{3}{\sqrt{2}} \approx 2.121 \]
+            </p>
+            
+            <p><strong>Minimum distance:</strong> \( \frac{1}{\sqrt{2}} \approx 0.707 \)</p>
+        </div>
+
+        <p>
+            This is worse than \( x = 1 \). But what if we try \( x + y = 2 \)?
+        </p>
+
+        <div class="equation-box">
+            <p><strong>Distance from (0,0) to line \( x + y = 2 \):</strong></p>
+            <p style="text-align: center;">
+
+                \[ d_1 = \frac{|0 + 0 - 2|}{\sqrt{2}} = \frac{2}{\sqrt{2}} = \sqrt{2} \approx 1.414 \]
+            </p>
+            
+            <p><strong>Distance from (2,2) to line \( x + y = 2 \):</strong></p>
+            <p style="text-align: center;">
+
+                \[ d_2 = \frac{|2 + 2 - 2|}{\sqrt{2}} = \frac{2}{\sqrt{2}} = \sqrt{2} \approx 1.414 \]
+            </p>
+            
+            <p><strong>Minimum distance:</strong> \( \sqrt{2} \approx 1.414 \) ✓ <strong>Better!</strong></p>
+        </div>
+
+        <h4>Step 3: Geometric Verification</h4>
+
+        <p>
+            According to our geometric intuition:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>The line joining (0,0) and (2,2) has equation \( y = x \)</li>
+            <li>The midpoint is (1, 1)</li>
+            <li>The perpendicular line through (1, 1) has slope -1 (negative reciprocal of 1)</li>
+            <li>Equation: \( y - 1 = -1(x - 1) \) → \( y = -x + 2 \) → \( x + y = 2 \)</li>
+        </ul>
+
+        <div class="professor-note">
+            By changing the orientation from a vertical line to the perpendicular bisector, we improved 
+            the margin from 1 to \( \sqrt{2} \approx 1.414 \). This confirms our geometric principle!
+        </div>
+
+        <h3 id="example1-optimization">4.2 Optimization Solution</h3>
+
+        <p>
+            Now let's verify that the SVM formulation gives us the same answer.
+        </p>
+
+        <div class="equation-box">
+            <h4>Setting up the optimization problem:</h4>
+            <p>
+
+                \[
+                \begin{aligned}
+                \text{minimize} \quad & w_1^2 + w_2^2 \\
+                \text{subject to} \quad & w_1(0) + w_2(0) \leq b - 1 \quad \text{[Point (0,0)]} \\
+                & w_1(2) + w_2(2) \geq b + 1 \quad \text{[Point (2,2)]}
+                \end{aligned}
+                \]
+            </p>
+        </div>
+
+        <h4>Step 1: Simplify Constraints</h4>
+
+        <p>
+            From the first constraint:
+        </p>
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[ 0 \leq b - 1 \quad \Rightarrow \quad b \geq 1 \]
+            </p>
+        </div>
+
+        <p>
+            From the second constraint:
+        </p>
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[ 2w_1 + 2w_2 \geq b + 1 \quad \Rightarrow \quad w_1 + w_2 \geq \frac{b+1}{2} \]
+            </p>
+        </div>
+
+        <h4>Step 2: Geometric Interpretation</h4>
+
+        <p>
+            Think of \( w_1 \) as x and \( w_2 \) as y. We need to:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>Minimize \( x^2 + y^2 \) (distance from origin in the \( w_1, w_2 \) space)</li>
+            <li>Subject to \( x + y \geq \frac{b+1}{2} \)</li>
+            <li>With \( b \geq 1 \)</li>
+        </ul>
+
+        <div class="professor-note">
+            Note: The optimization is happening in a different space - the space of parameters \( w_1, w_2, b \), 
+            not the original data space!
+        </div>
+
+        <p>
+            Minimizing \( w_1^2 + w_2^2 \) means finding the smallest circle centered at origin that still 
+            satisfies the constraint \( w_1 + w_2 \geq \frac{b+1}{2} \).
+        </p>
+
+        <h4>Step 3: Finding the Optimal Solution</h4>
+
+        <p>
+            For a constraint \( x + y \geq p \), by symmetry, the minimum of \( x^2 + y^2 \) occurs at \( x = y = \frac{p}{2} \).
+        </p>
+
+        <p>
+            So for our constraint \( w_1 + w_2 \geq \frac{b+1}{2} \):
+        </p>
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[ w_1 = w_2 = \frac{b+1}{4} \]
+            </p>
+        </div>
+
+        <p>
+            To minimize \( w_1^2 + w_2^2 \), we want the smallest value of \( b \), which is \( b = 1 \):
+        </p>
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[ w_1 = w_2 = \frac{1+1}{4} = \frac{1}{2} \]
+            </p>
+        </div>
+
+        <h4>Step 4: Final Answer</h4>
+
+        <div class="key-concept">
+            <h4>Optimal Solution:</h4>
+            <ul style="margin-left: 30px;">
+                <li>\( w_1 = \frac{1}{2} \)</li>
+                <li>\( w_2 = \frac{1}{2} \)</li>
+                <li>\( b = 1 \)</li>
+            </ul>
+            <p>
+                <strong>Separating hyperplane:</strong> \( \frac{1}{2}x + \frac{1}{2}y = 1 \) → \( x + y = 2 \) ✓
+            </p>
+        </div>
+
+        <p>
+            This matches our geometric solution perfectly!
+        </p>
+
+        <div class="practice-questions">
+            <h4>🎓 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> What would be the optimal separating hyperplane for points (0,0) and (4,4)?
+                <div class="answer">
+                    Following the same logic, the midpoint is (2,2), and the line joining them is \(y = x\). 
+                    The perpendicular bisector through (2,2) is \(x + y = 4\).
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why do we minimize \(\|w\|^2\) instead of just \(\|w\|\)?
+                <div class="answer">
+                    Minimizing \(\|w\|^2\) is mathematically equivalent to minimizing \(\|w\|\) (since both achieve 
+                    minimum at the same point), but \(\|w\|^2\) is differentiable everywhere and creates a quadratic 
+                    programming problem, which is easier to solve.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Calculate the margin for the optimal solution \(x + y = 2\).
+                <div class="answer">
+                    The margin is the distance from either point to the line: 
+
+                    \[\text{Margin} = \frac{|0 + 0 - 2|}{\sqrt{2}} = \frac{2}{\sqrt{2}} = \sqrt{2} \approx 1.414\]
+                </div>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                Is example mein humne do points (0,0) aur (2,2) ke liye SVM solve kiya. Pehle geometric intuition 
+                se socha - line midpoint (1,1) se pass honi chahiye aur perpendicular honi chahiye joining line ke. 
+                Isse hume \(x + y = 2\) mila. Phir humne mathematical optimization se solve kiya - minimize \(w_1^2 + w_2^2\) 
+                subject to constraints. Dono methods se same answer aaya: \(w_1 = w_2 = 1/2\), \(b = 1\), yaani 
+                \(x + y = 2\). Margin bhi improve hua - 1 se \(\sqrt{2}\) tak. Yeh confirm karta hai ki humara 
+                formulation sahi hai!
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 5: EXAMPLE 2 ===== -->
+    <section id="example2">
+        <h2>5. Example 2: Multiple Points on X-axis</h2>
+
+        <h3 id="example2-setup">5.1 Problem Setup: {(1,0), (2,0)} vs {(4,0), (5,0)}</h3>
+
+        <div class="key-concept">
+            <h4>Problem Statement</h4>
+            <p>
+                We have two classes of points, all lying on the x-axis:
+            </p>
+            <ul style="margin-left: 30px;">
+                <li><strong>Class 1:</strong> (1, 0) and (2, 0)</li>
+                <li><strong>Class 2:</strong> (4, 0) and (5, 0)</li>
+            </ul>
+            <p>
+                Find the optimal separating hyperplane.
+            </p>
+        </div>
+
+        <h4>Initial Observations</h4>
+
+        <p>
+            There are many lines that can classify these points:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>\( x = 2.5 \) ✓ Separates correctly</li>
+            <li>\( x = 3 \) ✓ Separates correctly</li>
+            <li>\( x = 3.5 \) ✓ Separates correctly</li>
+            <li>Any line \( x = c \) where \( 2 < c < 4 \) works</li>
+        </ul>
+
+        <p>
+            We could also try lines that are not vertical:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>\( y = x - 3 \) might work</li>
+            <li>\( y = 1.2x - 4 \) might work</li>
+            <li>Many other orientations...</li>
+        </ul>
+
+        <div class="professor-note">
+            But remember: we don't just want any separating line - we want the one with the <strong>maximum margin</strong>!
+        </div>
+
+        <h3>Geometric Intuition</h3>
+
+        <p>
+            Which points matter most? Not (1,0) and (5,0) - they're far apart. The critical points are 
+            <strong>(2,0) and (4,0)</strong> because these are the <em>closest points from different classes</em>.
+        </p>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Points on x-axis with (2,0) and (4,0) highlighted as "support vectors"]
+        </div>
+
+        <p>
+            Think of it like two trains approaching each other - we measure the distance between their fronts 
+            (closest points), not their ends!
+        </p>
+
+        <h4>Expected Solution</h4>
+
+        <p>
+            Based on our geometric principle:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>The line should pass through the midpoint of (2,0) and (4,0), which is <strong>(3,0)</strong></li>
+            <li>Since both points lie on the x-axis, the perpendicular line must be <strong>parallel to the y-axis</strong></li>
+            <li>Expected optimal line: \( x = 3 \)</li>
+        </ul>
+
+        <h3 id="example2-solution">5.2 Finding the Optimal Separator</h3>
+
+        <h4>Setting Up the Optimization</h4>
+
+        <div class="equation-box">
+            <h4>Optimization Problem:</h4>
+            <p>
+
+                \[
+                \begin{aligned}
+                \text{minimize} \quad & w_1^2 + w_2^2 \\
+                \text{subject to} \quad & w_1(1) + w_2(0) \leq b - 1 \\
+                & w_1(2) + w_2(0) \leq b - 1 \\
+                & w_1(4) + w_2(0) \geq b + 1 \\
+                & w_1(5) + w_2(0) \geq b + 1
+                \end{aligned}
+                \]
+            </p>
+        </div>
+
+        <h4>Simplifying Constraints</h4>
+
+        <p>
+            Since all y-coordinates are 0, the \( w_2 \) terms vanish:
+        </p>
+
+        <div class="equation-box">
+            <p style="text-align: center;">
+
+                \[
+                \begin{aligned}
+                w_1 & \leq b - 1 \\
+                2w_1 & \leq b - 1 \\
+                4w_1 & \geq b + 1 \\
+                5w_1 & \geq b + 1
+                \end{aligned}
+                \]
+            </p>
+        </div>
+
+        <p>
+            Since \( w_2 \) doesn't appear in any constraint and we want to minimize \( w_1^2 + w_2^2 \), 
+            the optimal choice is:
+        </p>
+        <div class="equation-box">
+            <p style="text-align: center; font-size: 1.2em;">
+
+                \[ w_2 = 0 \]
+            </p>
+        </div>
+
+        <h4>Visualizing the Feasible Region</h4>
+
+        <p>
+            Let's visualize these constraints in the \( (w_1, b) \) plane:
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Constraint</th>
+                    <th>Rewritten</th>
+                    <th>Region</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>\( w_1 \leq b - 1 \)</td>
+                    <td>\( b \geq w_1 + 1 \)</td>
+                    <td>Above line \( b = w_1 + 1 \)</td>
+                </tr>
+                <tr>
+                    <td>\( 2w_1 \leq b - 1 \)</td>
+                    <td>\( b \geq 2w_1 + 1 \)</td>
+                    <td>Above line \( b = 2w_1 + 1 \)</td>
+                </tr>
+                <tr>
+                    <td>\( 4w_1 \geq b + 1 \)</td>
+                    <td>\( b \leq 4w_1 - 1 \)</td>
+                    <td>Below line \( b = 4w_1 - 1 \)</td>
+                </tr>
+                <tr>
+                    <td>\( 5w_1 \geq b + 1 \)</td>
+                    <td>\( b \leq 5w_1 - 1 \)</td>
+                    <td>Below line \( b = 5w_1 - 1 \)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Feasible region in (w₁, b) space showing intersection of four half-planes]<br>
+            The feasible region is a narrow strip starting from point (1, 3)
+        </div>
+
+        <h4>Finding the Optimal Point</h4>
+
+        <p>
+            The <strong>feasible region</strong> is the intersection of all four constraints. This forms a 
+            narrow strip in the \( (w_1, b) \) plane.
+        </p>
+
+        <div class="professor-note">
+            The key insight: We want to minimize \( w_1^2 \), which means we want the smallest possible value of 
+            \( w_1 \) that still satisfies all constraints. Looking at the feasible region, the leftmost point 
+            (minimum \( w_1 \)) occurs at the intersection of the binding constraints.
+        </div>
+
+        <p>
+            The critical constraints are:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>\( 2w_1 = b - 1 \) (most restrictive from above)</li>
+            <li>\( 4w_1 = b + 1 \) (most restrictive from below)</li>
+        </ul>
+
+        <p>
+            Solving these simultaneously:
+        </p>
+        <div class="equation-box">
+            <p>
+
+                \[
+                \begin{aligned}
+                2w_1 &= b - 1 \\
+                4w_1 &= b + 1 \\
+                \hline
+                4w_1 - 2w_1 &= (b + 1) - (b - 1) \\
+                2w_1 &= 2 \\
+                w_1 &= 1
+                \end{aligned}
+                \]
+            </p>
+            <p>
+                Substituting back: \( 2(1) = b - 1 \) → \( b = 3 \)
+            </p>
+        </div>
+
+        <h4>Final Solution</h4>
+
+        <div class="key-concept">
+            <h4>Optimal Solution:</h4>
+            <ul style="margin-left: 30px;">
+                <li>\( w_1 = 1 \)</li>
+                <li>\( w_2 = 0 \)</li>
+                <li>\( b = 3 \)</li>
+            </ul>
+            <p>
+                <strong>Separating hyperplane:</strong> \( 1 \cdot x + 0 \cdot y = 3 \) → \( x = 3 \) ✓
+            </p>
+        </div>
+
+        <p>
+            Perfect! This matches our geometric intuition exactly.
+        </p>
+
+        <h4>Verification</h4>
+
+        <p>
+            Let's verify this is indeed optimal:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>Distance from (2,0) to line \( x = 3 \): |2 - 3| = 1</li>
+            <li>Distance from (4,0) to line \( x = 3 \): |4 - 3| = 1</li>
+            <li>Minimum distance (margin) = 1 (both points equidistant)</li>
+            <li>All Class 1 points (\( x < 3 \)) on left, Class 2 points (\( x > 3 \)) on right ✓</li>
+        </ul>
+
+        <div class="practice-questions">
+            <h4>🎓 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Why did we set \( w_2 = 0 \)?
+                <div class="answer">
+                    Since \( w_2 \) doesn't appear in any of the constraints, and we want to minimize 
+                    \( w_1^2 + w_2^2 \), the optimal choice is to set \( w_2 = 0 \) to make the objective 
+                    function as small as possible.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> What are the "support vectors" in this example?
+                <div class="answer">
+                    The support vectors are points (2,0) and (4,0) - the closest points from each class 
+                    that lie exactly on the margin boundaries. Points (1,0) and (5,0) are not support vectors 
+                    as they're further from the decision boundary.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Would the solution change if we had points (1,0), (2,0), (2.5,0) in Class 1?
+                <div class="answer">
+                    The optimal line would shift to \( x = 3.25 \) because the closest point from Class 1 
+                    would now be (2.5, 0), and the midpoint between (2.5, 0) and (4, 0) is 3.25.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways from Example 2</h4>
+            <ul>
+                <li>Only the <strong>closest points</strong> from each class (support vectors) determine the optimal hyperplane</li>
+                <li>When some features don't contribute to constraints, they can be set to minimize the objective</li>
+                <li>The feasible region in parameter space can be complex even for simple 2D problems</li>
+                <li>Geometric intuition provides the expected answer; optimization confirms it mathematically</li>
+                <li>Even with 2 variables, visualizing the feasible region requires careful constraint analysis</li>
+            </ul>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                Dusre example mein char points the, sab x-axis par: (1,0), (2,0) ek class mein aur (4,0), (5,0) 
+                doosri class mein. Sabse important points the (2,0) aur (4,0) kyunki ye dono classes ke sabse 
+                kareeb the - inhe "support vectors" kehte hain. Geometric intuition se pata tha ki optimal line 
+                \(x = 3\) honi chahiye (midpoint se pass hoke). Optimization solve kiya to paya ki \(w_2 = 0\) 
+                rakho (kyunki constraints mein involve nahi hai) aur \(w_1 = 1\), \(b = 3\) optimal hai. Final 
+                answer: \(x = 3\) - bilkul wahi jo expect kar rahe the! Yeh batata hai ki sirf closest points 
+                (support vectors) hi final hyperplane decide karte hain, baaki points ka zyada farak nahi padta.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 6: CONCLUSION ===== -->
+    <section id="conclusion">
+        <h2>6. Conclusion and Next Steps</h2>
+
+        <h3>What We Learned</h3>
+
+        <p>
+            Through these numerical examples, we've demonstrated that the SVM formulation correctly captures 
+            our geometric intuition:
+        </p>
+
+        <ol style="margin-left: 30px; line-height: 2;">
+            <li>The optimal hyperplane maximizes the margin between classes</li>
+            <li>It passes through the midpoint of the closest points from different classes</li>
+            <li>It is perpendicular to the line joining these closest points</li>
+            <li>The mathematical optimization formulation produces the same result as geometric reasoning</li>
+        </ol>
+
+        <div class="key-concept">
+            <h4>The Complete SVM Framework</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Input</strong></td>
+                        <td>Two classes of labeled data points</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Objective</strong></td>
+                        <td>Find hyperplane with maximum margin</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Formulation</strong></td>
+                        <td>Minimize \(\|w\|^2\) subject to separation constraints</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solution</strong></td>
+                        <td>Parameters \(w\) and \(b\) defining the hyperplane</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output</strong></td>
+                        <td>Decision boundary: \(w^T x = b\)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Why These Examples Were Tractable</h3>
+
+        <p>
+            We could solve these problems by hand because:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li>✓ Only 2-4 data points</li>
+            <li>✓ Low dimensionality (2D space)</li>
+            <li>✓ Simple constraint structure</li>
+            <li>✓ Geometric symmetry</li>
+        </ul>
+
+        <div class="professor-note">
+            However, in real-world applications, we typically have:
+            <ul style="margin-left: 30px;">
+                <li>Thousands or millions of data points</li>
+                <li>High-dimensional feature spaces (10s, 100s, or 1000s of dimensions)</li>
+                <li>Complex, non-symmetric distributions</li>
+                <li>Noisy or overlapping classes</li>
+            </ul>
+            This is where <strong>numerical optimization schemes</strong> become essential!
+        </div>
+
+        <h3>Next Steps: Numerical Methods</h3>
+
+        <p>
+            For larger, real-world problems, we need sophisticated numerical techniques:
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Challenge</th>
+                    <th>Solution Approach</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>High dimensionality</td>
+                    <td>Gradient-based optimization methods</td>
+                </tr>
+                <tr>
+                    <td>Many constraints</td>
+                    <td>Interior point methods, Sequential Minimal Optimization (SMO)</td>
+                </tr>
+                <tr>
+                    <td>Non-linear separability</td>
+                    <td>Kernel methods (kernel trick)</td>
+                </tr>
+                <tr>
+                    <td>Computational efficiency</td>
+                    <td>Stochastic gradient descent, distributed computing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Broader Context</h3>
+
+        <div class="key-concept">
+            <h4>Why SVM is Important</h4>
+            <p>
+                Support Vector Machines are one of the most powerful and widely-used machine learning algorithms because:
+            </p>
+            <ul style="margin-left: 30px;">
+                <li><strong>Maximum margin principle:</strong> Provides good generalization to unseen data</li>
+                <li><strong>Kernel trick:</strong> Can handle non-linearly separable data elegantly</li>
+                <li><strong>Convex optimization:</strong> Guaranteed to find global optimum</li>
+                <li><strong>Sparsity:</strong> Only support vectors matter, leading to efficient models</li>
+                <li><strong>Theoretical foundation:</strong> Strong mathematical guarantees</li>
+            </ul>
+        </div>
+
+        <h3>Extensions and Advanced Topics</h3>
+
+        <p>
+            Beyond basic SVM, there are many important extensions:
+        </p>
+        <ul style="margin-left: 30px;">
+            <li><strong>Soft-margin SVM:</strong> Handling non-perfectly separable data with slack variables</li>
+            <li><strong>Multi-class SVM:</strong> Extending to more than two classes (one-vs-one, one-vs-all)</li>
+            <li><strong>Kernel methods:</strong> Using kernel functions to project data into higher dimensions</li>
+            <li><strong>Nu-SVM:</strong> Alternative parameterization for controlling support vector count</li>
+            <li><strong>Support Vector Regression:</strong> Using SVM principles for regression problems</li>
+        </ul>
+
+        <div class="practice-questions">
+            <h4>🎓 Final Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> If we have three classes instead of two, can we still use the same SVM formulation?
+                <div class="answer">
+                    No, the basic binary SVM needs to be extended. Common approaches include: (1) One-vs-One: 
+                    Train \(\binom{K}{2}\) binary classifiers for K classes, (2) One-vs-All: Train K binary 
+                    classifiers, each separating one class from all others.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> What happens if the two classes are not linearly separable?
+                <div class="answer">
+                    We need either: (1) Soft-margin SVM with slack variables to allow some misclassification, 
+                    or (2) Kernel methods to project data into a higher-dimensional space where linear separation 
+                    becomes possible.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Why is the SVM formulation a convex optimization problem, and why does this matter?
+                <div class="answer">
+                    SVM minimizes a quadratic function \(\|w\|^2\) subject to linear constraints. This creates 
+                    a convex optimization landscape with a unique global minimum - no local minima to get stuck in! 
+                    This guarantees we'll find the best solution, unlike neural networks which can have many local minima.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> In a 100-dimensional space with 1000 data points, how many variables would the SVM optimization have?
+                <div class="answer">
+                    The optimization would have 100 variables for \(w\) (one per dimension) plus 1 variable for \(b\), 
+                    totaling 101 variables. The number of constraints would be 1000 (one per data point). Note that 
+                    the number of variables depends on dimension, not the number of data points!
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Overall Key Takeaways</h4>
+            <ul>
+                <li>SVM finds the optimal hyperplane by maximizing the margin between classes</li>
+                <li>The formulation converts an intuitive geometric concept into a tractable optimization problem</li>
+                <li>Small examples can be solved by hand, confirming the correctness of the formulation</li>
+                <li>Real-world problems require numerical optimization algorithms</li>
+                <li>The convex nature of SVM ensures finding the global optimum</li>
+                <li>Support vectors (closest points from each class) completely determine the solution</li>
+                <li>SVM's mathematical elegance makes it both theoretically sound and practically effective</li>
+            </ul>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>
+                Aaj ke lecture mein humne SVM ka formulation chote numerical examples se samjha. Dekha ki geometric 
+                intuition aur mathematical optimization dono same answer dete hain. Chote problems (2-4 points) ko 
+                hum haath se solve kar sakte hain, lekin real-world mein thousands of points aur high dimensions 
+                hote hain, isliye numerical methods ki zaroorat padti hai. SVM itna powerful isliye hai kyunki 
+                ye ek convex optimization problem hai - iska matlab guaranteed global optimum milega, local minima 
+                mein nahi phasenge. Support vectors (jo points sabse kareeb hain) hi final decision boundary decide 
+                karte hain. Next lecture mein hum numerical schemes seekhenge jo bade problems ko efficiently solve 
+                kar sakein.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== MIND MAP ===== -->
+    <section class="mind-map">
+        <h2>🧠 Comprehensive Mind Map</h2>
+        
+        <div class="mind-map-container">
+            <div class="central-topic">
+                Support Vector Machines (SVM)
+            </div>
+            
+            <div class="branches">
+                <!-- Branch 1: Core Concepts -->
+                <div class="branch">
+                    <h3>🎯 Core Concepts</h3>
+                    <ul>
+                        <li>Binary classification</li>
+                        <li>Hyperplane separation</li>
+                        <li>Margin maximization</li>
+                        <li>Support vectors</li>
+                        <li>Safety margin principle</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 2: Mathematical Formulation -->
+                <div class="branch">
+                    <h3>📐 Mathematical Formulation</h3>
+                    <ul>
+                        <li>Original: maximize min distance</li>
+                        <li>Final: minimize \(\|w\|^2\)</li>
+                        <li>Constraints: \(w^T x_i \leq b-1\), \(w^T x_i \geq b+1\)</li>
+                        <li>Quadratic programming</li>
+                        <li>Convex optimization</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 3: Geometric Intuition -->
+                <div class="branch">
+                    <h3>📏 Geometric Intuition</h3>
+                    <ul>
+                        <li>Perpendicular bisector</li>
+                        <li>Midpoint principle</li>
+                        <li>Equidistant from classes</li>
+                        <li>Maximum safety margin</li>
+                        <li>Pythagorean theorem proof</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 4: Example 1 -->
+                <div class="branch">
+                    <h3>📊 Example 1: (0,0) & (2,2)</h3>
+                    <ul>
+                        <li>Geometric: \(x + y = 2\)</li>
+                        <li>Optimization: \(w_1=w_2=0.5, b=1\)</li>
+                        <li>Margin: \(\sqrt{2}\)</li>
+                        <li>Both methods agree</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 5: Example 2 -->
+                <div class="branch">
+                    <h3>📊 Example 2: X-axis Points</h3>
+                    <ul>
+                        <li>Classes: {(1,0),(2,0)} vs {(4,0),(5,0)}</li>
+                        <li>Support vectors: (2,0) and (4,0)</li>
+                        <li>Solution: \(x = 3\)</li>
+                        <li>\(w_1=1, w_2=0, b=3\)</li>
+                        <li>Margin: 1 unit</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 6: Key Properties -->
+                <div class="branch">
+                    <h3>⚙️ Key Properties</h3>
+                    <ul>
+                        <li>Global optimum guaranteed</li>
+                        <li>Only support vectors matter</li>
+                        <li>Sparse solution</li>
+                        <li>Good generalization</li>
+                        <li>Robust to outliers (far points)</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 7: Numerical Methods -->
+                <div class="branch">
+                    <h3>🔢 Numerical Methods</h3>
+                    <ul>
+                        <li>Gradient descent</li>
+                        <li>Interior point methods</li>
+                        <li>SMO algorithm</li>
+                        <li>Quadratic programming solvers</li>
+                        <li>Needed for large-scale problems</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 8: Extensions -->
+                <div class="branch">
+                    <h3>🚀 Extensions</h3>
+                    <ul>
+                        <li>Soft-margin SVM</li>
+                        <li>Kernel methods</li>
+                        <li>Multi-class SVM</li>
+                        <li>Support Vector Regression</li>
+                        <li>Nu-SVM</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 9: Applications -->
+                <div class="branch">
+                    <h3>💼 Applications</h3>
+                    <ul>
+                        <li>Medical diagnosis</li>
+                        <li>Image classification</li>
+                        <li>Text categorization</li>
+                        <li>Bioinformatics</li>
+                        <li>Financial forecasting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

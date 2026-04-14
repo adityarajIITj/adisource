@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 13: Linear Regression - Pattern Recognition Principles</title>
+    
+    <!-- MathJax for mathematical equations -->
+    <script src="https://polyfill.io/v3/stable/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        
+        /* Table of Contents Styling */
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .toc ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 5px 10px;
+        }
+        
+        .toc a:hover {
+            background: #3498db;
+            color: white;
+            padding-left: 20px;
+            border-radius: 5px;
+        }
+        
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .toc ul ul li {
+            border-bottom: none;
+            margin: 5px 0;
+        }
+        
+        .toc ul ul a {
+            font-size: 1em;
+            color: #555;
+        }
+        
+        /* Section Headings */
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.6em;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        
+        /* Paragraph Styling */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        /* Key Terms and Concepts */
+        strong {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        /* Code and Math Blocks */
+        code {
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e8f4f8;
+        }
+        
+        /* Professor's Notes */
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        /* Hinglish Summary */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hinglish-summary h4 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        /* Practice Questions */
+        .practice-questions {
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .practice-questions h4 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question strong {
+            color: #2e7d32;
+        }
+        
+        .answer {
+            color: #555;
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        /* Key Takeaways */
+        .key-takeaways {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .key-takeaways h4 {
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .key-takeaways li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2196f3;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* Highlight Box */
+        .highlight-box {
+            background: #fff9e6;
+            border: 2px solid #ffeb3b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        /* Mind Map Styling */
+        .mindmap {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #3498db;
+            margin-bottom: 30px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .main-topic {
+            background: #3498db;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .branches {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .branch {
+            flex: 1;
+            min-width: 250px;
+            margin: 15px;
+            text-align: center;
+        }
+        
+        .branch-topic {
+            background: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .sub-topics {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .sub-topic {
+            background: white;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.6em;
+            }
+            
+            .branches {
+                flex-direction: column;
+            }
+        }
+        
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3498db;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .scroll-top:hover {
+            background: #2980b9;
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========== HEADER SECTION ========== -->
+        <header>
+            <h1>Lecture 13: Linear Regression</h1>
+            <p class="subtitle">Pattern Recognition Principles </p>
+        </header>
+
+        <!-- ========== TABLE OF CONTENTS ========== -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#intro">1. Introduction to Linear Regression</a></li>
+                <li><a href="#motivation">2. Motivation and Real-World Examples</a>
+                    <ul>
+                        <li><a href="#chaiwala">2.1 Example 1: Chaiwala Problem</a></li>
+                        <li><a href="#real-estate">2.2 Example 2: Real Estate Price Prediction</a></li>
+                    </ul>
+                </li>
+                <li><a href="#linear-regression-concept">3. Linear Regression: Core Concept</a></li>
+                <li><a href="#ols">4. Ordinary Least Square (OLS) Technique</a>
+                    <ul>
+                        <li><a href="#ols-theory">4.1 OLS Theory and Mathematical Foundation</a></li>
+                        <li><a href="#ols-example">4.2 Toy Example: Step-by-Step OLS Solution</a></li>
+                    </ul>
+                </li>
+                <li><a href="#gradient-descent">5. Gradient Descent Technique</a>
+                    <ul>
+                        <li><a href="#math-definition">5.1 Mathematical Definition</a></li>
+                        <li><a href="#derivatives">5.2 Understanding Derivatives and Gradients</a></li>
+                        <li><a href="#gd-algorithm">5.3 Gradient Descent Algorithm</a></li>
+                        <li><a href="#gd-example">5.4 Gradient Descent Example</a></li>
+                    </ul>
+                </li>
+                <li><a href="#implementation">6. Implementation in Python</a></li>
+                <li><a href="#comparison">7. OLS vs Gradient Descent: Comparison</a></li>
+                <li><a href="#mindmap">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- ========== INTRODUCTION SECTION ========== -->
+        <section id="intro">
+            <h2>1. Introduction to Linear Regression</h2>
+            
+            <p>Welcome to Lecture 13 on <strong>Pattern Recognition Principles</strong>. Today we are going to discuss <strong>Linear Regression</strong>, which is one of the fundamental supervised learning algorithms used in machine learning and pattern recognition.</p>
+            
+            <p>In this lecture, we will explore:</p>
+            <ul>
+                <li>Why linear regression is required and what types of problems it solves</li>
+                <li>The motivation behind using linear regression</li>
+                <li>Two main techniques to solve linear regression problems</li>
+                <li>Practical implementation of these techniques</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h4>📌 Two Main Techniques for Linear Regression:</h4>
+                <ol>
+                    <li><strong>Ordinary Least Square (OLS)</strong> - An exact, closed-form solution</li>
+                    <li><strong>Gradient Descent</strong> - An iterative optimization technique</li>
+                </ol>
+            </div>
+            
+            <div class="professor-note">
+                This is the last lecture of the course, and towards the end, we will quickly see how to implement linear regression practically. In the live sessions, we will discuss exam patterns and summarize the entire course.
+            </div>
+
+            <!-- Hinglish Summary for Introduction -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Is lecture mein hum <strong>Linear Regression</strong> ke baare mein padhenge jo ek bahut important supervised learning algorithm hai. Hum dekhenge ki yeh kyun zaroori hai aur kis tarah ke problems ko solve karta hai. Do main techniques hain - <strong>OLS</strong> (exact solution deta hai) aur <strong>Gradient Descent</strong> (iterative method hai). Dono techniques ko hum detail mein samjhenge aur end mein practical implementation bhi dekhenge.</p>
+            </div>
+        </section>
+
+        <!-- ========== MOTIVATION AND EXAMPLES SECTION ========== -->
+        <section id="motivation">
+            <h2>2. Motivation and Real-World Examples</h2>
+            
+            <p>Linear regression solves problems where we need to <strong>predict a continuous numerical value</strong> based on one or more input features. Let's understand this through two practical examples.</p>
+
+            <!-- Example 1: Chaiwala -->
+            <h3 id="chaiwala">2.1 Example 1: The Chaiwala Problem</h3>
+            
+            <p>Let's consider a <strong>tea seller (Chaiwala)</strong> who wants to optimize his business. He has collected data over the last year about the minimum temperature and the number of tea cups sold on those days.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Min. Temperature (°C)</th>
+                        <th>Number of Tea Cups Sold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>5</td><td>150</td></tr>
+                    <tr><td>7</td><td>152</td></tr>
+                    <tr><td>9</td><td>145</td></tr>
+                    <tr><td>10</td><td>148</td></tr>
+                    <tr><td>30</td><td>60</td></tr>
+                    <tr><td>35</td><td>32</td></tr>
+                    <tr><td>40</td><td>36</td></tr>
+                </tbody>
+            </table>
+            
+            <p><em>Note: This is not actual data, just an example for understanding the concept.</em></p>
+            
+            <h4>The Problem:</h4>
+            <p>The Chaiwala asks: <strong>"How many cups should I prepare if the expected minimum temperature for tomorrow is 28 degrees Celsius?"</strong></p>
+            
+            <h4>Pattern Observed:</h4>
+            <ul>
+                <li>When temperature is <strong>low</strong> (5-10°C), people consume <strong>more tea</strong> (145-152 cups)</li>
+                <li>When temperature is <strong>high</strong> (30-40°C), people consume <strong>less tea</strong> (32-60 cups)</li>
+                <li>There is a clear <strong>inverse relationship</strong> between temperature and tea consumption</li>
+            </ul>
+            
+            <div class="professor-note">
+                In this example, we have two things: <strong>X</strong> (temperature) and <strong>Y</strong> (number of cups sold). We need to predict the function \( y = f(x) \). When this function \( f \) is linear (can be fit using a line), we call it linear regression. The equation of the line is \( y = mx + c \), where \( m \) is the slope and \( c \) is the intercept.
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot showing temperature vs tea cups sold with a downward sloping trend line]
+            </div>
+
+            <!-- Example 2: Real Estate -->
+            <h3 id="real-estate">2.2 Example 2: Real Estate Price Prediction</h3>
+            
+            <p>Another real-world example is predicting <strong>property prices</strong> based on multiple features. This is a more complex problem because we have <strong>multiple input variables</strong> (multi-dimensional features).</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                        <th>Impact on Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Transaction Date</td><td>When the property was sold</td><td>Market trends over time</td></tr>
+                    <tr><td>House Age</td><td>Age of the property in years</td><td>Older houses may have lower prices</td></tr>
+                    <tr><td>Distance to MRT</td><td>Distance to nearest metro station</td><td>Closer = Higher price</td></tr>
+                    <tr><td>Number of Stores</td><td>Convenience stores nearby</td><td>More stores = Better location</td></tr>
+                    <tr><td>Latitude</td><td>Geographic coordinate</td><td>Determines location quality</td></tr>
+                    <tr><td>Longitude</td><td>Geographic coordinate</td><td>Proximity to facilities</td></tr>
+                </tbody>
+            </table>
+            
+            <p><em>Source: <a href="https://www.kaggle.com/datasets/quantbruce/real-estate-price-prediction" target="_blank">Kaggle - Real Estate Price Prediction Dataset</a></em></p>
+            
+            <h4>The Mathematical Model:</h4>
+            <p>Here, we have <strong>6 features</strong> (6-dimensional input) and we want to predict the <strong>price per unit area</strong> (Y). The linear function can be written as:</p>
+            
+            <p>$$y = c_1x_1 + c_2x_2 + c_3x_3 + c_4x_4 + c_5x_5 + c_6x_6 + b$$</p>
+            
+            <p>Where:</p>
+            <ul>
+                <li>\( x_1, x_2, ..., x_6 \) are the input features</li>
+                <li>\( c_1, c_2, ..., c_6 \) are the coefficients (weights) we need to find</li>
+                <li>\( b \) is the intercept (bias term)</li>
+            </ul>
+            
+            <p>This equation represents a <strong>hyperplane</strong> or a <strong>linear function in multi-dimensional space</strong>. The goal of linear regression is to find the optimal values of \( c_1, c_2, ..., c_6 \) and \( b \) that best fit the data.</p>
+            
+            <div class="professor-note">
+                In the Chaiwala example, we had only one feature (1-dimensional), but in the real estate example, we have six features (6-dimensional). Linear regression can handle both single and multiple features. When we have multiple features, we're essentially finding a hyperplane instead of a simple line.
+            </div>
+
+            <!-- Hinglish Summary for Motivation -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Linear regression real-world problems solve karne ke liye use hota hai jahan pe hume <strong>continuous numerical values predict</strong> karni hoti hain. Chaiwala example mein sirf ek feature tha (temperature) aur hume tea cups predict karne the. Real estate example mein 6 features hain jaise house age, location, etc., aur hume price predict karni hai. Simple example mein ek line fit hoti hai (\( y = mx + c \)), lekin multiple features mein ek hyperplane fit hota hai. Goal yehi hai ki best line ya hyperplane find karo jo data ko achhe se fit kare.</p>
+            </div>
+
+            <!-- Practice Questions for Motivation -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What is the main difference between the Chaiwala problem and the Real Estate problem?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The Chaiwala problem has only one input feature (temperature), making it a 1-dimensional problem where we fit a line. The Real Estate problem has six input features, making it a multi-dimensional problem where we fit a hyperplane.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why is the relationship between temperature and tea sales called "inverse"?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> As temperature increases, tea sales decrease, and vice versa. This negative correlation means they move in opposite directions, hence "inverse relationship."
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What does the 'linear' in linear regression mean?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> 'Linear' means the function can be represented as a straight line (in 1D) or a flat hyperplane (in multi-dimensional space), following the equation \( y = mx + c \) or its multi-dimensional equivalent.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for Motivation -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Linear regression is used to predict continuous numerical values</li>
+                    <li>It works with both single-dimensional and multi-dimensional input features</li>
+                    <li>Real-world applications include sales forecasting, price prediction, and trend analysis</li>
+                    <li>The goal is to find the function (line or hyperplane) that best fits the data</li>
+                    <li>Linear regression assumes a linear relationship between inputs and output</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== LINEAR REGRESSION CONCEPT SECTION ========== -->
+        <section id="linear-regression-concept">
+            <h2>3. Linear Regression: Core Concept</h2>
+            
+            <p>Now let's understand the <strong>fundamental concept</strong> behind linear regression and what problem we're actually trying to solve.</p>
+            
+            <h3>The Problem Statement</h3>
+            <p>Given some data points, we need to find the best function that describes the relationship between input \( x \) and output \( y \). For linear regression, we assume this function is <strong>linear</strong>.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot with multiple possible lines (A, B, C) that could fit the data]
+            </div>
+            
+            <h3>Which Line is Best?</h3>
+            <p>Looking at a scatter plot of data points, we can see that <strong>many different lines</strong> could potentially fit the data:</p>
+            <ul>
+                <li><strong>Line A</strong> - Passes through some points but misses others</li>
+                <li><strong>Line B</strong> - Has a different slope, also fits reasonably</li>
+                <li><strong>Line C</strong> - Yet another possible fit</li>
+            </ul>
+            
+            <p>So which solution is better? This is where <strong>optimization</strong> comes in. Optimization tries to find the <strong>best solution among many possible solutions</strong>.</p>
+            
+            <h3>The Optimization Problem</h3>
+            <p>The equation of a line is: \( y = mx + c \)</p>
+            
+            <p>Where:</p>
+            <ul>
+                <li>\( m \) = <strong>slope</strong> (parameter 1)</li>
+                <li>\( c \) = <strong>intercept</strong> (parameter 2)</li>
+                <li>\( x \) and \( y \) are the variables (data points)</li>
+            </ul>
+            
+            <p>By changing \( m \) and \( c \), we get different lines. Our goal is to find the <strong>optimal values of m and c</strong> that give us the best fitting line.</p>
+            
+            <h3>Defining "Best Fit": The Loss Function</h3>
+            <p>We need a mathematical way to measure how good a line fits the data. We use something called the <strong>Squared Loss</strong> or <strong>Mean Squared Error (MSE)</strong>:</p>
+            
+            <p>$$L(m, c) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$</p>
+            
+            <p>Or more explicitly:</p>
+            
+            <p>$$L(m, c) = \sum_{i=1}^{n} (y_i - (mx_i + c))^2$$</p>
+            
+            <p>Where:</p>
+            <ul>
+                <li>\( n \) = number of data points (samples)</li>
+                <li>\( y_i \) = <strong>actual value</strong> for the \( i^{th} \) data point</li>
+                <li>\( \hat{y}_i = mx_i + c \) = <strong>predicted value</strong> for the \( i^{th} \) data point</li>
+                <li>\( (y_i - \hat{y}_i) \) = <strong>error</strong> for the \( i^{th} \) data point</li>
+            </ul>
+            
+            <h3>Understanding the Error</h3>
+            <div class="diagram-placeholder">
+                [Insert diagram: Line with vertical lines showing error distance from actual points to predicted line]
+            </div>
+            
+            <p>For each data point:</p>
+            <ul>
+                <li>The actual \( y \) value is where the point is located</li>
+                <li>The predicted \( \hat{y} \) value is where our line predicts it should be</li>
+                <li>The difference \( (y_i - \hat{y}_i) \) is the <strong>error</strong></li>
+                <li>We <strong>square</strong> this error to:
+                    <ul>
+                        <li>Make all errors positive (avoid cancellation)</li>
+                        <li>Penalize larger errors more heavily</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>The Objective</h3>
+            <p>The best line is the one that <strong>minimizes this squared loss</strong>:</p>
+            
+            <p>$$\min_{m, c} L(m, c) = \min_{m, c} \sum_{i=1}^{n} (y_i - (mx_i + c))^2$$</p>
+            
+            <div class="professor-note">
+                The technique of minimizing squared loss is called <strong>Ordinary Least Square (OLS)</strong>. The line that minimizes this loss function is the optimal line we're looking for. The loss function has two parameters - m and c - and we want to find the values that give us the minimum loss.
+            </div>
+            
+            <h3>Why Can't We Overfit?</h3>
+            <p>One might think: "Why not draw a complex curve that passes through <em>all</em> the points exactly?" This would give zero error!</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Overfitted polynomial curve vs simple linear fit]
+            </div>
+            
+            <p>However, such a complex function would <strong>overfit</strong> the data, meaning:</p>
+            <ul>
+                <li>It memorizes the training data perfectly</li>
+                <li>But it <strong>fails to generalize</strong> to new, unseen data</li>
+                <li>It captures noise rather than the underlying pattern</li>
+            </ul>
+            
+            <p>A simple linear function is often <strong>good enough</strong> and generalizes much better to test data. This is the principle of <strong>Occam's Razor</strong> - prefer simpler models when they work well.</p>
+
+            <!-- Hinglish Summary for Core Concept -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Linear regression ka main goal hai best line dhoondhna jo data ko fit kare. Bahut saari possible lines ho sakti hain, par best line woh hai jo <strong>minimum error</strong> de. Error measure karne ke liye hum <strong>Squared Loss</strong> use karte hain - har point ke liye actual aur predicted value ka difference square karke sum karte hain. Jo line is loss ko minimize kare, wahi best line hai. Complex curves use kar sakte hain jo har point se exactly pass karein, lekin woh <strong>overfit</strong> ho jaata hai aur naye data pe achha kaam nahi karega. Simple linear function zyada better generalize karta hai.</p>
+            </div>
+
+            <!-- Practice Questions for Core Concept -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What are the parameters in the linear equation \( y = mx + c \)?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The parameters are \( m \) (slope) and \( c \) (intercept). These are the values we need to find to get the best fitting line. \( x \) and \( y \) are variables representing data points.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why do we square the errors in the loss function?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> We square errors to make them all positive (preventing positive and negative errors from canceling out) and to penalize larger errors more heavily, making the optimization focus on reducing big mistakes.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What is the difference between overfitting and a good linear fit?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Overfitting occurs when a complex model perfectly fits training data but fails on new data by capturing noise. A good linear fit may have some error on training data but generalizes well to unseen data by capturing the true underlying pattern.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for Core Concept -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Linear regression finds the line \( y = mx + c \) that best fits the data</li>
+                    <li>The loss function (squared error) measures how well a line fits</li>
+                    <li>Optimization means finding \( m \) and \( c \) that minimize the loss</li>
+                    <li>Squaring errors ensures all errors are positive and larger errors are penalized more</li>
+                    <li>Simple linear models generalize better than complex overfitted models</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== ORDINARY LEAST SQUARE (OLS) SECTION ========== -->
+        <section id="ols">
+            <h2>4. Ordinary Least Square (OLS) Technique</h2>
+            
+            <p>The <strong>Ordinary Least Square (OLS)</strong> method provides a <strong>closed-form solution</strong> to find the optimal parameters \( m \) and \( c \) directly through mathematical derivation. This is an <strong>exact, analytical approach</strong>.</p>
+
+            <h3 id="ols-theory">4.1 OLS Theory and Mathematical Foundation</h3>
+            
+            <h4>Step 1: Define the Loss Function</h4>
+            <p>We start with our loss function (which we want to minimize):</p>
+            
+            <p>$$L(m, c) = \sum_{i=1}^{n} (y_i - mx_i - c)^2$$</p>
+            
+            <h4>Step 2: Take Partial Derivative with respect to c</h4>
+            <p>To find the minimum, we take the derivative of \( L \) with respect to \( c \) and set it equal to zero:</p>
+            
+            <p>$$\frac{\partial L}{\partial c} = \sum_{i=1}^{n} 2(y_i - mx_i - c) \cdot (-1) = 0$$</p>
+            
+            <p>Simplifying:</p>
+            
+            <p>$$-2 \sum_{i=1}^{n} (y_i - mx_i - c) = 0$$</p>
+            
+            <p>$$\sum_{i=1}^{n} y_i - m\sum_{i=1}^{n} x_i - \sum_{i=1}^{n} c = 0$$</p>
+            
+            <p>Since \( c \) is a constant, \( \sum_{i=1}^{n} c = nc \):</p>
+            
+            <p>$$\sum_{i=1}^{n} y_i - m\sum_{i=1}^{n} x_i - nc = 0$$</p>
+            
+            <p><strong>This gives us Equation 1:</strong></p>
+            
+            <p>$$nc = \sum_{i=1}^{n} y_i - m\sum_{i=1}^{n} x_i \quad \text{...(1)}$$</p>
+            
+            <h4>Step 3: Take Partial Derivative with respect to m</h4>
+            <p>Now we take the derivative with respect to \( m \):</p>
+            
+            <p>$$\frac{\partial L}{\partial m} = \sum_{i=1}^{n} 2(y_i - mx_i - c) \cdot (-x_i) = 0$$</p>
+            
+            <p>Simplifying:</p>
+            
+            <p>$$-2 \sum_{i=1}^{n} x_i(y_i - mx_i - c) = 0$$</p>
+            
+            <p>$$\sum_{i=1}^{n} x_iy_i - m\sum_{i=1}^{n} x_i^2 - c\sum_{i=1}^{n} x_i = 0$$</p>
+            
+            <p><strong>This gives us Equation 2:</strong></p>
+            
+            <p>$$m\sum_{i=1}^{n} x_i^2 + c\sum_{i=1}^{n} x_i = \sum_{i=1}^{n} x_iy_i \quad \text{...(2)}$$</p>
+            
+            <h4>Step 4: Solve for c from Equation 1</h4>
+            <p>From Equation 1, we can solve for \( c \):</p>
+            
+            <p>$$c = \frac{1}{n}\sum_{i=1}^{n} y_i - \frac{m}{n}\sum_{i=1}^{n} x_i$$</p>
+            
+            <p>Using mean notation (\( \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i \) and \( \bar{y} = \frac{1}{n}\sum_{i=1}^{n} y_i \)):</p>
+            
+            <p>$$c = \bar{y} - m\bar{x} \quad \text{...(3)}$$</p>
+            
+            <div class="professor-note">
+                This is a beautiful result! The intercept \( c \) can be expressed directly in terms of the means of \( x \) and \( y \), and the slope \( m \). The quantity \( \frac{1}{n}\sum_{i=1}^{n} x_i \) is nothing but the mean of \( x \), denoted as \( \bar{x} \), and similarly for \( y \).
+            </div>
+            
+            <h4>Step 5: Substitute c into Equation 2 and Solve for m</h4>
+            <p>Substituting Equation 3 into Equation 2:</p>
+            
+            <p>$$\sum_{i=1}^{n} x_iy_i = m\sum_{i=1}^{n} x_i^2 + (\bar{y} - m\bar{x})\sum_{i=1}^{n} x_i$$</p>
+            
+            <p>Since \( \sum_{i=1}^{n} x_i = n\bar{x} \):</p>
+            
+            <p>$$\sum_{i=1}^{n} x_iy_i = m\sum_{i=1}^{n} x_i^2 + n\bar{x}\bar{y} - mn\bar{x}^2$$</p>
+            
+            <p>Rearranging to solve for \( m \):</p>
+            
+            <p>$$m\left(\sum_{i=1}^{n} x_i^2 - n\bar{x}^2\right) = \sum_{i=1}^{n} x_iy_i - n\bar{x}\bar{y}$$</p>
+            
+            <p>$$m = \frac{\sum_{i=1}^{n} x_iy_i - n\bar{x}\bar{y}}{\sum_{i=1}^{n} x_i^2 - n\bar{x}^2} \quad \text{...(4)}$$</p>
+            
+            <h4>Step 6: Simplification using Variance and Covariance Notation</h4>
+            <p>We can further simplify using statistical notation. Define:</p>
+            
+            <p><strong>S<sub>xx</sub></strong> (Sum of Squares of x):</p>
+            <p>$$S_{xx} = \sum_{i=1}^{n} (x_i - \bar{x})^2 = \sum_{i=1}^{n} x_i^2 - n\bar{x}^2$$</p>
+            
+            <p><strong>S<sub>xy</sub></strong> (Sum of Cross Products):</p>
+            <p>$$S_{xy} = \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) = \sum_{i=1}^{n} x_iy_i - n\bar{x}\bar{y}$$</p>
+            
+            <p>Therefore, our formulas become:</p>
+            
+            <div class="highlight-box">
+                <h4>📐 Final OLS Formulas:</h4>
+                <p>$$m = \frac{S_{xy}}{S_{xx}} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$$</p>
+                
+                <p>$$c = \bar{y} - m\bar{x}$$</p>
+            </div>
+            
+            <div class="professor-note">
+                Let's try to understand what \( S_{xx} \) and \( S_{xy} \) mean. \( S_{xx} \) is related to the variance of \( x \), and \( S_{xy} \) is similar to the covariance between \( x \) and \( y \). These are standard statistical measures that help us understand the relationship between variables.
+            </div>
+
+            <!-- Toy Example -->
+            <h3 id="ols-example">4.2 Toy Example: Step-by-Step OLS Solution</h3>
+            
+            <p>Let's work through a complete example to see how OLS works in practice.</p>
+            
+            <h4>Given Data:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>y</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>1</td></tr>
+                    <tr><td>2</td><td>3</td></tr>
+                    <tr><td>3</td><td>3</td></tr>
+                    <tr><td>4</td><td>5</td></tr>
+                </tbody>
+            </table>
+            
+            <p>We have just 4 data points. Let's find the best fitting line using OLS.</p>
+            
+            <h4>Step 1: Compute the Center Points (Means)</h4>
+            
+            <p>Mean of x:</p>
+            <p>$$\bar{x} = \frac{1 + 2 + 3 + 4}{4} = \frac{10}{4} = 2.5$$</p>
+            
+            <p>Mean of y:</p>
+            <p>$$\bar{y} = \frac{1 + 3 + 3 + 5}{4} = \frac{12}{4} = 3.0$$</p>
+            
+            <p>So the center point is <strong>(2.5, 3.0)</strong>, shown in green on a plot.</p>
+            
+            <h4>Step 2: Compute the Slope (m)</h4>
+            
+            <p>Let's create a table to compute \( S_{xy} \) and \( S_{xx} \):</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>i</th>
+                        <th>\( x_i \)</th>
+                        <th>\( y_i \)</th>
+                        <th>\( x_i - \bar{x} \)</th>
+                        <th>\( y_i - \bar{y} \)</th>
+                        <th>\( (x_i - \bar{x})(y_i - \bar{y}) \)</th>
+                        <th>\( (x_i - \bar{x})^2 \)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>1</td><td>1</td><td>-1.5</td><td>-2.0</td><td>3.0</td><td>2.25</td></tr>
+                    <tr><td>2</td><td>2</td><td>3</td><td>-0.5</td><td>0.0</td><td>0.0</td><td>0.25</td></tr>
+                    <tr><td>3</td><td>3</td><td>3</td><td>0.5</td><td>0.0</td><td>0.0</td><td>0.25</td></tr>
+                    <tr><td>4</td><td>4</td><td>5</td><td>1.5</td><td>2.0</td><td>3.0</td><td>2.25</td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td><strong>Sum:</strong></td><td><strong>6.0</strong></td><td><strong>5.0</strong></td></tr>
+                </tbody>
+            </table>
+            
+            <p>Therefore:</p>
+            <p>$$S_{xy} = 6.0$$</p>
+            <p>$$S_{xx} = 5.0$$</p>
+            
+            <p>The slope is:</p>
+            <p>$$m = \frac{S_{xy}}{S_{xx}} = \frac{6.0}{5.0} = 1.2$$</p>
+            
+            <h4>Step 3: Compute the Intercept (c)</h4>
+            
+            <p>Using the formula \( c = \bar{y} - m\bar{x} \):</p>
+            
+            <p>$$c = 3.0 - 1.2 \times 2.5 = 3.0 - 3.0 = 0$$</p>
+            
+            <p>The intercept is <strong>0</strong>, which means our line passes through the origin!</p>
+            
+            <div class="highlight-box">
+                <h4>🎯 Result: The Equation of the Best Fit Line</h4>
+                <p>$$y = 1.2x + 0$$</p>
+                <p>Or simply: <strong>\( y = 1.2x \)</strong></p>
+            </div>
+            
+            <div class="professor-note">
+                Notice that the intercept came out to be zero. This is because our data happens to be balanced such that the line passes through the origin. The center point (2.5, 3.0) lies exactly on this line: \( 1.2 \times 2.5 = 3.0 \).
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot with points (1,1), (2,3), (3,3), (4,5) and the line y = 1.2x passing through them]
+            </div>
+            
+            <h4>Step 4: Calculate the Training Error (MSE)</h4>
+            
+            <p>Let's see how well our line fits the data by computing the Mean Squared Error:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>y (Actual)</th>
+                        <th>Predicted y = 1.2x</th>
+                        <th>Difference (Error)</th>
+                        <th>Square Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>1</td><td>1.2</td><td>-0.2</td><td>0.04</td></tr>
+                    <tr><td>2</td><td>3</td><td>2.4</td><td>0.6</td><td>0.36</td></tr>
+                    <tr><td>3</td><td>3</td><td>3.6</td><td>-0.6</td><td>0.36</td></tr>
+                    <tr><td>4</td><td>5</td><td>4.8</td><td>0.2</td><td>0.04</td></tr>
+                    <tr><td colspan="4"><strong>Sum of Square Errors:</strong></td><td><strong>0.80</strong></td></tr>
+                </tbody>
+            </table>
+            
+            <p>Mean Squared Error (MSE):</p>
+            <p>$$MSE = \frac{1}{n}\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \frac{0.80}{4} = 0.20$$</p>
+            
+            <p>This is the <strong>minimum possible error</strong> we can achieve with a linear model for this data. Any other line would give a higher MSE!</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Visual representation of errors - vertical lines from each point to the fitted line]
+            </div>
+
+            <!-- Hinglish Summary for OLS -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Ordinary Least Square (OLS)</strong> ek exact mathematical method hai jo directly slope (m) aur intercept (c) calculate kar deta hai. Process simple hai: pehle data ka mean nikalo (\( \bar{x} \) aur \( \bar{y} \)), phir \( S_{xy} \) aur \( S_{xx} \) calculate karo. Slope formula hai \( m = S_{xy} / S_{xx} \) aur intercept hai \( c = \bar{y} - m\bar{x} \). Example mein humne 4 points ke liye calculate kiya aur line mili \( y = 1.2x \). Is line ka Mean Squared Error sirf 0.20 hai, jo ki minimum possible error hai. OLS ka benefit hai ki ek hi baar mein exact answer mil jaata hai, tuning ki zaroorat nahi.</p>
+            </div>
+
+            <!-- Practice Questions for OLS -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: Why do we need to take partial derivatives and set them to zero in OLS?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Taking derivatives and setting them to zero is the standard calculus method for finding the minimum or maximum of a function. At the minimum point of the loss function, the derivatives equal zero, giving us the optimal parameter values.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: What does \( S_{xy} \) represent in the OLS formula?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> \( S_{xy} \) represents the sum of cross products, which is similar to covariance between x and y. It measures how x and y vary together and determines the slope direction.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: In the toy example, why is the intercept 0?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The intercept is 0 because when we calculate \( c = \bar{y} - m\bar{x} = 3.0 - 1.2(2.5) = 0 \). This means the line passes through the origin, which happens to be the best fit for this particular dataset.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: What is the geometric meaning of the center point (\( \bar{x}, \bar{y} \))?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The center point is the mean of all x and y values. The best fit line in OLS always passes through this center point, balancing all the data points around it.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for OLS -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>OLS provides an exact, closed-form solution for linear regression</li>
+                    <li>The method involves taking partial derivatives of the loss function and solving simultaneously</li>
+                    <li>The optimal slope is \( m = S_{xy} / S_{xx} \), where \( S_{xy} \) and \( S_{xx} \) are statistical measures</li>
+                    <li>The optimal intercept is \( c = \bar{y} - m\bar{x} \), ensuring the line passes through the center point</li>
+                    <li>OLS gives the minimum possible squared error for a linear model</li>
+                    <li>The best fit line always passes through the point (\( \bar{x}, \bar{y} \))</li>
+                    <li>No iteration or tuning required - direct calculation</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== GRADIENT DESCENT SECTION ========== -->
+        <section id="gradient-descent">
+            <h2>5. Gradient Descent Technique</h2>
+            
+            <p>While OLS gives an exact solution, it can be <strong>computationally expensive for large datasets</strong>. <strong>Gradient Descent</strong> is an <strong>iterative optimization technique</strong> that's more scalable and flexible. Let's understand this powerful method step by step.</p>
+
+            <h3 id="math-definition">5.1 Mathematical Definition of Linear Regression</h3>
+            
+            <p>Before diving into gradient descent, let's formally define the linear regression problem in general mathematical notation.</p>
+            
+            <h4>General Problem Statement</h4>
+            <p>Given: <strong>n training samples</strong> \( \{(x_i, y_i)\}_{i=1}^{n} \)</p>
+            
+            <p>Where:</p>
+            <ul>
+                <li>\( x_i \in \mathbb{R}^d \) - input feature vector (could be 1-dimensional or d-dimensional)</li>
+                <li>\( y_i \in \mathbb{R} \) - output (real number, not categorical like in classification)</li>
+            </ul>
+            
+            <div class="professor-note">
+                The key difference between regression and classification: In classification, \( y_i \) is categorical (e.g., apple vs orange, or digits 0-9). In regression, \( y_i \) is a real number (e.g., price, temperature, number of cups). Both are supervised learning, but the output type differs.
+            </div>
+            
+            <h4>Linear Regression Model</h4>
+            <p>For a d-dimensional input, the prediction is given by:</p>
+            
+            <p>$$\hat{y}_i = w_0 + w_1x_{i1} + w_2x_{i2} + ... + w_dx_{id}$$</p>
+            
+            <p>Where:</p>
+            <ul>
+                <li>\( w_0, w_1, ..., w_d \) are the parameters (weights) we need to learn</li>
+                <li>\( x_{i1}, x_{i2}, ..., x_{id} \) are the d features of the i-th sample</li>
+            </ul>
+            
+            <h4>Compact Vector Notation</h4>
+            <p>We can write this more compactly using <strong>basis functions</strong>. Let:</p>
+            
+            <p>$$\phi(x_i) = [\phi_0(x_i), \phi_1(x_i), ..., \phi_m(x_i)]$$</p>
+            
+            <p>Where typically \( \phi_0(x_i) = 1 \) (for the bias term) and \( \phi_j(x_i) = x_{ij} \) for j > 0.</p>
+            
+            <p>Then our prediction becomes a simple dot product:</p>
+            
+            <p>$$\hat{y}_i = \mathbf{w}^T \phi(x_i)$$</p>
+            
+            <p>Where \( \mathbf{w} = [w_0, w_1, ..., w_m]^T \) is our parameter vector.</p>
+            
+            <div class="professor-note">
+                By adding \( \phi_0(x_i) = 1 \), we can treat the bias term uniformly with other weights. This is a neat mathematical trick - now every term can be written as just a dot product between two vectors!
+            </div>
+            
+            <h4>The Loss Function (Training Error)</h4>
+            <p>The <strong>objective function</strong> or <strong>loss function</strong> we want to minimize is:</p>
+            
+            <p>$$J(\mathbf{w}) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} (y_i - \mathbf{w}^T\phi(x_i))^2$$</p>
+            
+            <p>This is the same squared error we saw before, but now written for the general multi-dimensional case.</p>
+            
+            <h4>The Optimization Problem</h4>
+            <div class="highlight-box">
+                <p><strong>Goal:</strong> Find the weight vector \( \mathbf{w} \) that minimizes \( J(\mathbf{w}) \)</p>
+                <p>$$\mathbf{w}^* = \arg\min_{\mathbf{w}} J(\mathbf{w})$$</p>
+            </div>
+            
+            <p>With different values of \( \mathbf{w} \), we get different losses. We want to find the \( \mathbf{w} \) that gives the <strong>minimum loss</strong>.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 3D surface plot showing loss J as a function of two weights w₁ and w₂, with a valley indicating the minimum]
+            </div>
+
+            <h3 id="derivatives">5.2 Understanding Derivatives and Gradients</h3>
+            
+            <p>To minimize the loss function, we need to understand <strong>derivatives</strong> and <strong>gradients</strong>. Let's go back to basics!</p>
+            
+            <h4>Single Variable Case: Derivative</h4>
+            <p>Consider a simple function: \( y = f(x) \)</p>
+            
+            <p>If we change \( x \) by a small amount \( \Delta x \), then \( y \) changes by \( \Delta y \). The relationship is:</p>
+            
+            <p>$$\Delta y = \alpha \cdot \Delta x$$</p>
+            
+            <p>Where \( \alpha \) is called the <strong>derivative</strong>, denoted as:</p>
+            
+            <p>$$\alpha = \frac{dy}{dx}$$</p>
+            
+            <p>The derivative tells us the <strong>rate of change</strong> - how much \( y \) changes for a small change in \( x \).</p>
+            
+            <h4>Example: Finding Minimum</h4>
+            <p>For \( y = x^2 \), to minimize:</p>
+            <ol>
+                <li>Take derivative: \( \frac{dy}{dx} = 2x \)</li>
+                <li>Set to zero: \( 2x = 0 \)</li>
+                <li>Solve: \( x = 0 \)</li>
+            </ol>
+            
+            <p>So \( x = 0 \) is the minimum! This is the standard calculus approach.</p>
+            
+            <h4>Multi-Variable Case: Gradient</h4>
+            <p>Now suppose \( x \) is not a scalar but a <strong>d-dimensional vector</strong>: \( \mathbf{x} = [x_1, x_2, ..., x_d]^T \)</p>
+            
+            <p>When we change \( \mathbf{x} \) by \( \Delta \mathbf{x} \), the output \( y \) changes by \( \Delta y \). The relationship becomes:</p>
+            
+            <p>$$\Delta y = \alpha^T \cdot \Delta \mathbf{x}$$</p>
+            
+            <p>Here, \( \alpha \) must be a <strong>vector</strong> (not a scalar) to make this equation work dimensionally:</p>
+            
+            <p>$$\alpha = \nabla f = \begin{bmatrix} \frac{\partial y}{\partial x_1} \\ \frac{\partial y}{\partial x_2} \\ \vdots \\ \frac{\partial y}{\partial x_d} \end{bmatrix}$$</p>
+            
+            <p>This vector \( \alpha \) is called the <strong>gradient</strong>, denoted as \( \nabla f \) or \( \nabla y \).</p>
+            
+            <div class="professor-note">
+                What multiplied with a vector gives you a scalar? Another vector, through dot product! Since \( \Delta y \) is scalar and \( \Delta \mathbf{x} \) is a vector, \( \alpha \) must be a vector too. The gradient shows the rate of change in different directions.
+            </div>
+            
+            <h4>The Key Insight: Gradient Direction</h4>
+            <p>The dot product is: \( \Delta y = \alpha^T \Delta \mathbf{x} = |\alpha| \cdot |\Delta \mathbf{x}| \cdot \cos\theta \)</p>
+            
+            <p>Where \( \theta \) is the angle between \( \alpha \) (gradient) and \( \Delta \mathbf{x} \) (direction of change).</p>
+            
+            <p><strong>When is \( \Delta y \) maximum?</strong></p>
+            <ul>
+                <li>When \( \cos\theta = 1 \), i.e., \( \theta = 0° \)</li>
+                <li>This happens when \( \Delta \mathbf{x} \) is in the <strong>same direction</strong> as the gradient</li>
+                <li><strong>Moving in the gradient direction gives maximum increase in y</strong></li>
+            </ul>
+            
+            <p><strong>When is \( \Delta y \) minimum (most negative)?</strong></p>
+            <ul>
+                <li>When \( \cos\theta = -1 \), i.e., \( \theta = 180° \)</li>
+                <li>This happens when \( \Delta \mathbf{x} \) is in the <strong>opposite direction</strong> to the gradient</li>
+                <li><strong>Moving opposite to the gradient direction gives maximum decrease in y</strong></li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h4>🎯 The Gradient Descent Principle</h4>
+                <p><strong>To minimize a function, move in the direction opposite to the gradient!</strong></p>
+                <p>This is the fundamental idea behind gradient descent.</p>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D contour plot showing gradient vectors pointing uphill and descent path going downhill opposite to gradient]
+            </div>
+
+            <h3 id="gd-algorithm">5.3 Gradient Descent Algorithm</h3>
+            
+            <p>Now we're ready to understand the gradient descent algorithm!</p>
+            
+            <h4>Visualizing the Loss Surface</h4>
+            <p>Imagine the loss function \( J(w_1, w_2) \) as a 3D surface (for 2 parameters). It looks like a valley or bowl.</p>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 3D loss surface with a ball rolling down to the minimum]
+            </div>
+            
+            <h4>Contour Plot Representation</h4>
+            <p>We can also represent this as a <strong>contour plot</strong> (2D projection):</p>
+            <ul>
+                <li>Each contour line represents points with the <strong>same loss value</strong></li>
+                <li><strong>Red areas</strong> = high loss (bad)</li>
+                <li><strong>Blue areas</strong> = low loss (good)</li>
+                <li>Center of concentric circles = <strong>minimum loss</strong> (our goal!)</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Contour plot showing gradient descent path from starting point to minimum, with arrows showing steps]
+            </div>
+            
+            <h4>The Algorithm Steps</h4>
+            
+            <p><strong>1. Start at a random point:</strong> Pick any initial weights \( \mathbf{w}^{(0)} \)</p>
+            
+            <p><strong>2. Compute the gradient:</strong> Calculate \( \nabla J(\mathbf{w}^{(t)}) \) at current position</p>
+            
+            <p><strong>3. Move opposite to gradient:</strong> Update weights:
+
+            $$\mathbf{w}^{(t+1)} = \mathbf{w}^{(t)} - \eta \nabla J(\mathbf{w}^{(t)})$$</p>
+            
+            <p>Where \( \eta \) is the <strong>learning rate</strong> or <strong>step size</strong> - it controls how big a step we take.</p>
+            
+            <p><strong>4. Repeat:</strong> Keep updating until convergence (gradient becomes very small or loss stops decreasing)</p>
+            
+            <div class="professor-note">
+                Notice the negative sign in the update rule! We move <strong>opposite</strong> to the gradient direction because we want to go downhill (minimize), not uphill. The learning rate \( \eta \) is crucial - too large and we might overshoot; too small and convergence will be very slow.
+            </div>
+            
+            <h4>Learning Rate Impact</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learning Rate (\( \eta \))</th>
+                        <th>Effect</th>
+                        <th>Problem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Too Small</td>
+                        <td>Tiny steps, slow progress</td>
+                        <td>Takes forever to converge</td>
+                    </tr>
+                    <tr>
+                        <td>Optimal</td>
+                        <td>Steady progress toward minimum</td>
+                        <td>Converges efficiently</td>
+                    </tr>
+                    <tr>
+                        <td>Too Large</td>
+                        <td>Huge jumps, unstable</td>
+                        <td>Might overshoot and diverge</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Formal Algorithm</h4>
+            
+            <pre>
+<strong>Gradient Descent Algorithm</strong>
+
+<strong>Input:</strong> Training data {(x_i, y_i)}
+<strong>Initialize:</strong> 
+    t = 0 (iteration count)
+    w⁽⁰⁾ = random initial weights
+    η = learning rate (e.g., 0.01)
+    ε = small threshold (e.g., 0.0001)
+
+<strong>While</strong> |J(w⁽ᵗ⁺¹⁾) - J(w⁽ᵗ⁾)| > ε:
+    
+    (1) Compute gradient: ∇J(w⁽ᵗ⁾)
+    
+    (2) Update weights: w⁽ᵗ⁺¹⁾ = w⁽ᵗ⁾ - η · ∇J(w⁽ᵗ⁾)
+    
+    (3) t = t + 1
+
+<strong>Output:</strong> Optimal weights w*
+            </pre>
+            
+            <h4>Convergence Criterion</h4>
+            <p>We stop when:</p>
+            <ul>
+                <li>The change in loss is very small: \( |J(\mathbf{w}^{(t+1)}) - J(\mathbf{w}^{(t)})| < \epsilon \)</li>
+                <li><strong>OR</strong> we reach a maximum number of iterations</li>
+                <li><strong>OR</strong> the gradient becomes very small: \( |\nabla J(\mathbf{w})| < \epsilon \)</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Series of frames showing gradient descent steps converging to minimum on contour plot]
+            </div>
+
+            <h3 id="gd-example">5.4 Gradient Descent Example</h3>
+            
+            <p>Let's work through a concrete example to see gradient descent in action!</p>
+            
+            <h4>Example Loss Function</h4>
+            <p>Consider the following loss function (just for illustration):</p>
+            
+            <p>$$J(w_1, w_2) = 3w_1^2 + 2w_2^2$$</p>
+            
+            <p>This is a simple quadratic function with minimum at \( (0, 0) \).</p>
+            
+            <h4>Step 1: Compute the Gradient</h4>
+            <p>The gradient is:</p>
+            
+            <p>$$\nabla J = \begin{bmatrix} \frac{\partial J}{\partial w_1} \\ \frac{\partial J}{\partial w_2} \end{bmatrix} = \begin{bmatrix} 6w_1 \\ 4w_2 \end{bmatrix}$$</p>
+            
+            <h4>Step 2: Initialize</h4>
+            <p>Let's start at: \( \mathbf{w}^{(0)} = \begin{bmatrix} 1 \\ 1 \end{bmatrix} \)</p>
+            
+            <p>Choose learning rate: \( \eta = 0.1 \)</p>
+            
+            <h4>Step 3: First Iteration</h4>
+            
+            <p>Gradient at \( \mathbf{w}^{(0)} = [1, 1]^T \):</p>
+            
+            <p>$$\nabla J(\mathbf{w}^{(0)}) = \begin{bmatrix} 6(1) \\ 4(1) \end{bmatrix} = \begin{bmatrix} 6 \\ 4 \end{bmatrix}$$</p>
+            
+            <p>Update:</p>
+            
+            <p>$$\mathbf{w}^{(1)} = \mathbf{w}^{(0)} - \eta \nabla J(\mathbf{w}^{(0)})$$</p>
+            
+            <p>$$= \begin{bmatrix} 1 \\ 1 \end{bmatrix} - 0.1 \begin{bmatrix} 6 \\ 4 \end{bmatrix}$$</p>
+            
+            <p>$$= \begin{bmatrix} 1 - 0.6 \\ 1 - 0.4 \end{bmatrix} = \begin{bmatrix} 0.4 \\ 0.6 \end{bmatrix}$$</p>
+            
+            <p>So after one iteration, we've moved from (1, 1) to (0.4, 0.6) - closer to the minimum at (0, 0)!</p>
+            
+            <h4>Step 4: Continue Iterating</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Iteration</th>
+                        <th>w₁</th>
+                        <th>w₂</th>
+                        <th>J(w₁, w₂)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>0</td><td>1.000</td><td>1.000</td><td>5.000</td></tr>
+                    <tr><td>1</td><td>0.400</td><td>0.600</td><td>1.200</td></tr>
+                    <tr><td>2</td><td>0.160</td><td>0.360</td><td>0.336</td></tr>
+                    <tr><td>3</td><td>0.064</td><td>0.216</td><td>0.106</td></tr>
+                    <tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+                    <tr><td>∞</td><td>0.000</td><td>0.000</td><td>0.000</td></tr>
+                </tbody>
+            </table>
+            
+            <p>We can see that with each iteration, we get closer to the minimum (0, 0) and the loss decreases!</p>
+            
+            <div class="professor-note">
+                Notice how the loss decreases: 5.000 → 1.200 → 0.336 → 0.106 → ... → 0. The weights are converging to zero, which is the true minimum. If we had chosen a different learning rate, the convergence speed would be different, but we'd still reach the same minimum (assuming the learning rate isn't too large).
+            </div>
+
+            <!-- Hinglish Summary for Gradient Descent -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>Gradient Descent</strong> ek iterative method hai jo step-by-step minimum tak pahunchta hai. Pehle random point se start karte hain, phir gradient (slope) calculate karte hain. Gradient batata hai ki function kis direction mein badh raha hai. Hum <strong>opposite direction</strong> mein jaate hain (downhill) kyunki loss minimize karni hai. Har step mein weights update karte hain: <strong>new_weight = old_weight - learning_rate × gradient</strong>. Learning rate (η) control karta hai kitna bada step lena hai - bahut small ho to slow, bahut large ho to overshoot. Process tab tak repeat karte hain jab tak loss change bahut chota na ho jaye. OLS se difference: OLS direct answer deta hai, gradient descent step-by-step approach hai jo large datasets ke liye better hai.</p>
+            </div>
+
+            <!-- Practice Questions for Gradient Descent -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What is the gradient and why is it important in gradient descent?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The gradient is a vector of partial derivatives that points in the direction of maximum increase of a function. In gradient descent, we move in the opposite direction of the gradient to find the minimum, making it the key to optimization.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why do we move opposite to the gradient direction?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> The gradient points in the direction of maximum increase. Since we want to minimize the loss (not maximize), we move in the opposite direction where the loss decreases most rapidly.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What happens if the learning rate is too large?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> If the learning rate is too large, the algorithm might take huge steps and overshoot the minimum, potentially diverging and never converging to the optimal solution.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: How do we know when to stop gradient descent?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> We stop when the change in loss between iterations becomes very small (less than threshold ε), or when we reach a maximum number of iterations, indicating convergence to the minimum.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for Gradient Descent -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Gradient descent is an iterative optimization algorithm that finds parameters step-by-step</li>
+                    <li>The gradient points in the direction of maximum increase; we move opposite to minimize</li>
+                    <li>Update rule: \( \mathbf{w}^{(t+1)} = \mathbf{w}^{(t)} - \eta \nabla J(\mathbf{w}^{(t)}) \)</li>
+                    <li>Learning rate \( \eta \) controls step size - requires careful tuning</li>
+                    <li>Convergence occurs when loss change is below threshold</li>
+                    <li>More scalable than OLS for large datasets</li>
+                    <li>May converge to suboptimal solutions if not properly initialized</li>
+                    <li>Flexible and can be applied to many types of optimization problems</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== IMPLEMENTATION SECTION ========== -->
+        <section id="implementation">
+            <h2>6. Implementation in Python</h2>
+            
+            <p>Now that we understand both OLS and Gradient Descent theoretically, let's see how to implement them in Python!</p>
+            
+            <h3>Setting Up</h3>
+            
+            <p>First, we import the necessary libraries:</p>
+            
+            <pre>
+import numpy as np
+import matplotlib.pyplot as plt
+            </pre>
+            
+            <h3>Toy Dataset</h3>
+            
+            <p>We'll use a simple toy dataset for demonstration:</p>
+            
+            <pre>
+# Training data
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([4, 8, 10, 12, 15])
+            </pre>
+            
+            <h3>Implementation 1: Ordinary Least Square (OLS)</h3>
+            
+            <h4>Step 1: Compute Means</h4>
+            
+            <pre>
+# Compute mean of x and y
+x_mean = np.mean(x)
+y_mean = np.mean(y)
+
+print(f"Mean of x: {x_mean}")
+print(f"Mean of y: {y_mean}")
+            </pre>
+            
+            <h4>Step 2: Compute Slope (m)</h4>
+            
+            <pre>
+# Compute S_xy and S_xx
+S_xy = np.sum((x - x_mean) * (y - y_mean))
+S_xx = np.sum((x - x_mean) ** 2)
+
+# Compute slope
+m = S_xy / S_xx
+
+print(f"Slope (m): {m}")
+            </pre>
+            
+            <h4>Step 3: Compute Intercept (c)</h4>
+            
+            <pre>
+# Compute intercept
+c = y_mean - m * x_mean
+
+print(f"Intercept (c): {c}")
+            </pre>
+            
+            <h4>Complete OLS Function</h4>
+            
+            <pre>
+def ordinary_least_square(x, y):
+    """
+    Compute linear regression using OLS method.
+    
+    Parameters:
+    x: array of input features
+    y: array of output labels
+    
+    Returns:
+    m: slope
+    c: intercept
+    """
+    x_mean = np.mean(x)
+    y_mean = np.mean(y)
+    
+    S_xy = np.sum((x - x_mean) * (y - y_mean))
+    S_xx = np.sum((x - x_mean) ** 2)
+    
+    m = S_xy / S_xx
+    c = y_mean - m * x_mean
+    
+    return m, c
+
+# Apply OLS
+m_ols, c_ols = ordinary_least_square(x, y)
+print(f"OLS Result: y = {m_ols:.2f}x + {c_ols:.2f}")
+            </pre>
+            
+            <h3>Implementation 2: Gradient Descent</h3>
+            
+            <h4>Define Hyperparameters</h4>
+            
+            <pre>
+# Gradient descent parameters
+learning_rate = 0.01      # Learning rate (eta)
+max_iterations = 1000     # Maximum number of iterations
+epsilon = 1e-6            # Convergence threshold
+            </pre>
+            
+            <h4>Initialize Parameters</h4>
+            
+            <pre>
+# Initialize m and c randomly
+m_gd = np.random.randn()
+c_gd = np.random.randn()
+
+print(f"Initial m: {m_gd:.4f}, Initial c: {c_gd:.4f}")
+            </pre>
+            
+            <div class="professor-note">
+                We start with random initial guesses for the parameters. The algorithm will iteratively improve these values.
+            </div>
+            
+            <h4>Gradient Descent Loop</h4>
+            
+            <pre>
+def gradient_descent(x, y, learning_rate, max_iterations, epsilon):
+    """
+    Compute linear regression using Gradient Descent.
+    
+    Parameters:
+    x: array of input features
+    y: array of output labels
+    learning_rate: step size (eta)
+    max_iterations: maximum number of iterations
+    epsilon: convergence threshold
+    
+    Returns:
+    m: slope
+    c: intercept
+    """
+    n = len(x)
+    m = np.random.randn()
+    c = np.random.randn()
+    
+    prev_loss = float('inf')
+    
+    for iteration in range(max_iterations):
+        # Predict y
+        y_pred = m * x + c
+        
+        # Compute loss (MSE)
+        current_loss = np.sum((y - y_pred) ** 2) / n
+        
+        # Check convergence
+        if abs(prev_loss - current_loss) < epsilon:
+            print(f"Converged at iteration {iteration}")
+            break
+        
+        # Compute gradients
+        d_m = -2 * np.sum(x * (y - y_pred)) / n
+        d_c = -2 * np.sum(y - y_pred) / n
+        
+        # Update parameters
+        m = m - learning_rate * d_m
+        c = c - learning_rate * d_c
+        
+        prev_loss = current_loss
+        
+        # Print progress every 100 iterations
+        if iteration % 100 == 0:
+            print(f"Iteration {iteration}: Loss = {current_loss:.4f}")
+    
+    return m, c
+
+# Apply Gradient Descent
+m_gd, c_gd = gradient_descent(x, y, learning_rate, max_iterations, epsilon)
+print(f"Gradient Descent Result: y = {m_gd:.2f}x + {c_gd:.2f}")
+            </pre>
+            
+            <h4>Understanding the Gradients</h4>
+            
+            <p>The gradients (partial derivatives of the loss function) are:</p>
+            
+            <p>For slope \( m \):</p>
+            <p>$$\frac{\partial J}{\partial m} = \frac{-2}{n} \sum_{i=1}^{n} x_i(y_i - \hat{y}_i)$$</p>
+            
+            <p>For intercept \( c \):</p>
+            <p>$$\frac{\partial J}{\partial c} = \frac{-2}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)$$</p>
+            
+            <div class="professor-note">
+                These gradient formulas come from taking the partial derivatives of the squared loss function. The negative sign in the code accounts for the fact that we're moving opposite to the gradient (descent, not ascent).
+            </div>
+            
+            <h3>Visualization: Comparing Results</h3>
+            
+            <pre>
+# Plot data points
+plt.scatter(x, y, color='blue', label='Data Points', s=100)
+
+# Plot OLS line
+y_ols = m_ols * x + c_ols
+plt.plot(x, y_ols, color='red', linewidth=2, label=f'OLS: y = {m_ols:.2f}x + {c_ols:.2f}')
+
+# Plot Gradient Descent line
+y_gd = m_gd * x + c_gd
+plt.plot(x, y_gd, color='green', linewidth=2, linestyle='--', 
+         label=f'GD: y = {m_gd:.2f}x + {c_gd:.2f}')
+
+plt.xlabel('x', fontsize=14)
+plt.ylabel('y', fontsize=14)
+plt.title('Linear Regression: OLS vs Gradient Descent', fontsize=16)
+plt.legend(fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.show()
+            </pre>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot with data points and two nearly overlapping lines (OLS in red, GD in green dashed)]
+            </div>
+            
+            <h3>Results Comparison</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Slope (m)</th>
+                        <th>Intercept (c)</th>
+                        <th>Convergence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>OLS</strong></td>
+                        <td>Exact value</td>
+                        <td>Exact value</td>
+                        <td>Immediate (1 step)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gradient Descent</strong></td>
+                        <td>Very close to OLS</td>
+                        <td>Very close to OLS</td>
+                        <td>After ~200-500 iterations</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                As you can see, Gradient Descent gives very similar results to OLS, but it's an iterative algorithm so it may not reach the exact solution. However, it comes very close! The advantage of GD is that it scales better to large datasets and can handle more complex scenarios.
+            </div>
+
+            <!-- Hinglish Summary for Implementation -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Python mein implementation simple hai! <strong>OLS</strong> ke liye: mean calculate karo, phir \( S_{xy} \) aur \( S_{xx} \) nikalo, aur formulas use karke m aur c calculate karo - ek hi baar mein answer mil jaata hai. <strong>Gradient Descent</strong> ke liye: random values se start karo, loop mein predictions banao, gradients calculate karo (\( d_m \) aur \( d_c \)), aur parameters ko update karo - yeh process repeat hota hai jab tak convergence na mile. Dono methods similar results dete hain, par OLS fast hai (ek step) jabki GD iterative hai (kayi steps). Plot mein dekhenge to dono lines almost same hain, confirming ki dono methods sahi kaam kar rahe hain!</p>
+            </div>
+
+            <!-- Practice Questions for Implementation -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: Why do we use NumPy instead of plain Python lists?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> NumPy provides vectorized operations that are much faster than Python loops, has built-in mathematical functions like mean and sum, and handles array operations efficiently, making it ideal for numerical computations.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: What is the purpose of the epsilon parameter in gradient descent?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Epsilon is the convergence threshold. When the change in loss between iterations becomes smaller than epsilon, we consider the algorithm converged and stop iterating, preventing unnecessary computations.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: Why might Gradient Descent not give exactly the same result as OLS?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Gradient Descent is an iterative approximation method that stops when the loss change is below a threshold. It may not reach the absolute exact minimum but gets very close, while OLS provides the exact analytical solution.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: How would you modify the code to handle multiple features (not just one x)?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Change x from a 1D array to a 2D matrix where each row is a sample and each column is a feature. Then use matrix operations: \( \mathbf{y}_{pred} = \mathbf{Xw} + c \), and compute gradients accordingly with matrix multiplications.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for Implementation -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>OLS implementation is straightforward: compute means, then slope and intercept using formulas</li>
+                    <li>Gradient Descent requires initialization, iterative updates, and convergence checking</li>
+                    <li>NumPy makes implementation efficient with vectorized operations</li>
+                    <li>Gradients for linear regression are derived from the squared loss function</li>
+                    <li>Both methods produce nearly identical results when properly implemented</li>
+                    <li>Visualization helps verify that both methods find the correct line</li>
+                    <li>Learning rate and max iterations are hyperparameters that need tuning</li>
+                    <li>Gradient Descent is more flexible and scales better to complex problems</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== COMPARISON SECTION ========== -->
+        <section id="comparison">
+            <h2>7. OLS vs Gradient Descent: Comparison</h2>
+            
+            <p>Now that we've learned both methods, let's compare them to understand when to use which approach.</p>
+            
+            <h3>Detailed Comparison Table</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Ordinary Least Square (OLS)</th>
+                        <th>Gradient Descent (GD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Type of Solution</strong></td>
+                        <td>Closed-form, analytical, exact</td>
+                        <td>Iterative, numerical, approximate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Number of Steps</strong></td>
+                        <td>Single computation (direct)</td>
+                        <td>Multiple iterations required</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accuracy</strong></td>
+                        <td>Exact optimal solution</td>
+                        <td>Approximate solution (very close to optimal)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tuning Required</strong></td>
+                        <td>None - no hyperparameters</td>
+                        <td>Yes - learning rate, iterations, etc.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computational Complexity</strong></td>
+                        <td>O(n²d + d³) - expensive for large n or d</td>
+                        <td>O(ndk) where k = iterations - scalable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Usage</strong></td>
+                        <td>High - needs to store matrices</td>
+                        <td>Low - only stores current parameters</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>Poor for very large datasets</td>
+                        <td>Excellent - can handle massive data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence Speed</strong></td>
+                        <td>Instant (one calculation)</td>
+                        <td>Depends on learning rate and initialization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Limited to specific loss functions</td>
+                        <td>Can be adapted to various loss functions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Robustness</strong></td>
+                        <td>Can fail if matrix is singular</td>
+                        <td>More robust to numerical issues</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Extension to Non-linear</strong></td>
+                        <td>Difficult</td>
+                        <td>Easy - just change the model</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best Use Case</strong></td>
+                        <td>Small to medium datasets, when exact solution needed</td>
+                        <td>Large datasets, complex models, deep learning</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>When to Use OLS</h3>
+            <div class="highlight-box">
+                <h4>✅ Choose OLS when:</h4>
+                <ul>
+                    <li>Dataset is <strong>small to medium-sized</strong> (fits in memory)</li>
+                    <li>Number of features is <strong>not too large</strong></li>
+                    <li>You need the <strong>exact optimal solution</strong></li>
+                    <li>You want <strong>no hyperparameter tuning</strong></li>
+                    <li>Computational resources are sufficient</li>
+                    <li>Interpretability and exact coefficients are important</li>
+                </ul>
+            </div>
+            
+            <h3>When to Use Gradient Descent</h3>
+            <div class="highlight-box">
+                <h4>✅ Choose Gradient Descent when:</h4>
+                <ul>
+                    <li>Dataset is <strong>very large</strong> (millions of samples)</li>
+                    <li>Number of features is <strong>very high</strong></li>
+                    <li>Memory constraints exist</li>
+                    <li>You need <strong>online learning</strong> (updating as new data arrives)</li>
+                    <li>Working with <strong>deep learning</strong> or neural networks</li>
+                    <li>Loss function is complex or custom</li>
+                    <li>Approximate solution is acceptable</li>
+                </ul>
+            </div>
+            
+            <h3>Visual Performance Comparison</h3>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Bar chart comparing OLS vs GD on metrics like Speed, Accuracy, Scalability, Memory]
+            </div>
+            
+            <h3>Real-World Scenario Examples</h3>
+            
+            <h4>Scenario 1: Small Business Sales Prediction</h4>
+            <ul>
+                <li><strong>Data Size:</strong> 500 records, 5 features</li>
+                <li><strong>Recommendation:</strong> <span style="color: green;">OLS</span></li>
+                <li><strong>Reason:</strong> Small dataset, OLS will give instant exact solution</li>
+            </ul>
+            
+            <h4>Scenario 2: Image Recognition with Neural Networks</h4>
+            <ul>
+                <li><strong>Data Size:</strong> Millions of images, thousands of features</li>
+                <li><strong>Recommendation:</strong> <span style="color: blue;">Gradient Descent</span></li>
+                <li><strong>Reason:</strong> OLS not applicable; GD is the standard for deep learning</li>
+            </ul>
+            
+            <h4>Scenario 3: Real Estate Price Prediction</h4>
+            <ul>
+                <li><strong>Data Size:</strong> 10,000 records, 20 features</li>
+                <li><strong>Recommendation:</strong> <span style="color: purple;">Either (preference: OLS for exact results)</span></li>
+                <li><strong>Reason:</strong> Medium size - both work well, choose based on other constraints</li>
+            </ul>
+            
+            <h4>Scenario 4: Stock Market Prediction (Streaming Data)</h4>
+            <ul>
+                <li><strong>Data Size:</strong> Continuous stream, needs frequent updates</li>
+                <li><strong>Recommendation:</strong> <span style="color: blue;">Gradient Descent (Stochastic GD)</span></li>
+                <li><strong>Reason:</strong> Online learning capability needed, OLS requires recomputation each time</li>
+            </ul>
+            
+            <div class="professor-note">
+                In modern machine learning, Gradient Descent (and its variants like Stochastic Gradient Descent, Mini-batch GD, Adam, etc.) is the foundation of almost all deep learning algorithms. OLS is still valuable for statistical analysis and classical regression problems where exact solutions and interpretability matter.
+            </div>
+            
+            <h3>Advanced Variants</h3>
+            
+            <h4>Gradient Descent Variants:</h4>
+            <ul>
+                <li><strong>Batch Gradient Descent:</strong> Uses entire dataset per iteration (what we discussed)</li>
+                <li><strong>Stochastic Gradient Descent (SGD):</strong> Uses one sample at a time - much faster for large data</li>
+                <li><strong>Mini-batch Gradient Descent:</strong> Uses small batches - balances speed and stability</li>
+                <li><strong>Momentum:</strong> Adds velocity to speed up convergence</li>
+                <li><strong>Adam, RMSprop:</strong> Adaptive learning rate methods used in deep learning</li>
+            </ul>
+            
+            <h4>OLS Extensions:</h4>
+            <ul>
+                <li><strong>Ridge Regression:</strong> OLS + L2 regularization</li>
+                <li><strong>Lasso Regression:</strong> OLS + L1 regularization</li>
+                <li><strong>Elastic Net:</strong> Combines Ridge and Lasso</li>
+            </ul>
+
+            <!-- Hinglish Summary for Comparison -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p><strong>OLS</strong> aur <strong>Gradient Descent</strong> dono linear regression solve karte hain par approach alag hai. <strong>OLS</strong> ek baar mein exact answer deta hai, par large data ke liye slow aur memory-intensive ho jaata hai - best hai small/medium datasets ke liye. <strong>Gradient Descent</strong> step-by-step approximate answer deta hai par bahut scalable hai - large datasets, deep learning, aur complex models ke liye perfect hai. OLS ko koi tuning nahi chahiye, par GD mein learning rate set karna padta hai. Real-world mein: choti company ke liye OLS use karo (fast aur exact), lekin agar millions of images ya big data hai to GD use karo. Modern machine learning mein GD aur uske variants (SGD, Adam) sabse zyada popular hain kyunki flexible aur scalable hain.</p>
+            </div>
+
+            <!-- Practice Questions for Comparison -->
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: Why is OLS computationally expensive for large datasets?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> OLS involves matrix operations with complexity O(n²d + d³), requiring computation and storage of large matrices. For datasets with millions of samples, this becomes prohibitively expensive in both time and memory.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Can Gradient Descent be used for non-linear models?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Yes! Gradient Descent is very flexible and can optimize parameters for any differentiable model, including neural networks and complex non-linear functions. OLS is limited to linear models only.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What is online learning and why is GD suitable for it?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> Online learning means updating the model as new data arrives continuously. GD (especially Stochastic GD) can update parameters incrementally with each new sample, while OLS requires recomputing from scratch with the entire dataset.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: If you have 100 samples with 3 features, which method is better?</strong>
+                    <div class="answer">
+                        <strong>Answer:</strong> OLS is better for this small dataset. It will provide an instant exact solution without any tuning, whereas Gradient Descent would be overkill and require hyperparameter tuning for minimal benefit.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways for Comparison -->
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>OLS: exact, fast for small data, no tuning needed, but doesn't scale well</li>
+                    <li>Gradient Descent: approximate, scalable for large data, requires tuning, very flexible</li>
+                    <li>Choose OLS for small/medium datasets when exact solution is needed</li>
+                    <li>Choose GD for large datasets, complex models, or deep learning</li>
+                    <li>Modern ML heavily relies on GD and its variants (SGD, Adam, etc.)</li>
+                    <li>Both methods produce nearly identical results for problems where both apply</li>
+                    <li>GD enables online learning; OLS requires batch processing</li>
+                    <li>Understanding both methods provides foundation for advanced ML algorithms</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== MIND MAP SECTION ========== -->
+        <section id="mindmap">
+            <div class="mindmap">
+                <h2>8. Comprehensive Mind Map: Linear Regression</h2>
+                
+                <div class="mindmap-container">
+                    <div class="main-topic">LINEAR REGRESSION</div>
+                    
+                    <div class="branches">
+                        <!-- Branch 1: Motivation -->
+                        <div class="branch">
+                            <div class="branch-topic">Motivation</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">Predict Continuous Values</div>
+                                <div class="sub-topic">Example: Chaiwala Problem</div>
+                                <div class="sub-topic">Example: Real Estate Price</div>
+                                <div class="sub-topic">Find Function y = f(x)</div>
+                                <div class="sub-topic">Single/Multi-dimensional Features</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branch 2: Core Concept -->
+                        <div class="branch">
+                            <div class="branch-topic">Core Concept</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">Linear Function: y = mx + c</div>
+                                <div class="sub-topic">Parameters: m (slope), c (intercept)</div>
+                                <div class="sub-topic">Loss Function: Squared Error</div>
+                                <div class="sub-topic">Optimization: Minimize Loss</div>
+                                <div class="sub-topic">Avoid Overfitting</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branch 3: OLS Method -->
+                        <div class="branch">
+                            <div class="branch-topic">OLS Method</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">Closed-form Solution</div>
+                                <div class="sub-topic">Take Partial Derivatives</div>
+                                <div class="sub-topic">m = S_xy / S_xx</div>
+                                <div class="sub-topic">c = ȳ - mx̄</div>
+                                <div class="sub-topic">Exact, No Tuning</div>
+                                <div class="sub-topic">Not Scalable</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branch 4: Gradient Descent -->
+                        <div class="branch">
+                            <div class="branch-topic">Gradient Descent</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">Iterative Method</div>
+                                <div class="sub-topic">Gradient: Direction of Increase</div>
+                                <div class="sub-topic">Move Opposite to Gradient</div>
+                                <div class="sub-topic">w = w - η∇J(w)</div>
+                                <div class="sub-topic">Learning Rate η</div>
+                                <div class="sub-topic">Scalable & Flexible</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branch 5: Implementation -->
+                        <div class="branch">
+                            <div class="branch-topic">Implementation</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">NumPy for Computation</div>
+                                <div class="sub-topic">Matplotlib for Visualization</div>
+                                <div class="sub-topic">OLS: Direct Formula</div>
+                                <div class="sub-topic">GD: Loop & Update</div>
+                                <div class="sub-topic">Compare Results</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branch 6: Comparison -->
+                        <div class="branch">
+                            <div class="branch-topic">Comparison</div>
+                            <div class="sub-topics">
+                                <div class="sub-topic">OLS: Small Data</div>
+                                <div class="sub-topic">GD: Large Data</div>
+                                <div class="sub-topic">OLS: Exact Solution</div>
+                                <div class="sub-topic">GD: Approximate</div>
+                                <div class="sub-topic">GD: Deep Learning Foundation</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px;">🔗 Connections Between Concepts:</h4>
+                    <ul style="list-style-type: disc; padding-left: 30px;">
+                        <li>Both OLS and GD aim to minimize the same loss function (squared error)</li>
+                        <li>The optimal parameters found by both methods are (nearly) identical</li>
+                        <li>Gradient in GD points in the direction that derivatives in OLS set to zero</li>
+                        <li>OLS is suitable for small-scale problems; GD extends to large-scale and complex scenarios</li>
+                        <li>Understanding linear regression is foundational for advanced ML topics</li>
+                        <li>Gradient Descent principles apply to neural networks and deep learning</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FINAL SUMMARY ========== -->
+        <section style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+            <h2 style="color: white; border-bottom: 2px solid white;">📚 Lecture Summary</h2>
+            <p style="font-size: 1.1em; line-height: 2;">
+                In this lecture, we explored <strong>Linear Regression</strong>, a fundamental supervised learning algorithm for predicting continuous values. We learned:
+            </p>
+            <ul style="font-size: 1.05em; line-height: 2;">
+                <li><strong>Motivation:</strong> Real-world problems like Chaiwala sales and real estate pricing</li>
+                <li><strong>Core Concept:</strong> Finding the best line/hyperplane by minimizing squared error</li>
+                <li><strong>OLS Method:</strong> Exact analytical solution using derivatives and statistical formulas</li>
+                <li><strong>Gradient Descent:</strong> Iterative optimization moving opposite to the gradient</li>
+                <li><strong>Implementation:</strong> Practical Python code for both methods using NumPy</li>
+                <li><strong>Comparison:</strong> When to use OLS vs GD based on data size and requirements</li>
+            </ul>
+            <p style="font-size: 1.1em; margin-top: 20px;">
+                <strong>Key Insight:</strong> Linear regression tries to find the best line that fits the data by minimizing the total squared error between predicted and actual values. OLS gives exact solutions but is computationally expensive for large data; Gradient Descent is scalable and flexible but requires tuning and may converge slowly or to suboptimal solutions if not done well.
+            </p>
+            <p style="font-size: 1.1em; margin-top: 20px; font-style: italic;">
+                This is the foundation for more advanced machine learning algorithms. Understanding linear regression deeply prepares you for tackling complex models like neural networks, where gradient descent is the core optimization technique!
+            </p>
+        </section>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

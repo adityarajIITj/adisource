@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition Principles - Naive Bayes Classification</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            padding-bottom: 20px;
+            border-bottom: 4px solid #3498db;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #2980b9;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #3498db;
+        }
+        
+        h3 {
+            color: #16a085;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #e74c3c;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            padding-left: 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+        }
+        
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #3498db;
+            padding-left: 5px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        .key-term {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .formula-box {
+            background: #fff9e6;
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .example-box {
+            background: #e8f8f5;
+            border-left: 5px solid #16a085;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .note-box {
+            background: #fef5e7;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #e8daef;
+            border-left: 5px solid #8e44ad;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .hinglish-summary {
+            background: #ffeaa7;
+            border: 2px dashed #fdcb6e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-top: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f5f6fa;
+        }
+        
+        .practice-questions {
+            background: #fff5f5;
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .practice-questions h3 {
+            color: #c0392b;
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .answer {
+            background: #d5f4e6;
+            padding: 15px;
+            margin: 10px 0 15px 20px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .key-takeaways {
+            background: #d6eaf8;
+            border: 2px solid #2980b9;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .key-takeaways h3 {
+            color: #1f618d;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 30px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        .diagram-placeholder {
+            background: #ecf0f1;
+            border: 2px dashed #95a5a6;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .mind-map {
+            background: white;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .central-node {
+            background: #3498db;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 20px;
+            box-shadow: 0 5px 15px rgba(52,152,219,0.4);
+        }
+        
+        .branch-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .branch {
+            background: #ecf0f1;
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid #3498db;
+            min-width: 200px;
+        }
+        
+        .branch h4 {
+            color: #2980b9;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .branch li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .branch li:before {
+            content: "→ ";
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pattern Recognition Principles</h1>
+        <p class="subtitle">Naive Bayes Classification<br>~ Armaan Kachhawa</p>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Course Recap: What We've Learned So Far</a></li>
+                <li><a href="#datasets">2. Understanding Example Datasets</a>
+                    <ul>
+                        <li><a href="#iris">2.1 Iris Flower Dataset</a></li>
+                        <li><a href="#anemia">2.2 Anemia vs Non-Anemia Dataset</a></li>
+                        <li><a href="#cricket">2.3 Play Cricket Dataset</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mathematical">3. Mathematical Formulation of Classification</a></li>
+                <li><a href="#parameters">4. The Parameter Problem</a>
+                    <ul>
+                        <li><a href="#direct">4.1 Direct Posterior Estimation</a></li>
+                        <li><a href="#bayes-help">4.2 Does Bayes Theorem Help?</a></li>
+                    </ul>
+                </li>
+                <li><a href="#naive-bayes">5. Naive Bayes Classification</a>
+                    <ul>
+                        <li><a href="#assumption">5.1 The Naive Assumption</a></li>
+                        <li><a href="#parameter-reduction">5.2 Parameter Reduction</a></li>
+                    </ul>
+                </li>
+                <li><a href="#workout">6. Workout Example: Play Cricket Dataset</a></li>
+                <li><a href="#zero-problem">7. Zero Probability Problem</a></li>
+                <li><a href="#laplacian">8. Laplacian Smoothing (Add-One Smoothing)</a></li>
+                <li><a href="#implementation">9. Implementation: Spam vs Ham Classification</a></li>
+                <li><a href="#summary">10. Summary and Key Takeaways</a></li>
+                <li><a href="#mindmap">11. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Recap -->
+        <section id="recap">
+            <h2>1. Course Recap: What We've Learned So Far</h2>
+            
+            <p>Before diving into <span class="key-term">Naive Bayes Classification</span>, let's review the foundational concepts we've covered in this Pattern Recognition course:</p>
+            
+            <h3>Bayesian Decision Theory</h3>
+            <p>Bayesian Decision Theory uses <span class="highlight">Bayes' Theorem</span> to make classification decisions. The core idea is to find the maximum of the <span class="key-term">posterior probability</span>.</p>
+            
+            <div class="formula-box">
+                <p><strong>Bayes' Theorem:</strong></p>
+
+                $$P(Y|X) = \frac{P(X|Y) \cdot P(Y)}{P(X)}$$
+                <p style="margin-top: 15px;">Where:</p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li>$P(Y|X)$ = <strong>Posterior</strong> probability (what we want to find)</li>
+                    <li>$P(X|Y)$ = <strong>Likelihood</strong></li>
+                    <li>$P(Y)$ = <strong>Prior</strong> probability</li>
+                    <li>$P(X)$ = <strong>Evidence</strong> (common for all classes, can be ignored for classification)</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "The evidence term $P(X)$ is common for all the classes, so we just worry about the prior multiplied by the likelihood. We find out those classes for which these probabilities are maximum for a given sample, and based on that, we decide the class."
+            </div>
+            
+            <h3>Discriminant Functions</h3>
+            <p>We also studied <span class="highlight">discriminant functions</span>, which are a set of functions where whichever function gives a higher value determines the class assignment. These can be:</p>
+            <ul style="margin-left: 40px;">
+                <li><strong>Linear Discriminant Functions:</strong> Decision boundaries are linear</li>
+                <li><strong>Non-linear Discriminant Functions:</strong> Decision boundaries are curved or complex</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 1)</h4>
+                <p><strong>Abhi tak humne kya seekha:</strong> Bayesian Decision Theory mein hum posterior probability ko maximize karte hain using Bayes' theorem. Formula simple hai - likelihood × prior / evidence. Evidence ko ignore kar sakte hain kyunki sab classes ke liye same hota hai. Discriminant functions bhi dekhe jo different classes ke liye alag values dete hain, aur jo maximum value de, woh class select hoti hai. Ye foundational concepts hain jo Naive Bayes samajhne ke liye zaroori hain.</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Datasets -->
+        <section id="datasets">
+            <h2>2. Understanding Example Datasets</h2>
+            
+            <p>To understand pattern recognition and classification better, let's explore three real-world datasets. These examples will help us understand how features and class labels are structured.</p>
+            
+            <h3 id="iris">2.1 Iris Flower Dataset</h3>
+            
+            <p>The <span class="highlight">Iris Flower Dataset</span> is one of the most famous datasets in machine learning. The task is to classify iris flowers into three species based on their physical measurements.</p>
+            
+            <div class="example-box">
+                <h4>Dataset Description:</h4>
+                <p><strong>Features (X):</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>$X_1$: Sepal Length (cm) - <em>continuous random variable</em></li>
+                    <li>$X_2$: Sepal Width (cm) - <em>continuous random variable</em></li>
+                    <li>$X_3$: Petal Length (cm) - <em>continuous random variable</em></li>
+                    <li>$X_4$: Petal Width (cm) - <em>continuous random variable</em></li>
+                </ul>
+                <p><strong>Class Label (Y):</strong> Species (setosa, versicolor, virginica) - <em>discrete random variable</em></p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sepal Length (cm)</th>
+                        <th>Sepal Width (cm)</th>
+                        <th>Petal Length (cm)</th>
+                        <th>Petal Width (cm)</th>
+                        <th>Species</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5.1</td>
+                        <td>3.5</td>
+                        <td>1.4</td>
+                        <td>0.2</td>
+                        <td>setosa</td>
+                    </tr>
+                    <tr>
+                        <td>4.9</td>
+                        <td>3.0</td>
+                        <td>1.4</td>
+                        <td>0.2</td>
+                        <td>setosa</td>
+                    </tr>
+                    <tr>
+                        <td>7.0</td>
+                        <td>3.2</td>
+                        <td>4.7</td>
+                        <td>1.4</td>
+                        <td>versicolor</td>
+                    </tr>
+                    <tr>
+                        <td>6.4</td>
+                        <td>3.2</td>
+                        <td>4.5</td>
+                        <td>1.5</td>
+                        <td>versicolor</td>
+                    </tr>
+                    <tr>
+                        <td>6.3</td>
+                        <td>3.3</td>
+                        <td>6.0</td>
+                        <td>2.5</td>
+                        <td>virginica</td>
+                    </tr>
+                    <tr>
+                        <td>5.8</td>
+                        <td>2.7</td>
+                        <td>5.1</td>
+                        <td>1.9</td>
+                        <td>virginica</td>
+                    </tr>
+                    <tr>
+                        <td>7.1</td>
+                        <td>3.0</td>
+                        <td>5.9</td>
+                        <td>2.1</td>
+                        <td>virginica</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Given a flower, you need to find out whether it is Iris setosa, versicolor or virginica. We will be using the length and width of petal and sepal to classify this flower. So that's the feature we are going to use. This is a 4-dimensional feature and the class label is Y. The task here is: given the observation $X_1 = 5$cm, $X_2 = 3$cm, $X_3 = 1.4$cm, $X_4 = 0.3$cm, what is the class it belongs to?"</p>
+            </div>
+            
+            <h3 id="anemia">2.2 Anemia vs Non-Anemia Dataset</h3>
+            
+            <p>This medical dataset demonstrates classification with <span class="highlight">mixed types of random variables</span> - binary, discrete, and continuous.</p>
+            
+            <div class="example-box">
+                <h4>Dataset Description:</h4>
+                <p><strong>Features (X):</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>$X_1$: Age - <em>continuous random variable</em></li>
+                    <li>$X_2$: Gender (M/F) - <em>binary random variable</em></li>
+                    <li>$X_3$: Hemoglobin (g/dL) - <em>continuous random variable</em></li>
+                    <li>$X_4$: RBC Count (mill/µL) - <em>continuous random variable</em></li>
+                    <li>$X_5$: Fatigue (Yes/No) - <em>binary random variable</em></li>
+                    <li>$X_6$: Pallor (Yes/No/Slight) - <em>discrete random variable with 3 values</em></li>
+                </ul>
+                <p><strong>Class Label (Y):</strong> Anemia (Yes/No) - <em>binary random variable</em></p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Hemoglobin (g/dL)</th>
+                        <th>RBC Count (mill/µL)</th>
+                        <th>Fatigue</th>
+                        <th>Pallor</th>
+                        <th>Anemia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>25</td>
+                        <td>M</td>
+                        <td>13.8</td>
+                        <td>5.0</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td>F</td>
+                        <td>9.2</td>
+                        <td>3.8</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>F</td>
+                        <td>14.1</td>
+                        <td>4.9</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>60</td>
+                        <td>F</td>
+                        <td>8.5</td>
+                        <td>3.6</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>38</td>
+                        <td>M</td>
+                        <td>12.5</td>
+                        <td>4.5</td>
+                        <td>No</td>
+                        <td>Slight</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Different random variables can take different values. Ultimately the goal is to predict: given X1 to X6 values, whether the person has anemia or not. Some of the values here are binary, some are continuous, and some are discrete with multiple values."
+            </div>
+            
+            <h3 id="cricket">2.3 Play Cricket Dataset</h3>
+            
+            <p>This simple dataset will be used throughout this lecture for <span class="highlight">workout examples</span>. It demonstrates binary and discrete random variables.</p>
+            
+            <div class="example-box">
+                <h4>Dataset Description:</h4>
+                <p><strong>Features (X):</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>$X_1$: Weather (Sunny/Overcast/Rainy) - <em>discrete random variable with 3 values</em></li>
+                    <li>$X_2$: Wind (Weak/Strong) - <em>binary random variable</em></li>
+                </ul>
+                <p><strong>Class Label (Y):</strong> Play Cricket (Yes/No) - <em>binary random variable</em></p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Weather ($X_1$)</th>
+                        <th>Wind ($X_2$)</th>
+                        <th>Play Cricket (Y)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Weak</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Strong</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Overcast</td>
+                        <td>Weak</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Rainy</td>
+                        <td>Weak</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Rainy</td>
+                        <td>Strong</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Weak</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Example Question:</strong> If the weather is sunny and the wind is strong, will cricket be played or not? We need to estimate $P(Y = \text{Yes} | X_1 = \text{Sunny}, X_2 = \text{Strong})$</p>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 2)</h4>
+                <p><strong>Datasets ka structure:</strong> Teen examples dekhe - Iris flowers (4 continuous features se 3 species classify karna), Anemia detection (mixed features - binary, discrete, continuous), aur Play Cricket (simple binary classification). Har dataset mein features ko X1, X2... Xn se represent karte hain (ye random variables hote hain), aur class label ko Y se (ye bhi random variable hai). Test time pe humein diye gaye features se Y predict karna hota hai. Different datasets mein different types ke random variables hote hain - continuous (measurements), binary (yes/no), ya discrete (multiple values).</p>
+            </div>
+        </section>
+
+        <!-- Section 3: Mathematical Formulation -->
+        <section id="mathematical">
+            <h2>3. Mathematical Formulation of Classification</h2>
+            
+            <p>Now let's formalize the classification problem mathematically. Understanding this formulation is crucial for grasping why Naive Bayes is needed.</p>
+            
+            <h3>General Supervised Learning Setup</h3>
+            
+            <p>In supervised learning, we are given a <span class="highlight">training dataset</span> $D$:</p>
+            
+            <div class="formula-box">
+
+                $$D = \{(X^{(i)}, Y^{(i)}) : i = 1, 2, ..., M\}$$
+                <p style="margin-top: 15px;">Where:</p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li>$X^{(i)} = (X_1^{(i)}, X_2^{(i)}, ..., X_n^{(i)})$ = Feature vector for the $i^{th}$ sample</li>
+                    <li>$Y^{(i)} \in \{\omega_1, \omega_2, ..., \omega_k\}$ = Class label for the $i^{th}$ sample</li>
+                    <li>$M$ = Total number of training samples</li>
+                    <li>$n$ = Number of features (dimensionality)</li>
+                    <li>$k$ = Number of classes</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>Example: Counting M in our datasets</h4>
+                <ul style="margin-left: 30px;">
+                    <li><strong>Iris Dataset:</strong> $M = 7$ samples shown (but typically has 150 total)</li>
+                    <li><strong>Anemia Dataset:</strong> $M = 5$ samples</li>
+                    <li><strong>Play Cricket Dataset:</strong> $M = 6$ samples</li>
+                </ul>
+            </div>
+            
+            <h3>The Classification Task</h3>
+            
+            <p>Given a <span class="key-term">test sample</span> $X^{test} = (X_1, X_2, ..., X_n)$, we need to predict the class label $Y$.</p>
+            
+            <p>Mathematically, this means estimating:</p>
+            
+            <div class="formula-box">
+
+                $$P(Y = y | X_1, X_2, ..., X_n)$$
+                <p style="margin-top: 10px;">for all possible values of $y \in \{\omega_1, \omega_2, ..., \omega_k\}$</p>
+            </div>
+            
+            <p>The <span class="highlight">decision rule</span> is:</p>
+            
+            <div class="formula-box">
+
+                $$\hat{Y} = \arg\max_{y \in \{\omega_1, ..., \omega_k\}} P(Y = y | X_1, X_2, ..., X_n)$$
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "This is the classification problem - given the training data, we need to predict for a given test sample what is the posterior probability. We need to estimate $P(Y = y | X_1, ..., X_n)$ for different values of Y, and whichever comes maximum, we assign that particular class."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 3)</h4>
+                <p><strong>Mathematical formulation samajhte hain:</strong> Training data D mein M samples hote hain, har sample mein n features (X1 se Xn) aur ek class label Y hota hai. Test time pe humein ek nayi sample milti hai, aur humein uska Y predict karna hai. Iske liye posterior probability P(Y|X1...Xn) calculate karte hain sabhi classes ke liye, aur jo maximum probability de, woh class assign kar dete hain. Simple formula hai - arg max over all classes. Par problem ye hai ki ye probabilities estimate kaise karein, woh aage dekhenge.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Parameter Problem -->
+        <section id="parameters">
+            <h2>4. The Parameter Problem</h2>
+            
+            <p>Now comes the crucial question: How many parameters do we need to estimate these probabilities? The answer will shock you and reveal why Naive Bayes is necessary.</p>
+            
+            <h3 id="direct">4.1 Direct Posterior Estimation</h3>
+            
+            <p>Let's assume all features $X_1, X_2, ..., X_n$ are <span class="highlight">binary random variables</span> (taking values 0 or 1), and $Y$ can take $k$ different class values.</p>
+            
+            <p>If we directly estimate $P(Y | X_1, X_2, ..., X_n)$, we need to create probability tables.</p>
+            
+            <div class="example-box">
+                <h4>Understanding the Probability Table</h4>
+                <p>For each possible combination of $(X_1, X_2, ..., X_n)$, we need to store probabilities for different values of $Y$.</p>
+                
+                <p><strong>How many combinations exist?</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>Each $X_i$ can take 2 values (0 or 1)</li>
+                    <li>There are $n$ such features</li>
+                    <li>Total combinations = $2 \times 2 \times ... \times 2$ (n times) = $2^n$</li>
+                </ul>
+                
+                <p><strong>How many probability values to store?</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>For each of the $2^n$ combinations, we need probabilities for $k$ classes</li>
+                    <li>But we only need $(k-1)$ values because the $k^{th}$ can be computed as $1 - \sum_{i=1}^{k-1} P_i$</li>
+                </ul>
+            </div>
+            
+            <div class="formula-box">
+                <p><strong>Number of Parameters for Direct Posterior:</strong></p>
+
+                $$\text{Parameters} = 2^n \times (k - 1)$$
+            </div>
+            
+            <div class="note-box">
+                <h4>⚠️ Why is this problematic?</h4>
+                <p>Let's take a practical example:</p>
+                <ul style="margin-left: 30px;">
+                    <li>Suppose $n = 30$ (30 features) and $k = 2$ (binary classification)</li>
+                    <li>Parameters needed = $2^{30} \times (2-1) = 2^{30} = 1,073,741,824$</li>
+                    <li>That's <strong>over 1 billion parameters</strong>!</li>
+                    <li>This requires an enormous amount of training data</li>
+                    <li>With limited samples, probability estimates will be highly inaccurate</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "This $2^n \times (k-1)$ is going to be a very, very large number. If you have just 30-dimensional features, this will be like $2^{30}$, and even if you have binary classification (k=2), that will be $2^{30}$ parameters, which is huge, in the billion scale. That requires a lot of data, and which is not very much practically feasible."
+            </div>
+            
+            <h3 id="bayes-help">4.2 Does Bayes Theorem Help?</h3>
+            
+            <p>Let's try using Bayes' Theorem to see if it reduces the parameters.</p>
+            
+            <div class="formula-box">
+                <p><strong>Applying Bayes' Theorem:</strong></p>
+
+                $$P(Y | X_1, ..., X_n) = \frac{P(X_1, ..., X_n | Y) \cdot P(Y)}{P(X_1, ..., X_n)}$$
+                
+                <p style="margin-top: 15px;"><strong>Decision Rule (ignoring denominator):</strong></p>
+
+                $$\hat{Y} = \arg\max_{Y \in \{\omega_1, ..., \omega_k\}} P(X_1, ..., X_n | Y) \cdot P(Y)$$
+            </div>
+            
+            <p>Now let's count parameters for each component:</p>
+            
+            <h4>Parameters for $P(Y)$ (Prior):</h4>
+            <div class="formula-box">
+
+                $$\text{Parameters for } P(Y) = k - 1$$
+                <p style="margin-top: 10px; font-size: 0.9em;">We only need $(k-1)$ values; the $k^{th}$ is computed as $1 - \sum_{i=1}^{k-1} P(Y = \omega_i)$</p>
+            </div>
+            
+            <h4>Parameters for $P(X_1, ..., X_n | Y)$ (Likelihood):</h4>
+            
+            <div class="example-box">
+                <h4>Understanding Likelihood Tables</h4>
+                <p><strong>Structure:</strong> We need one table for each class</p>
+                <ul style="margin-left: 30px;">
+                    <li>Number of tables = $k$ (one for each class $\omega_1, ..., \omega_k$)</li>
+                    <li>Rows in each table = $2^n$ (all combinations of binary features)</li>
+                    <li>But we only need $(2^n - 1)$ entries per table (last row computed from others)</li>
+                </ul>
+                
+                <p><strong>Total parameters:</strong></p>
+
+                $$k \times (2^n - 1)$$
+            </div>
+            
+            <div class="formula-box">
+                <p><strong>Total Parameters Using Bayes' Theorem:</strong></p>
+
+                $$\text{Total} = (k-1) + k(2^n - 1)$$
+
+                $$= k - 1 + k \cdot 2^n - k$$
+
+                $$= k \cdot 2^n - 1$$
+            </div>
+            
+            <div class="note-box">
+                <h4>❌ The Problem Persists!</h4>
+                <p>Compare the two approaches:</p>
+                <ul style="margin-left: 30px;">
+                    <li><strong>Direct Posterior:</strong> $2^n \times (k-1)$ parameters</li>
+                    <li><strong>Using Bayes' Theorem:</strong> $k \cdot 2^n - 1$ parameters</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>The $2^n$ term still dominates!</strong> We haven't really solved the problem. The exponential growth in parameters remains.</p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "So Bayes theorem is not helping in that way. It is sometime practically really hard to have such high dimensional features and estimate all these parameters. And that is the problem which Naive Bayes tries to solve."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 4)</h4>
+                <p><strong>Parameter problem ka crisis:</strong> Agar hum directly posterior probability estimate karein, toh $2^n \times (k-1)$ parameters chahiye. Matlab 30 features aur 2 classes ke liye 1 billion se zyada parameters! Itna data kahan se laayein? Phir socha Bayes theorem use karke parameters kam ho jayenge. Prior ke liye sirf (k-1), likelihood ke liye k × $2^n$ chahiye. Total milake k × $2^n$ - 1 parameters. Still exponential hai! $2^n$ term abhi bhi hai. Problem solve nahi hui. Toh kya karein? Yahan Naive Bayes rescue mein aata hai ek assumption ke saath.</p>
+            </div>
+        </section>
+
+        <!-- Section 5: Naive Bayes -->
+        <section id="naive-bayes">
+            <h2>5. Naive Bayes Classification</h2>
+            
+            <p>Naive Bayes solves the exponential parameter problem with one <span class="highlight">simplistic yet powerful assumption</span>.</p>
+            
+            <h3 id="assumption">5.1 The Naive Assumption</h3>
+            
+            <p>The core assumption of Naive Bayes is:</p>
+            
+            <div class="formula-box">
+                <p><strong>Conditional Independence Assumption:</strong></p>
+                <p style="font-size: 1.2em; margin: 15px 0;">All features $X_1, X_2, ..., X_n$ are <span class="key-term">conditionally independent</span> given the class label $Y$</p>
+            </div>
+            
+            <div class="note-box">
+                <h4>💡 What Does Conditional Independence Mean?</h4>
+                <p>Two events A and B are conditionally independent given C if:</p>
+
+                $$P(A, B | C) = P(A | C) \cdot P(B | C)$$
+                
+                <p style="margin-top: 15px;"><strong>In our context:</strong></p>
+                <p>Given the class label Y, knowing the value of one feature doesn't give us any additional information about another feature.</p>
+                
+                <p style="margin-top: 15px;"><strong>Example:</strong> In the Play Cricket dataset:</p>
+                <ul style="margin-left: 30px;">
+                    <li>Given that cricket will be played (Y = Yes)</li>
+                    <li>Knowing the weather is Sunny doesn't affect our knowledge about wind</li>
+                    <li>$P(\text{Sunny}, \text{Weak} | \text{Yes}) = P(\text{Sunny} | \text{Yes}) \times P(\text{Weak} | \text{Yes})$</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "This assumption is also called Naive assumption because it's a very simplistic assumption. It's not very wrong to assume because we can always assume that all the features are independent given the class label. In the real world it's not always true, but for practical purposes, to make the classification more practically useful, this assumption is really going to help."
+            </div>
+            
+            <h3>Mathematical Derivation</h3>
+            
+            <p>With the conditional independence assumption, we can factorize the likelihood:</p>
+            
+            <div class="formula-box">
+
+                $$P(X_1, X_2, ..., X_n | Y) = P(X_1 | Y) \times P(X_2 | Y) \times ... \times P(X_n | Y)$$
+                
+                <p style="margin-top: 15px;">Or in compact notation:</p>
+
+                $$P(X_1, ..., X_n | Y) = \prod_{i=1}^{n} P(X_i | Y)$$
+            </div>
+            
+            <p>Substituting this into our Bayesian decision rule:</p>
+            
+            <div class="formula-box">
+                <p><strong>Naive Bayes Classification Rule:</strong></p>
+
+                $$\hat{Y} = \arg\max_{Y \in \{\omega_1, ..., \omega_k\}} P(Y) \times \prod_{i=1}^{n} P(X_i | Y)$$
+            </div>
+            
+            <div class="example-box">
+                <h4>Complete Picture: Breaking Down the Formula</h4>
+                <table style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Mathematical Form</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Prior</strong></td>
+                            <td>$P(Y)$</td>
+                            <td>Probability of class Y without considering features</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Likelihood</strong></td>
+                            <td>$P(X_i | Y)$</td>
+                            <td>Probability of feature $X_i$ given class Y</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Product of Likelihoods</strong></td>
+                            <td>$\prod_{i=1}^{n} P(X_i | Y)$</td>
+                            <td>Multiply all individual feature probabilities</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Posterior (Score)</strong></td>
+                            <td>$P(Y) \times \prod_{i=1}^{n} P(X_i | Y)$</td>
+                            <td>Final score for classification</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3 id="parameter-reduction">5.2 Parameter Reduction: The Magic of Naive Bayes</h3>
+            
+            <p>Now let's count how many parameters we need with the Naive assumption:</p>
+            
+            <h4>Parameters for $P(Y)$ (Prior):</h4>
+            <div class="formula-box">
+
+                $$\text{Parameters for } P(Y) = k - 1$$
+            </div>
+            
+            <h4>Parameters for $P(X_i | Y)$ (Likelihood for each feature):</h4>
+            
+            <div class="example-box">
+                <h4>Understanding Individual Feature Probabilities</h4>
+                <p>For each feature $X_i$:</p>
+                <ul style="margin-left: 30px;">
+                    <li>$X_i$ is a binary random variable (values: 0 or 1)</li>
+                    <li>We need probabilities for each class: $P(X_i | Y = \omega_1), P(X_i | Y = \omega_2), ..., P(X_i | Y = \omega_k)$</li>
+                    <li>For each class, we only need 1 parameter</li>
+                    <li>Why? Because if we know $P(X_i = 0 | Y = \omega_j)$, then $P(X_i = 1 | Y = \omega_j) = 1 - P(X_i = 0 | Y = \omega_j)$</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Total parameters for $P(X_i | Y)$:</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>Number of features: $n$</li>
+                    <li>Number of classes: $k$</li>
+                    <li>Parameters per feature per class: 1</li>
+                    <li><strong>Total: $n \times k$</strong></li>
+                </ul>
+            </div>
+            
+            <div class="formula-box">
+                <p><strong>Total Parameters with Naive Bayes:</strong></p>
+
+                $$\text{Total Parameters} = (k-1) + nk = nk + k - 1$$
+            </div>
+            
+            <h3>Comparison: The Dramatic Reduction</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Approach</th>
+                        <th>Number of Parameters</th>
+                        <th>Growth Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Direct Posterior</strong></td>
+                        <td>$2^n \times (k-1)$</td>
+                        <td>Exponential in $n$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Using Bayes' Theorem</strong></td>
+                        <td>$k \times 2^n - 1$</td>
+                        <td>Exponential in $n$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Naive Bayes</strong></td>
+                        <td>$nk + k - 1$</td>
+                        <td><span class="highlight">Linear in $n$</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <h4>🎯 Concrete Example: $n = 30$ features, $k = 2$ classes</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Calculation</th>
+                            <th>Number of Parameters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Direct Posterior</strong></td>
+                            <td>$2^{30} \times (2-1)$</td>
+                            <td>1,073,741,824 (1+ billion!)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bayes' Theorem</strong></td>
+                            <td>$2 \times 2^{30} - 1$</td>
+                            <td>2,147,483,647 (2+ billion!)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Naive Bayes</strong></td>
+                            <td>$30 \times 2 + 2 - 1$</td>
+                            <td><strong>61</strong> ✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin-top: 20px; font-size: 1.2em; text-align: center; color: #27ae60;"><strong>We reduced over 1 billion parameters to just 61!</strong></p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "You can see we are reducing the number of parameters significantly using the naive Bayes assumption. From $2^{30}$ which is very very high, to just 61 parameters. And that is why this is preferred for practical purposes. The naive assumption helps in reducing the parameters and makes things more manageable."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 5)</h4>
+                <p><strong>Naive Bayes ka magic:</strong> Ek simple assumption liya - sabhi features conditionally independent hain given class label. Matlab agar class pata hai, toh ek feature ka value doosre feature ke baare mein kuch nahi batata. Is assumption se likelihood ko tod diya: P(X1,X2...Xn|Y) = P(X1|Y) × P(X2|Y) × ... × P(Xn|Y). Ab parameters count karo - prior ke liye (k-1), har feature har class ke liye 1, total n features aur k classes, so nk parameters. Final total: nk + k - 1. Ye linear hai! 30 features aur 2 classes ke liye sirf 61 parameters! Billion se 61 pe aa gaye. Exponential se linear growth. That's the power of Naive Bayes!</p>
+            </div>
+        </section>
+
+        <!-- Section 6: Workout Example -->
+        <section id="workout">
+            <h2>6. Workout Example: Play Cricket Dataset</h2>
+            
+            <p>Let's work through a complete example step-by-step to understand how Naive Bayes works in practice.</p>
+            
+            <h3>Problem Statement</h3>
+            
+            <div class="example-box">
+                <h4>Question:</h4>
+                <p>Given the weather is <strong>Sunny</strong> and the wind is <strong>Weak</strong>, what is the probability that cricket will be played?</p>
+                <p>Mathematically: Find $P(Y = \text{Yes} | X_1 = \text{Sunny}, X_2 = \text{Weak})$</p>
+            </div>
+            
+            <h3>Step 1: Recall the Dataset</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Weather ($X_1$)</th>
+                        <th>Wind ($X_2$)</th>
+                        <th>Play Cricket (Y)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Weak</td>
+                        <td style="background: #d5f4e6;">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Strong</td>
+                        <td style="background: #fadbd8;">No</td>
+                    </tr>
+                    <tr>
+                        <td>Overcast</td>
+                        <td>Weak</td>
+                        <td style="background: #d5f4e6;">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Rainy</td>
+                        <td>Weak</td>
+                        <td style="background: #d5f4e6;">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Rainy</td>
+                        <td>Strong</td>
+                        <td style="background: #fadbd8;">No</td>
+                    </tr>
+                    <tr>
+                        <td>Sunny</td>
+                        <td>Weak</td>
+                        <td style="background: #d5f4e6;">Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Dataset Summary:</strong></p>
+            <ul style="margin-left: 40px;">
+                <li>Total samples: $M = 6$</li>
+                <li>Yes samples: 4 (rows 1, 3, 4, 6)</li>
+                <li>No samples: 2 (rows 2, 5)</li>
+            </ul>
+            
+            <h3>Step 2: Apply Naive Bayes Formula</h3>
+            
+            <div class="formula-box">
+                <p><strong>Using Bayes' Theorem:</strong></p>
+
+                $$P(Y | \text{Sunny}, \text{Weak}) = \frac{P(\text{Sunny}, \text{Weak} | Y) \cdot P(Y)}{P(\text{Sunny}, \text{Weak})}$$
+                
+                <p style="margin-top: 15px;"><strong>Ignoring denominator (common for all classes):</strong></p>
+
+                $$\text{Score}(Y) = P(Y) \times P(\text{Sunny}, \text{Weak} | Y)$$
+                
+                <p style="margin-top: 15px;"><strong>Applying Naive assumption:</strong></p>
+
+                $$\text{Score}(Y) = P(Y) \times P(\text{Sunny} | Y) \times P(\text{Weak} | Y)$$
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Since we have to estimate this using Bayes theorem and Naive Bayes assumption, we can write the posterior as P(Sunny, Weak | Yes) × P(Yes). But with the naive assumption, the features are conditionally independent, so they can be multiplied: P(Sunny | Yes) × P(Weak | Yes)."
+            </div>
+            
+            <h3>Step 3: Calculate Probabilities for Y = Yes</h3>
+            
+            <h4>3a. Calculate Prior: $P(\text{Yes})$</h4>
+            
+            <div class="formula-box">
+
+                $$P(\text{Yes}) = \frac{\text{Number of Yes samples}}{\text{Total samples}} = \frac{4}{6} = \frac{2}{3}$$
+            </div>
+            
+            <h4>3b. Calculate Likelihood: $P(\text{Sunny} | \text{Yes})$</h4>
+            
+            <div class="example-box">
+                <p><strong>Focus only on rows where Y = Yes:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Weather</th>
+                            <th>Wind</th>
+                            <th>Play Cricket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="background: #fff9e6;"><strong>Sunny</strong></td>
+                            <td>Weak</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Overcast</td>
+                            <td>Weak</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Rainy</td>
+                            <td>Weak</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff9e6;"><strong>Sunny</strong></td>
+                            <td>Weak</td>
+                            <td>Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Count:</strong> Out of 4 "Yes" samples, 2 have "Sunny" weather</p>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Sunny} | \text{Yes}) = \frac{\text{Count of Sunny in Yes rows}}{\text{Total Yes rows}} = \frac{2}{4} = \frac{1}{2}$$
+            </div>
+            
+            <h4>3c. Calculate Likelihood: $P(\text{Weak} | \text{Yes})$</h4>
+            
+            <div class="example-box">
+                <p><strong>Again focus on Y = Yes rows:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Weather</th>
+                            <th>Wind</th>
+                            <th>Play Cricket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sunny</td>
+                            <td style="background: #e8f8f5;"><strong>Weak</strong></td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Overcast</td>
+                            <td style="background: #e8f8f5;"><strong>Weak</strong></td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Rainy</td>
+                            <td style="background: #e8f8f5;"><strong>Weak</strong></td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Sunny</td>
+                            <td style="background: #e8f8f5;"><strong>Weak</strong></td>
+                            <td>Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Count:</strong> ALL 4 "Yes" samples have "Weak" wind</p>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Weak} | \text{Yes}) = \frac{4}{4} = 1$$
+            </div>
+            
+            <h4>3d. Calculate Score for Yes</h4>
+            
+            <div class="formula-box">
+
+                $$\text{Score}(\text{Yes}) = P(\text{Yes}) \times P(\text{Sunny} | \text{Yes}) \times P(\text{Weak} | \text{Yes})$$
+
+                $$= \frac{2}{3} \times \frac{1}{2} \times 1 = \frac{1}{3} \approx 0.333$$
+            </div>
+            
+            <h3>Step 4: Calculate Probabilities for Y = No</h3>
+            
+            <h4>4a. Calculate Prior: $P(\text{No})$</h4>
+            
+            <div class="formula-box">
+
+                $$P(\text{No}) = \frac{\text{Number of No samples}}{\text{Total samples}} = \frac{2}{6} = \frac{1}{3}$$
+            </div>
+            
+            <h4>4b. Calculate Likelihood: $P(\text{Sunny} | \text{No})$</h4>
+            
+            <div class="example-box">
+                <p><strong>Focus only on rows where Y = No:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Weather</th>
+                            <th>Wind</th>
+                            <th>Play Cricket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="background: #fff9e6;"><strong>Sunny</strong></td>
+                            <td>Strong</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Rainy</td>
+                            <td>Strong</td>
+                            <td>No</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Count:</strong> Out of 2 "No" samples, 1 has "Sunny" weather</p>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Sunny} | \text{No}) = \frac{1}{2}$$
+            </div>
+            
+            <h4>4c. Calculate Likelihood: $P(\text{Weak} | \text{No})$</h4>
+            
+            <div class="example-box">
+                <p><strong>Focus on Y = No rows:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Weather</th>
+                            <th>Wind</th>
+                            <th>Play Cricket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sunny</td>
+                            <td style="background: #fadbd8;"><strong>Strong</strong></td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Rainy</td>
+                            <td style="background: #fadbd8;"><strong>Strong</strong></td>
+                            <td>No</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Count:</strong> ZERO "No" samples have "Weak" wind (all have "Strong")</p>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Weak} | \text{No}) = \frac{0}{2} = 0$$
+            </div>
+            
+            <div class="note-box">
+                <h4>⚠️ Zero Probability Alert!</h4>
+                <p>We encountered a <strong>zero probability</strong>. This will make the entire score zero due to multiplication. This is a serious problem we'll address in the next section with <span class="key-term">Laplacian Smoothing</span>.</p>
+            </div>
+            
+            <h4>4d. Calculate Score for No</h4>
+            
+            <div class="formula-box">
+
+                $$\text{Score}(\text{No}) = P(\text{No}) \times P(\text{Sunny} | \text{No}) \times P(\text{Weak} | \text{No})$$
+
+                $$= \frac{1}{3} \times \frac{1}{2} \times 0 = 0$$
+            </div>
+            
+            <h3>Step 5: Make Classification Decision</h3>
+            
+            <div class="formula-box">
+                <p><strong>Compare Scores:</strong></p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li>$\text{Score}(\text{Yes}) = \frac{1}{3} = 0.333$</li>
+                    <li>$\text{Score}(\text{No}) = 0$</li>
+                </ul>
+                
+                <p style="margin-top: 20px; font-size: 1.3em; color: #27ae60;"><strong>Decision: $\hat{Y} = \text{Yes}$</strong></p>
+            </div>
+            
+            <div class="example-box">
+                <h4>Interpretation</h4>
+                <p>If the weather is <strong>Sunny</strong> and the wind is <strong>Weak</strong>, cricket will be played with approximately <strong>33% probability</strong> (or certainty in this case since the other option has 0 probability).</p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "So we have estimated all the probabilities. Now if we plug them into the formula, we get the score for Yes is 1/3, and the score for No is 0. So yes, you are going to play cricket. That's what we are saying. And you are going to play cricket with 33% chance at 1 by 3."
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 6)</h4>
+                <p><strong>Workout example samajhte hain:</strong> Cricket dataset mein Sunny aur Weak given hai, cricket khelenge ya nahi? Pehle prior nikala - P(Yes) = 4/6 = 2/3. Phir likelihood nikali - Yes waale 4 rows mein se 2 mein Sunny hai, toh P(Sunny|Yes) = 1/2. Saare Yes rows mein Weak wind hai, toh P(Weak|Yes) = 1. Score(Yes) = 2/3 × 1/2 × 1 = 1/3. Similarly No ke liye - P(No) = 1/3, P(Sunny|No) = 1/2, par P(Weak|No) = 0 kyunki No waale rows mein kabhi Weak nahi aaya! Toh Score(No) = 0. Decision: Yes! Cricket khelenge 33% probability ke saath. Par zero probability problem hai jo aage solve karenge.</p>
+            </div>
+        </section>
+
+        <!-- Section 7: Zero Probability Problem -->
+        <section id="zero-problem">
+            <h2>7. Zero Probability Problem</h2>
+            
+            <p>In the previous example, we encountered a <span class="key-term">zero probability</span>. This is a critical issue in Naive Bayes that needs to be understood and addressed.</p>
+            
+            <h3>What is the Zero Probability Problem?</h3>
+            
+            <div class="note-box">
+                <h4>⚠️ The Problem</h4>
+                <p>Sometimes, certain feature-class combinations are <strong>not observed in the training data</strong>, even though they might occur in real-world test scenarios.</p>
+                
+                <p style="margin-top: 15px;"><strong>When this happens:</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>The probability estimate becomes zero: $P(X_i = x | Y = y) = 0$</li>
+                    <li>Since Naive Bayes uses multiplication, the entire posterior becomes zero</li>
+                    <li>The class is completely ruled out, even if other features strongly support it</li>
+                    <li>This is <strong>too harsh</strong> and unrealistic</li>
+                </ul>
+            </div>
+            
+            <h3>Mathematical Explanation</h3>
+            
+            <div class="formula-box">
+                <p><strong>How We Compute Conditional Probability:</strong></p>
+
+                $$P(X_i = x | Y = y) = \frac{\text{Count}(X_i = x \text{ and } Y = y)}{\text{Count}(Y = y)}$$
+                
+                <p style="margin-top: 20px;"><strong>The Problem Arises When:</strong></p>
+
+                $$\text{Count}(X_i = x \text{ and } Y = y) = 0$$
+                
+                <p style="margin-top: 10px;">This makes:</p>
+
+                $$P(X_i = x | Y = y) = 0$$
+                
+                <p style="margin-top: 20px;"><strong>Impact on Classification:</strong></p>
+
+                $$P(Y = y | X_1, ..., X_n) \propto P(Y = y) \times \prod_{i=1}^{n} P(X_i | Y = y)$$
+                
+                <p style="margin-top: 10px;">If any $P(X_i | Y = y) = 0$, then:</p>
+
+                $$P(Y = y | X_1, ..., X_n) = 0$$
+            </div>
+            
+            <h3>Why Does This Happen?</h3>
+            
+            <div class="example-box">
+                <h4>Reasons for Zero Probability:</h4>
+                <ul style="margin-left: 30px;">
+                    <li><strong>Incomplete Training Data:</strong> Training data hasn't seen all possible feature-class combinations</li>
+                    <li><strong>Limited Samples:</strong> Small dataset size means many valid combinations are missing</li>
+                    <li><strong>Rare Events:</strong> Some feature values rarely occur with certain classes</li>
+                    <li><strong>New Vocabulary:</strong> In text classification, new words appear in test data that weren't in training</li>
+                </ul>
+            </div>
+            
+            <h3>Real-World Examples</h3>
+            
+            <h4>Example 1: Spam Email Classification</h4>
+            
+            <div class="example-box">
+                <p><strong>Scenario:</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>Training data contains spam emails with words like: "win", "money", "prize", "free"</li>
+                    <li>Test email contains the word <strong>"price"</strong> which never appeared in spam training data</li>
+                    <li>$P(\text{"price"} | \text{Spam}) = 0$ (never observed)</li>
+                    <li>Even if all other words strongly indicate spam, the classification score becomes 0</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Your training data may not be always complete. It may not have - you may not have observed certain things, but you may be observing that in the future. For example, you are doing ham versus spam classification, and let's say 'price' is a word which you have never seen. Now you have to classify that. Since you have never seen such word, if you just compute the probability of that word, it may become zero."
+            </div>
+            
+            <h4>Example 2: Play Cricket Dataset</h4>
+            
+            <div class="example-box">
+                <p><strong>From our earlier example:</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>We never observed: <strong>Weak wind when cricket was NOT played</strong></li>
+                    <li>$P(\text{Weak} | \text{No}) = \frac{0}{2} = 0$</li>
+                    <li>This made the entire $\text{Score}(\text{No}) = 0$</li>
+                    <li>But this doesn't mean it's impossible for cricket to not be played on a weak-wind day!</li>
+                </ul>
+            </div>
+            
+            <h3>Why is This "Too Harsh"?</h3>
+            
+            <div class="note-box">
+                <h4>💭 Philosophical Problem</h4>
+                <p><strong>Zero probability implies impossibility</strong>, but in reality:</p>
+                <ul style="margin-left: 30px;">
+                    <li>Just because we haven't seen something doesn't mean it can't happen</li>
+                    <li>Limited training data ≠ complete knowledge of the world</li>
+                    <li>We should leave room for unseen but plausible scenarios</li>
+                    <li>A more reasonable approach: assign a <em>small but non-zero</em> probability</li>
+                </ul>
+            </div>
+            
+            <div class="formula-box">
+                <p><strong>The Fundamental Issue:</strong></p>
+                <p style="margin-top: 15px;">Training data incompleteness leads to:</p>
+
+                $$P_{\text{estimated}}(X_i = x | Y = y) = 0$$
+                
+                <p style="margin-top: 15px;">But the true probability might be:</p>
+
+                $$P_{\text{true}}(X_i = x | Y = y) > 0$$
+                
+                <p style="margin-top: 15px;">We need a better estimation method that accounts for unseen events!</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 7)</h4>
+                <p><strong>Zero probability problem kya hai:</strong> Kabhi kabhi training data mein kuch combinations nahi dikhte, par wo real world mein ho sakte hain. Jaise spam classification mein "price" word kabhi spam mein nahi dekha training mein, toh P(price|spam) = 0 ho gaya. Naive Bayes mein multiplication hai, toh ek bhi probability zero ho toh poora score zero ho jaata hai. Ye bahut harsh hai! Kyunki training data incomplete hai, doesn't mean kuch ho hi nahi sakta. Agar humne nahi dekha doesn't mean impossible hai. Toh solution chahiye jo zero probabilities ko avoid kare aur unseen events ko bhi small non-zero probability de. Ye solution hai Laplacian Smoothing jo next section mein samajhenge.</p>
+            </div>
+        </section>
+
+        <!-- Section 8: Laplacian Smoothing -->
+        <section id="laplacian">
+            <h2>8. Laplacian Smoothing (Add-One Smoothing)</h2>
+            
+            <p>Laplacian Smoothing is the elegant solution to the zero probability problem. It ensures all probabilities remain non-zero, even for unseen events.</p>
+            
+            <h3>What is Laplacian Smoothing?</h3>
+            
+            <div class="formula-box">
+                <p><strong>Without Smoothing (Original):</strong></p>
+
+                $$P(X_i = v | Y = y) = \frac{\text{Count}(X_i = v, Y = y)}{\text{Count}(Y = y)}$$
+                
+                <p style="margin-top: 20px;"><strong>With Laplacian Smoothing:</strong></p>
+
+                $$P(X_i = v | Y = y) = \frac{\text{Count}(X_i = v, Y = y) + 1}{\text{Count}(Y = y) + m}$$
+                
+                <p style="margin-top: 15px;">Where $m$ = number of possible values that $X_i$ can take</p>
+            </div>
+            
+            <div class="note-box">
+                <h4>💡 Understanding the Formula</h4>
+                <p><strong>Numerator: Add 1</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>We add 1 to every count</li>
+                    <li>This ensures even if count = 0, the numerator becomes 1</li>
+                    <li>Think of it as: "assume you've seen every event at least once"</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Denominator: Add $m$</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>We add $m$ (total possible values) to maintain probability consistency</li>
+                    <li>This ensures all probabilities still sum to 1</li>
+                    <li>It's a normalization factor to keep the probability distribution valid</li>
+                </ul>
+            </div>
+            
+            <h3>Why Does it Work?</h3>
+            
+            <div class="example-box">
+                <h4>Intuition: Fair Redistribution</h4>
+                <p>Imagine $X_i$ can take 3 values: A, B, C</p>
+                
+                <p><strong>Training Data (for class Y = Yes):</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>A appeared 5 times</li>
+                    <li>B appeared 3 times</li>
+                    <li>C appeared 0 times (never seen!)</li>
+                    <li>Total: 8 samples</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Without Smoothing:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Value</th>
+                            <th>Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A</td>
+                            <td>$\frac{5}{8} = 0.625$</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>$\frac{3}{8} = 0.375$</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>$\frac{0}{8} = 0$ ❌</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>With Laplacian Smoothing ($m = 3$):</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Value</th>
+                            <th>Calculation</th>
+                            <th>Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A</td>
+                            <td>$\frac{5+1}{8+3}$</td>
+                            <td>$\frac{6}{11} = 0.545$</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>$\frac{3+1}{8+3}$</td>
+                            <td>$\frac{4}{11} = 0.364$</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>$\frac{0+1}{8+3}$</td>
+                            <td>$\frac{1}{11} = 0.091$ ✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin-top: 15px; color: #27ae60;"><strong>Result:</strong> C gets a small but non-zero probability!</p>
+            </div>
+            
+            <h3>Smoothing for Prior Probabilities</h3>
+            
+            <p>We also apply smoothing to <span class="highlight">prior probabilities</span>:</p>
+            
+            <div class="formula-box">
+                <p><strong>Without Smoothing:</strong></p>
+
+                $$P(Y = y) = \frac{\text{Count}(Y = y)}{N}$$
+                
+                <p style="margin-top: 20px;"><strong>With Laplacian Smoothing:</strong></p>
+
+                $$P(Y = y) = \frac{\text{Count}(Y = y) + 1}{N + k}$$
+                
+                <p style="margin-top: 15px;">Where:</p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li>$N$ = Total number of training samples</li>
+                    <li>$k$ = Number of classes</li>
+                </ul>
+            </div>
+            
+            <h3>Workout Example with Laplacian Smoothing</h3>
+            
+            <p>Let's revisit the Play Cricket example with a <strong>new question</strong> that requires smoothing:</p>
+            
+            <div class="example-box">
+                <h4>New Question:</h4>
+                <p>What is $P(Y = \text{Yes} | X_1 = \text{Overcast}, X_2 = \text{Strong})$?</p>
+                <p><strong>Problem:</strong> The combination "Overcast + Strong" never appears in the training data!</p>
+            </div>
+            
+            <h4>Step 1: Apply Naive Bayes Formula</h4>
+            
+            <div class="formula-box">
+
+                $$\text{Score}(\text{Yes}) = P(\text{Yes}) \times P(\text{Overcast} | \text{Yes}) \times P(\text{Strong} | \text{Yes})$$
+            </div>
+            
+            <h4>Step 2: Calculate with Laplacian Smoothing</h4>
+            
+            <p><strong>2a. Prior Probability with Smoothing:</strong></p>
+            
+            <div class="formula-box">
+
+                $$P(\text{Yes}) = \frac{\text{Count}(\text{Yes}) + 1}{N + k} = \frac{4 + 1}{6 + 2} = \frac{5}{8}$$
+            </div>
+            
+            <p><strong>2b. Likelihood: $P(\text{Overcast} | \text{Yes})$</strong></p>
+            
+            <div class="example-box">
+                <p>In the 4 "Yes" samples:</p>
+                <ul style="margin-left: 30px;">
+                    <li>Overcast appears 1 time</li>
+                    <li>Weather can take 3 values: Sunny, Overcast, Rainy ($m = 3$)</li>
+                </ul>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Overcast} | \text{Yes}) = \frac{1 + 1}{4 + 3} = \frac{2}{7}$$
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "P of overcast given yes - yes are these 4 rows. Out of that, overcast is only once. So it is 1 by 4. But since we are doing Laplacian smoothing, we will be adding 1 here, and we will be adding how many values this weather can take - weather can take either sunny or overcast or rainy, so there are 3 possibilities. So that's going to be plus 3. So this will be 2 by 7."
+            </div>
+            
+            <p><strong>2c. Likelihood: $P(\text{Strong} | \text{Yes})$</strong></p>
+            
+            <div class="example-box">
+                <p>In the 4 "Yes" samples:</p>
+                <ul style="margin-left: 30px;">
+                    <li>Strong wind appears <strong>0 times</strong> (all are Weak!)</li>
+                    <li>Wind can take 2 values: Weak, Strong ($m = 2$)</li>
+                </ul>
+            </div>
+            
+            <div class="formula-box">
+
+                $$P(\text{Strong} | \text{Yes}) = \frac{0 + 1}{4 + 2} = \frac{1}{6}$$
+            </div>
+            
+            <div class="note-box">
+                <h4>✅ Success!</h4>
+                <p>Even though we never observed "Strong" wind when cricket was played, Laplacian smoothing gives it a probability of $\frac{1}{6}$ instead of 0!</p>
+            </div>
+            
+            <p><strong>2d. Final Score for Yes:</strong></p>
+            
+            <div class="formula-box">
+
+                $$\text{Score}(\text{Yes}) = \frac{5}{8} \times \frac{2}{7} \times \frac{1}{6} = \frac{10}{336} = \frac{5}{168} \approx 0.030$$
+            </div>
+            
+            <h4>Step 3: Calculate for Y = No (similarly)</h4>
+            
+            <p>Following the same process for No:</p>
+            
+            <div class="formula-box">
+
+                $$P(\text{No}) = \frac{2 + 1}{6 + 2} = \frac{3}{8}$$
+
+                $$P(\text{Overcast} | \text{No}) = \frac{0 + 1}{2 + 3} = \frac{1}{5}$$
+
+                $$P(\text{Strong} | \text{No}) = \frac{2 + 1}{2 + 2} = \frac{3}{4}$$
+
+                $$\text{Score}(\text{No}) = \frac{3}{8} \times \frac{1}{5} \times \frac{3}{4} = \frac{9}{160} \approx 0.056$$
+            </div>
+            
+            <h4>Step 4: Normalize and Make Decision</h4>
+            
+            <div class="formula-box">
+                <p><strong>Normalized Probability:</strong></p>
+
+                $$P(\text{Yes} | \text{Overcast}, \text{Strong}) = \frac{\text{Score}(\text{Yes})}{\text{Score}(\text{Yes}) + \text{Score}(\text{No})}$$
+
+                $$= \frac{5/168}{5/168 + 9/160} = \frac{5/168}{5/168 + 9/160} \approx 0.34$$
+                
+                <p style="margin-top: 15px;">Similarly:</p>
+
+                $$P(\text{No} | \text{Overcast}, \text{Strong}) \approx 0.66$$
+                
+                <p style="margin-top: 20px; color: #e74c3c; font-size: 1.2em;"><strong>Decision: Cricket will NOT be played (66% confidence)</strong></p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "So it's 34% chance is there that if weather is overcast and wind is strong, one plays cricket. While 1 minus 34%, that will be the higher chance of not playing the cricket. This is how we can compute all these probabilities and smooth them using the Laplacian smoothing."
+            </div>
+            
+            <h3>Key Properties of Laplacian Smoothing</h3>
+            
+            <div class="key-takeaways">
+                <h3>Properties and Benefits</h3>
+                <ul>
+                    <li><strong>No Zero Probabilities:</strong> All probabilities remain strictly positive</li>
+                    <li><strong>Maintains Probability Distribution:</strong> Sum of all probabilities still equals 1</li>
+                    <li><strong>Minimal Impact on Frequent Events:</strong> Events with large counts are barely affected</li>
+                    <li><strong>Fair to Rare Events:</strong> Unseen events get small but reasonable probabilities</li>
+                    <li><strong>Simple and Efficient:</strong> Easy to implement, minimal computational overhead</li>
+                    <li><strong>Theoretically Motivated:</strong> Related to Bayesian inference with uniform prior</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 8)</h4>
+                <p><strong>Laplacian Smoothing ka solution:</strong> Zero probability problem ka fix hai add-one smoothing. Formula simple hai - numerator mein +1 add karo, denominator mein +m add karo (m = kitne values possible hain). Isse kya hota hai? Jo combination training mein nahi dikha, usko bhi small non-zero probability mil jaati hai. Example: Strong wind never observed in Yes, par smoothing se P(Strong|Yes) = 1/6 mil gaya, zero nahi! Overcast+Strong combination never seen, par phir bhi calculate kar paaye - Yes ka 34% chance, No ka 66% chance. Smoothing ensures ki rare events ignore na ho, par frequent events ka bhi impact kam na ho. Prior probabilities mein bhi apply karte hain - numerator +1, denominator +k. Simple, effective, aur theoretically sound solution!</p>
+            </div>
+        </section>
+
+        <!-- Section 9: Implementation -->
+        <section id="implementation">
+            <h2>9. Implementation: Spam vs Ham Classification</h2>
+            
+            <p>Now let's see how Naive Bayes works in a real-world application: <span class="highlight">Email Classification</span>. This is the technology behind spam filters in Gmail, Outlook, and other email services.</p>
+            
+            <h3>The Spam Classification Problem</h3>
+            
+            <div class="example-box">
+                <h4>Problem Definition</h4>
+                <p><strong>Goal:</strong> Given an email message, classify it as either:</p>
+                <ul style="margin-left: 30px;">
+                    <li><strong>Spam:</strong> Unwanted, unsolicited messages (ads, phishing, etc.)</li>
+                    <li><strong>Ham:</strong> Legitimate, wanted messages</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Approach:</strong> Represent emails as <em>bag of words</em> (binary features indicating word presence)</p>
+            </div>
+            
+            <h3>Example Dataset</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"Win money now"</td>
+                        <td style="background: #fadbd8;">Spam</td>
+                    </tr>
+                    <tr>
+                        <td>"Win lottery prize"</td>
+                        <td style="background: #fadbd8;">Spam</td>
+                    </tr>
+                    <tr>
+                        <td>"Lunch at office"</td>
+                        <td style="background: #d5f4e6;">Ham</td>
+                    </tr>
+                    <tr>
+                        <td>"Project meeting today"</td>
+                        <td style="background: #d5f4e6;">Ham</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Feature Representation</h3>
+            
+            <p>Convert text messages to <span class="highlight">binary feature vectors</span>:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>Class</th>
+                        <th>$x_1$ (win)</th>
+                        <th>$x_2$ (money)</th>
+                        <th>$x_3$ (prize)</th>
+                        <th>$x_4$ (lunch)</th>
+                        <th>$x_5$ (office)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"Win money now"</td>
+                        <td>Spam</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>"Win lottery prize"</td>
+                        <td>Spam</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>"Lunch at office"</td>
+                        <td>Ham</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>"Project meeting today"</td>
+                        <td>Ham</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note-box">
+                <h4>💡 Vocabulary Creation</h4>
+                <p>The <strong>vocabulary</strong> is the set of all unique words that appear in the training corpus:</p>
+                <p style="text-align: center; margin: 15px 0;">Vocabulary = {win, money, prize, lunch, office, lottery, now, at, project, meeting, today, ...}</p>
+                <p>Each word becomes a binary feature: 1 if present in the message, 0 if absent.</p>
+            </div>
+            
+            <h3>Python Implementation</h3>
+            
+            <p>Let's walk through a Python implementation with detailed explanation:</p>
+            
+            <pre><div class="code-block">
+<strong># Training Data</strong>
+texts = [
+    "win money now",
+    "lowest price guarantee",
+    "hi are we meeting today",
+    "lunch at office",
+    # ... more samples
+]
+
+labels = ["spam", "spam", "ham", "ham", ...]  # Corresponding labels
+            </div></pre>
+            
+            <h4>Step 1: Tokenization and Vocabulary Building</h4>
+            
+            <pre><div class="code-block">
+<strong># Tokenize each text into words</strong>
+def tokenize(text):
+    return text.lower().split()
+
+<strong># Build vocabulary from all training texts</strong>
+vocabulary = set()
+for text in texts:
+    vocabulary.update(tokenize(text))
+
+<strong># vocabulary = {"win", "money", "now", "lowest", "price", ...}</strong>
+            </div></pre>
+            
+            <h4>Step 2: Training Phase (Fitting the Model)</h4>
+            
+            <pre><div class="code-block">
+<strong># Calculate Prior Probabilities P(Y)</strong>
+def fit(texts, labels, alpha=1):  # alpha for Laplacian smoothing
+    
+    # Count class frequencies
+    class_counts = {}
+    for label in labels:
+        class_counts[label] = class_counts.get(label, 0) + 1
+    
+    # Calculate priors with Laplacian smoothing
+    num_classes = len(class_counts)
+    total_samples = len(labels)
+    
+    priors = {}
+    for label, count in class_counts.items():
+        priors[label] = (count + alpha) / (total_samples + num_classes * alpha)
+    
+    # Calculate word frequencies for each class
+    word_counts = {label: {} for label in class_counts}
+    total_words_per_class = {label: 0 for label in class_counts}
+    
+    for text, label in zip(texts, labels):
+        words = tokenize(text)
+        for word in words:
+            word_counts[label][word] = word_counts[label].get(word, 0) + 1
+            total_words_per_class[label] += 1
+    
+    return priors, word_counts, total_words_per_class
+            </div></pre>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "In the fit part we are computing the prior probability. For the text and labels, we compute how many times ham is coming and how many times spam is coming. And then we compute the word count for each of the word in the label."
+            </div>
+            
+            <h4>Step 3: Prediction Phase</h4>
+            
+            <pre><div class="code-block">
+<strong># Predict class for new text</strong>
+def predict(text, priors, word_counts, total_words_per_class, vocabulary, alpha=1):
+    
+    words = tokenize(text)
+    scores = {}
+    
+    for label in priors:
+        # Start with log prior (multiplication becomes addition in log space)
+        score = np.log(priors[label])
+        
+        # Add log likelihoods for each word
+        for word in words:
+            # Count of this word in this class
+            word_count = word_counts[label].get(word, 0)
+            
+            # Total words in this class
+            total_words = total_words_per_class[label]
+            
+            # Vocabulary size (for Laplacian smoothing)
+            vocab_size = len(vocabulary)
+            
+            # Calculate P(word | class) with Laplacian smoothing
+            prob = (word_count + alpha) / (total_words + vocab_size * alpha)
+            
+            # Add log probability
+            score += np.log(prob)
+        
+        scores[label] = score
+    
+    # Return class with highest score
+    return max(scores, key=scores.get)
+            </div></pre>
+            
+            <div class="note-box">
+                <h4>💡 Why Use Logarithms?</h4>
+                <p><strong>Problem:</strong> Multiplying many small probabilities can cause numerical underflow (result becomes too small for computers to represent)</p>
+                
+                <p style="margin-top: 15px;"><strong>Solution:</strong> Use logarithms!</p>
+                <ul style="margin-left: 30px;">
+                    <li>$\log(a \times b) = \log(a) + \log(b)$</li>
+                    <li>Multiplication becomes addition (more stable)</li>
+                    <li>Logarithm is monotonic: $\arg\max_y P(y|x) = \arg\max_y \log P(y|x)$</li>
+                    <li>Prevents numerical underflow</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "We are also taking log so that the multiplication - you remember there are multiplication terms - that will become addition. If I just take log, it will become log of all the terms, it will become just addition. This is Laplacian smoothing here, where we do the word frequency count plus self dot alpha. And similarly, total number of words in the denominator and self dot alpha times the vocabulary, because this is the length of the vocabulary - how many values this particular random variable can take."
+            </div>
+            
+            <h4>Step 4: Testing</h4>
+            
+            <pre><div class="code-block">
+<strong># Test examples</strong>
+test_messages = [
+    "win free money now",      # Likely spam
+    "meeting at office today"  # Likely ham
+]
+
+for message in test_messages:
+    prediction = predict(message, priors, word_counts, 
+                         total_words_per_class, vocabulary)
+    print(f"Message: '{message}' → Class: {prediction}")
+
+<strong># Output:</strong>
+# Message: 'win free money now' → Class: spam
+# Message: 'meeting at office today' → Class: ham
+            </div></pre>
+            
+            <h3>Understanding the Log-Space Computation</h3>
+            
+            <div class="formula-box">
+                <p><strong>Original Formula:</strong></p>
+
+                $$\text{Score}(Y) = P(Y) \times \prod_{i=1}^{n} P(X_i | Y)$$
+                
+                <p style="margin-top: 20px;"><strong>Log-Space Formula:</strong></p>
+
+                $$\log \text{Score}(Y) = \log P(Y) + \sum_{i=1}^{n} \log P(X_i | Y)$$
+                
+                <p style="margin-top: 15px;"><strong>Decision remains the same:</strong></p>
+
+                $$\arg\max_Y \text{Score}(Y) = \arg\max_Y \log \text{Score}(Y)$$
+            </div>
+            
+            <h3>Laplacian Smoothing in Code</h3>
+            
+            <div class="example-box">
+                <h4>How Smoothing is Applied</h4>
+                
+                <p><strong>For each word in each class:</strong></p>
+                <pre><div class="code-block">
+# Numerator: word count + alpha (typically 1)
+numerator = word_counts[label].get(word, 0) + alpha
+
+# Denominator: total words in class + (vocabulary size × alpha)
+denominator = total_words_per_class[label] + (len(vocabulary) * alpha)
+
+# Smoothed probability
+prob = numerator / denominator
+                </div></pre>
+                
+                <p style="margin-top: 15px;"><strong>Example:</strong></p>
+                <ul style="margin-left: 30px;">
+                    <li>Word "price" never seen in Spam: count = 0</li>
+                    <li>With $\alpha = 1$ and vocabulary size = 1000:</li>
+                    <li>$P(\text{"price"} | \text{Spam}) = \frac{0 + 1}{\text{total\_spam\_words} + 1000}$</li>
+                    <li>Small but non-zero! ✓</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 9)</h4>
+                <p><strong>Spam classification ka implementation:</strong> Emails ko bag-of-words mein convert karte hain - har unique word ek binary feature ban jaata hai (1 if present, 0 if absent). Training phase mein do cheezein calculate karte hain: (1) Prior probabilities P(Spam) aur P(Ham), (2) Har word ka conditional probability har class ke liye P(word|class). Laplacian smoothing lagaate hain alpha parameter se (usually 1). Prediction time pe test message ke sabhi words ke liye log probabilities add karte hain (multiplication se underflow bachne ke liye). Highest score waala class select ho jaata hai. Python implementation simple hai - tokenize karo, vocabulary banao, counts calculate karo, smoothing apply karo, log-space mein scores compute karo. Gmail aur email services yahi technique use karti hain spam filter ke liye!</p>
+            </div>
+        </section>
+
+        <!-- Section 10: Summary -->
+        <section id="summary">
+            <h2>10. Summary and Key Takeaways</h2>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li><strong>The Parameter Problem:</strong> Direct posterior estimation requires $2^n \times (k-1)$ parameters (exponential growth), making it impractical for high-dimensional data</li>
+                    
+                    <li><strong>Naive Assumption:</strong> Features are conditionally independent given the class label: $P(X_1, ..., X_n | Y) = \prod_{i=1}^{n} P(X_i | Y)$</li>
+                    
+                    <li><strong>Parameter Reduction:</strong> Naive Bayes reduces parameters from exponential ($2^n$) to linear ($nk + k - 1$) - dramatic improvement!</li>
+                    
+                    <li><strong>Classification Rule:</strong> $\hat{Y} = \arg\max_Y P(Y) \times \prod_{i=1}^{n} P(X_i | Y)$</li>
+                    
+                    <li><strong>Zero Probability Problem:</strong> Unseen feature-class combinations in training data lead to zero probabilities, which is too harsh</li>
+                    
+                    <li><strong>Laplacian Smoothing:</strong> Add 1 to numerator, add $m$ to denominator to ensure all probabilities remain non-zero:
+
+                    $$P(X_i = v | Y = y) = \frac{\text{Count}(X_i = v, Y = y) + 1}{\text{Count}(Y = y) + m}$$
+                    </li>
+                    
+                    <li><strong>Log-Space Computation:</strong> Use logarithms to convert multiplication to addition, preventing numerical underflow</li>
+                    
+                    <li><strong>Real-World Applications:</strong> Spam filters, document classification, sentiment analysis, medical diagnosis, and more</li>
+                    
+                    <li><strong>Strengths:</strong> Simple, fast, works well with limited data, handles high dimensions, probabilistic interpretation</li>
+                    
+                    <li><strong>Limitations:</strong> Assumes feature independence (often violated in reality), but still works surprisingly well in practice!</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p><strong>Question 1:</strong> Why does direct posterior estimation require $2^n \times (k-1)$ parameters? Explain with an example where $n=3$ and $k=2$.</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong> Direct posterior estimation requires a probability table for all possible feature combinations. With $n=3$ binary features, there are $2^3 = 8$ possible combinations: (0,0,0), (0,0,1), (0,1,0), ..., (1,1,1). For $k=2$ classes, we need $(k-1) = 1$ probability value for each combination (the other is $1 - p$). Total: $8 \times 1 = 8$ parameters. For larger $n$, this grows exponentially, making estimation impractical.</p>
+                </div>
+                
+                <div class="question">
+                    <p><strong>Question 2:</strong> Calculate $P(Y = \text{Yes} | X_1 = \text{Rainy}, X_2 = \text{Weak})$ using the Play Cricket dataset without Laplacian smoothing.</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong> 
+                    <br>$P(\text{Yes}) = 4/6 = 2/3$
+                    <br>$P(\text{Rainy} | \text{Yes}) = 1/4$ (1 out of 4 Yes samples)
+                    <br>$P(\text{Weak} | \text{Yes}) = 4/4 = 1$ (all Yes samples have Weak wind)
+                    <br>Score(Yes) = $(2/3) \times (1/4) \times 1 = 1/6$
+                    <br><br>$P(\text{No}) = 2/6 = 1/3$
+                    <br>$P(\text{Rainy} | \text{No}) = 1/2$ (1 out of 2 No samples)
+                    <br>$P(\text{Weak} | \text{No}) = 0/2 = 0$ (No samples have Strong wind only)
+                    <br>Score(No) = $(1/3) \times (1/2) \times 0 = 0$
+                    <br><br><strong>Decision: Yes</strong> (score = 1/6 vs 0)</p>
+                </div>
+                
+                <div class="question">
+                    <p><strong>Question 3:</strong> What is the naive assumption, and why is it called "naive"?</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong> The naive assumption states that all features are conditionally independent given the class label. Mathematically: $P(X_1, ..., X_n | Y) = P(X_1|Y) \times P(X_2|Y) \times ... \times P(X_n|Y)$. It's called "naive" because this assumption is often unrealistic - in real-world data, features are frequently correlated. For example, in email spam detection, words like "win" and "prize" often appear together. Despite this oversimplification, Naive Bayes still performs remarkably well in practice.</p>
+                </div>
+                
+                <div class="question">
+                    <p><strong>Question 4:</strong> Apply Laplacian smoothing to calculate $P(X_i = 1 | Y = \text{Class A})$ given: Count($X_i=1, Y=\text{Class A}$) = 0, Count($Y=\text{Class A}$) = 10, and $X_i$ is binary.</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong> Using Laplacian smoothing formula:
+                    <br>$$P(X_i = 1 | Y = \text{Class A}) = \frac{0 + 1}{10 + 2} = \frac{1}{12} \approx 0.083$$
+                    <br>Here, $m=2$ because $X_i$ is binary (can take 2 values). Without smoothing, the probability would be 0/10 = 0, but smoothing gives it a small non-zero value of 1/12.</p>
+                </div>
+                
+                <div class="question">
+                    <p><strong>Question 5:</strong> Why do we use logarithms in Naive Bayes implementation? What problem does it solve?</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong> We use logarithms to prevent numerical underflow. When multiplying many small probabilities (e.g., $0.1 \times 0.01 \times 0.001 \times ...$), the result can become so small that computers cannot represent it accurately (underflow to 0). Taking logarithms converts multiplication to addition: $\log(a \times b) = \log(a) + \log(b)$. Since logarithm is monotonic, the class with maximum probability still has maximum log-probability: $\arg\max_Y P(Y|X) = \arg\max_Y \log P(Y|X)$. This makes computation numerically stable.</p>
+                </div>
+                
+                <div class="question">
+                    <p><strong>Question 6:</strong> Compare the number of parameters needed for $n=20$ features and $k=3$ classes using: (a) Direct posterior, (b) Naive Bayes. Which is more practical?</p>
+                </div>
+                <div class="answer">
+                    <p><strong>Answer:</strong>
+                    <br>(a) Direct posterior: $2^n \times (k-1) = 2^{20} \times 2 = 1,048,576 \times 2 = 2,097,152$ parameters
+                    <br>(b) Naive Bayes: $nk + k - 1 = 20 \times 3 + 3 - 1 = 60 + 2 = 62$ parameters
+                    <br><br><strong>Naive Bayes is vastly more practical!</strong> It reduces over 2 million parameters to just 62 - a reduction of more than 33,000 times. This makes Naive Bayes feasible even with limited training data.</p>
+                </div>
+            </div>
+            
+            <div class="note-box">
+                <h4>🔍 Next Steps in Learning</h4>
+                <p>In the next lecture, we will explore:</p>
+                <ul style="margin-left: 30px;">
+                    <li><strong>Performance Metrics:</strong> How to measure classifier performance</li>
+                    <li><strong>Accuracy:</strong> Basic metric and its limitations</li>
+                    <li><strong>Precision, Recall, F1-Score:</strong> Metrics for imbalanced datasets</li>
+                    <li><strong>Confusion Matrix:</strong> Visualizing classification results</li>
+                    <li><strong>ROC Curves and AUC:</strong> Threshold-independent evaluation</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 11: Mind Map -->
+        <section id="mindmap">
+            <div class="mind-map">
+                <h2>🧠 Comprehensive Mind Map: Naive Bayes Classification</h2>
+                
+                <div class="mind-map-content">
+                    <div class="central-node">
+                        NAIVE BAYES CLASSIFICATION
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch">
+                            <h4>Foundation</h4>
+                            <ul>
+                                <li>Bayesian Decision Theory</li>
+                                <li>Bayes' Theorem</li>
+                                <li>Prior × Likelihood / Evidence</li>
+                                <li>Posterior Probability</li>
+                                <li>Maximum A Posteriori (MAP)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>The Problem</h4>
+                            <ul>
+                                <li>High-dimensional features</li>
+                                <li>Exponential parameters ($2^n$)</li>
+                                <li>Limited training data</li>
+                                <li>Impractical estimation</li>
+                                <li>Curse of dimensionality</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>The Solution</h4>
+                            <ul>
+                                <li>Conditional Independence</li>
+                                <li>Naive Assumption</li>
+                                <li>Factorized Likelihood</li>
+                                <li>Linear parameters (nk)</li>
+                                <li>Practical & Efficient</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch">
+                            <h4>Key Formula</h4>
+                            <ul>
+                                <li>$\hat{Y} = \arg\max_Y P(Y) \prod P(X_i|Y)$</li>
+                                <li>Prior: $P(Y)$</li>
+                                <li>Likelihood: $P(X_i|Y)$</li>
+                                <li>Product of probabilities</li>
+                                <li>Log-space computation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>Challenges</h4>
+                            <ul>
+                                <li>Zero Probability Problem</li>
+                                <li>Unseen combinations</li>
+                                <li>Multiplication yields zero</li>
+                                <li>Too harsh penalization</li>
+                                <li>Incomplete training data</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>Laplacian Smoothing</h4>
+                            <ul>
+                                <li>Add-one smoothing</li>
+                                <li>Numerator: count + 1</li>
+                                <li>Denominator: total + m</li>
+                                <li>Non-zero probabilities</li>
+                                <li>Maintains distribution</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch">
+                            <h4>Implementation</h4>
+                            <ul>
+                                <li>Training phase</li>
+                                <li>Calculate priors</li>
+                                <li>Calculate likelihoods</li>
+                                <li>Prediction phase</li>
+                                <li>Score computation</li>
+                                <li>Log-space operations</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>Applications</h4>
+                            <ul>
+                                <li>Spam/Ham classification</li>
+                                <li>Document categorization</li>
+                                <li>Sentiment analysis</li>
+                                <li>Medical diagnosis</li>
+                                <li>Recommendation systems</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Simple & Fast</li>
+                                <li>Works with limited data</li>
+                                <li>Handles high dimensions</li>
+                                <li>Probabilistic output</li>
+                                <li>Easy to implement</li>
+                                <li>Scales well</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>Limitations</h4>
+                            <ul>
+                                <li>Independence assumption</li>
+                                <li>May not hold in reality</li>
+                                <li>Correlated features</li>
+                                <li>Can be suboptimal</li>
+                                <li>Still works well!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Note -->
+        <div style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; text-align: center;">
+           <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

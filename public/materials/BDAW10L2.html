@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics of Data Analytics - Joins and Unions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .title {
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .hinglish-note {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .join-diagram {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .join-diagram > div {
+            width: 30%;
+        }
+        .null-cell {
+            background-color: #f8f8f8;
+            color: #999;
+            font-style: italic;
+        }
+        .matched-row {
+            background-color: #f0fff4;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="page">
+        <div class="title">
+            <h1 class="text-4xl font-bold text-blue-600 text-center mb-2">Basics of Data Analytics</h1>
+            <h2 class="text-2xl text-blue-500 text-center mb-1">BS./BSc. in Applied AI and Data Science</h2>
+        </div>
+
+        <div class="section">
+            <h2 class="text-3xl font-bold text-blue-600 mb-4">Joins and Unions</h2>
+            <p class="mb-4">
+                When working with multiple datasets, we often need to combine them to perform comprehensive analysis. 
+                This process requires understanding of different types of joins and unions. When joining datasets, 
+                not all records may find matching counterparts across datasets. The way we handle these unmatched 
+                records determines the type of join we use.
+            </p>
+            <p class="mb-4">
+                The terminology used in this lecture follows structured querying languages like SQL, but these 
+                concepts are consistent across other programming languages like R and Python.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4">Types of Joins</h2>
+            <p class="mb-4">There are several ways to combine datasets:</p>
+            <ul class="list-disc pl-6 mb-6">
+                <li>INNER JOIN</li>
+                <li>LEFT JOIN</li>
+                <li>RIGHT JOIN</li>
+                <li>FULL JOIN</li>
+                <li>UNION</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-blue-500 mb-3">INNER JOIN</h3>
+            <p class="mb-4">
+                An inner join between two tables will return only records where a joining field, such as a key, 
+                finds a match in both tables. This is the most common type of join operation.
+            </p>
+
+            <div class="mb-6">
+                <p class="font-semibold mb-2">Example:</p>
+                <div class="join-diagram">
+                    <div>
+                        <h4 class="font-semibold mb-2">Left Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Results After INNER JOIN</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Right Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mb-4">
+                In this example, only the transactions with IDs 1001, 1002, and 1004 appear in both tables, so only these 
+                records are included in the result of the INNER JOIN. Records 1003, 1005, and 1006 are excluded because 
+                they don't have matches in both tables.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Summary in Hinglish:</strong> Inner Join matlab sirf wahi records aayenge result mein jo dono tables mein match karte hain. Agar koi record ek table mein hai lekin dusre mein nahi, to wo result mein nahi aayega. Ye sabse common join type hai jise hum data science mein use karte hain, jab humen sirf matching records chahiye hote hain.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="text-xl font-bold text-blue-500 mb-3">LEFT JOIN</h3>
+            <p class="mb-4">
+                A left join keeps all of the original records in the left table and returns missing values for 
+                any columns from the right table where the joining field did not find a match. As the name suggests, 
+                the left table dominates in this type of join.
+            </p>
+
+            <div class="mb-6">
+                <p class="font-semibold mb-2">Example:</p>
+                <div class="join-diagram">
+                    <div>
+                        <h4 class="font-semibold mb-2">Left Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Results After LEFT JOIN</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                    <td class="null-cell">NULL</td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                    <td class="null-cell">NULL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Right Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mb-4">
+                In this example, all records from the left table are included in the result. For transaction IDs 
+                1001, 1002, and 1004, which have matches in the right table, we get complete information. For 
+                transaction IDs 1003 and 1005, which don't have matches in the right table, we get NULL values 
+                for the Payment Mode column. The record with transaction ID 1006 from the right table is not 
+                included at all since it doesn't match any record in the left table.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Summary in Hinglish:</strong> Left Join mein hum left table ke saare records rakhte hain, chahe unka right table mein match mile ya na mile. Jahan match nahi milta, wahan right table ke columns mein NULL values aa jati hain. Left table ke records kabhi bhi result se bahar nahi jate, lekin right table ke unmatch records nahi aate result mein. Ye bahut useful hota hai jab aapko left table ka data pure taur par preserve karna ho.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="text-xl font-bold text-blue-500 mb-3">RIGHT JOIN</h3>
+            <p class="mb-4">
+                A right join keeps all of the original records in the right table and returns missing values for 
+                any columns from the left table where the joining field did not find a match. Right joins are far 
+                less common than left joins, because right joins can always be rewritten as left joins by swapping 
+                the table order.
+            </p>
+
+            <div class="mb-6">
+                <p class="font-semibold mb-2">Example:</p>
+                <div class="join-diagram">
+                    <div>
+                        <h4 class="font-semibold mb-2">Left Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Results After RIGHT JOIN</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td class="null-cell">NULL</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Right Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mb-4">
+                In this example, all records from the right table are included in the result. For transaction IDs 
+                1001, 1002, and 1004, which have matches in the left table, we get complete information. For 
+                transaction ID 1006, which doesn't have a match in the left table, we get a NULL value for the 
+                Purchase Date column. The records with transaction IDs 1003 and 1005 from the left table are not 
+                included at all since they don't match any record in the right table.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Summary in Hinglish:</strong> Right Join bilkul Left Join ki ulti operation hai. Ismein right table ke saare records result mein aate hain aur left table se sirf wahi records aate hain jo match karte hain. Jahan match nahi milta, wahan left table ke columns mein NULL values aa jati hain. Asal mein, Right Join ka use kam hota hai kyunki aap tables ko swap karke Left Join mein convert kar sakte hain. Isliye zyada log Left Join hi prefer karte hain.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="text-xl font-bold text-blue-500 mb-3">FULL JOIN</h3>
+            <p class="mb-4">
+                A full join combines a left join and right join. A full join will return all records from both tables, 
+                irrespective of whether there is a match on the joining field in the other table, returning null 
+                values accordingly.
+            </p>
+
+            <div class="mb-6">
+                <p class="font-semibold mb-2">Example:</p>
+                <div class="join-diagram">
+                    <div>
+                        <h4 class="font-semibold mb-2">Left Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Results After FULL JOIN</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                    <td class="null-cell">NULL</td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                    <td class="null-cell">NULL</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td class="null-cell">NULL</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Right Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="matched-row">
+                                    <td>1001</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1002</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr class="matched-row">
+                                    <td>1004</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mb-4">
+                In this example, all records from both tables are included in the result. For transaction IDs 
+                1001, 1002, and 1004, which have matches in both tables, we get complete information. For 
+                transaction IDs 1003 and 1005, which are only in the left table, we get NULL values for the 
+                Payment Mode column. For transaction ID 1006, which is only in the right table, we get a NULL 
+                value for the Purchase Date column.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Summary in Hinglish:</strong> Full Join dono Left aur Right Join ka combination hai. Ismein dono tables ke saare records aate hain, chahe unka match ho ya na ho. Jahan match nahi hota, wahan respective columns mein NULL values aa jati hain. Ye tab useful hota hai jab aapko dono tables ka complete data chahiye ho aur aap koi bhi record miss nahi karna chahte, lekin ye operation data redundancy bhi create kar sakta hai.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="text-xl font-bold text-blue-500 mb-3">UNION</h3>
+            <p class="mb-4">
+                The UNION operator is used to vertically combine the results of two statements. For UNION to work 
+                without errors, all statements must have the same number of columns and corresponding columns must 
+                have the same data type. UNION does not return duplicates.
+            </p>
+
+            <div class="mb-6">
+                <p class="font-semibold mb-2">Example:</p>
+                <div class="join-diagram">
+                    <div>
+                        <h4 class="font-semibold mb-2">Table 1</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Results After UNION</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>2023-01-15</td>
+                                    <td>Credit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>2023-01-18</td>
+                                    <td>Debit Card</td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>2023-01-20</td>
+                                    <td>UPI</td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                    <td>Net Banking</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>2023-02-05</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Table 2</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Purchase Date</th>
+                                    <th>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>2023-01-25</td>
+                                    <td>Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>1005</td>
+                                    <td>2023-01-30</td>
+                                    <td>Net Banking</td>
+                                </tr>
+                                <tr>
+                                    <td>1006</td>
+                                    <td>2023-02-05</td>
+                                    <td>UPI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mb-4">
+                In this example, UNION combines records from both tables vertically. It's important to note that:
+            </p>
+            <ul class="list-disc pl-6 mb-4">
+                <li>Both tables must have the same structure (same number of columns with compatible data types)</li>
+                <li>UNION automatically removes duplicate rows</li>
+                <li>If you want to keep duplicates, you would use UNION ALL (not shown in the example)</li>
+            </ul>
+            <p class="mb-4">
+                Unlike joins, which combine tables horizontally based on matching keys, UNION combines tables 
+                vertically by appending rows from one table after another. This is useful when you want to 
+                combine results from similar tables or queries.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Summary in Hinglish:</strong> UNION operation join ki tarah horizontal combine nahi karti balki vertically data ko jodti hai - matlab ek table ke baad dusri table ke records add ho jaate hain. UNION ke liye zaruri hai ki dono tables mein columns ki sankhya aur unke data types same hon. Ek important baat ye hai ki UNION duplicate records ko automatically remove kar deta hai. Agar aap duplicates rakhna chahte hain to UNION ALL ka use karna padega. Ye operation tab useful hoti hai jab aap similar structure wale alag-alag tables ke data ko combine karna chahte hain.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4">Recap</h2>
+            <p class="mb-4">
+                We've explored different ways to combine datasets in data analytics:
+            </p>
+            <ul class="list-disc pl-6 mb-6">
+                <li><strong>INNER JOIN</strong>: Returns only records that have matches in both tables</li>
+                <li><strong>LEFT JOIN</strong>: Keeps all records from the left table, returns NULL for non-matching right table records</li>
+                <li><strong>RIGHT JOIN</strong>: Keeps all records from the right table, returns NULL for non-matching left table records</li>
+                <li><strong>FULL JOIN</strong>: Combines LEFT and RIGHT JOINs, keeping all records from both tables</li>
+                <li><strong>UNION</strong>: Combines tables vertically (appends rows), requires same structure, removes duplicates</li>
+            </ul>
+            <p class="mb-4">
+                Understanding these operations is crucial in data science as you'll often need to combine information 
+                from multiple tables to answer research questions. Knowing which type of join to use helps you 
+                control what records are included in your final dataset and how missing values are handled.
+            </p>
+
+            <div class="hinglish-note">
+                <p><strong>Final Summary in Hinglish:</strong> Data science mein, alag-alag tables ko combine karna ek common task hai. Hum ne dekha ki INNER JOIN sirf matching records ko leta hai, LEFT JOIN left table ke saare records rakhta hai, RIGHT JOIN right table ke saare records rakhta hai, FULL JOIN dono tables ke saare records rakhta hai, aur UNION tables ko vertically combine karta hai. In operations ko samajhna bahut zaroori hai kyunki real-world projects mein data aksar kahi jagah se aata hai aur use analyze karne ke liye pehle combine karna padta hai. Correct join type ka chunav karna aapko ye control karne mein madad karta hai ki final dataset mein kaun se records shamil honge aur missing values ko kaise handle kiya jayega.</p>
+            </div>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,2310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Optimization - Lecture 6: Quasi-Newton Methods</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        },
+        options: {
+            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        #toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        #toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        #toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        #toc li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        #toc li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        #toc a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1.1em;
+        }
+        
+        #toc a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        
+        #toc ul ul {
+            padding-left: 30px;
+            margin-top: 5px;
+        }
+        
+        section {
+            margin: 50px 0;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 25px 0 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 20px 0 10px;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+            overflow-x: auto;
+        }
+        
+        .important-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #0c5460;
+        }
+        
+        .hinglish-summary {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary p {
+            font-style: italic;
+            color: #555;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        table tr:hover {
+            background: #e9ecef;
+            transition: background 0.3s;
+        }
+        
+        .practice-questions {
+            background: #f0f8ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+        
+        .practice-questions h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #764ba2;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .answer:before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .key-takeaways {
+            background: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #ffa726;
+        }
+        
+        .key-takeaways h4 {
+            color: #f57c00;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+        }
+        
+        .key-takeaways li:before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: #ffa726;
+            font-size: 1.5em;
+        }
+        
+        .diagram-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #999;
+            padding: 50px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .algorithm-box {
+            background: #263238;
+            color: #aed581;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .algorithm-box h4 {
+            color: #81c784;
+            margin-bottom: 15px;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .mind-map-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .mind-map-subnode {
+            background: #e8eaf6;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #667eea;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        .comparison-table {
+            margin: 30px 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Numerical Optimization</h1>
+            <h1>~ Armaan Kachhawa</h1>
+            <p>Lecture 6: Quasi-Newton Methods & BFGS</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Complete Lecture Notes with Detailed Explanations</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav id="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">1. Overview & Learning Objectives</a></li>
+                <li><a href="#review">2. Review of Previous Lecture</a>
+                    <ul>
+                        <li><a href="#gradient-descent-review">2.1 Gradient Descent Variants</a></li>
+                        <li><a href="#newton-method-review">2.2 Newton's Method</a></li>
+                        <li><a href="#damped-newton">2.3 Damped Newton's Method</a></li>
+                    </ul>
+                </li>
+                <li><a href="#quasi-newton">3. Quasi-Newton Methods</a>
+                    <ul>
+                        <li><a href="#motivation">3.1 Motivation & Basic Idea</a></li>
+                        <li><a href="#mathematical-foundation">3.2 Mathematical Foundation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#dfp-method">4. Davidon-Fletcher-Powell (DFP) Method</a>
+                    <ul>
+                        <li><a href="#secant-equation">4.1 The Secant Equation</a></li>
+                        <li><a href="#curvature-condition">4.2 Curvature Condition</a></li>
+                        <li><a href="#dfp-update">4.3 DFP Update Formula</a></li>
+                    </ul>
+                </li>
+                <li><a href="#bfgs-method">5. BFGS Method</a>
+                    <ul>
+                        <li><a href="#bfgs-approach">5.1 The BFGS Approach</a></li>
+                        <li><a href="#bfgs-update">5.2 BFGS Update Formula</a></li>
+                    </ul>
+                </li>
+                <li><a href="#broyden-family">6. Broyden Family</a></li>
+                <li><a href="#implementation">7. Algorithm Implementation</a></li>
+                <li><a href="#lbfgs">8. Limited-Memory BFGS (L-BFGS)</a></li>
+                <li><a href="#mind-map">9. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+
+        <!-- Section 1: Overview -->
+        <section id="overview">
+            <h2>1. Overview & Learning Objectives</h2>
+            
+            <p>Welcome to another comprehensive lecture on <strong>Numerical Optimization</strong>. In this lecture, we build upon the foundation of gradient descent and Newton's methods to explore a powerful family of optimization techniques called <span class="key-term">Quasi-Newton Methods</span>.</p>
+
+            <h3>What We'll Cover Today:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Description</th>
+                        <th>Importance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Review</strong></td>
+                        <td>Gradient Descent variants and Newton's Method</td>
+                        <td>Foundation for understanding</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quasi-Newton Methods</strong></td>
+                        <td>Methods that mimic Newton but avoid Hessian computation</td>
+                        <td>Practical optimization tool</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DFP Method</strong></td>
+                        <td>Davidon-Fletcher-Powell rank-2 update method</td>
+                        <td>Historical significance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BFGS Method</strong></td>
+                        <td>Most popular quasi-Newton variant</td>
+                        <td>Industry standard</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L-BFGS</strong></td>
+                        <td>Memory-efficient version for large-scale problems</td>
+                        <td>Machine Learning applications</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                You need not understand everything in complete detail, but at least understand the overall broad picture. We're covering quite extensive material, so focus on the key concepts and how these methods relate to each other.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Aaj hum Quasi-Newton methods seekhenge jo ki Newton method jaisa powerful hai but Hessian matrix calculate nahi karna padta. Ye methods optimization mein bahut useful hain especially jab function twice differentiable na ho. DFP aur BFGS do important variants hain jo industry mein widely use hote hain. L-BFGS to machine learning mein bahut famous hai!</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Review -->
+        <section id="review">
+            <h2>2. Review of Previous Lecture</h2>
+
+            <p>Before diving into Quasi-Newton methods, let's review the numerical methods we've already covered for solving <strong>unconstrained optimization problems</strong>.</p>
+
+            <h3 id="gradient-descent-review">2.1 Gradient Descent and Its Variants</h3>
+
+            <p>We started studying numerical methods with <span class="key-term">Gradient Descent</span>, which is the foundation of modern optimization. There are several important variants:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Data Usage</th>
+                        <th>Key Feature</th>
+                        <th>Application</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Vanilla/Batch Gradient Descent</strong></td>
+                        <td>Entire dataset</td>
+                        <td>Uses all data points to compute gradient</td>
+                        <td>Small to medium datasets</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stochastic Gradient Descent (SGD)</strong></td>
+                        <td>Single data point</td>
+                        <td>Computes gradient using only one random sample</td>
+                        <td>Large-scale machine learning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mini-Batch Gradient Descent</strong></td>
+                        <td>Small batch of data</td>
+                        <td>Balance between batch and stochastic</td>
+                        <td>Deep learning (most common)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accelerated/Momentum</strong></td>
+                        <td>Varies</td>
+                        <td>Uses previous gradients for acceleration</td>
+                        <td>Faster convergence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adam</strong></td>
+                        <td>Mini-batch</td>
+                        <td>Adaptive learning rates per parameter</td>
+                        <td>Neural networks (default choice)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RMSProp</strong></td>
+                        <td>Mini-batch</td>
+                        <td>Adaptive learning with moving average</td>
+                        <td>Recurrent neural networks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AdaGrad</strong></td>
+                        <td>Mini-batch</td>
+                        <td>Parameter-specific learning rates</td>
+                        <td>Sparse data problems</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                These are all fundamentally using only two basic methods: <strong>vanilla gradient descent</strong> and <strong>accelerated gradient descent</strong>. The variations come from different sampling strategies—whether to use one data point, multiple data points, or all data points at each iteration. This gives rise to all these different solvers.
+            </div>
+
+            <h4>Key Update Rule for Gradient Descent:</h4>
+            <div class="formula-box">
+                <p>The basic gradient descent update is:</p>
+
+                $$x_{k+1} = x_k - \alpha_k \nabla f(x_k)$$
+                <p>Where:</p>
+                <ul>
+                    <li>$x_k$ is the current point</li>
+                    <li>$\alpha_k$ is the step size (learning rate)</li>
+                    <li>$\nabla f(x_k)$ is the gradient at $x_k$</li>
+                </ul>
+            </div>
+
+            <h3 id="newton-method-review">2.2 Newton's Method</h3>
+
+            <p><span class="key-term">Newton's Method</span> is a second-order optimization algorithm that uses the Hessian matrix (second derivative) to find the minimum of a function.</p>
+
+            <h4>Mathematical Foundation:</h4>
+            <p>Newton's method is derived from the second-order Taylor approximation of function $f$ at point $x_k$:</p>
+
+            <div class="formula-box">
+
+                $$f(x) \approx f(x_k) + \nabla f(x_k)^T (x - x_k) + \frac{1}{2}(x - x_k)^T \nabla^2 f(x_k)(x - x_k)$$
+                
+                <p>To minimize this quadratic approximation, we take the derivative and set it to zero:</p>
+
+                $$\nabla f(x_k) + \nabla^2 f(x_k)(x - x_k) = 0$$
+                
+                <p>Solving for $x$ gives us the Newton step:</p>
+
+                $$x - x_k = -[\nabla^2 f(x_k)]^{-1} \nabla f(x_k)$$
+                
+                <p><strong>Pure Newton's Method update:</strong></p>
+
+                $$x_{k+1} = x_k - [\nabla^2 f(x_k)]^{-1} \nabla f(x_k)$$
+            </div>
+
+            <h4>Key Properties of Newton's Method:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Convergence for Quadratic Functions</strong></td>
+                        <td>Converges in <strong>just ONE step</strong> for quadratic functions with positive definite Hessian</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Requirement</strong></td>
+                        <td>Function must be twice continuously differentiable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hessian Condition</strong></td>
+                        <td>$\nabla^2 f(x_k)$ must be positive definite at all points</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Local Convergence</strong></td>
+                        <td>Quadratic convergence rate near the solution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computational Cost</strong></td>
+                        <td>Very expensive: Computing and inverting Hessian is $O(n^3)$</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important-note">
+                <strong>⚠️ Major Drawback:</strong> Pure Newton's method does NOT converge for all starting points! The choice of initial point $x_0$ is critical. If you start far from the solution, the method may diverge or oscillate.
+            </div>
+
+            <h4>Example: Newton's Method Behavior</h4>
+            <p>Consider the function:</p>
+            <div class="formula-box">
+
+                $$f(x_1, x_2) = \sqrt{x_1^2 + 1} + \sqrt{x_2^2 + 1}$$
+            </div>
+
+            <div class="professor-note">
+                When we start from $(0.5, 0.5)$, Newton's method converges in just 3 steps. But if we change the starting point to $(1, 1)$, the algorithm oscillates between $(1, -1)$ and $(-1, 1)$ and never stops! And if we start from $(-2, 3)$, the numbers become so large that the algorithm diverges and gives an error. This shows how sensitive pure Newton's method is to the starting point!
+            </div>
+
+            <h3 id="damped-newton">2.3 Damped Newton's Method</h3>
+
+            <p>To overcome the convergence issues of pure Newton's method, we introduce the <span class="key-term">Damped Newton's Method</span> (also called Newton's method with line search).</p>
+
+            <h4>Key Modification:</h4>
+            <p>Instead of using a fixed step length of 1, we introduce an <strong>adaptive step length</strong> $\alpha_k$ at each iteration:</p>
+
+            <div class="formula-box">
+
+                $$x_{k+1} = x_k - \alpha_k [\nabla^2 f(x_k)]^{-1} \nabla f(x_k)$$
+                
+                <p>Where $\alpha_k$ is computed using a line search algorithm (e.g., backtracking) to ensure:</p>
+
+                $$f(x_{k+1}) < f(x_k)$$
+            </div>
+
+            <h4>Advantages of Damped Newton's Method:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Advantage</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Global Convergence</strong></td>
+                        <td>Converges from any starting point (not just local)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Robustness</strong></td>
+                        <td>Handles poor initial guesses gracefully</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Guaranteed Descent</strong></td>
+                        <td>Each iteration reduces function value</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexible</strong></td>
+                        <td>Works with various line search strategies (backtracking, Armijo, Wolfe conditions)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                With the adaptive step length modification, you don't have to worry about the starting point anymore. Wherever you start, you will converge! Even if we start from $(-2, 3)$ where pure Newton diverged, damped Newton converges successfully. We can even start very far away like $(-10, 10)$ and it still converges. This makes it <strong>globally convergent</strong>!
+            </div>
+
+            <h4>Remaining Limitation:</h4>
+            <div class="important-note">
+                <strong>Applicability Still Limited:</strong> Even damped Newton's method can only be applied to functions that are:
+                <ul>
+                    <li>Twice continuously differentiable</li>
+                    <li>Have positive definite Hessian</li>
+                </ul>
+                This drastically reduces the family of functions where these methods are applicable. Gradient descent only needs first-order derivatives, making it applicable to a much larger class of functions.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Review mein humne dekha ki Gradient Descent aur uske variants (SGD, Adam, RMSProp) sirf first-order information use karte hain aur bahut general hain. Newton's method bahut powerful hai—quadratic functions ke liye ek step mein converge kar jaata hai—lekin isme do problems hain: (1) starting point sensitive hai aur (2) Hessian matrix positive definite hona chahiye. Damped Newton's method step size ko adaptive banake globally convergent ban jata hai, lekin phir bhi sirf twice differentiable functions ke liye hi kaam karta hai. Ab humein kuch aisa chahiye jo Newton jaisa fast ho par Hessian ki zaroorat na ho!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - Review Section</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What is the main difference between Stochastic Gradient Descent (SGD) and Vanilla Gradient Descent?
+                    <div class="answer">
+                        SGD uses only <strong>one randomly selected data point</strong> at each iteration to compute the gradient, while Vanilla Gradient Descent uses the <strong>entire dataset</strong>. This makes SGD much faster per iteration for large datasets but introduces more noise in the gradient estimation.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> Why does Newton's method converge in just one step for quadratic functions?
+                    <div class="answer">
+                        Because Newton's method uses a <strong>second-order Taylor approximation</strong>, which for a quadratic function is an <strong>exact representation</strong> (not an approximation). Since the approximation is exact, minimizing it gives us the exact minimum in one step. Mathematically, for $f(x) = \frac{1}{2}x^TAx + b^Tx + c$ where $A$ is positive definite, the Hessian $\nabla^2f = A$ is constant, so the Newton step directly reaches the minimum.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> What is the key improvement that Damped Newton's method provides over Pure Newton's method?
+                    <div class="answer">
+                        Damped Newton's method introduces an <strong>adaptive step length $\alpha_k$</strong> computed via line search (like backtracking), which ensures descent at each iteration. This makes the method <strong>globally convergent</strong>—it will converge from any starting point, not just from points near the solution. Pure Newton with fixed step size 1 can diverge or oscillate depending on the starting point.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - Review</h4>
+                <ul>
+                    <li>Gradient descent variants differ mainly in sampling strategy (full batch vs. single sample vs. mini-batch)</li>
+                    <li>Newton's method is extremely fast for quadratic functions (1-step convergence) but requires expensive Hessian computation</li>
+                    <li>Pure Newton's method is sensitive to starting point and can diverge</li>
+                    <li>Damped Newton's method achieves global convergence through adaptive step lengths</li>
+                    <li>Both Newton methods require twice-differentiable functions with positive definite Hessian, limiting applicability</li>
+                    <li>We need methods that are faster than gradient descent but don't require Hessian computation—this motivates Quasi-Newton methods!</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 3: Quasi-Newton Methods -->
+        <section id="quasi-newton">
+            <h2>3. Quasi-Newton Methods</h2>
+
+            <h3 id="motivation">3.1 Motivation & The Need for Quasi-Newton Methods</h3>
+
+            <p>We've seen that optimization methods exist on a spectrum:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Method Type</th>
+                        <th>Order</th>
+                        <th>Speed</th>
+                        <th>Computational Cost</th>
+                        <th>Applicability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient Descent</strong></td>
+                        <td>First-order</td>
+                        <td>Slow</td>
+                        <td>Low ($O(n)$ per iteration)</td>
+                        <td>Very wide (only needs first derivative)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Newton's Method</strong></td>
+                        <td>Second-order</td>
+                        <td>Very Fast</td>
+                        <td>Very High ($O(n^3)$ per iteration)</td>
+                        <td>Limited (needs positive definite Hessian)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quasi-Newton</strong></td>
+                        <td>Pseudo second-order</td>
+                        <td>Fast</td>
+                        <td>Moderate ($O(n^2)$ per iteration)</td>
+                        <td>Wide (only needs first derivative)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important-note">
+                <strong>The Optimization Dilemma:</strong>
+                <ul>
+                    <li><strong>Gradient Descent:</strong> Applicable to many functions (only first derivative needed) but converges slowly</li>
+                    <li><strong>Newton's Method:</strong> Converges very fast but requires computing and inverting expensive Hessian matrix, and only works for restricted class of functions</li>
+                </ul>
+                <p><strong>Question:</strong> Can we get the best of both worlds? Can we have a method that is:</p>
+                <ul>
+                    <li>✅ Much faster than gradient descent</li>
+                    <li>✅ Avoids computing the Hessian</li>
+                    <li>✅ Works for functions with only first derivatives</li>
+                    <li>✅ Retains some of Newton's fast convergence properties</li>
+                </ul>
+                <p><strong>Answer:</strong> Yes! This is precisely what <span class="key-term">Quasi-Newton Methods</span> achieve!</p>
+            </div>
+
+            <h3 id="mathematical-foundation">3.2 Mathematical Foundation of Quasi-Newton Methods</h3>
+
+            <p><span class="key-term">Quasi-Newton methods</span> are a collection of methods that use the idea of Newton's method but <strong>bypass the calculation of the Hessian</strong>.</p>
+
+            <h4>Core Idea:</h4>
+            <p>Recall that Newton's method uses the second-order Taylor approximation:</p>
+
+            <div class="formula-box">
+                <p><strong>Newton's approximation at $x_k$:</strong></p>
+
+                $$f(x) \approx f(x_k) + \nabla f(x_k)^T (x - x_k) + \frac{1}{2}(x - x_k)^T \nabla^2 f(x_k)(x - x_k)$$
+                
+                <p>The Newton step comes from minimizing this approximation:</p>
+
+                $$d_k = -[\nabla^2 f(x_k)]^{-1} \nabla f(x_k)$$
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Quasi-Newton's key modification:</strong></p>
+                <p>Replace the exact Hessian $\nabla^2 f(x_k)$ with an <strong>approximation</strong> $B_k$:</p>
+
+                $$f(x) \approx f(x_k) + \nabla f(x_k)^T (x - x_k) + \frac{1}{2}(x - x_k)^T \mathbf{B_k}(x - x_k)$$
+                
+                <p>The quasi-Newton step is:</p>
+
+                $$d_k = -B_k^{-1} \nabla f(x_k)$$
+                
+                <p>Or equivalently, using $H_k = B_k^{-1}$:</p>
+
+                $$d_k = -H_k \nabla f(x_k)$$
+            </div>
+
+            <h4>Requirements for $B_k$:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>Why?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>$B_k$ must be <strong>positive definite</strong></td>
+                        <td>Ensures $d_k$ is a descent direction</td>
+                    </tr>
+                    <tr>
+                        <td>$B_k$ should be <strong>symmetric</strong></td>
+                        <td>Mimics properties of Hessian</td>
+                    </tr>
+                    <tr>
+                        <td>$B_k$ should be computed using <strong>only first-order information</strong></td>
+                        <td>Main advantage over Newton's method</td>
+                    </tr>
+                    <tr>
+                        <td>$B_k$ should be <strong>easy to update</strong> from $B_{k-1}$</td>
+                        <td>Computational efficiency</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                Instead of calculating or taking the actual Hessian, we are approximating it by some matrix $B_k$, which is a positive definite matrix. Then, like Newton's method, we minimize this approximation, and that will give us the step length. Different ways to choose this $B_k$ will give us different quasi-Newton methods! That's why this is a <strong>class of methods</strong>, not just one method.
+            </div>
+
+            <h4>Historical Note: The Story of the DFP Method</h4>
+            <div class="important-note">
+                <strong>📚 An Inspiring Story:</strong>
+                <p>Davidon first introduced the quasi-Newton method in the 1950s, but initially, people did not accept it. Perhaps Davidon was not a very popular mathematician at that time, so people didn't care much. His initial papers were <strong>rejected by major journals</strong>!</p>
+                
+                <p>It took <strong>more than 30 years</strong> before Davidon's idea got published! Later, when Fletcher and Powell (who were more established researchers) rediscovered and popularized the method, people saw what a beautiful method it was. They realized you could somehow keep the good properties of Newton's method without actually needing the Hessian!</p>
+                
+                <p><strong>Lesson:</strong> Scientific discovery is not always fair. You may come up with a very big idea, but unless people are convinced, your work may not get recognized immediately. This type of thing can happen sometimes, but eventually, good ideas prevail!</p>
+            </div>
+
+            <h4>Popular Quasi-Newton Methods:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Full Name</th>
+                        <th>Year</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>DFP</strong></td>
+                        <td>Davidon-Fletcher-Powell</td>
+                        <td>1950s-1960s</td>
+                        <td>First quasi-Newton method, historically important</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BFGS</strong></td>
+                        <td>Broyden-Fletcher-Goldfarb-Shanno</td>
+                        <td>1970</td>
+                        <td>Most popular, industry standard today</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SR1</strong></td>
+                        <td>Symmetric Rank-1</td>
+                        <td>Various</td>
+                        <td>Rank-1 update (we won't cover in detail)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Broyden Family</strong></td>
+                        <td>Convex combination of DFP and BFGS</td>
+                        <td>1970s</td>
+                        <td>Flexible hybrid approach</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L-BFGS</strong></td>
+                        <td>Limited-memory BFGS</td>
+                        <td>1980s</td>
+                        <td>Modern variant for machine learning</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                For data science, the BFGS method is very popular, and it also has a data science-specific version called L-BFGS (Limited-memory BFGS). Because in data science, the main problem is the size of the data points. Calculating gradients or even approximations to Hessians would be a huge calculation if you want to use all the samples. So instead, you use some of the samples—that's why L-BFGS is very popular nowadays for large-scale machine learning!
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Quasi-Newton methods ek aise optimization techniques hain jo Newton method ki speed ko maintain karte hain lekin expensive Hessian matrix calculate nahi karna padta. Inka basic idea simple hai: Hessian matrix ko approximate kar lo ek aur matrix $B_k$ se jo sirf first-order derivatives se calculate ho sake. Different approximations alag-alag methods dete hain. Sabse pehla DFP tha (jiski kaafi interesting history hai—30 saal baad publish hua!), lekin aaj kal BFGS sabse popular hai. Machine learning ke liye L-BFGS bahut use hota hai kyunki wo memory efficient hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - Quasi-Newton Foundation</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What is the fundamental difference between Newton's method and Quasi-Newton methods?
+                    <div class="answer">
+                        Newton's method uses the <strong>exact Hessian</strong> $\nabla^2 f(x_k)$ which requires second derivatives, while Quasi-Newton methods use an <strong>approximation $B_k$</strong> that is built using only <strong>first-order derivative information</strong>. This makes Quasi-Newton methods applicable to a wider class of functions while still maintaining fast convergence properties.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> Why must the approximation matrix $B_k$ be positive definite?
+                    <div class="answer">
+                        $B_k$ must be positive definite to ensure that $d_k = -B_k^{-1}\nabla f(x_k)$ is a <strong>descent direction</strong>. If $B_k$ is positive definite, then $d_k^T \nabla f(x_k) = -\nabla f(x_k)^T B_k^{-1} \nabla f(x_k) < 0$, guaranteeing that moving in direction $d_k$ will decrease the function value (at least locally).
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> Why are these methods called "Quasi-Newton" rather than just "approximation methods"?
+                    <div class="answer">
+                        They are called "Quasi-Newton" because they <strong>mimic the behavior</strong> of Newton's method (especially near the solution) while avoiding the expensive Hessian computation. "Quasi" means "resembling but not exactly"—these methods maintain the fast convergence properties of Newton's method near the optimum while being computationally cheaper and more broadly applicable.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - Quasi-Newton Foundation</h4>
+                <ul>
+                    <li>Quasi-Newton methods bridge the gap between gradient descent (slow, broadly applicable) and Newton's method (fast, narrowly applicable)</li>
+                    <li>The key innovation is approximating the Hessian with a matrix $B_k$ that uses only first-order information</li>
+                    <li>Different ways of choosing/updating $B_k$ lead to different quasi-Newton methods</li>
+                    <li>The approximation matrix must be positive definite and symmetric to ensure descent and mimic Hessian properties</li>
+                    <li>These methods are rank-2 updates (most variants add two rank-1 matrices at each iteration)</li>
+                    <li>BFGS is the most widely used variant today, with L-BFGS being the go-to for large-scale problems</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 4: DFP Method -->
+        <section id="dfp-method">
+            <h2>4. Davidon-Fletcher-Powell (DFP) Method</h2>
+
+            <p>The <span class="key-term">DFP method</span> was the first successful quasi-Newton method, proposed by Davidon in the 1950s and later popularized by Fletcher and Powell.</p>
+
+            <h3>4.1 The Update Strategy</h3>
+
+            <p>The key question is: How do we update $B_k$ to get $B_{k+1}$? In other words, if we have an approximation at iteration $k$, how do we improve it for iteration $k+1$ using only gradient information?</p>
+
+            <div class="formula-box">
+                <p><strong>Quasi-Newton Direction:</strong></p>
+
+                $$B_k d_k = -\nabla f(x_k)$$
+                
+                <p>Or equivalently, using the inverse $H_k = B_k^{-1}$:</p>
+
+                $$d_k = -H_k \nabla f(x_k)$$
+            </div>
+
+            <h3 id="secant-equation">4.2 The Secant Equation</h3>
+
+            <p>Davidon proposed an elegant condition: At $x_{k+1}$, the quadratic model using $B_{k+1}$ should have the <strong>same gradient as the true function $f$</strong> at both $x_k$ and $x_{k+1}$.</p>
+
+            <div class="professor-note">
+                How do you come up with such a condition? You have to be a Davidon to have that idea! It's not very intuitive—all of a sudden, some idea clicked in his mind, and it worked beautifully! That's why it's called a brilliant discovery.
+            </div>
+
+            <h4>Deriving the Secant Equation:</h4>
+            <p>Consider the quadratic model at $x_{k+1}$:</p>
+
+            <div class="formula-box">
+
+                $$m_{k+1}(d) = f(x_{k+1}) + \nabla f(x_{k+1})^T d + \frac{1}{2}d^T B_{k+1} d$$
+                
+                <p>Taking the gradient of this model:</p>
+
+                $$\nabla m_{k+1}(d) = \nabla f(x_{k+1}) + B_{k+1} d$$
+                
+                <p><strong>Davidon's Condition:</strong> At displacement $d = x_k - x_{k+1}$, the model gradient should equal the true gradient at $x_k$:</p>
+
+                $$\nabla m_{k+1}(x_k - x_{k+1}) = \nabla f(x_k)$$
+                
+                <p>This gives:</p>
+
+                $$\nabla f(x_{k+1}) + B_{k+1}(x_k - x_{k+1}) = \nabla f(x_k)$$
+                
+                <p>Rearranging:</p>
+
+                $$B_{k+1}(x_{k+1} - x_k) = \nabla f(x_{k+1}) - \nabla f(x_k)$$
+            </div>
+
+            <p>Defining notation for convenience:</p>
+            <div class="formula-box">
+                <p>Let:</p>
+
+                $$s_k = x_{k+1} - x_k \quad \text{(step taken)}$$
+
+                $$y_k = \nabla f(x_{k+1}) - \nabla f(x_k) \quad \text{(gradient change)}$$
+                
+                <p>Then the <span class="key-term">Secant Equation</span> is:</p>
+
+                $$\boxed{B_{k+1} s_k = y_k}$$
+            </div>
+
+            <div class="important-note">
+                <strong>Why is it called the "Secant" Equation?</strong>
+                <p>The name comes from the one-dimensional case. In 1D, the secant method approximates the derivative using:</p>
+
+                $$f'(x_{k+1}) \approx \frac{f(x_{k+1}) - f(x_k)}{x_{k+1} - x_k} = \frac{y_k}{s_k}$$
+                <p>The multidimensional generalization requires the Hessian approximation $B_{k+1}$ to map the step $s_k$ to the gradient change $y_k$, hence $B_{k+1}s_k = y_k$.</p>
+            </div>
+
+            <h3 id="curvature-condition">4.3 Curvature Condition</h3>
+
+            <p>An important question arises: Does the secant equation $B_{k+1}s_k = y_k$ have a solution? And if so, is it unique?</p>
+
+            <div class="formula-box">
+                <p><strong>Curvature Condition:</strong></p>
+                <p>The secant equation has positive definite solutions if and only if:</p>
+
+                $$\boxed{s_k^T y_k > 0}$$
+                
+                <p>This is called the <span class="key-term">curvature condition</span>.</p>
+            </div>
+
+            <h4>Interpretation:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>When satisfied?</strong></td>
+                        <td>When the step $s_k$ is made in a direction where the gradient is increasing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Geometric meaning</strong></td>
+                        <td>The angle between $s_k$ and $y_k$ is less than 90°</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ensures</strong></td>
+                        <td>The function exhibits positive curvature along the search direction</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Guaranteed by</strong></td>
+                        <td>Wolfe line search conditions</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important-note">
+                <strong>⚠️ Key Insight:</strong> When the curvature condition is satisfied, the secant equation has <strong>infinitely many solutions</strong>! So we need an additional criterion to select a unique $B_{k+1}$.
+            </div>
+
+            <h3 id="dfp-update">4.4 DFP Update Formula</h3>
+
+            <p>Since there are infinitely many solutions to the secant equation, Davidon, Fletcher, and Powell proposed choosing the solution that is <strong>closest to $B_k$</strong> in some matrix norm sense.</p>
+
+            <h4>Optimization Problem:</h4>
+            <div class="formula-box">
+                <p><strong>DFP Selection Criterion:</strong></p>
+
+                $$\min_{B} \|B - B_k\|_F$$
+
+                $$\text{subject to: } \begin{cases} B \text{ is positive definite} \\ B s_k = y_k \end{cases}$$
+                
+                <p>Where $\|\cdot\|_F$ is the Frobenius norm (weighted version can also be used).</p>
+            </div>
+
+            <div class="professor-note">
+                You can choose different norms, and different norms will give you different update rules! For example, Davidon-Fletcher-Powell used a weighted Frobenius norm, which gave them a specific update formula. How do we come to this calculation? It requires linear algebraic knowledge of Frobenius norm and matrix calculus. It's not easy, so let's take the result for granted!
+            </div>
+
+            <h4>DFP Update for $B_k$:</h4>
+            <div class="formula-box">
+                <p>The solution to the minimization problem is:</p>
+
+                $$B_{k+1} = \left(I - \frac{y_k s_k^T}{y_k^T s_k}\right) B_k \left(I - \frac{s_k y_k^T}{y_k^T s_k}\right) + \frac{y_k y_k^T}{y_k^T s_k}$$
+            </div>
+
+            <p>However, in practice, we often work directly with the <strong>inverse</strong> $H_k = B_k^{-1}$:</p>
+
+            <div class="formula-box">
+                <p><strong>DFP Update for $H_k$ (more commonly used):</strong></p>
+
+                $$\boxed{H_{k+1} = H_k - \frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k} + \frac{s_k s_k^T}{y_k^T s_k}}$$
+                
+                <p>This can be interpreted as a <span class="key-term">rank-2 update</span>:</p>
+
+                $$H_{k+1} = H_k + \underbrace{\frac{s_k s_k^T}{y_k^T s_k}}_{\text{rank-1 addition}} - \underbrace{\frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k}}_{\text{rank-1 subtraction}}$$
+            </div>
+
+            <div class="professor-note">
+                Why do we call this a rank-2 update? Because we're adding and subtracting rank-1 matrices. A matrix of the form $vv^T$ (outer product of a vector with itself) has rank 1. So we're modifying $H_k$ by adding two rank-1 matrices, making it a rank-2 update!
+            </div>
+
+            <h4>Properties of DFP Method:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Convergence for Quadratic Functions</strong></td>
+                        <td>Converges in <strong>at most $n$ steps</strong> for $n$-dimensional quadratic functions with positive definite Hessian</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comparison to Newton</strong></td>
+                        <td>Newton converges in 1 step; DFP in $n$ steps—but DFP doesn't need Hessian!</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Positive Definiteness</strong></td>
+                        <td>If $H_k$ is positive definite and curvature condition holds, then $H_{k+1}$ is positive definite</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Initial Choice</strong></td>
+                        <td>Often start with $H_0 = I$ (identity matrix)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Exact Line Search</strong></td>
+                        <td>For quadratic functions with exact line search, $B_n = \nabla^2 f$ (converges to exact Hessian!)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computational Cost</strong></td>
+                        <td>$O(n^2)$ per iteration (much cheaper than Newton's $O(n^3)$)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important-note">
+                <strong>🎯 Key Theoretical Result:</strong>
+                <p>For strongly convex quadratic functions, if you start with any symmetric positive definite $B_0$ and use exact line search, the DFP method:</p>
+                <ul>
+                    <li>Converges to the solution in <strong>at most $n$ steps</strong></li>
+                    <li>The final approximation $B_n$ equals the true Hessian: $B_n = \nabla^2 f$</li>
+                    <li>All previous search directions satisfy the secant equation: $B_k s_j = y_j$ for all $j < k$</li>
+                </ul>
+            </div>
+
+            <h4>Complete DFP Algorithm:</h4>
+            <div class="algorithm-box">
+                <h4>Algorithm: Davidon-Fletcher-Powell (DFP) Method</h4>
+                <p><strong>Input:</strong> Starting point $x_0$, initial matrix $H_0$ (often $I$), tolerance $\text{tol}$</p>
+                <p><strong>Output:</strong> Approximate solution $x^*$</p>
+                <p><strong>Steps:</strong></p>
+                <p>1. Initialize $k = 0$</p>
+                <p>2. While $\|\nabla f(x_k)\| > \text{tol}$:</p>
+                <p>&nbsp;&nbsp;&nbsp;a. Compute direction: $d_k = -H_k \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;b. Line search: Find $\alpha_k$ such that $f(x_k + \alpha_k d_k) < f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;c. Update position: $s_k = \alpha_k d_k$, $x_{k+1} = x_k + s_k$</p>
+                <p>&nbsp;&nbsp;&nbsp;d. Compute gradient change: $y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;e. Update Hessian inverse:</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$H_{k+1} = H_k - \frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k} + \frac{s_k s_k^T}{y_k^T s_k}$</p>
+                <p>&nbsp;&nbsp;&nbsp;f. $k \leftarrow k + 1$</p>
+                <p>3. Return $x_k$</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>DFP method pehla successful quasi-Newton method tha. Iska main idea ye hai ki hum secant equation $B_{k+1}s_k = y_k$ satisfy karein—yani Hessian approximation gradient change ko correctly map kare. Lekin ye equation ke infinite solutions hain! Toh hum woh solution choose karte hain jo previous approximation $B_k$ se sabse close ho (Frobenius norm mein). Result ek rank-2 update formula hai. DFP quadratic functions ke liye $n$ steps mein converge karta hai—Newton se slow hai (1 step) par Hessian nahi chahiye! Practical mein hum direct inverse $H_k$ ko update karte hain instead of $B_k$ ko.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - DFP Method</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What is the secant equation and why is it important?
+                    <div class="answer">
+                        The secant equation is $B_{k+1}s_k = y_k$ where $s_k = x_{k+1} - x_k$ (step) and $y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$ (gradient change). It's important because it ensures that the Hessian approximation $B_{k+1}$ correctly captures how gradients change along the search direction. This is the fundamental constraint that makes quasi-Newton approximations accurate.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> Why does the secant equation have infinitely many solutions?
+                    <div class="answer">
+                        In an $n$-dimensional space, the secant equation $B_{k+1}s_k = y_k$ is a system of $n$ equations with $n^2$ unknowns (the elements of symmetric $B_{k+1}$). Since $n < n^2$ for $n > 1$, this is an <strong>underdetermined system</strong> that generally has infinitely many solutions. The curvature condition $s_k^T y_k > 0$ ensures that positive definite solutions exist. We need an additional criterion (like minimal distance from $B_k$) to select a unique solution.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> For a 5-dimensional quadratic function, how many iterations would DFP need versus Newton's method?
+                    <div class="answer">
+                        <strong>Newton's method:</strong> 1 iteration (converges in one step for quadratic functions)
+                        <br><strong>DFP method:</strong> At most 5 iterations (converges in at most $n$ steps where $n$ is dimension)
+                        <br><br>
+                        However, DFP has a major advantage: it doesn't require computing or inverting the Hessian matrix, making each iteration much cheaper ($O(n^2)$ vs. $O(n^3)$) and applicable to a wider class of functions.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - DFP Method</h4>
+                <ul>
+                    <li>DFP was the first successful quasi-Newton method (1950s-1960s)</li>
+                    <li>Based on the secant equation: $B_{k+1}s_k = y_k$, which has infinitely many solutions</li>
+                    <li>Curvature condition $s_k^T y_k > 0$ ensures positive definite solutions exist</li>
+                    <li>DFP chooses the solution closest to previous $B_k$ in Frobenius norm</li>
+                    <li>Results in a rank-2 update formula for both $B_k$ and its inverse $H_k$</li>
+                    <li>Converges in at most $n$ steps for $n$-dimensional quadratic functions</li>
+                    <li>Each iteration costs $O(n^2)$ instead of Newton's $O(n^3)$</li>
+                    <li>For quadratic functions with exact line search, $B_n$ converges to the exact Hessian</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 5: BFGS Method -->
+        <section id="bfgs-method">
+            <h2>5. BFGS Method</h2>
+
+            <p>The <span class="key-term">BFGS method</span>, named after Broyden, Fletcher, Goldfarb, and Shanno, is the most popular quasi-Newton method today. It's widely considered superior to DFP in practice.</p>
+
+            <h3 id="bfgs-approach">5.1 The BFGS Approach: A Different Perspective</h3>
+
+            <p>While DFP approximates the Hessian $B_k$ and then computes its inverse, BFGS takes a different approach: it <strong>directly approximates the inverse Hessian</strong> $H_k$.</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>DFP Method</th>
+                        <th>BFGS Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primary Target</strong></td>
+                        <td>Approximates Hessian $B_k$</td>
+                        <td>Directly approximates inverse $H_k$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secant Equation</strong></td>
+                        <td>$B_{k+1}s_k = y_k$</td>
+                        <td>$H_{k+1}y_k = s_k$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Minimization Problem</strong></td>
+                        <td>$\min \|B - B_k\|$ s.t. $Bs_k = y_k$</td>
+                        <td>$\min \|H - H_k\|$ s.t. $Hy_k = s_k$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Practical Performance</strong></td>
+                        <td>Good, but can be numerically unstable</td>
+                        <td>Superior, more robust in practice</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Popularity</strong></td>
+                        <td>Historical importance</td>
+                        <td>Industry standard today</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                The guiding secant equation for DFP was $B_{k+1}s_k = y_k$, right? But what I'm saying is that instead of using $B_k$, you can directly try to approximate the inverse of it. Instead of approximating the Hessian, approximate the Hessian inverse directly and minimize that function. If you minimize this function, then you will get an update like BFGS. You would not believe this—these methods become <strong>faster than DFP</strong>, and that's why BFGS is a very, very powerful method!
+            </div>
+
+            <h3 id="bfgs-update">5.2 BFGS Update Formula</h3>
+
+            <h4>The BFGS Secant Equation:</h4>
+            <p>Instead of $B_{k+1}s_k = y_k$, BFGS works with the dual formulation:</p>
+
+            <div class="formula-box">
+                <p><strong>BFGS Secant Equation:</strong></p>
+
+                $$\boxed{H_{k+1} y_k = s_k}$$
+                
+                <p>Where:</p>
+                <ul>
+                    <li>$H_{k+1} = (B_{k+1})^{-1}$ is the inverse Hessian approximation</li>
+                    <li>$y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$ is the gradient change</li>
+                    <li>$s_k = x_{k+1} - x_k$ is the step taken</li>
+                </ul>
+            </div>
+
+            <h4>BFGS Optimization Problem:</h4>
+            <div class="formula-box">
+
+                $$\min_{H} \|H - H_k\|_F$$
+
+                $$\text{subject to: } \begin{cases} H \text{ is positive definite} \\ H y_k = s_k \end{cases}$$
+            </div>
+
+            <h4>BFGS Update Formula:</h4>
+            <p>Solving this optimization problem yields the BFGS update formula:</p>
+
+            <div class="formula-box">
+                <p><strong>BFGS Update for $H_k$:</strong></p>
+
+                $$\boxed{H_{k+1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k}\right) H_k \left(I - \frac{y_k s_k^T}{y_k^T s_k}\right) + \frac{s_k s_k^T}{y_k^T s_k}}$$
+                
+                <p>This can be written more compactly as:</p>
+
+                $$H_{k+1} = (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) + \rho_k s_k s_k^T$$
+                
+                <p>Where $\rho_k = \frac{1}{y_k^T s_k}$</p>
+            </div>
+
+            <div class="important-note">
+                <strong>⚠️ Note:</strong> The BFGS formula looks similar to DFP but with $s_k$ and $y_k$ roles reversed! This is not a coincidence—BFGS can be viewed as applying the DFP formula to the inverse problem.
+            </div>
+
+            <h4>Why BFGS is Better Than DFP:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Advantage</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Numerical Stability</strong></td>
+                        <td>BFGS is more numerically robust and less prone to breakdown</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence Speed</strong></td>
+                        <td>Often converges faster in practice than DFP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Global Convergence</strong></td>
+                        <td>With Wolfe line search, BFGS has proven global convergence for twice-differentiable quasi-convex functions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Self-Correcting</strong></td>
+                        <td>More resilient to inexact line searches and rounding errors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Industry Adoption</strong></td>
+                        <td>Default choice in most optimization libraries (scipy, MATLAB, etc.)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                How do I come to these calculations? This linear algebraic calculation requires knowledge of Frobenius norm, how to calculate it, and all that. So that is not easy. Take it for granted that this is an update rule—this is called the BFGS rule. The beauty is that even though both DFP and BFGS can be implemented approximately, BFGS becomes faster than DFP method, and that is a very, very powerful method!
+            </div>
+
+            <h4>Theoretical Guarantees for BFGS:</h4>
+            <div class="important-note">
+                <strong>📘 Convergence Theorem:</strong>
+                <p>If the objective function is twice continuously differentiable, quasi-convex, has positive definite Hessian, and step lengths satisfy the <strong>Wolfe conditions</strong>, then BFGS is a <span class="key-term">globally convergent algorithm</span>.</p>
+                
+                <p><strong>Wolfe Conditions:</strong></p>
+                <ol>
+                    <li><strong>Sufficient decrease (Armijo):</strong> $f(x_k + \alpha_k d_k) \leq f(x_k) + c_1 \alpha_k \nabla f(x_k)^T d_k$</li>
+                    <li><strong>Curvature condition:</strong> $\nabla f(x_k + \alpha_k d_k)^T d_k \geq c_2 \nabla f(x_k)^T d_k$</li>
+                </ol>
+                <p>Where $0 < c_1 < c_2 < 1$ (typically $c_1 = 10^{-4}$ and $c_2 = 0.9$)</p>
+            </div>
+
+            <h4>Complete BFGS Algorithm:</h4>
+            <div class="algorithm-box">
+                <h4>Algorithm: BFGS Method</h4>
+                <p><strong>Input:</strong> Starting point $x_0$, initial matrix $H_0$ (often $I$), tolerance $\text{tol}$</p>
+                <p><strong>Output:</strong> Approximate solution $x^*$</p>
+                <p><strong>Steps:</strong></p>
+                <p>1. Initialize $k = 0$</p>
+                <p>2. While $\|\nabla f(x_k)\| > \text{tol}$:</p>
+                <p>&nbsp;&nbsp;&nbsp;a. Compute direction: $d_k = -H_k \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;b. Line search: Find $\alpha_k$ satisfying Wolfe conditions</p>
+                <p>&nbsp;&nbsp;&nbsp;c. Update position: $s_k = \alpha_k d_k$, $x_{k+1} = x_k + s_k$</p>
+                <p>&nbsp;&nbsp;&nbsp;d. Compute gradient change: $y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;e. Update Hessian inverse (BFGS):</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\rho_k = \frac{1}{y_k^T s_k}$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$H_{k+1} = (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) + \rho_k s_k s_k^T$</p>
+                <p>&nbsp;&nbsp;&nbsp;f. $k \leftarrow k + 1$</p>
+                <p>3. Return $x_k$</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>BFGS method DFP ka advanced version hai aur aaj kal sabse zyada use hone wala quasi-Newton method hai. Fundamental difference ye hai ki DFP Hessian $B_k$ ko approximate karta hai jabki BFGS directly inverse Hessian $H_k$ ko approximate karta hai. Secant equation bhi change ho jata hai: DFP mein $B_{k+1}s_k = y_k$ tha, BFGS mein $H_{k+1}y_k = s_k$ hai. Practically, BFGS DFP se zyada fast aur numerically stable hai. Wolfe conditions ke saath use karne par ye globally convergent hai. Sabhi major optimization libraries (scipy, MATLAB, PyTorch) mein BFGS default choice hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - BFGS Method</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What is the key philosophical difference between DFP and BFGS?
+                    <div class="answer">
+                        DFP approximates the <strong>Hessian matrix $B_k$</strong> and then computes its inverse to get the search direction, while BFGS <strong>directly approximates the inverse Hessian $H_k$</strong>. This leads to different secant equations: DFP uses $B_{k+1}s_k = y_k$ while BFGS uses $H_{k+1}y_k = s_k$. Direct approximation of the inverse in BFGS leads to better numerical stability and faster convergence in practice.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> What are the Wolfe conditions and why are they important for BFGS?
+                    <div class="answer">
+                        The Wolfe conditions are two criteria for choosing step length $\alpha_k$:
+                        <br>1. <strong>Sufficient decrease:</strong> $f(x_k + \alpha_k d_k) \leq f(x_k) + c_1 \alpha_k \nabla f(x_k)^T d_k$ (ensures progress)
+                        <br>2. <strong>Curvature condition:</strong> $\nabla f(x_k + \alpha_k d_k)^T d_k \geq c_2 \nabla f(x_k)^T d_k$ (ensures sufficient step length)
+                        <br><br>
+                        These conditions are important because they guarantee that:
+                        <br>• The curvature condition $s_k^T y_k > 0$ is satisfied
+                        <br>• BFGS maintains positive definiteness of $H_k$
+                        <br>• Global convergence is guaranteed for appropriate function classes
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> Why is BFGS preferred over DFP in modern optimization software?
+                    <div class="answer">
+                        BFGS is preferred for several practical reasons:
+                        <br>1. <strong>Numerical stability:</strong> More robust to rounding errors and inexact line searches
+                        <br>2. <strong>Convergence speed:</strong> Typically converges faster than DFP in practice
+                        <br>3. <strong>Self-correcting:</strong> Better at recovering from poor approximations
+                        <br>4. <strong>Theoretical guarantees:</strong> Proven global convergence with Wolfe conditions
+                        <br>5. <strong>Empirical performance:</strong> Decades of testing show BFGS outperforms DFP on most problems
+                        <br><br>
+                        For these reasons, BFGS is the default quasi-Newton method in scipy.optimize.minimize, MATLAB's fminunc, and other major libraries.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - BFGS Method</h4>
+                <ul>
+                    <li>BFGS directly approximates inverse Hessian $H_k$ instead of Hessian $B_k$</li>
+                    <li>Uses dual secant equation: $H_{k+1}y_k = s_k$ (roles of $s_k$ and $y_k$ swapped from DFP)</li>
+                    <li>Update formula also involves rank-2 correction but more numerically stable than DFP</li>
+                    <li>With Wolfe line search conditions, BFGS is globally convergent</li>
+                    <li>Typically faster and more robust than DFP in practice</li>
+                    <li>Industry standard for quasi-Newton optimization today</li>
+                    <li>Same $O(n^2)$ computational cost per iteration as DFP</li>
+                    <li>Foundation for L-BFGS, the memory-efficient variant used in machine learning</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 6: Broyden Family -->
+        <section id="broyden-family">
+            <h2>6. Broyden Family (Broyden Class)</h2>
+
+            <p>The <span class="key-term">Broyden Family</span> is a generalization that creates hybrid methods by combining DFP and BFGS.</p>
+
+            <h3>6.1 The Convex Combination Approach</h3>
+
+            <p>Instead of choosing either DFP or BFGS, why not take a weighted combination of both?</p>
+
+            <div class="formula-box">
+                <p><strong>Broyden Family Update for $B_k$:</strong></p>
+
+                $$B_{k+1} = \phi_{k+1} B_{k+1}^{\text{DFP}} + (1 - \phi_{k+1}) B_{k+1}^{\text{BFGS}}$$
+                
+                <p>Where:</p>
+                <ul>
+                    <li>$B_{k+1}^{\text{DFP}}$ is the DFP update</li>
+                    <li>$B_{k+1}^{\text{BFGS}}$ is the BFGS update</li>
+                    <li>$\phi_{k+1} \in [0, 1]$ is a parameter</li>
+                </ul>
+                
+                <p><strong>Special Cases:</strong></p>
+                <ul>
+                    <li>$\phi = 1$: Pure DFP method</li>
+                    <li>$\phi = 0$: Pure BFGS method</li>
+                    <li>$\phi = 0.5$: Equal weight to both methods</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                So now there's a very big family called the Broyden class or Broyden family—what it does is create a hybrid method. The update rule is that you're making a convex combination: some $\phi_{k+1}$ times the DFP matrix plus $(1 - \phi_{k+1})$ times the BFGS matrix, where $\phi_{k+1}$ is between 0 and 1. So this is a hybrid process that goes by the name of Broyden family, and it has a parameter $\phi_k$ that you can choose!
+            </div>
+
+            <h3>6.2 Convergence Properties</h3>
+
+            <p>The Broyden family maintains excellent convergence properties:</p>
+
+            <div class="important-note">
+                <strong>📘 Theorem (Broyden Family Convergence):</strong>
+                <p>Consider a quadratic strongly convex function $f(x) = \frac{1}{2}x^TAx + b^Tx + c$ where $A$ is positive definite.</p>
+                
+                <p>Suppose $B_0$ is any symmetric positive definite matrix and $x_0$ is any starting point. If we use Broyden family with exact line search at each iteration and choose:</p>
+
+                $$\phi_k \geq \frac{1 - \mu_k}{1}$$
+                
+                <p>Where:</p>
+
+                $$\mu_k = \frac{[y_k^T (B_k)^{-1} y_k][s_k^T B_k s_k]}{(y_k^T s_k)^2}$$
+                
+                <p><strong>Then:</strong></p>
+                <ul>
+                    <li>The iterates are <strong>independent of $\phi_k$</strong> (same sequence for all valid $\phi$!)</li>
+                    <li>Converges to solution in <strong>at most $n$ steps</strong></li>
+                    <li>The secant equation is satisfied for all previous iterations</li>
+                    <li>If starting matrix is identity, iterates are identical to conjugate gradient method</li>
+                    <li>$B_n = A$ (converges to exact Hessian!)</li>
+                </ul>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Broyden Family</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Parameter $\phi_k$ can be tuned for specific problem classes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Includes</strong></td>
+                        <td>DFP ($\phi=1$), BFGS ($\phi=0$), and everything in between</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence</strong></td>
+                        <td>At most $n$ steps for quadratic functions (like DFP and BFGS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secant Equation</strong></td>
+                        <td>All methods in family satisfy $B_k s_j = y_j$ for all $j < k$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Practical Use</strong></td>
+                        <td>Less common than pure BFGS; theoretical interest</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                This convergence result shows that all these methods in the Broyden family also satisfy the secant equation, and that is very important because ultimately these methods come from solving that secant equation, right? The update rule—they also satisfy the second equation, and that's crucial!
+            </div>
+
+            <h3>6.3 Connection to Conjugate Gradient Method</h3>
+
+            <p>An interesting theoretical result:</p>
+
+            <div class="important-note">
+                <strong>🔗 Connection:</strong> When starting with $H_0 = I$ (identity matrix) for a quadratic function and using exact line search, the Broyden family methods produce the <strong>same iterates as the Conjugate Gradient method</strong>!
+                
+                <p>This shows the deep connection between quasi-Newton methods and conjugate gradient methods—they're solving the same problem from different perspectives.</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Broyden family ek generalized approach hai jo DFP aur BFGS ko combine karta hai. Ye ek convex combination use karta hai with parameter $\phi_k \in [0,1]$: jab $\phi=1$ hai toh pure DFP milta hai, jab $\phi=0$ hai toh pure BFGS milta hai. Interesting baat ye hai ki quadratic functions ke liye, agar proper $\phi$ choose karo toh ye bhi $n$ steps mein converge karta hai aur final matrix exact Hessian ban jaata hai! Theoretical perspective se bahut important hai, lekin practically log simple BFGS hi use karte hain. Conjugate gradient method se bhi iska deep connection hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - Broyden Family</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What values of $\phi$ give you DFP and BFGS respectively?
+                    <div class="answer">
+                        • When $\phi = 1$: We get pure <strong>DFP method</strong> (100% DFP, 0% BFGS)
+                        <br>• When $\phi = 0$: We get pure <strong>BFGS method</strong> (0% DFP, 100% BFGS)
+                        <br>• When $\phi = 0.5$: We get an equal weighted combination of both methods
+                        <br><br>
+                        Any value $\phi \in (0, 1)$ gives a hybrid method that interpolates between DFP and BFGS characteristics.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> What is surprising about the convergence of Broyden family for quadratic functions?
+                    <div class="answer">
+                        The surprising result is that for quadratic functions with exact line search, the <strong>iterates are independent of $\phi_k$</strong>! This means:
+                        <br>• All valid choices of $\phi_k$ (satisfying $\phi_k \geq 1 - \mu_k$) produce the <strong>same sequence of points</strong> $\{x_0, x_1, x_2, ...\}$
+                        <br>• Even though the Hessian approximation matrices $B_k$ differ, the actual optimization path is identical
+                        <br>• All converge in the same number of steps (at most $n$)
+                        <br><br>
+                        This shows a deep structural property of quasi-Newton methods for quadratic problems!
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> How does the Broyden family relate to the Conjugate Gradient method?
+                    <div class="answer">
+                        When using the Broyden family with:
+                        <br>• Starting matrix $H_0 = I$ (identity)
+                        <br>• A quadratic function
+                        <br>• Exact line search
+                        <br><br>
+                        The iterates produced are <strong>identical to those from the Conjugate Gradient method</strong>! This reveals that quasi-Newton methods and conjugate gradient methods are closely related—they're essentially solving the same optimization problem through different mathematical frameworks. This connection is theoretically important for understanding the deeper structure of optimization algorithms.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - Broyden Family</h4>
+                <ul>
+                    <li>Broyden family is a parameterized class of methods interpolating between DFP and BFGS</li>
+                    <li>Uses convex combination: $\phi \cdot \text{DFP} + (1-\phi) \cdot \text{BFGS}$ with $\phi \in [0,1]$</li>
+                    <li>All methods satisfy the secant equation for previous iterations</li>
+                    <li>For quadratic functions, all valid $\phi$ choices give same iterate sequence!</li>
+                    <li>Converges in at most $n$ steps for $n$-dimensional quadratic functions</li>
+                    <li>Connects to conjugate gradient method when $H_0 = I$</li>
+                    <li>Theoretically interesting but practically BFGS ($\phi=0$) is most used</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 7: Implementation -->
+        <section id="implementation">
+            <h2>7. Algorithm Implementation and Practical Considerations</h2>
+
+            <h3>7.1 General Quasi-Newton Algorithm</h3>
+
+            <p>Here's the complete algorithm structure that works for any quasi-Newton method (DFP, BFGS, or Broyden family):</p>
+
+            <div class="algorithm-box">
+                <h4>Algorithm: General Quasi-Newton Method</h4>
+                <p><strong>Input:</strong></p>
+                <ul style="color: #aed581;">
+                    <li>$x_0 \in \mathbb{R}^n$ - Starting point</li>
+                    <li>$H_0 \in \mathbb{R}^{n \times n}$ - Initial positive definite matrix (often $H_0 = I$)</li>
+                    <li>tol - Convergence tolerance</li>
+                    <li>Method choice: DFP, BFGS, or Broyden with parameter $\phi$</li>
+                </ul>
+                <p><strong>Output:</strong> $x_k$ as approximate critical point of $f(\cdot)$</p>
+                <p><strong>Algorithm:</strong></p>
+                <p>1. Initialize: $k = 0$</p>
+                <p>2. <strong>WHILE</strong> $\|\nabla f(x_k)\| > \text{tol}$ <strong>DO:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;3. <strong>Direction:</strong> Choose $d_k = -H_k \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;4. <strong>Step-size:</strong> Choose $\alpha_k$ such that $f(x_k + \alpha_k d_k) < f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(using backtracking, Armijo, or Wolfe line search)</p>
+                <p>&nbsp;&nbsp;&nbsp;5. <strong>Update position:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$s_k = \alpha_k d_k$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$x_{k+1} = x_k + s_k$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$</p>
+                <p>&nbsp;&nbsp;&nbsp;6. <strong>Update Hessian inverse:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>IF</strong> method == DFP <strong>THEN:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$H_{k+1} = H_k - \frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k} + \frac{s_k s_k^T}{y_k^T s_k}$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>ELSE IF</strong> method == BFGS <strong>THEN:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$H_{k+1} = (I - \frac{s_k y_k^T}{y_k^T s_k}) H_k (I - \frac{y_k s_k^T}{y_k^T s_k}) + \frac{s_k s_k^T}{y_k^T s_k}$</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>ELSE</strong> (Broyden family):</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compute convex combination with parameter $\phi_k$</p>
+                <p>&nbsp;&nbsp;&nbsp;7. $k \leftarrow k + 1$</p>
+                <p>8. <strong>END WHILE</strong></p>
+                <p>9. <strong>RETURN</strong> $x_k$</p>
+            </div>
+
+            <h3>7.2 Stopping Criteria</h3>
+
+            <p>Choosing an appropriate stopping criterion is crucial:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Formula</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient Norm</strong></td>
+                        <td>$\|\nabla f(x_k)\| < \epsilon$</td>
+                        <td>Standard choice for general optimization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relative Gradient</strong></td>
+                        <td>$\frac{\|\nabla f(x_k)\|}{1 + |f(x_k)|} < \epsilon$</td>
+                        <td>When function values vary widely</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Step Size</strong></td>
+                        <td>$\|x_{k+1} - x_k\| < \epsilon$</td>
+                        <td>When changes become very small</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Function Change</strong></td>
+                        <td>$|f(x_{k+1}) - f(x_k)| < \epsilon$</td>
+                        <td>Complementary to gradient norm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maximum Iterations</strong></td>
+                        <td>$k > k_{\max}$</td>
+                        <td>Always! Prevents infinite loops</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                Here I'm putting $\|\nabla f(x_k)\| > \text{tolerance}$ as the stopping criterion, but this is not a very good criterion actually. In most machine learning applications, you use <strong>epochs</strong> or the <strong>number of times it runs</strong>. You can put something like that as a stopping criterion—for example, it will run for 500 steps or 1000 times or something like that. That is also a very valid stopping criteria!
+            </div>
+
+            <h3>7.3 Line Search Strategies</h3>
+
+            <p>The choice of step length $\alpha_k$ significantly impacts performance:</p>
+
+            <h4>Backtracking Line Search (Simple and Effective):</h4>
+            <div class="algorithm-box">
+                <h4>Backtracking Algorithm</h4>
+                <p><strong>Input:</strong> $x_k$, $d_k$, $\alpha_{\text{init}}$ (e.g., 1), $\rho \in (0,1)$ (e.g., 0.5), $c \in (0,1)$ (e.g., 10^-4)</p>
+                <p><strong>Output:</strong> Step length $\alpha_k$</p>
+                <p>1. $\alpha \leftarrow \alpha_{\text{init}}$</p>
+                <p>2. <strong>WHILE</strong> $f(x_k + \alpha d_k) > f(x_k) + c \alpha \nabla f(x_k)^T d_k$ <strong>DO:</strong></p>
+                <p>&nbsp;&nbsp;&nbsp;3. $\alpha \leftarrow \rho \alpha$ (shrink step)</p>
+                <p>4. <strong>END WHILE</strong></p>
+                <p>5. <strong>RETURN</strong> $\alpha$</p>
+            </div>
+
+            <h4>Wolfe Line Search (Recommended for BFGS):</h4>
+            <p>Satisfies both sufficient decrease and curvature conditions, ensuring positive definiteness is maintained.</p>
+
+            <h3>7.4 Python Implementation Example</h3>
+
+            <div class="professor-note">
+                I have written a Python implementation from scratch that demonstrates the convergence rate. For example, I'm using a random 5×5 positive definite matrix to create a quadratic function. Let's verify the theoretical claim that these methods converge in at most $n$ steps for quadratic functions!
+                
+                <br><br>
+                
+                In my experiments, I ran DFP, Broyden family (with $\phi = 0.5$), and BFGS methods multiple times on random 5-dimensional quadratic functions. You see, every time:
+                <ul style="margin-top: 10px;">
+                    <li>DFP converges in 5 steps</li>
+                    <li>Broyden family converges in 5 steps</li>
+                    <li>BFGS converges in 5 steps</li>
+                </ul>
+                
+                The matrix keeps changing (it's random), but the convergence is always within 5 steps! This validates our theory that with a quadratic function, these methods are also equally good—they don't converge in one step like pure Newton, but they converge in $n$ steps, which is still very good!
+            </div>
+
+            <div class="important-note">
+                <strong>⚠️ Important Practical Note:</strong>
+                <p>These methods can actually be used for even functions which do not have positive definite Hessian everywhere, or functions that are only once differentiable! You cannot guarantee convergence in such cases, but the <strong>applicability</strong> of BFGS is much wider than pure Newton or Damped Newton method.</p>
+                
+                <p>For Newton method, you need to know <strong>exactly what is happening</strong> (positive definite Hessian) to guarantee something. For a general function, you cannot really talk about convergence guarantees—that's a drawback—but applicability of BFGS is much, much wider!</p>
+            </div>
+
+            <h3>7.5 Key Implementation Steps</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Details</th>
+                        <th>Tips</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Direction Computation</strong></td>
+                        <td>$d_k = -H_k \nabla f(x_k)$</td>
+                        <td>Need to compute gradient and matrix-vector product</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Line Search</strong></td>
+                        <td>Find appropriate $\alpha_k$</td>
+                        <td>Backtracking for simplicity; Wolfe for BFGS robustness</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Update Formulas</strong></td>
+                        <td>Compute $s_k$, $y_k$, then $H_{k+1}$</td>
+                        <td>Check curvature condition $s_k^T y_k > 0$ before updating</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Initial Matrix</strong></td>
+                        <td>Choose $H_0$</td>
+                        <td>Identity matrix is common; scaled identity sometimes better</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage</strong></td>
+                        <td>Store full $n \times n$ matrix $H_k$</td>
+                        <td>$O(n^2)$ memory—problem for large $n$ (motivates L-BFGS!)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Implementation mein kuch important points hain: Pehla, direction compute karo $d_k = -H_k \nabla f(x_k)$ se. Phir line search use karke appropriate step size $\alpha_k$ dhundho—backtracking simple hai lekin Wolfe conditions better hain BFGS ke liye. Update formulas mein $s_k$ aur $y_k$ calculate karo aur check karo ki curvature condition satisfy ho raha hai ya nahi. Python mein implement karne par theoretically claims verify ho jaate hain—5D quadratic function 5 steps mein converge karta hai! Memory wise, full $H_k$ matrix store karna padta hai jo $O(n^2)$ space leta hai—yahi problem large-scale problems mein aati hai aur L-BFGS ki zaroorat padti hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - Implementation</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What are the three main computational steps in each iteration of a quasi-Newton method?
+                    <div class="answer">
+                        The three main steps are:
+                        <br>1. <strong>Direction computation:</strong> Calculate $d_k = -H_k \nabla f(x_k)$ (requires gradient evaluation and matrix-vector multiplication)
+                        <br>2. <strong>Line search:</strong> Find step length $\alpha_k$ that satisfies descent conditions (e.g., backtracking or Wolfe conditions)
+                        <br>3. <strong>Update:</strong> Compute new position $x_{k+1} = x_k + \alpha_k d_k$, gradient change $y_k$, and update Hessian inverse $H_{k+1}$ using chosen method (DFP/BFGS)
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> Why is it important to check the curvature condition $s_k^T y_k > 0$ before updating?
+                    <div class="answer">
+                        Checking $s_k^T y_k > 0$ is critical because:
+                        <br>• It ensures the update will maintain <strong>positive definiteness</strong> of $H_k$
+                        <br>• If violated, the next search direction may not be a descent direction
+                        <br>• Can lead to algorithm breakdown or divergence
+                        <br>• Wolfe line search conditions guarantee this is satisfied
+                        <br><br>
+                        If $s_k^T y_k \leq 0$, common strategies include: skipping the update (keep $H_{k+1} = H_k$), resetting to identity, or switching to a different line search.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> What is the memory requirement for standard BFGS, and why does this motivate L-BFGS?
+                    <div class="answer">
+                        <strong>Memory requirement:</strong> Standard BFGS stores the full $n \times n$ matrix $H_k$, requiring $O(n^2)$ memory.
+                        <br><br>
+                        <strong>Problem for large-scale:</strong> For machine learning with $n = 10^6$ parameters, storing $H_k$ would require $(10^6)^2 = 10^{12}$ floating-point numbers ≈ 8 TB of RAM—completely impractical!
+                        <br><br>
+                        <strong>L-BFGS solution:</strong> Instead of storing full matrix, L-BFGS stores only a few recent vector pairs $(s_k, y_k)$—typically 5-20 pairs. This reduces memory from $O(n^2)$ to $O(mn)$ where $m$ is small (like 10), making it practical for millions of parameters.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - Implementation</h4>
+                <ul>
+                    <li>General quasi-Newton structure: direction → line search → position update → Hessian update</li>
+                    <li>Multiple stopping criteria should be used (gradient norm + max iterations minimum)</li>
+                    <li>Line search choice matters: backtracking is simple; Wolfe conditions ensure robustness for BFGS</li>
+                    <li>Always verify curvature condition $s_k^T y_k > 0$ before applying update</li>
+                    <li>Common to start with $H_0 = I$ (identity matrix)</li>
+                    <li>Experimental validation confirms theoretical results ($n$ steps for $n$-D quadratic)</li>
+                    <li>Applicability extends beyond theoretical guarantees to once-differentiable functions</li>
+                    <li>Memory requirement is $O(n^2)$—manageable for moderate $n$ but problematic for large-scale</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 8: L-BFGS -->
+        <section id="lbfgs">
+            <h2>8. Limited-Memory BFGS (L-BFGS)</h2>
+
+            <p>The <span class="key-term">L-BFGS</span> (Limited-Memory BFGS) method is a memory-efficient variant of BFGS designed specifically for large-scale optimization problems common in machine learning and data science.</p>
+
+            <h3>8.1 The Scalability Problem</h3>
+
+            <div class="important-note">
+                <strong>⚠️ The Challenge:</strong>
+                <p>Standard BFGS requires storing and updating an $n \times n$ matrix $H_k$:</p>
+                <ul>
+                    <li><strong>Memory:</strong> $O(n^2)$ storage</li>
+                    <li><strong>Computation:</strong> $O(n^2)$ operations per iteration</li>
+                </ul>
+                
+                <p><strong>Problem for Modern Machine Learning:</strong></p>
+                <ul>
+                    <li>Neural networks can have millions or billions of parameters ($n = 10^6$ to $10^9$)</li>
+                    <li>For $n = 10^6$: storing $H_k$ needs ~8 TB of RAM!</li>
+                    <li>Even computing $H_k d$ becomes prohibitively expensive</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                A popular version of BFGS is the L-BFGS method. Again, you see, to calculate this $x_k$ and $y_k$, I have to calculate the <strong>exact gradient</strong>, right? But now, to calculate the gradient, if it's a data problem and it has huge data, then calculating the exact gradient is a very costly operation! So you use some <strong>samples</strong>—you use some samples at each step instead of using the entire data, and that gives you L-BFGS method, and this is very, very popular!
+            </div>
+
+            <h3>8.2 The L-BFGS Solution</h3>
+
+            <p>L-BFGS solves the memory problem through a clever insight:</p>
+
+            <div class="formula-box">
+                <p><strong>Key Insight:</strong> We don't actually need to store the full matrix $H_k$!</p>
+                
+                <p>Instead of storing $H_k$, L-BFGS stores only the last $m$ vector pairs:</p>
+
+                $$(s_0, y_0), (s_1, y_1), \ldots, (s_{m-1}, y_{m-1})$$
+                
+                <p>Where typically $m = 5$ to $20$ (much smaller than $n$).</p>
+                
+                <p><strong>Memory Reduction:</strong></p>
+                <ul>
+                    <li><strong>BFGS:</strong> $O(n^2)$ memory</li>
+                    <li><strong>L-BFGS:</strong> $O(mn)$ memory where $m \ll n$</li>
+                </ul>
+                
+                <p>For $n = 10^6$ and $m = 10$:</p>
+                <ul>
+                    <li>BFGS: ~8 TB</li>
+                    <li>L-BFGS: ~80 MB (reduction of factor 100,000!)</li>
+                </ul>
+            </div>
+
+            <h3>8.3 How L-BFGS Works</h3>
+
+            <p>L-BFGS computes the search direction $d_k = -H_k \nabla f(x_k)$ implicitly using a two-loop recursion:</p>
+
+            <div class="algorithm-box">
+                <h4>L-BFGS Two-Loop Recursion</h4>
+                <p><strong>Input:</strong> $\nabla f(x_k)$, stored pairs $\{(s_i, y_i)\}_{i=k-m}^{k-1}$</p>
+                <p><strong>Output:</strong> Search direction $d_k$</p>
+                <p><strong>Algorithm:</strong></p>
+                <p>1. $q \leftarrow \nabla f(x_k)$</p>
+                <p>2. <strong>FOR</strong> $i = k-1, k-2, \ldots, k-m$ <strong>DO:</strong> (backward loop)</p>
+                <p>&nbsp;&nbsp;&nbsp;3. $\alpha_i \leftarrow \rho_i s_i^T q$ where $\rho_i = \frac{1}{y_i^T s_i}$</p>
+                <p>&nbsp;&nbsp;&nbsp;4. $q \leftarrow q - \alpha_i y_i$</p>
+                <p>5. <strong>END FOR</strong></p>
+                <p>6. $r \leftarrow H_0^k q$ (initial Hessian approximation, often $\frac{s_{k-1}^T y_{k-1}}{y_{k-1}^T y_{k-1}} I$)</p>
+                <p>7. <strong>FOR</strong> $i = k-m, k-m+1, \ldots, k-1$ <strong>DO:</strong> (forward loop)</p>
+                <p>&nbsp;&nbsp;&nbsp;8. $\beta \leftarrow \rho_i y_i^T r$</p>
+                <p>&nbsp;&nbsp;&nbsp;9. $r \leftarrow r + s_i(\alpha_i - \beta)$</p>
+                <p>10. <strong>END FOR</strong></p>
+                <p>11. $d_k \leftarrow -r$</p>
+                <p>12. <strong>RETURN</strong> $d_k$</p>
+            </div>
+
+            <h3>8.4 Stochastic Gradient Approach</h3>
+
+            <p>In machine learning applications, L-BFGS often uses stochastic gradients:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Standard BFGS/L-BFGS</th>
+                        <th>Stochastic L-BFGS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient</strong></td>
+                        <td>Exact: $\nabla f(x_k) = \frac{1}{N}\sum_{i=1}^N \nabla f_i(x_k)$</td>
+                        <td>Approximate: $\nabla f(x_k) \approx \frac{1}{|B|}\sum_{i \in B} \nabla f_i(x_k)$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mini-batch</strong></td>
+                        <td>Full dataset ($N$ samples)</td>
+                        <td>Small subset ($|B| \ll N$ samples)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost per iteration</strong></td>
+                        <td>$O(N)$ for gradient</td>
+                        <td>$O(|B|)$ for gradient</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence</strong></td>
+                        <td>Deterministic guarantees</td>
+                        <td>Probabilistic guarantees</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                Once you do this sampling, you of course have to bring in some idea of probability—you cannot directly talk about convergence, but convergence with respect to certain <strong>probability guarantees</strong> you can give. But these are also very, very useful methods! These are very powerful methods, and it's very easy to call them from scikit-learn or PyTorch.
+            </div>
+
+            <h3>8.5 L-BFGS Properties and Usage</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Memory</strong></td>
+                        <td>$O(mn)$ where $m$ is memory parameter (typically 5-20)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computation</strong></td>
+                        <td>$O(mn)$ per iteration (vs. $O(n^2)$ for BFGS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence</strong></td>
+                        <td>Slightly slower than full BFGS but still superlinear</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Typical $m$ values</strong></td>
+                        <td>5-20; larger $m$ ≈ better convergence but more memory</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best for</strong></td>
+                        <td>Large-scale problems: $n > 10^4$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementations</strong></td>
+                        <td>scipy.optimize.minimize(method='L-BFGS-B')<br>PyTorch: torch.optim.LBFGS<br>TensorFlow Probability</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>8.6 When to Use L-BFGS vs. Other Methods</h3>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Best For</th>
+                        <th>Memory</th>
+                        <th>Speed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient Descent</strong></td>
+                        <td>Huge scale, online learning</td>
+                        <td>$O(n)$</td>
+                        <td>Slow convergence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adam/SGD variants</strong></td>
+                        <td>Deep learning, stochastic setting</td>
+                        <td>$O(n)$</td>
+                        <td>Fast per iteration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BFGS</strong></td>
+                        <td>Medium-scale ($n < 10^4$)</td>
+                        <td>$O(n^2)$</td>
+                        <td>Fast convergence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L-BFGS</strong></td>
+                        <td>Large-scale batch optimization</td>
+                        <td>$O(mn)$</td>
+                        <td>Fast convergence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Newton</strong></td>
+                        <td>Small-scale, high accuracy needed</td>
+                        <td>$O(n^2)$</td>
+                        <td>Very fast (near solution)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important-note">
+                <strong>🎯 Rule of Thumb:</strong>
+                <ul>
+                    <li><strong>$n < 1000$:</strong> BFGS is fine</li>
+                    <li><strong>$1000 < n < 10^6$:</strong> L-BFGS is ideal</li>
+                    <li><strong>$n > 10^6$ or online learning:</strong> Consider SGD/Adam</li>
+                    <li><strong>Stochastic setting:</strong> Adam/SGD usually better than L-BFGS</li>
+                    <li><strong>Batch optimization:</strong> L-BFGS usually better than Adam</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                Here I've written one implementation from scratch, and this is showing the convergence rate. So the convergence rate of BFGS method and L-BFGS method—because it was a small problem, both are comparable. But this L-BFGS method can be applied to, for example, if you apply it to a high-dimensional problem, the BFGS method may not be very good to implement because to calculate the gradient—the exact gradient—is not a very easy calculation. It's a costly calculation! So that's the beauty of L-BFGS for data science!
+            </div>
+
+            <h3>8.7 Practical Example: Logistic Regression</h3>
+
+            <p>A common use case for L-BFGS is training logistic regression on large datasets:</p>
+
+            <div class="formula-box">
+                <p><strong>Problem:</strong> Minimize logistic loss</p>
+
+                $$\min_{w} f(w) = \sum_{i=1}^N \log(1 + \exp(-y_i w^T x_i)) + \frac{\lambda}{2}\|w\|^2$$
+                
+                <p>For $N = 10^6$ samples with $n = 10^4$ features:</p>
+                <ul>
+                    <li><strong>Adam:</strong> Many iterations (10K+), but each cheap</li>
+                    <li><strong>L-BFGS:</strong> Fewer iterations (~100-1000), higher cost per iteration</li>
+                </ul>
+                
+                <p>L-BFGS often reaches higher accuracy faster for this smooth, batch-optimized problem!</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>L-BFGS BFGS ka memory-efficient version hai jo large-scale machine learning problems ke liye design kiya gaya hai. Standard BFGS full $n \times n$ matrix store karta hai ($O(n^2)$ memory) jo millions of parameters ke liye impractical hai. L-BFGS sirf last $m$ vector pairs store karta hai (typically $m=5$ to $20$), jo memory ko $O(mn)$ reduce kar deta hai—yani 100,000 times kam memory! Direction compute karne ke liye ek clever two-loop recursion use hoti hai. Data science mein, gradient calculate karne ke liye samples use karte hain instead of full dataset, jo convergence ko probabilistic banata hai par bahut practical hai. Scikit-learn, PyTorch, TensorFlow—sabme L-BFGS easily available hai aur large--scale batch optimization mein L-BFGS Adam se better performance deta hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎯 Practice Questions - L-BFGS</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> How does L-BFGS reduce memory requirements compared to standard BFGS?
+                    <div class="answer">
+                        L-BFGS reduces memory from $O(n^2)$ to $O(mn)$ by:
+                        <br>• Not storing the full $n \times n$ Hessian approximation matrix
+                        <br>• Storing only the last $m$ vector pairs $(s_i, y_i)$ where $m$ is small (typically 5-20)
+                        <br>• Computing the search direction implicitly using a two-loop recursion
+                        <br>• For $n = 10^6$ and $m = 10$: reduces from ~8 TB to ~80 MB
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q2:</strong> What is the two-loop recursion in L-BFGS and why is it important?
+                    <div class="answer">
+                        The two-loop recursion is an algorithm that computes the search direction $d_k = -H_k \nabla f(x_k)$ without explicitly forming $H_k$:
+                        <br><br>
+                        <strong>Loop 1 (backward):</strong> Applies curvature corrections using stored pairs
+                        <br><strong>Loop 2 (forward):</strong> Reconstructs the final direction
+                        <br><br>
+                        It's important because it allows L-BFGS to:
+                        <br>• Compute BFGS-like directions with only $O(mn)$ operations
+                        <br>• Maintain the superlinear convergence properties of BFGS
+                        <br>• Scale to problems with millions of parameters
+                    </div>
+                </div>
+
+                <div class="question">
+                    <strong>Q3:</strong> When should you prefer L-BFGS over Adam for machine learning?
+                    <div class="answer">
+                        Prefer L-BFGS over Adam when:
+                        <br>• You have access to the full gradient (batch setting)
+                        <br>• The problem is smooth and well-conditioned
+                        <br>• You need higher accuracy with fewer iterations
+                        <br>• Memory is not extremely constrained (you can store $m$ vectors)
+                        <br>• The dataset fits in memory or can be processed in batches
+                        <br><br>
+                        Choose Adam when:
+                        <br>• You need stochastic/online learning
+                        <br>• The problem is very noisy or non-convex
+                        <br>• Memory is extremely limited
+                        <br>• You need very fast per-iteration updates
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways - L-BFGS</h4>
+                <ul>
+                    <li>L-BFGS solves BFGS memory problem by storing only $m$ recent vector pairs</li>
+                    <li>Reduces memory from $O(n^2)$ to $O(mn)$ where $m \ll n$ (typically 5-20)</li>
+                    <li>Uses two-loop recursion to compute search directions implicitly</li>
+                    <li>Maintains superlinear convergence similar to full BFGS</li>
+                    <li>Ideal for large-scale batch optimization ($10^4 < n < 10^6$)</li>
+                    <li>Available in all major libraries (scipy, PyTorch, TensorFlow)</li>
+                    <li>For stochastic settings, Adam/SGD variants are usually preferred</li>
+                    <li>Best choice for smooth, large-scale optimization problems where full gradients are available</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 9: Mind Map -->
+        <section id="mind-map">
+            <h2>9. Comprehensive Mind Map</h2>
+            
+            <div class="mind-map">
+                <h3>🧠 Numerical Optimization Methods Overview</h3>
+                
+                <div class="mind-map-content">
+                    <div class="mind-map-node" style="grid-column: span 3; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h4>Numerical Optimization</h4>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Methods for finding minima of functions</p>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>First-Order Methods</h4>
+                        <div class="mind-map-subnode">Gradient Descent</div>
+                        <div class="mind-map-subnode">SGD</div>
+                        <div class="mind-map-subnode">Mini-Batch GD</div>
+                        <div class="mind-map-subnode">Adam</div>
+                        <div class="mind-map-subnode">RMSProp</div>
+                        <div class="mind-map-subnode">AdaGrad</div>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>Second-Order Methods</h4>
+                        <div class="mind-map-subnode">Newton's Method</div>
+                        <div class="mind-map-subnode">Damped Newton</div>
+                        <div class="mind-map-subnode">Trust Region</div>
+                    </div>
+                    
+                    <div class="mind-map-node">
+                        <h4>Quasi-Newton Methods</h4>
+                        <div class="mind-map-subnode">DFP</div>
+                        <div class="mind-map-subnode">BFGS</div>
+                        <div class="mind-map-subnode">Broyden Family</div>
+                        <div class="mind-map-subnode">L-BFGS</div>
+                    </div>
+                    
+                    <div class="mind-map-node" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <h4>Key Properties</h4>
+                        <div class="mind-map-subnode">Convergence Rate</div>
+                        <div class="mind-map-subnode">Memory Usage</div>
+                        <div class="mind-map-subnode">Computational Cost</div>
+                        <div class="mind-map-subnode">Applicability</div>
+                    </div>
+                    
+                    <div class="mind-map-node" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <h4>Applications</h4>
+                        <div class="mind-map-subnode">Machine Learning</div>
+                        <div class="mind-map-subnode">Deep Learning</div>
+                        <div class="mind-map-subnode">Operations Research</div>
+                        <div class="mind-map-subnode">Engineering Design</div>
+                    </div>
+                    
+                    <div class="mind-map-node" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <h4>Implementation</h4>
+                        <div class="mind-map-subnode">Line Search</div>
+                        <div class="mind-map-subnode">Stopping Criteria</div>
+                        <div class="mind-map-subnode">Numerical Stability</div>
+                        <div class="mind-map-subnode">Libraries</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">🔗 Method Selection Guide</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 10px; background: #667eea; color: white;">Problem Size</th>
+                                <th style="padding: 10px; background: #667eea; color: white;">Recommended Method</th>
+                                <th style="padding: 10px; background: #667eea; color: white;">Why?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Small ($n < 100$)</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Newton's Method</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Fastest convergence, memory not an issue</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Medium ($100 < n < 10^4$)</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">BFGS</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Good balance of speed and memory</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Large ($10^4 < n < 10^6$)</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">L-BFGS</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Memory efficient, fast convergence</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Very Large ($n > 10^6$)</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">SGD/Adam</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Minimal memory, works with mini-batches</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,3186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 7: Performance Metrics in Pattern Recognition</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ============================================
+           GLOBAL STYLES - Basic page setup
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* ============================================
+           HEADER SECTION
+           ============================================ */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* ============================================
+           TABLE OF CONTENTS
+           ============================================ */
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+        
+        .toc ul ul {
+            margin-left: 25px;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 5px;
+        }
+        
+        /* ============================================
+           MAIN CONTENT SECTIONS
+           ============================================ */
+        .content-section {
+            background: white;
+            padding: 35px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        /* ============================================
+           KEY TERMS & HIGHLIGHTS
+           ============================================ */
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .key-term {
+            background-color: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .highlight-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .danger-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        /* ============================================
+           PROFESSOR'S NOTES
+           ============================================ */
+        .professor-note {
+            background-color: #f0f4ff;
+            border-left: 5px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #667eea;
+            font-style: normal;
+        }
+        
+        /* ============================================
+           TABLES
+           ============================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* ============================================
+           CODE BLOCKS
+           ============================================ */
+        .code-block {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .code-block code {
+            color: #61dafb;
+        }
+        
+        .code-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+        
+        /* ============================================
+           FORMULAS & EQUATIONS
+           ============================================ */
+        .formula-box {
+            background-color: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        /* ============================================
+           DIAGRAMS PLACEHOLDER
+           ============================================ */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 2px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #555;
+            font-style: italic;
+        }
+        
+        /* ============================================
+           HINGLISH SUMMARY SECTION
+           ============================================ */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            color: #333;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+        
+        /* ============================================
+           PRACTICE QUESTIONS
+           ============================================ */
+        .practice-section {
+            background-color: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 2px solid #ffc107;
+        }
+        
+        .practice-section h4 {
+            color: #f57c00;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .answer {
+            background-color: #e8f5e9;
+            padding: 15px;
+            margin: 10px 0 15px 20px;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        /* ============================================
+           KEY TAKEAWAYS
+           ============================================ */
+        .key-takeaways {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #00acc1;
+        }
+        
+        .key-takeaways h4 {
+            color: #00695c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .key-takeaways ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .key-takeaways li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00acc1;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        /* ============================================
+           MIND MAP SECTION
+           ============================================ */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .branch h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .branch ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .branch li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .branch li::before {
+            content: "→ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        /* ============================================
+           LISTS
+           ============================================ */
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.2em;
+            }
+        }
+        
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER SECTION
+         ============================================ -->
+    <div class="header">
+        <h1>Lecture 7: Performance Metrics in Pattern Recognition</h1>
+        <p>By Armaan Kachhawa</p>
+        <p> Pattern Recognition Principles (PRP)</p>
+    </div>
+
+    <!-- ============================================
+         TABLE OF CONTENTS
+         ============================================ -->
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#recap">1. Course Recap: What We've Learned So Far</a></li>
+            <li><a href="#introduction">2. Introduction to Performance Metrics</a>
+                <ul>
+                    <li><a href="#importance">2.1 Why Performance Metrics Matter</a></li>
+                    <li><a href="#pte">2.2 The PTE Framework in Machine Learning</a></li>
+                </ul>
+            </li>
+            <li><a href="#accuracy">3. Accuracy</a>
+                <ul>
+                    <li><a href="#accuracy-definition">3.1 Definition and Calculation</a></li>
+                    <li><a href="#accuracy-example">3.2 Example: Apple vs Orange Classifier</a></li>
+                </ul>
+            </li>
+            <li><a href="#confusion-matrix">4. Confusion Matrix</a>
+                <ul>
+                    <li><a href="#cm-definition">4.1 Understanding Confusion Matrix</a></li>
+                    <li><a href="#cm-examples">4.2 Examples and Interpretation</a></li>
+                    <li><a href="#normalized-cm">4.3 Normalized Confusion Matrix</a></li>
+                    <li><a href="#cm-code">4.4 Implementation in Python</a></li>
+                </ul>
+            </li>
+            <li><a href="#tp-fp-tn-fn">5. True Positive, False Positive, True Negative, False Negative</a>
+                <ul>
+                    <li><a href="#definitions">5.1 Definitions</a></li>
+                    <li><a href="#covid-example">5.2 COVID-19 Classification Example</a></li>
+                    <li><a href="#threshold-analysis">5.3 Different Threshold Scenarios</a></li>
+                </ul>
+            </li>
+            <li><a href="#precision-recall">6. Precision and Recall</a>
+                <ul>
+                    <li><a href="#precision">6.1 Precision</a></li>
+                    <li><a href="#recall">6.2 Recall</a></li>
+                    <li><a href="#pr-examples">6.3 Dog vs Cat Classifier Example</a></li>
+                    <li><a href="#pr-practice">6.4 Practice Problems</a></li>
+                </ul>
+            </li>
+            <li><a href="#f1-score">7. F1-Score</a>
+                <ul>
+                    <li><a href="#f1-definition">7.1 Definition and Formula</a></li>
+                    <li><a href="#f1-example">7.2 Examples</a></li>
+                </ul>
+            </li>
+            <li><a href="#roc-curve">8. ROC Curve and AUC</a>
+                <ul>
+                    <li><a href="#roc-definition">8.1 Understanding ROC Curves</a></li>
+                    <li><a href="#auc">8.2 Area Under the Curve (AUC)</a></li>
+                </ul>
+            </li>
+            <li><a href="#other-metrics">9. Other Performance Metrics</a>
+                <ul>
+                    <li><a href="#mse">9.1 Mean Squared Error (MSE)</a></li>
+                    <li><a href="#mae">9.2 Mean Absolute Error (MAE)</a></li>
+                </ul>
+            </li>
+            <li><a href="#summary">10. Summary and Key Takeaways</a></li>
+            <li><a href="#mind-map">11. Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+
+    <!-- ============================================
+         SECTION 1: COURSE RECAP
+         ============================================ -->
+    <div class="content-section" id="recap">
+        <h2>1. Course Recap: What We've Learned So Far</h2>
+        
+        <p>Welcome to Lecture 7 on Pattern Recognition Principles! Before we dive into today's topic on performance metrics, let's briefly recap what we've covered in this course so far.</p>
+        
+        <h3>Previously Covered Topics</h3>
+        
+        <div class="highlight-box">
+            <h4>Bayesian Decision Theory</h4>
+            <p>We learned how <strong>Bayes' theorem</strong> can be used for classification tasks. This fundamental approach allows us to compute the probability of a class given observed features.</p>
+        </div>
+        
+        <div class="highlight-box">
+            <h4>Naive Bayes Classifier</h4>
+            <p>We addressed the computational challenge of estimating joint probabilities when dealing with multiple features. The Naive Bayes approach assumes <strong>feature independence</strong>, allowing us to compute probabilities as simple multiplications. We specifically explored spam vs. ham (legitimate email) classification using this technique.</p>
+        </div>
+        
+        <div class="highlight-box">
+            <h4>Discriminant Functions</h4>
+            <p>We discussed methods for finding <strong>decision boundaries</strong> that separate different classes. One side of the decision boundary represents one class, while the other side represents another class.</p>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Recap)</h4>
+            <p>Ab tak humne Bayesian decision theory seekha jisme Bayes theorem se classification karte hain. Phir Naive Bayes dekha jisme hum assume karte hain ki features independent hain, taki computation easy ho jaye. Humne spam-ham classification ka example bhi dekha. Discriminant functions me humne decision boundary banana seekha jo classes ko separate karta hai. Ab aage hum performance metrics dekhenge - yani ki kaise measure karein ki humara classifier kitna achha kaam kar raha hai!</p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 2: INTRODUCTION TO PERFORMANCE METRICS
+         ============================================ -->
+    <div class="content-section" id="introduction">
+        <h2>2. Introduction to Performance Metrics</h2>
+        
+        <h3 id="importance">2.1 Why Performance Metrics Matter</h3>
+        
+        <p>In any Machine Learning (ML) or Pattern Recognition (PR) task, <span class="key-term">performance metrics</span> are absolutely crucial. But why are they so important?</p>
+        
+        <div class="success-box">
+            <h4>Key Reasons for Performance Metrics:</h4>
+            <ol>
+                <li><strong>Track Progress:</strong> Performance metrics allow us to monitor how well our method or algorithm is improving over time</li>
+                <li><strong>Measure Quality:</strong> They help us quantify how good our classifier is (e.g., "How accurate is my Apple vs. Orange classifier?")</li>
+                <li><strong>Compare Methods:</strong> When multiple researchers or teams develop different approaches, we need well-defined metrics to fairly compare them</li>
+                <li><strong>Validate Models:</strong> Metrics help us understand if our model is truly learning or just memorizing</li>
+            </ol>
+        </div>
+        
+        <h3 id="pte">2.2 The PTE Framework in Machine Learning</h3>
+        
+        <div class="professor-note">
+            If you remember the definition we discussed about Machine Learning, there are three essential components: <strong>P</strong>erformance, <strong>T</strong>ask, and <strong>E</strong>xperience. For any valid ML task, these three components are very important. You should have a task, you should have some training data (experience), and you should have some performance metrics.
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>P - Performance</strong></td>
+                    <td>How well the system performs the task</td>
+                    <td>Accuracy, Precision, Recall, F1-Score</td>
+                </tr>
+                <tr>
+                    <td><strong>T - Task</strong></td>
+                    <td>The specific problem to solve</td>
+                    <td>Image classification, spam detection, disease diagnosis</td>
+                </tr>
+                <tr>
+                    <td><strong>E - Experience</strong></td>
+                    <td>Training data used to learn</td>
+                    <td>Labeled images, email corpus, patient records</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <p>Without proper performance metrics, we cannot:</p>
+        <ul>
+            <li>Know if our model is actually working</li>
+            <li>Compare different approaches objectively</li>
+            <li>Understand where our model needs improvement</li>
+            <li>Publish or validate research findings</li>
+        </ul>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Introduction)</h4>
+            <p>Performance metrics bahut important hain ML aur PR tasks mein. Yeh humein batate hain ki humara model kitna achha kaam kar raha hai. Machine Learning mein teen cheezein zaroori hain - PTE (Performance, Task, Experience). Task hai kya karna hai, Experience hai training data, aur Performance metrics se hum measure karte hain ki kitna achha kar rahe hain. Bina performance metrics ke, hum different methods ko compare nahi kar sakte aur progress track nahi kar sakte.</p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 3: ACCURACY
+         ============================================ -->
+    <div class="content-section" id="accuracy">
+        <h2>3. Accuracy</h2>
+        
+        <h3 id="accuracy-definition">3.1 Definition and Calculation</h3>
+        
+        <p><span class="key-term">Accuracy</span> is one of the most basic and intuitive performance metrics. It measures the proportion of correct predictions out of total predictions made by a classifier.</p>
+        
+        <div class="formula-box">
+            <p><strong>Accuracy Formula:</strong></p>
+
+            $$\text{Accuracy} = \frac{\text{Number of Correct Predictions}}{\text{Total Number of Samples}}$$
+        </div>
+        
+        <h3 id="accuracy-example">3.2 Example: Apple vs Orange Classifier</h3>
+        
+        <p>Let's understand accuracy with a simple example. Suppose you're building a classifier to distinguish between apples and oranges, and you test it on four samples:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Sample</th>
+                    <th>Actual Class</th>
+                    <th>Predicted Class</th>
+                    <th>Correct? (1/0)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sample 1</td>
+                    <td>Apple</td>
+                    <td>Apple</td>
+                    <td style="color: green; font-weight: bold;">1 ✓</td>
+                </tr>
+                <tr>
+                    <td>Sample 2</td>
+                    <td>Apple</td>
+                    <td>Orange</td>
+                    <td style="color: red; font-weight: bold;">0 ✗</td>
+                </tr>
+                <tr>
+                    <td>Sample 3</td>
+                    <td>Orange</td>
+                    <td>Orange</td>
+                    <td style="color: green; font-weight: bold;">1 ✓</td>
+                </tr>
+                <tr>
+                    <td>Sample 4</td>
+                    <td>Orange</td>
+                    <td>Orange</td>
+                    <td style="color: green; font-weight: bold;">1 ✓</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box">
+            <h4>Calculation:</h4>
+            <p><strong>Total Correct Predictions:</strong> 3 (Samples 1, 3, and 4)</p>
+            <p><strong>Total Samples:</strong> 4</p>
+            <p><strong>Accuracy:</strong> $\frac{3}{4} = 0.75 = 75\%$</p>
+        </div>
+        
+        <div class="professor-note">
+            Out of these four samples you predicted, three of them are correct, right? So out of four, we have three of them correct, which means 3 by 4 is the accuracy. So it's simply the number of correct predictions divided by the total number of samples - that gives us 75% accuracy.
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Limitation of Accuracy</h4>
+            <p>While accuracy is simple and intuitive, it can be <strong>misleading</strong> when dealing with <strong>imbalanced datasets</strong>. For example, if 95% of emails are legitimate (ham) and only 5% are spam, a naive classifier that always predicts "ham" would achieve 95% accuracy but would be completely useless at detecting spam!</p>
+            <p>This is why we need more sophisticated metrics like Precision, Recall, and F1-Score, which we'll explore later in this lecture.</p>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Accuracy)</h4>
+            <p>Accuracy sabse basic metric hai jo batata hai ki kitne predictions sahi hain. Formula simple hai - sahi predictions ko total samples se divide karo. Apple-Orange example mein humne 4 samples test kiye aur 3 sahi predict kiye, toh accuracy 3/4 = 75% hai. Lekin ek problem hai - agar data imbalanced ho (jaise 95% ham emails aur 5% spam), toh accuracy misleading ho sakti hai. Isliye hume aur bhi metrics chahiye jaise Precision aur Recall.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> A classifier is tested on 50 images: 30 dogs and 20 cats. It correctly identifies 25 dogs and 18 cats. What is the accuracy?
+            </div>
+            <div class="answer">
+                Total correct predictions = 25 + 18 = 43<br>
+                Total samples = 50<br>
+                Accuracy = 43/50 = 0.86 = 86%
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why might a 95% accuracy classifier still be considered poor for disease detection?
+            </div>
+            <div class="answer">
+                If the disease is rare (e.g., only 5% of people have it), a classifier that always predicts "healthy" would achieve 95% accuracy but would completely fail at detecting any actual disease cases. This shows that accuracy alone is insufficient for imbalanced datasets, especially in critical applications like medical diagnosis where false negatives can have serious consequences.
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Accuracy measures the ratio of correct predictions to total predictions</li>
+                <li>It's intuitive and easy to calculate</li>
+                <li>Accuracy can be misleading with imbalanced datasets</li>
+                <li>For critical applications, we need additional metrics beyond accuracy</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 4: CONFUSION MATRIX
+         ============================================ -->
+    <div class="content-section" id="confusion-matrix">
+        <h2>4. Confusion Matrix</h2>
+        
+        <h3 id="cm-definition">4.1 Understanding Confusion Matrix</h3>
+        
+        <p>Sometimes samples from one class can be confused with another class. For example, in handwritten digit recognition, a "2" might look similar to a "1", or in our earlier example, some people's handwriting might make these digits ambiguous. To visualize and quantify such confusion, we use a <span class="key-term">Confusion Matrix</span>.</p>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p>For <strong>n-way classification</strong> (classifying into n classes), the Confusion Matrix <strong>C</strong> is an <strong>n × n matrix</strong> where:</p>
+            <ul>
+                <li><strong>Rows</strong> represent the <strong>true labels</strong> (actual classes)</li>
+                <li><strong>Columns</strong> represent the <strong>predicted labels</strong> (what the model predicted)</li>
+                <li>Entry <strong>C[i][j]</strong> represents the <strong>count of instances</strong> where the true label is <strong>i</strong> and the predicted label is <strong>j</strong></li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            If you are doing handwritten digit classification and someone writes a "2" like this [demonstrating] and someone writes a "1" like this [demonstrating], this can be classified as "2" even though it's actually "1". There may be mistakes or confusions. This confusion - how do you represent it formally? You represent it using a confusion matrix.
+        </div>
+        
+        <h3 id="cm-examples">4.2 Examples and Interpretation</h3>
+        
+        <h4>Example 1: Apple vs Orange (2-way Classification)</h4>
+        
+        <p>For binary classification (like Apple vs. Orange), the confusion matrix is a <strong>2 × 2 matrix</strong>:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" style="vertical-align: middle;">Actual Class ↓</th>
+                    <th colspan="2" style="text-align: center;">Predicted Class →</th>
+                </tr>
+                <tr>
+                    <th>Apple</th>
+                    <th>Orange</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Apple</strong></td>
+                    <td style="background-color: #d4edda; font-weight: bold;">1</td>
+                    <td style="background-color: #f8d7da; font-weight: bold;">1</td>
+                </tr>
+                <tr>
+                    <td><strong>Orange</strong></td>
+                    <td style="background-color: #f8d7da; font-weight: bold;">0</td>
+                    <td style="background-color: #d4edda; font-weight: bold;">2</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box">
+            <h4>Interpretation:</h4>
+            <ul>
+                <li><strong>Diagonal elements (green):</strong> Correct predictions
+                    <ul>
+                        <li>1 Apple correctly classified as Apple</li>
+                        <li>2 Oranges correctly classified as Orange</li>
+                    </ul>
+                </li>
+                <li><strong>Off-diagonal elements (red):</strong> Mistakes/Confusion
+                    <ul>
+                        <li>1 Apple incorrectly classified as Orange (mistake)</li>
+                        <li>0 Oranges incorrectly classified as Apple (no such error)</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>✓ Ideal Confusion Matrix</h4>
+            <p>For a perfect classifier, the confusion matrix should be a <strong>diagonal matrix</strong> (or diagonal-heavy matrix) where:</p>
+            <ul>
+                <li><strong>Diagonal entries</strong> are <strong>high</strong> (many correct predictions)</li>
+                <li><strong>Off-diagonal entries</strong> are <strong>zero</strong> (no mistakes)</li>
+            </ul>
+            <p>If your classifier is making mistakes, off-diagonal elements will have non-zero entries.</p>
+        </div>
+        
+        <h4>Example 2: Handwritten Digit Classification (10-way Classification)</h4>
+        
+        <p>For digit classification (0-9), we have a <strong>10 × 10 confusion matrix</strong>. The professor showed actual data from a neural network classifier:</p>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: 10×10 Confusion Matrix for Handwritten Digits 0-9]
+            <br><br>
+            <strong>Key observations:</strong>
+            <ul style="text-align: left; display: inline-block; margin-top: 10px;">
+                <li>Diagonal: High numbers (e.g., 970 zeros correctly classified)</li>
+                <li>Off-diagonal: Confusion between similar digits (e.g., 0→4, 1→8, 9→4)</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            If you see this 970, it means 970 samples that are actually "0" are classified as "0". These are correct. But if I talk about this entry showing "2", it means they are actually "0" but they are classified as "4". So 0 may be classified as 4 sometimes because 0 and 4 may look similar in some handwriting styles.
+        </div>
+        
+        <h4>Example 3: Five Animal Classification</h4>
+        
+        <div class="question">
+            <strong>Problem:</strong> You have an image classifier that distinguishes between five animal classes: {Elephant, Goat, Sheep, Tiger, Cheetah}.
+            <ol type="A">
+                <li>What will be the dimensions of the confusion matrix?</li>
+                <li>For a reasonably well-trained classifier, which off-diagonal entries are expected to be relatively higher?</li>
+            </ol>
+        </div>
+        
+        <div class="answer">
+            <strong>Answer A:</strong> The confusion matrix will be <strong>5 × 5</strong> (5 classes means 5×5 matrix).
+            <br><br>
+            <strong>Answer B:</strong> The following off-diagonal entries may be relatively higher due to visual similarity:
+            <ul>
+                <li><strong>Goat ↔ Sheep:</strong> These animals look somewhat similar, so goat may be classified as sheep and vice versa</li>
+                <li><strong>Tiger ↔ Cheetah:</strong> Both have spotted/striped patterns and similar body shapes, causing potential confusion</li>
+                <li><strong>Elephant:</strong> Will likely have high diagonal values and low off-diagonal values because elephants look very different from all other animals</li>
+            </ul>
+        </div>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: 5×5 Confusion Matrix showing red dots at positions (Goat, Sheep), (Sheep, Goat), (Tiger, Cheetah), and (Cheetah, Tiger)]
+        </div>
+        
+        <h3 id="normalized-cm">4.3 Normalized Confusion Matrix</h3>
+        
+        <p>A <span class="key-term">Normalized Confusion Matrix</span> scales the values to make them more interpretable by showing proportions instead of raw counts.</p>
+        
+        <div class="formula-box">
+            <p><strong>Normalization Formula:</strong></p>
+
+            $$C_{\text{norm}}[i][j] = \frac{C[i][j]}{\sum_{k=1}^{n} C[i][k]}$$
+            <p style="font-size: 0.9em; margin-top: 10px;">where we divide each entry by the sum of its row</p>
+        </div>
+        
+        <div class="highlight-box">
+            <h4>Properties of Normalized Confusion Matrix:</h4>
+            <ul>
+                <li>All entries are <strong>between 0 and 1</strong></li>
+                <li>Each <strong>row sums to 1</strong> (or approximately 1 due to rounding)</li>
+                <li>Values represent <strong>proportions or percentages</strong></li>
+                <li>Easier to compare across datasets of different sizes</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            The entries will be normalized between 0 to 1, and each row will sum to 1. In the representation we might show only two decimal places, so the sum may not be exactly 1 due to rounding, but if you take more decimal places (five or six), you'll see that the sum becomes closer and closer to 1, or exactly 1.
+        </div>
+        
+        <h3 id="cm-code">4.4 Implementation in Python</h3>
+        
+        <p>Here's how to compute and visualize a confusion matrix using Python's scikit-learn library:</p>
+        
+        <pre><div class="code-block">
+<span class="code-comment"># Import necessary libraries</span>
+<code>from sklearn.metrics import confusion_matrix
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+<span class="code-comment"># Example: 3-class classification (classes 0, 1, 2)</span>
+y_true = [0, 1, 2, 2, 0, 1, 0, 2, 1, 0]  <span class="code-comment"># Actual labels</span>
+y_pred = [0, 2, 2, 2, 0, 1, 0, 1, 1, 0]  <span class="code-comment"># Predicted labels</span>
+
+<span class="code-comment"># Compute confusion matrix</span>
+cm = confusion_matrix(y_true, y_pred)
+print("Confusion Matrix:")
+print(cm)
+
+<span class="code-comment"># Compute normalized confusion matrix (row-wise)</span>
+cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+print("\nNormalized Confusion Matrix:")
+print(cm_normalized)
+
+<span class="code-comment"># Visualize using matplotlib and seaborn</span>
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=['Class 0', 'Class 1', 'Class 2'],
+            yticklabels=['Class 0', 'Class 1', 'Class 2'])
+plt.ylabel('Actual Class')
+plt.xlabel('Predicted Class')
+plt.title('Confusion Matrix')
+plt.show()</code>
+        </div></pre>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Confusion Matrix)</h4>
+            <p>Confusion matrix ek n×n matrix hai jo batata hai ki kitni baar ek class ko doosri class se confuse kiya gaya. Rows mein actual classes hoti hain aur columns mein predicted classes. Diagonal pe jo values hain woh correct predictions hain - yeh high honi chahiye. Off-diagonal values mistakes hain - yeh kam honi chahiye. Jaise Apple-Orange ke liye 2×2 matrix hoga, aur digits 0-9 ke liye 10×10 matrix hoga. Similar looking classes mein confusion zyada hota hai - jaise Goat-Sheep ya Tiger-Cheetah. Normalized confusion matrix mein values 0-1 ke beech hoti hain aur har row ka sum 1 hota hai, jo comparison ke liye better hai.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Given the following predictions for a 3-class problem (Cat, Dog, Bird):
+                <br>Actual: [Cat, Cat, Dog, Dog, Bird, Cat, Dog]
+                <br>Predicted: [Cat, Dog, Dog, Dog, Bird, Cat, Bird]
+                <br>Construct the confusion matrix.
+            </div>
+            <div class="answer">
+                Confusion Matrix (3×3):<br>
+                <table style="margin-top: 10px; font-size: 0.9em;">
+                    <tr><th></th><th>Cat</th><th>Dog</th><th>Bird</th></tr>
+                    <tr><th>Cat</th><td>2</td><td>1</td><td>0</td></tr>
+                    <tr><th>Dog</th><td>0</td><td>2</td><td>1</td></tr>
+                    <tr><th>Bird</th><td>0</td><td>0</td><td>1</td></tr>
+                </table>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> In a confusion matrix, what does a high off-diagonal value indicate?
+            </div>
+            <div class="answer">
+                A high off-diagonal value indicates frequent misclassification between two specific classes. For example, if C[2][5] is high, it means many samples of class 2 are being incorrectly predicted as class 5. This usually happens when the two classes share similar features or characteristics.
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Confusion matrix is an n×n matrix for n-way classification</li>
+                <li>Rows = actual classes, Columns = predicted classes</li>
+                <li>Diagonal values should be high (correct predictions)</li>
+                <li>Off-diagonal values represent classification errors</li>
+                <li>Normalized confusion matrix uses proportions (0-1) for better comparison</li>
+                <li>Visual similarity between classes leads to higher off-diagonal confusion</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 5: TP, FP, TN, FN
+         ============================================ -->
+    <div class="content-section" id="tp-fp-tn-fn">
+        <h2>5. True Positive, False Positive, True Negative, False Negative</h2>
+        
+        <p>Now that we understand confusion matrices, let's explore more specific performance metrics, especially for <strong>binary classification</strong> problems. These four fundamental metrics form the basis for understanding classifier behavior.</p>
+        
+        <h3 id="definitions">5.1 Definitions</h3>
+        
+        <p>Let's understand these concepts with clear definitions:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Metric</th>
+                    <th style="width: 40%;">Definition</th>
+                    <th style="width: 35%;">Notation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Positive (TP)</strong></td>
+                    <td>Sample is <strong>predicted positive</strong> by the model AND is <strong>actually positive</strong></td>
+                    <td>(Predicted: +, Actual: +)</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Positive (FP)</strong></td>
+                    <td>Sample is <strong>predicted positive</strong> by the model BUT is <strong>actually negative</strong></td>
+                    <td>(Predicted: +, Actual: -)</td>
+                </tr>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Negative (TN)</strong></td>
+                    <td>Sample is <strong>predicted negative</strong> by the model AND is <strong>actually negative</strong></td>
+                    <td>(Predicted: -, Actual: -)</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Negative (FN)</strong></td>
+                    <td>Sample is <strong>predicted negative</strong> by the model BUT is <strong>actually positive</strong></td>
+                    <td>(Predicted: -, Actual: +)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box">
+            <h4>🔍 Key Pattern to Remember:</h4>
+            <ul>
+                <li><strong>"True"</strong> means the prediction matches reality (model is correct)</li>
+                <li><strong>"False"</strong> means the prediction doesn't match reality (model is wrong)</li>
+                <li><strong>"Positive/Negative"</strong> refers to what the model predicted</li>
+            </ul>
+        </div>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Visual representation of TP, FP, TN, FN in a 2×2 grid]
+            <br>
+            <strong>Layout:</strong>
+            <table style="margin-top: 10px; background: white;">
+                <tr>
+                    <th></th>
+                    <th>Predicted Positive</th>
+                    <th>Predicted Negative</th>
+                </tr>
+                <tr>
+                    <th>Actually Positive</th>
+                    <td style="background-color: #d4edda;"><strong>True Positive (TP)</strong><br>✓ Correct</td>
+                    <td style="background-color: #f8d7da;"><strong>False Negative (FN)</strong><br>✗ Type II Error</td>
+                </tr>
+                <tr>
+                    <th>Actually Negative</th>
+                    <td style="background-color: #f8d7da;"><strong>False Positive (FP)</strong><br>✗ Type I Error</td>
+                    <td style="background-color: #d4edda;"><strong>True Negative (TN)</strong><br>✓ Correct</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h3 id="covid-example">5.2 COVID-19 Classification Example</h3>
+        
+        <p>Let's take a practical example to understand these concepts thoroughly. During the COVID-19 pandemic, body temperature was sometimes used as a screening feature (though it's a weak feature, as the professor noted).</p>
+        
+        <div class="professor-note">
+            Let's take an example - it's really useful to understand with examples. Let's say we classify someone based on body temperature. Even if temperature is high, a person can be COVID-negative. Even if temperature is low, a person can still be COVID-positive because they may be asymptomatic. So this feature is not that effective, but let's see how we can at least understand the concepts.
+        </div>
+        
+        <h4>Scenario 1: Very Conservative Threshold (Everyone Positive)</h4>
+        
+        <p>Let's say we set an extremely conservative threshold where <strong>anyone with temperature ≥ 92°F (about 33°C) is classified as COVID-positive</strong>. This means practically everyone is classified as positive.</p>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Temperature scale from 96°F to 104°F with + and - symbols scattered]
+            <br>Red + symbols: Actually COVID-positive (5 people)
+            <br>Green - symbols: Actually COVID-negative (5 people)
+            <br>Decision threshold: 92°F (everyone classified as positive)
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Calculation</th>
+                    <th>Value</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Positive</strong></td>
+                    <td>Model says positive AND actually positive</td>
+                    <td><strong>5</strong></td>
+                    <td>All 5 actual positives are correctly identified</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Positive</strong></td>
+                    <td>Model says positive BUT actually negative</td>
+                    <td><strong>5</strong></td>
+                    <td>All 5 actual negatives are incorrectly classified as positive</td>
+                </tr>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Negative</strong></td>
+                    <td>Model says negative AND actually negative</td>
+                    <td><strong>0</strong></td>
+                    <td>No one is classified as negative</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Negative</strong></td>
+                    <td>Model says negative BUT actually positive</td>
+                    <td><strong>0</strong></td>
+                    <td>No one is classified as negative</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="warning-box">
+            <h4>⚠️ Analysis of This Approach:</h4>
+            <ul>
+                <li><strong>High False Positives (5):</strong> Many healthy people are incorrectly flagged as positive. This causes unnecessary panic and resource wastage.</li>
+                <li><strong>Zero False Negatives:</strong> No actual positive cases are missed, which is good from a public health perspective.</li>
+                <li><strong>Tradeoff:</strong> This conservative approach catches all cases but creates many false alarms.</li>
+            </ul>
+        </div>
+        
+        <h4>Scenario 2: Moderate Threshold (97°F)</h4>
+        
+        <p>Now let's use a more reasonable threshold: <strong>temperature ≥ 97°F is COVID-positive</strong>.</p>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Temperature scale with threshold at 97°F]
+            <br>Left of threshold (negative): Some + and - symbols
+            <br>Right of threshold (positive): Some + and - symbols
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Positive (TP)</strong></td>
+                    <td><strong>5</strong></td>
+                    <td>5 people with temp ≥97°F who are actually COVID-positive</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Positive (FP)</strong></td>
+                    <td><strong>2</strong></td>
+                    <td>2 people with temp ≥97°F who are actually COVID-negative</td>
+                </tr>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Negative (TN)</strong></td>
+                    <td><strong>3</strong></td>
+                    <td>3 people with temp <97°F who are actually COVID-negative</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Negative (FN)</strong></td>
+                    <td><strong>0</strong></td>
+                    <td>No COVID-positive person has temp <97°F</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h4>Scenario 3: Higher Threshold (100°F)</h4>
+        
+        <p>Using a higher threshold: <strong>temperature ≥ 100°F is COVID-positive</strong>.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Positive (TP)</strong></td>
+                    <td><strong>3</strong></td>
+                    <td>Only 3 COVID-positive people have temp ≥100°F</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Positive (FP)</strong></td>
+                    <td><strong>2</strong></td>
+                    <td>2 COVID-negative people have temp ≥100°F</td>
+                </tr>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>True Negative (TN)</strong></td>
+                    <td><strong>3</strong></td>
+                    <td>3 COVID-negative people correctly identified</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>False Negative (FN)</strong></td>
+                    <td><strong>2</strong></td>
+                    <td>2 COVID-positive people have temp <100°F (missed cases!)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="danger-box">
+            <h4>🚨 Critical Insight: False Negatives in Healthcare</h4>
+            <p>The professor emphasized an important point about <strong>False Negatives</strong>:</p>
+            <ul>
+                <li><strong>False Positive:</strong> Model says someone is positive, but they're actually negative. This causes unnecessary worry and retesting, but is relatively less dangerous.</li>
+                <li><strong>False Negative (DANGEROUS):</strong> Model says someone is negative, but they're actually positive. These people may not follow isolation protocols and can spread the disease to others. In medical contexts, this is often more serious than false positives!</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            False positive is high means there are many people whom the model is saying they are positive, but they are not actually positive. While false negative is a dangerous thing because this may increase the chance of the spread of the disease. Here what is happening is the model is saying someone is negative, but they are not actually negative - they are positive! So these people may not be following isolation and so on, and they may spread it.
+        </div>
+        
+        <h4>Scenario 4: Very High Threshold (105°F)</h4>
+        
+        <p>Extremely high threshold: <strong>temperature ≥ 105°F is COVID-positive</strong> (practically no one classified as positive).</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>True Positive (TP)</strong></td>
+                    <td><strong>0</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>False Positive (FP)</strong></td>
+                    <td><strong>0</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>True Negative (TN)</strong></td>
+                    <td><strong>5</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>False Negative (FN)</strong></td>
+                    <td><strong>5</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="warning-box">
+            <p>This threshold misses all positive cases - completely useless for disease detection!</p>
+        </div>
+        
+        <h3 id="threshold-analysis">5.3 Practice Problem: Student Testing</h3>
+        
+        <div class="question">
+            <strong>Problem:</strong> Suppose in a population of 100 students, a Test identifies students S1 and S2 as positive and the remaining as negative. However, students {S1, S2, S5, S9, S10, S11, S100} were actually positive (7 students total). Compute TP, FP, TN, and FN.
+        </div>
+        
+        <div class="answer">
+            <h4>Step-by-step Solution:</h4>
+            
+            <p><strong>Given Information:</strong></p>
+            <ul>
+                <li>Total students: 100</li>
+                <li>Model predicts positive: S1, S2 (2 students)</li>
+                <li>Model predicts negative: Remaining 98 students</li>
+                <li>Actually positive: S1, S2, S5, S9, S10, S11, S100 (7 students)</li>
+                <li>Actually negative: 100 - 7 = 93 students</li>
+            </ul>
+            
+            <table style="margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Calculation</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #d4edda;">
+                        <td><strong>True Positive (TP)</strong></td>
+                        <td>Students predicted positive AND actually positive<br>= S1, S2</td>
+                        <td><strong>2</strong></td>
+                    </tr>
+                    <tr style="background-color: #f8d7da;">
+                        <td><strong>False Positive (FP)</strong></td>
+                        <td>Students predicted positive BUT actually negative<br>= None (both S1 and S2 are actually positive)</td>
+                        <td><strong>0</strong></td>
+                    </tr>
+                    <tr style="background-color: #d4edda;">
+                        <td><strong>True Negative (TN)</strong></td>
+                        <td>Students predicted negative AND actually negative<br>= 98 predicted negative - 5 who are actually positive<br>= 98 - 5</td>
+                        <td><strong>93</strong></td>
+                    </tr>
+                    <tr style="background-color: #f8d7da;">
+                        <td><strong>False Negative (FN)</strong></td>
+                        <td>Students predicted negative BUT actually positive<br>= S5, S9, S10, S11, S100</td>
+                        <td><strong>5</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 15px;"><strong>Verification:</strong> TP + FP + TN + FN = 2 + 0 + 93 + 5 = 100 ✓</p>
+        </div>
+        
+        <div class="professor-note">
+            The model says only S1 and S2 are positive, and they are actually positive, so there is no false positive here - the model is not making any mistakes in classifying positive. But the problem is that out of 7 actual positives, only 2 are caught. The remaining 5 (S5, S9, S10, S11, S100) are false negatives - the model says they are negative, but they are actually positive. This is a problematic situation.
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (TP, FP, TN, FN)</h4>
+            <p>Yeh chaar basic metrics hain jo binary classification ke liye bahut important hain. True Positive (TP) matlab model ne positive bola aur sach mein positive hai. False Positive (FP) matlab model ne positive bola par actually negative hai - yeh galat alarm hai. True Negative (TN) matlab model ne negative bola aur sach mein negative hai. False Negative (FN) matlab model ne negative bola par actually positive hai - yeh bahut dangerous hai especially medical cases mein kyunki real positive cases miss ho jaate hain. COVID example mein humne dekha ki threshold change karne se yeh values change hoti hain. Conservative threshold se FN kam hota hai par FP zyada ho jaata hai, aur strict threshold se FP kam hota hai par FN zyada ho jaata hai.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> A spam filter classifies 1000 emails. It marks 100 as spam. Actually, 80 of these are spam, but 20 are legitimate emails (ham). Of the 900 emails marked as ham, 10 are actually spam. Calculate TP, FP, TN, and FN.
+            </div>
+            <div class="answer">
+                TP = 80 (correctly identified spam)<br>
+                FP = 20 (legitimate emails wrongly marked as spam)<br>
+                TN = 890 (correctly identified legitimate emails: 900 - 10)<br>
+                FN = 10 (spam emails that were missed)<br>
+                Verification: 80 + 20 + 890 + 10 = 1000 ✓
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why are false negatives particularly concerning in cancer screening tests?
+            </div>
+            <div class="answer">
+                False negatives in cancer screening mean patients who actually have cancer are told they're healthy. This leads to:
+                <ul>
+                    <li>Delayed treatment, allowing cancer to progress to more advanced stages</li>
+                    <li>Reduced survival rates as early intervention is missed</li>
+                    <li>False sense of security preventing further testing</li>
+                </ul>
+                In such critical medical applications, minimizing false negatives is often prioritized over minimizing false positives, even if it means more people need follow-up testing.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> In a fraud detection system, which is worse: false positives or false negatives? Why might the answer depend on context?
+            </div>
+            <div class="answer">
+                It depends on the specific application:
+                <ul>
+                    <li><strong>False Positive (legitimate transaction flagged as fraud):</strong> Customer inconvenience, blocked transactions, poor user experience</li>
+                    <li><strong>False Negative (fraudulent transaction not caught):</strong> Financial loss, security breach</li>
+                </ul>
+                <strong>Context matters:</strong>
+                <ul>
+                    <li>For high-value transactions: False negatives are worse (big financial loss)</li>
+                    <li>For frequent small transactions: Too many false positives hurt user experience</li>
+                    <li>The system needs to balance these based on risk tolerance and customer satisfaction</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>TP, FP, TN, FN are fundamental metrics for binary classification</li>
+                <li>True = model prediction matches reality; False = model prediction is wrong</li>
+                <li>Positive/Negative refers to what the model predicted</li>
+                <li>False Negatives can be more dangerous than False Positives in critical applications (medical, security)</li>
+                <li>Threshold selection involves trading off between FP and FN</li>
+                <li>Always verify: TP + FP + TN + FN = Total number of samples</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 6: PRECISION AND RECALL
+         ============================================ -->
+    <div class="content-section" id="precision-recall">
+        <h2>6. Precision and Recall</h2>
+        
+        <p>Building upon our understanding of TP, FP, TN, and FN, we now explore two crucial metrics that provide deeper insights into classifier performance: <strong>Precision</strong> and <strong>Recall</strong>.</p>
+        
+        <h3 id="precision">6.1 Precision</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p><span class="key-term">Precision</span> is the fraction of true positives among <strong>all instances predicted as positive</strong> by the classification model.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>Precision Formula:</strong></p>
+
+            $$\text{Precision} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Positives (FP)}}$$
+            <p style="font-size: 0.9em; margin-top: 10px;">= $\frac{\text{TP}}{\text{All Predicted Positive}}$</p>
+        </div>
+        
+        <div class="professor-note">
+            Precision asks: "Out of all the things the model predicted as positive, how many were actually positive?" So if the model says something is positive, how precise is that prediction? If precision is high, it means when the model says "positive," it's usually correct.
+        </div>
+        
+        <div class="success-box">
+            <h4>🎯 What Does High Precision Mean?</h4>
+            <ul>
+                <li>The model is <strong>careful and accurate</strong> when making positive predictions</li>
+                <li>When it says "positive," you can <strong>trust</strong> that prediction</li>
+                <li>Low false positive rate</li>
+                <li><strong>Example:</strong> A spam filter with high precision rarely marks legitimate emails as spam</li>
+            </ul>
+        </div>
+        
+        <h3 id="recall">6.2 Recall</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p><span class="key-term">Recall</span> (also called <strong>Sensitivity</strong> or <strong>True Positive Rate</strong>) is the fraction of true positives among <strong>all instances that actually belong to the positive class</strong>.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>Recall Formula:</strong></p>
+
+            $$\text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}$$
+            <p style="font-size: 0.9em; margin-top: 10px;">= $\frac{\text{TP}}{\text{All Actually Positive}}$</p>
+        </div>
+        
+        <div class="professor-note">
+            Recall asks: "Out of all the samples that are actually positive, how many did the model successfully identify?" It's about coverage - how many positive cases did we catch? If recall is high, it means we're not missing many positive cases.
+        </div>
+        
+        <div class="success-box">
+            <h4>🎯 What Does High Recall Mean?</h4>
+            <ul>
+                <li>The model <strong>finds most</strong> of the positive cases</li>
+                <li>Good <strong>coverage</strong> of the positive class</li>
+                <li>Low false negative rate</li>
+                <li><strong>Example:</strong> A disease screening test with high recall catches most patients who have the disease</li>
+            </ul>
+        </div>
+        
+        <h3>Precision vs. Recall: Key Differences</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Question Asked</strong></td>
+                    <td>"Of what we predicted as positive, how many were actually positive?"</td>
+                    <td>"Of what is actually positive, how many did we find?"</td>
+                </tr>
+                <tr>
+                    <td><strong>Focus</strong></td>
+                    <td>Quality of positive predictions</td>
+                    <td>Coverage of actual positives</td>
+                </tr>
+                <tr>
+                    <td><strong>Denominator</strong></td>
+                    <td>All predicted positives</td>
+                    <td>All actually positives</td>
+                </tr>
+                <tr>
+                    <td><strong>When Important</strong></td>
+                    <td>When false positives are costly</td>
+                    <td>When false negatives are costly</td>
+                </tr>
+                <tr>
+                    <td><strong>Example Priority</strong></td>
+                    <td>Spam filter (don't block legitimate emails)</td>
+                    <td>Cancer screening (don't miss any cases)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3 id="pr-examples">6.3 Dog vs Cat Classifier Example</h3>
+        
+        <p>Let's understand Precision, Recall, and Accuracy with a comprehensive example using a dog vs. cat classifier.</p>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Circle representing "Predicted as Dog" with dog and cat images inside and outside]
+            <br><br>
+            <strong>Setup:</strong>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Inside circle = Predicted as Dog (8 images total)</li>
+                <li>Outside circle = Predicted as Cat (14 images total)</li>
+                <li>Actual dogs in dataset = 12</li>
+                <li>Actual cats in dataset = 10</li>
+                <li>Total images = 22</li>
+            </ul>
+        </div>
+        
+        <h4>Breaking Down the Image Classification:</h4>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Classification</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td>Inside Circle (Predicted Dog)</td>
+                    <td>Actually Dogs (Correct ✓)</td>
+                    <td>5</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td>Inside Circle (Predicted Dog)</td>
+                    <td>Actually Cats (Wrong ✗)</td>
+                    <td>3</td>
+                </tr>
+                <tr style="background-color: #d4edda;">
+                    <td>Outside Circle (Predicted Cat)</td>
+                    <td>Actually Cats (Correct ✓)</td>
+                    <td>7</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td>Outside Circle (Predicted Cat)</td>
+                    <td>Actually Dogs (Wrong ✗)</td>
+                    <td>7</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h4>Calculating Precision:</h4>
+        
+        <div class="highlight-box">
+            <p><strong>Question:</strong> Of all images predicted as dog (inside circle), how many are actually dogs?</p>
+            <p><strong>Numerator (TP):</strong> Dogs inside circle = 5</p>
+            <p><strong>Denominator:</strong> Total images inside circle = 8</p>
+            <p><strong>Calculation:</strong></p>
+
+            $$\text{Precision} = \frac{5}{8} = 0.625 = 62.5\%$$
+        </div>
+        
+        <div class="professor-note">
+            Precision is worrying only about what's inside the circle. It doesn't care about anything outside. It just wants to know: "Inside the circle, how good is the classification?" So if everything inside the circle were dogs, precision would be very high or in fact 1 (100%).
+        </div>
+        
+        <h4>Calculating Recall:</h4>
+        
+        <div class="highlight-box">
+            <p><strong>Question:</strong> Of all actual dogs (total 12 in dataset), how many did we correctly identify as dogs?</p>
+            <p><strong>Numerator (TP):</strong> Dogs correctly classified (inside circle) = 5</p>
+            <p><strong>Denominator:</strong> Total actual dogs = 12</p>
+            <p><strong>Calculation:</strong></p>
+
+            $$\text{Recall} = \frac{5}{12} \approx 0.417 = 41.7\%$$
+        </div>
+        
+        <div class="professor-note">
+            Recall worries about all the dogs, whether inside or outside the circle. It asks: "Out of all 12 dogs, how many did we catch?" In this case, only 5 out of 12, so the recall is low - we're missing many dog images. Recall measures coverage.
+        </div>
+        
+        <h4>Calculating Accuracy:</h4>
+        
+        <div class="highlight-box">
+            <p><strong>Question:</strong> Of all 22 images, how many did we classify correctly (regardless of class)?</p>
+            <p><strong>Correct Predictions:</strong></p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Dogs correctly classified as dog: 5</li>
+                <li>Cats correctly classified as cat: 7</li>
+                <li>Total correct: 5 + 7 = 12</li>
+            </ul>
+            <p><strong>Calculation:</strong></p>
+
+            $$\text{Accuracy} = \frac{12}{22} \approx 0.545 = 54.5\%$$
+        </div>
+        
+        <div class="professor-note">
+            Accuracy worries about everything - both classes. It measures: "Out of all 22 samples, cats and dogs together, how many did we get right?" So we count 5 dogs classified correctly plus 7 cats classified correctly, giving us 12 correct out of 22 total.
+        </div>
+        
+        <h4>Summary of Results:</h4>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Precision</strong></td>
+                    <td>62.5%</td>
+                    <td>When the model says "dog," it's correct 62.5% of the time</td>
+                </tr>
+                <tr>
+                    <td><strong>Recall</strong></td>
+                    <td>41.7%</td>
+                    <td>The model finds only 41.7% of all actual dogs (poor coverage)</td>
+                </tr>
+                <tr>
+                    <td><strong>Accuracy</strong></td>
+                    <td>54.5%</td>
+                    <td>Overall, 54.5% of all predictions are correct</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3 id="pr-practice">6.4 Practice Problem: Student Testing Revisited</h3>
+        
+        <div class="question">
+            <strong>Problem:</strong> Recall the student testing problem: In a population of 100 students, a Test identified students S1 and S2 as positive and the remaining as negative. However, students {S1, S2, S5, S9, S10, S11, S100} were actually positive (7 students total). Compute Precision and Recall.
+        </div>
+        
+        <div class="answer">
+            <h4>Step-by-step Solution:</h4>
+            
+            <p><strong>From Previous Analysis:</strong></p>
+            <ul>
+                <li>TP (True Positive) = 2 (S1, S2)</li>
+                <li>FP (False Positive) = 0</li>
+                <li>TN (True Negative) = 93</li>
+                <li>FN (False Negative) = 5 (S5, S9, S10, S11, S100)</li>
+            </ul>
+            
+            <h4>Calculating Precision:</h4>
+
+            $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}} = \frac{2}{2 + 0} = \frac{2}{2} = 1.0 = 100\%$$
+            
+            <div class="success-box">
+                <p><strong>Interpretation:</strong> The test has <strong>perfect precision (100%)</strong>! This means that whenever the test says someone is positive, they are actually positive. The model is not making any mistakes in classifying positive cases - there are no false alarms.</p>
+            </div>
+            
+            <h4>Calculating Recall:</h4>
+
+            $$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}} = \frac{2}{2 + 5} = \frac{2}{7} \approx 0.286 = 28.6\%$$
+            
+            <div class="warning-box">
+                <p><strong>Interpretation:</strong> The test has <strong>very low recall (28.6%)</strong>. Out of 7 actual positive students, it only catches 2. This means 5 positive students (about 71%) are missed! The test has poor coverage of the positive class.</p>
+            </div>
+        </div>
+        
+        <div class="professor-note">
+            This is a perfect example showing the difference between precision and recall. The model is very precise - when it says positive, it's always right (precision = 1). But the coverage is terrible - it only finds 2 out of 7 positive cases (recall = 2/7). This is a very conservative model that only flags cases when it's absolutely sure, but misses many actual positive cases.
+        </div>
+        
+        <h3>Real-World Application Examples</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Application</th>
+                    <th>Which Metric Matters More?</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Cancer Screening</strong></td>
+                    <td>Recall</td>
+                    <td>Must catch all cancer cases, even with some false positives. Missing a case (FN) can be fatal.</td>
+                </tr>
+                <tr>
+                    <td><strong>Spam Email Filter</strong></td>
+                    <td>Precision</td>
+                    <td>Important not to mark legitimate emails as spam (FP). Missing some spam (FN) is acceptable.</td>
+                </tr>
+                <tr>
+                    <td><strong>Fraud Detection</strong></td>
+                    <td>Both (use F1-Score)</td>
+                    <td>Need to catch fraud (high recall) but also avoid blocking legitimate transactions (high precision).</td>
+                </tr>
+                <tr>
+                    <td><strong>Search Engine</strong></td>
+                    <td>Precision (top results)</td>
+                    <td>Users look at top few results - these must be relevant. Some relevant pages being missed in lower ranks is okay.</td>
+                </tr>
+                <tr>
+                    <td><strong>Rare Disease Detection</strong></td>
+                    <td>Recall</td>
+                    <td>With rare diseases, must catch every case. Can afford more follow-up tests (false positives).</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Precision & Recall)</h4>
+            <p>Precision aur Recall do important metrics hain jo TP aur FP/FN se bante hain. Precision puchta hai: "Jitne positive predict kiye, un mein se kitne sach mein positive the?" Matlab predicted positive mein se actual positive ka fraction. High precision ka matlab model careful hai aur jab positive bolta hai toh usually sahi hota hai. Recall puchta hai: "Jitne actual positive hain, un mein se kitne catch kiye?" Matlab coverage kitna hai. High recall ka matlab model zyada positives pakad raha hai. Dog-cat example mein inside circle 8 images hain jisme se 5 dogs hain (precision = 5/8), lekin total 12 dogs mein se sirf 5 pakde (recall = 5/12). Student example mein precision 100% hai (jo positive bola woh sahi tha) lekin recall sirf 28.6% hai (7 mein se sirf 2 pakde). Different applications mein different metrics important hote hain.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> A search engine returns 100 results for a query. Of these, 70 are relevant. The database actually contains 200 relevant documents for this query. Calculate precision and recall.
+            </div>
+            <div class="answer">
+                <strong>Precision:</strong> Of 100 returned results, 70 are relevant<br>
+                Precision = 70/100 = 0.70 = 70%<br><br>
+                <strong>Recall:</strong> Of 200 total relevant documents, 70 were retrieved<br>
+                Recall = 70/200 = 0.35 = 35%<br><br>
+                <strong>Interpretation:</strong> The search engine is reasonably precise (70% of results are good), but has low recall (only finds 35% of all relevant documents).
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> A classifier predicts all samples as positive. There are 30 actual positives and 70 actual negatives. What are the precision and recall?
+            </div>
+            <div class="answer">
+                <strong>Analysis:</strong> Predicting everything as positive means:<br>
+                TP = 30 (all actual positives caught)<br>
+                FP = 70 (all actual negatives wrongly marked positive)<br>
+                FN = 0 (no positive missed)<br><br>
+                <strong>Precision = TP/(TP+FP) = 30/(30+70) = 30/100 = 30%</strong><br>
+                <strong>Recall = TP/(TP+FN) = 30/(30+0) = 30/30 = 100%</strong><br><br>
+                <strong>Interpretation:</strong> Perfect recall (catches all positives) but poor precision (many false alarms). This is an overly liberal classifier.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Can a classifier have 100% precision and 100% recall simultaneously? What would that mean?
+            </div>
+            <div class="answer">
+                Yes! This represents a <strong>perfect classifier</strong>:<br>
+                <ul>
+                    <li><strong>100% Precision:</strong> Every positive prediction is correct (FP = 0)</li>
+                    <li><strong>100% Recall:</strong> All actual positives are found (FN = 0)</li>
+                </ul>
+                This means TP is maximized while both FP and FN are zero. In practice, this is rare and usually indicates either:
+                <ul>
+                    <li>A very easy problem with well-separated classes</li>
+                    <li>Overfitting on the test set</li>
+                    <li>Data leakage between training and testing</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Precision = TP / (TP + FP) - focuses on quality of positive predictions</li>
+                <li>Recall = TP / (TP + FN) - focuses on coverage of actual positives</li>
+                <li>High precision = few false positives, model is careful</li>
+                <li>High recall = few false negatives, model catches most positives</li>
+                <li>There's often a tradeoff between precision and recall</li>
+                <li>Choice depends on application: medical (recall), spam filter (precision)</li>
+                <li>Accuracy differs from both as it considers all four quadrants (TP, FP, TN, FN)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 7: F1-SCORE
+         ============================================ -->
+    <div class="content-section" id="f1-score">
+        <h2>7. F1-Score</h2>
+        
+        <p>We've seen that Precision and Recall are both important metrics, but they often tell different stories about a classifier's performance. Wouldn't it be useful to have a <strong>single metric</strong> that captures both aspects? This is where the <span class="key-term">F1-Score</span> comes in.</p>
+        
+        <h3 id="f1-definition">7.1 Definition and Formula</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p>The <span class="key-term">F1-Score</span> is the <strong>harmonic mean</strong> of Precision and Recall. It provides a single score that balances both metrics.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>F1-Score Formula:</strong></p>
+
+            $$\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+            <br>
+            <p><strong>Alternative form (harmonic mean):</strong></p>
+
+            $$\text{F1-Score} = \frac{1}{\frac{1}{2}\left(\frac{1}{\text{Precision}} + \frac{1}{\text{Recall}}\right)}$$
+        </div>
+        
+        <div class="professor-note">
+            F1-Score is the harmonic mean of precision and recall. In an ideal case, both precision and recall should be 1, right? So we need one score that, instead of keeping looking into two scores, if you can just look into that one score and summarize the performance, then that one score is F1-Score.
+        </div>
+        
+        <h3>Why Harmonic Mean Instead of Arithmetic Mean?</h3>
+        
+        <div class="warning-box">
+            <h4>Why Not Simple Average?</h4>
+            <p>The harmonic mean is used instead of arithmetic mean because it:</p>
+            <ol>
+                <li><strong>Penalizes extreme values:</strong> If either Precision or Recall is very low, F1-Score will be low even if the other is high</li>
+                <li><strong>Gives more weight to lower value:</strong> You can't "cheat" by maximizing one metric at the expense of the other</li>
+                <li><strong>Requires balance:</strong> To get a high F1-Score, you need both Precision and Recall to be reasonably high</li>
+            </ol>
+        </div>
+        
+        <div class="highlight-box">
+            <h4>Comparison: Arithmetic Mean vs. Harmonic Mean</h4>
+            <p><strong>Example:</strong> Precision = 1.0 (100%), Recall = 0.3 (30%)</p>
+            <table style="margin-top: 10px;">
+                <tr>
+                    <th>Mean Type</th>
+                    <th>Formula</th>
+                    <th>Result</th>
+                </tr>
+                <tr>
+                    <td>Arithmetic Mean</td>
+                    <td>(1.0 + 0.3) / 2</td>
+                    <td>0.65 (65%)</td>
+                </tr>
+                <tr>
+                    <td>Harmonic Mean (F1)</td>
+                    <td>2 × (1.0 × 0.3) / (1.0 + 0.3)</td>
+                    <td>0.46 (46%)</td>
+                </tr>
+            </table>
+            <p style="margin-top: 10px;">The harmonic mean (F1 = 46%) better reflects that having one metric at 30% makes the overall performance poor, despite the other being perfect. The arithmetic mean (65%) would be misleadingly optimistic.</p>
+        </div>
+        
+        <h3>Properties of F1-Score</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Range</strong></td>
+                    <td>0 to 1 (or 0% to 100%)</td>
+                </tr>
+                <tr>
+                    <td><strong>Perfect Score</strong></td>
+                    <td>F1 = 1 when both Precision = 1 and Recall = 1</td>
+                </tr>
+                <tr>
+                    <td><strong>Worst Score</strong></td>
+                    <td>F1 = 0 when either Precision or Recall is 0</td>
+                </tr>
+                <tr>
+                    <td><strong>Balance</strong></td>
+                    <td>Requires both metrics to be high; can't maximize one while ignoring the other</td>
+                </tr>
+                <tr>
+                    <td><strong>Interpretation</strong></td>
+                    <td>Higher F1-Score indicates better overall classification performance</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3 id="f1-example">7.2 Examples</h3>
+        
+        <h4>Example 1: Student Testing Problem</h4>
+        
+        <p>Let's calculate F1-Score for our student testing example where:</p>
+        <ul>
+            <li>Precision = 1.0 (100%)</li>
+            <li>Recall = 2/7 ≈ 0.286 (28.6%)</li>
+        </ul>
+        
+        <div class="formula-box">
+
+            $$\text{F1-Score} = 2 \times \frac{1.0 \times 0.286}{1.0 + 0.286} = 2 \times \frac{0.286}{1.286} \approx 0.445 = 44.5\%$$
+        </div>
+        
+        <div class="highlight-box">
+            <p><strong>Interpretation:</strong> Although precision is perfect (100%), the F1-Score of 44.5% reveals that the overall performance is actually poor due to the very low recall. The F1-Score provides a more realistic assessment of the classifier's performance.</p>
+        </div>
+        
+        <h4>Example 2: Dog vs Cat Classifier</h4>
+        
+        <p>From our earlier example:</p>
+        <ul>
+            <li>Precision = 5/8 = 0.625 (62.5%)</li>
+            <li>Recall = 5/12 ≈ 0.417 (41.7%)</li>
+        </ul>
+        
+        <div class="formula-box">
+
+            $$\text{F1-Score} = 2 \times \frac{0.625 \times 0.417}{0.625 + 0.417} = 2 \times \frac{0.261}{1.042} \approx 0.501 = 50.1\%$$
+        </div>
+        
+        <h4>Example 3: Extreme Classifier - Predicts Everything as Negative</h4>
+        
+        <div class="question">
+            <strong>Problem:</strong> A classifier predicts all samples as negative. There are 25 actual positives and 75 actual negatives in the dataset. Compute precision, recall, and F1-score. What does this reveal?
+        </div>
+        
+        <div class="answer">
+            <h4>Step-by-step Analysis:</h4>
+            
+            <p><strong>Situation:</strong></p>
+            <ul>
+                <li>Model predicts: All 100 samples as negative</li>
+                <li>Actually: 25 positive, 75 negative</li>
+            </ul>
+            
+            <p><strong>Computing TP, FP, TN, FN:</strong></p>
+            <ul>
+                <li><strong>TP (True Positive):</strong> 0 (model never predicts positive)</li>
+                <li><strong>FP (False Positive):</strong> 0 (model never predicts positive)</li>
+                <li><strong>TN (True Negative):</strong> 75 (all actual negatives correctly classified)</li>
+                <li><strong>FN (False Negative):</strong> 25 (all actual positives missed)</li>
+            </ul>
+            
+            <p><strong>Computing Metrics:</strong></p>
+            
+            <table style="margin-top: 10px;">
+                <tr>
+                    <td><strong>Precision:</strong></td>
+                    <td>$$\frac{\text{TP}}{\text{TP} + \text{FP}} = \frac{0}{0 + 0} = \frac{0}{0}$$ → <strong>Undefined</strong> (or 0)</td>
+                </tr>
+                <tr>
+                    <td><strong>Recall:</strong></td>
+                    <td>$$\frac{\text{TP}}{\text{TP} + \text{FN}} = \frac{0}{0 + 25} = \frac{0}{25} = 0$$</td>
+                </tr>
+                <tr>
+                    <td><strong>Accuracy:</strong></td>
+                    <td>$$\frac{\text{TP} + \text{TN}}{\text{Total}} = \frac{0 + 75}{100} = 0.75 = 75\%$$</td>
+                </tr>
+                <tr>
+                    <td><strong>F1-Score:</strong></td>
+                    <td>Since Recall = 0, F1 = <strong>0</strong></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="danger-box">
+            <h4>🚨 Critical Insight: Why Accuracy Alone is Misleading</h4>
+            <p>This example perfectly demonstrates why accuracy can be misleading:</p>
+            <ul>
+                <li><strong>Accuracy = 75%</strong> sounds decent, but...</li>
+                <li><strong>Recall = 0%</strong> reveals the model is completely useless for detecting positives</li>
+                <li><strong>F1-Score = 0%</strong> correctly indicates poor performance</li>
+            </ul>
+            <p>The classifier achieves 75% accuracy simply because 75% of the data is negative! It's a lazy classifier that doesn't actually learn anything useful.</p>
+        </div>
+        
+        <div class="professor-note">
+            The actual positives are 25 and actual negatives are 75. If you just compute accuracy for this case, it may come very high (75%) because there is a dominance of one class. But F1-Score will not be that high in that case - in fact, it will be 0! Therefore, F1 is preferred when there is an imbalance in the class.
+        </div>
+        
+        <h3>When to Use F1-Score vs. Accuracy</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Preferred Metric</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Balanced Dataset</strong><br>(Classes have similar sizes)</td>
+                    <td>Accuracy</td>
+                    <td>Accuracy is reliable when classes are balanced (e.g., 50% positive, 50% negative)</td>
+                </tr>
+                <tr>
+                    <td><strong>Imbalanced Dataset</strong><br>(One class dominates)</td>
+                    <td>F1-Score</td>
+                    <td>F1-Score accounts for both precision and recall, preventing misleading high accuracy from majority class</td>
+                </tr>
+                <tr>
+                    <td><strong>Binary Classification</strong><br>(Positive class is important)</td>
+                    <td>F1-Score</td>
+                    <td>When detecting positives matters (disease, fraud, spam), F1 gives better insight</td>
+                </tr>
+                <tr>
+                    <td><strong>Multi-class with equal importance</strong></td>
+                    <td>Accuracy or Macro-F1</td>
+                    <td>Depends on whether all classes are equally important</td>
+                </tr>
+                <tr>
+                    <td><strong>Rare Event Detection</strong><br>(e.g., 1% positive)</td>
+                    <td>F1-Score (or PR curve)</td>
+                    <td>Accuracy will be misleadingly high (99% by predicting all negative); F1 reveals true performance</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="success-box">
+            <h4>✓ Best Practice Recommendation</h4>
+            <p>The professor's guideline: <strong>F1-Score is preferred over accuracy when classes are imbalanced.</strong></p>
+            <p>As a rule of thumb:</p>
+            <ul>
+                <li>If class distribution is roughly 40-60% or more balanced → Accuracy is okay</li>
+                <li>If class distribution is 80-20% or more skewed → Use F1-Score</li>
+                <li>If in doubt → Report both, plus confusion matrix for full picture</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (F1-Score)</h4>
+            <p>F1-Score ek single number hai jo precision aur recall dono ko combine karta hai using harmonic mean. Formula hai: 2 × (P×R)/(P+R). Yeh simple average nahi hai kyunki harmonic mean low values ko zyada penalty deta hai. Agar precision ya recall mein se ek bhi bahut kam hai toh F1 bhi kam hoga - aap ek ko maximize karke doosre ko ignore nahi kar sakte. Perfect F1 = 1 hota hai jab dono P aur R = 1 ho. Example mein jab ek classifier sab kuch negative predict karta hai toh accuracy 75% dikh sakti hai (kyunki data mein 75% negative hai) lekin F1 = 0 hota hai jo sahi picture dikhata hai. Isliye imbalanced dataset mein F1-Score accuracy se better metric hai. Balanced dataset mein accuracy theek hai par imbalanced mein F1 use karna chahiye.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> A model has Precision = 0.8 and Recall = 0.6. Calculate the F1-Score.
+            </div>
+            <div class="answer">
+
+                $$\text{F1-Score} = 2 \times \frac{0.8 \times 0.6}{0.8 + 0.6} = 2 \times \frac{0.48}{1.4} = \frac{0.96}{1.4} \approx 0.686 = 68.6\%$$
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Which F1-Score is better: Model A (P=0.9, R=0.5) or Model B (P=0.7, R=0.7)?
+            </div>
+            <div class="answer">
+                <strong>Model A F1:</strong> 2 × (0.9×0.5)/(0.9+0.5) = 2 × 0.45/1.4 ≈ 0.643 = 64.3%<br>
+                <strong>Model B F1:</strong> 2 × (0.7×0.7)/(0.7+0.7) = 2 × 0.49/1.4 = 0.7 = 70%<br><br>
+                <strong>Answer:</strong> Model B is better (F1 = 70% > 64.3%). Even though Model A has higher precision, Model B's balanced performance gives it a higher F1-Score. This demonstrates how F1 rewards balance between precision and recall.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> A fraud detection system has 95% accuracy on a dataset where only 2% of transactions are fraudulent. Is this good performance?
+            </div>
+            <div class="answer">
+                <strong>Not necessarily!</strong> With only 2% fraud, a naive model that predicts "not fraud" for everything would achieve 98% accuracy. So 95% is actually <em>worse</em> than doing nothing!<br><br>
+                We need to examine:
+                <ul>
+                    <li><strong>Recall:</strong> What percentage of actual frauds are caught?</li>
+                    <li><strong>Precision:</strong> Of flagged transactions, how many are really fraud?</li>
+                    <li><strong>F1-Score:</strong> Overall balance of detection performance</li>
+                </ul>
+                This is a perfect example of why F1-Score is crucial for imbalanced datasets!
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>F1-Score is the harmonic mean of Precision and Recall</li>
+                <li>Formula: F1 = 2 × (P × R) / (P + R)</li>
+                <li>Ranges from 0 to 1; perfect score is 1</li>
+                <li>Requires both precision and recall to be high</li>
+                <li>Penalizes extreme imbalance between precision and recall</li>
+                <li>Preferred over accuracy for imbalanced datasets</li>
+                <li>Provides single metric for comparing models</li>
+                <li>Can't be "gamed" by maximizing only one component</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 8: ROC CURVE
+         ============================================ -->
+    <div class="content-section" id="roc-curve">
+        <h2>8. ROC Curve and AUC</h2>
+        
+        <p>Up to now, we've been looking at performance metrics for a classifier with a <strong>fixed threshold</strong>. But what if we want to understand how a classifier performs across <strong>all possible thresholds</strong>? This is where the <span class="key-term">ROC Curve</span> becomes invaluable.</p>
+        
+        <h3 id="roc-definition">8.1 Understanding ROC Curves</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p>A <span class="key-term">Receiver Operating Characteristic (ROC) Curve</span> is a graphical plot that illustrates the performance of a binary classifier model at varying threshold values.</p>
+        </div>
+        
+        <div class="professor-note">
+            This comes from the signal processing literature. ROC Curve shows how the classifier performs as you modulate or change the threshold. Each point on the curve corresponds to a different threshold setting for the classifier.
+        </div>
+        
+        <h3>ROC Curve Components</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Formula</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>X-axis</strong></td>
+                    <td>False Positive Rate (FPR)<br>Also called: <em>1 - Specificity</em></td>
+                    <td>$$\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}}$$</td>
+                </tr>
+                <tr>
+                    <td><strong>Y-axis</strong></td>
+                    <td>True Positive Rate (TPR)<br>Also called: <em>Sensitivity</em> or <em>Recall</em></td>
+                    <td>$$\text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box">
+            <h4>Understanding the Axes:</h4>
+            <ul>
+                <li><strong>TPR (True Positive Rate):</strong> What fraction of actual positives are correctly identified? (This is the same as Recall!)</li>
+                <li><strong>FPR (False Positive Rate):</strong> What fraction of actual negatives are incorrectly identified as positive?</li>
+            </ul>
+        </div>
+        
+        <h3>How ROC Curves Work</h3>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: ROC Curve showing three curves - Perfect Classifier, Good Classifier, Random Classifier]
+            <br><br>
+            <strong>Features:</strong>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Diagonal line (FPR = TPR): Random classifier</li>
+                <li>Curve bowing toward top-left: Good classifier</li>
+                <li>Straight line to (0,1) then to (1,1): Perfect classifier</li>
+                <li>Area under curve represents overall performance</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            As you increase the false positive rate, your true positive rate increases. This makes sense - if you're more liberal in calling things positive (higher FPR), you'll also catch more actual positives (higher TPR). The question is: how efficiently does TPR increase relative to FPR?
+        </div>
+        
+        <h3>Interpreting ROC Curves</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ROC Curve Shape</th>
+                    <th>Classifier Quality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>Perfect Classifier</strong><br>(Goes to top-left corner)</td>
+                    <td>Excellent</td>
+                    <td>Achieves TPR = 1.0 while FPR = 0. Can perfectly separate classes.</td>
+                </tr>
+                <tr style="background-color: #e7f3ff;">
+                    <td><strong>Good Classifier</strong><br>(Curves above diagonal)</td>
+                    <td>Good to Very Good</td>
+                    <td>Higher TPR for given FPR compared to random guessing. The more it bows toward top-left, the better.</td>
+                </tr>
+                <tr style="background-color: #fff3cd;">
+                    <td><strong>Random Classifier</strong><br>(Diagonal line)</td>
+                    <td>Poor / No discrimination</td>
+                    <td>TPR = FPR at all points. No better than random guessing (e.g., coin flip).</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>Worse than Random</strong><br>(Below diagonal)</td>
+                    <td>Very Poor</td>
+                    <td>Actively making wrong predictions. Can be "fixed" by inverting predictions!</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Key Points on ROC Curve</h3>
+        
+        <div class="success-box">
+            <h4>✓ Important Properties:</h4>
+            <ol>
+                <li><strong>Threshold Independent:</strong> Shows performance across all thresholds, not just one</li>
+                <li><strong>Each Point = One Threshold:</strong> Moving along the curve corresponds to changing the classification threshold</li>
+                <li><strong>Ideal Shape:</strong> Curve should go toward the top-left corner (high TPR, low FPR)</li>
+                <li><strong>Diagonal = Random:</strong> A classifier that randomly guesses will have an ROC curve along the diagonal</li>
+                <li><strong>Above Diagonal = Learning:</strong> Anything above the diagonal line indicates the model is learning something useful</li>
+            </ol>
+        </div>
+        
+        <h3 id="auc">8.2 Area Under the Curve (AUC)</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p>The <span class="key-term">Area Under the ROC Curve (AUC-ROC or just AUC)</span> is a single number that summarizes the overall performance of the classifier across all thresholds.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>AUC Properties:</strong></p>
+            <ul style="text-align: left; display: inline-block;">
+                <li><strong>Range:</strong> 0 to 1</li>
+                <li><strong>Perfect Classifier:</strong> AUC = 1.0</li>
+                <li><strong>Random Classifier:</strong> AUC = 0.5</li>
+                <li><strong>Interpretation:</strong> Probability that the model ranks a random positive example higher than a random negative example</li>
+            </ul>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>AUC Value</th>
+                    <th>Interpretation</th>
+                    <th>Classifier Quality</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #d4edda;">
+                    <td><strong>0.9 - 1.0</strong></td>
+                    <td>Excellent discrimination</td>
+                    <td>Outstanding classifier</td>
+                </tr>
+                <tr style="background-color: #e7f3ff;">
+                    <td><strong>0.8 - 0.9</strong></td>
+                    <td>Good discrimination</td>
+                    <td>Very good classifier</td>
+                </tr>
+                <tr style="background-color: #fff8e1;">
+                    <td><strong>0.7 - 0.8</strong></td>
+                    <td>Acceptable discrimination</td>
+                    <td>Good classifier</td>
+                </tr>
+                <tr style="background-color: #fff3cd;">
+                    <td><strong>0.6 - 0.7</strong></td>
+                    <td>Poor discrimination</td>
+                    <td>Weak classifier</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>0.5 - 0.6</strong></td>
+                    <td>Minimal discrimination</td>
+                    <td>Nearly random</td>
+                </tr>
+                <tr style="background-color: #f8d7da;">
+                    <td><strong>0.5</strong></td>
+                    <td>No discrimination</td>
+                    <td>Random classifier</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            The area under this ROC curve is what is known as AUC-ROC or area under the curve. This is used as a performance metric. So ideally, the area should be high - closer to 1 is better. If it's 0.5, then the classifier is a random classifier. Anything greater than 0.5 means the model is learning somewhat.
+        </div>
+        
+        <h3>Advantages of ROC and AUC</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Advantage</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Threshold Independent</strong></td>
+                    <td>Evaluates performance across all possible thresholds, not just one arbitrary choice</td>
+                </tr>
+                <tr>
+                    <td><strong>Single Metric</strong></td>
+                    <td>AUC provides one number for easy comparison between models</td>
+                </tr>
+                <tr>
+                    <td><strong>Scale Invariant</strong></td>
+                    <td>Measures how well predictions are ranked, not their absolute values</td>
+                </tr>
+                <tr>
+                    <td><strong>Classification-Threshold Invariant</strong></td>
+                    <td>Performance independent of chosen classification threshold</td>
+                </tr>
+                <tr>
+                    <td><strong>Handles Imbalance</strong></td>
+                    <td>Works reasonably well even with class imbalance (though PR curves may be better for extreme imbalance)</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>When to Use ROC/AUC vs. Other Metrics</h3>
+        
+        <div class="highlight-box">
+            <h4>Use ROC/AUC when:</h4>
+            <ul>
+                <li>You want to compare models independent of threshold choice</li>
+                <li>You need a single metric for model selection</li>
+                <li>Classes are reasonably balanced</li>
+                <li>Both TPR and FPR are important</li>
+            </ul>
+            
+            <h4>Consider Precision-Recall Curve instead when:</h4>
+            <ul>
+                <li>Dataset is highly imbalanced (e.g., 99% negative, 1% positive)</li>
+                <li>Positive class is more important</li>
+                <li>You care more about precision vs. false positive rate</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (ROC & AUC)</h4>
+            <p>ROC Curve ek graph hai jo classifier ki performance dikhata hai jab aap threshold change karte ho. X-axis pe False Positive Rate (FPR) hai - matlab kitne actual negatives ko galti se positive bola. Y-axis pe True Positive Rate (TPR) hai - yeh Recall hi hai, matlab kitne actual positives ko sahi pakda. Perfect classifier top-left corner tak jaata hai (TPR=1, FPR=0). Random classifier diagonal line pe hota hai jahan AUC = 0.5. Achha classifier diagonal se upar curve banata hai. AUC (Area Under Curve) ek single number hai jo overall performance batata hai - 0.9-1.0 excellent hai, 0.5 se 0.6 almost random hai. AUC ka matlab hai probability ki model ek random positive example ko ek random negative example se higher rank karega. Threshold independent hone ki wajah se ROC/AUC model comparison ke liye bahut useful hai.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> If a classifier's ROC curve lies exactly on the diagonal, what does this tell you about the classifier?
+            </div>
+            <div class="answer">
+                The classifier performs <strong>no better than random guessing</strong>. It has AUC = 0.5, meaning:
+                <ul>
+                    <li>At every threshold, TPR = FPR</li>
+                    <li>No discriminative power between classes</li>
+                    <li>Equivalent to flipping a coin for predictions</li>
+                    <li>The model has learned nothing useful from the data</li>
+                </ul>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Model A has AUC = 0.85 and Model B has AUC = 0.92. Which is better and why?
+            </div>
+            <div class="answer">
+                <strong>Model B is better</strong> (AUC = 0.92 > 0.85). This means:
+                <ul>
+                    <li>Model B has better overall discrimination ability across all thresholds</li>
+                    <li>Model B is more likely to rank positive examples higher than negative examples</li>
+                    <li>Specifically: 92% of the time, Model B will rank a random positive instance higher than a random negative instance</li>
+                    <li>Both are "good" (> 0.8), but Model B is "very good" to "excellent" (> 0.9)</li>
+                </ul>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Why might AUC not be the best metric for a rare disease detection model where only 0.1% of patients have the disease?
+            </div>
+            <div class="answer">
+                With extreme class imbalance (99.9% negative, 0.1% positive), AUC can be misleading because:
+                <ul>
+                    <li><strong>FPR denominator is huge:</strong> FP/(FP+TN) where TN ≈ 99.9% of data. Even many false positives result in low FPR</li>
+                    <li><strong>High AUC possible with poor precision:</strong> Can have high AUC while still having low precision (many false positives)</li>
+                    <li><strong>Positive class matters more:</strong> In disease detection, finding actual cases (recall) and not having false alarms (precision) are critical</li>
+                    <li><strong>Better alternatives:</strong> Use Precision-Recall curve and Average Precision (AP) score instead, which focus on the positive class performance</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>ROC Curve plots TPR vs. FPR at various thresholds</li>
+                <li>Each point on ROC curve = one threshold setting</li>
+                <li>Ideal curve goes toward top-left corner (high TPR, low FPR)</li>
+                <li>Diagonal line = random classifier (AUC = 0.5)</li>
+                <li>AUC summarizes overall performance in single number (0 to 1)</li>
+                <li>AUC > 0.9 is excellent, AUC ≈ 0.5 is random</li>
+                <li>Threshold-independent evaluation</li>
+                <li>For extreme imbalance, consider Precision-Recall curve instead</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 9: OTHER PERFORMANCE METRICS (Continued)
+         ============================================ -->
+    <div class="content-section" id="other-metrics">
+        <h2>9. Other Performance Metrics</h2>
+        
+        <p>While classification tasks use metrics like Accuracy, Precision, Recall, and F1-Score, <strong>regression tasks</strong> (predicting continuous values) require different evaluation metrics. Let's explore two fundamental regression metrics.</p>
+        
+        <h3 id="mse">9.1 Mean Squared Error (MSE)</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p><span class="key-term">Mean Squared Error (MSE)</span> is the average of the squared differences between actual values and predicted values.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>MSE Formula:</strong></p>
+
+            $$\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
+            
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                Where:<br>
+                $y_i$ = actual value for $i^{th}$ sample<br>
+                $\hat{y}_i$ = predicted value for $i^{th}$ sample<br>
+                $n$ = total number of samples
+            </p>
+        </div>
+        
+        <div class="professor-note">
+            In regression tasks, when you are doing some counting or kind of task where your counts are actual count $y_i$ while the ground truth count is $\hat{y}_i$, you can take the difference of these two values to compute error. MSE squares the differences before averaging, which heavily penalizes large errors.
+        </div>
+        
+        <div class="success-box">
+            <h4>✓ Key Characteristics of MSE:</h4>
+            <ul>
+                <li><strong>Penalizes large errors heavily:</strong> Squaring means large errors have disproportionately high impact</li>
+                <li><strong>Differentiable:</strong> Smooth function, easy to optimize using gradient descent</li>
+                <li><strong>Punishes outliers:</strong> Very sensitive to large prediction errors</li>
+                <li><strong>Units are squared:</strong> If predicting dollars, MSE is in "dollars squared"</li>
+                <li><strong>Lower is better:</strong> Perfect prediction gives MSE = 0</li>
+            </ul>
+        </div>
+        
+        <h4>Example: Predicting House Prices</h4>
+        
+        <div class="question">
+            <strong>Problem:</strong> You predict house prices for 5 houses. Actual prices and your predictions are:
+            <table style="margin: 15px 0;">
+                <thead>
+                    <tr>
+                        <th>House</th>
+                        <th>Actual ($y_i$)</th>
+                        <th>Predicted ($\hat{y}_i$)</th>
+                        <th>Difference</th>
+                        <th>Squared Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>$300,000</td>
+                        <td>$310,000</td>
+                        <td>-$10,000</td>
+                        <td>100,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>$450,000</td>
+                        <td>$445,000</td>
+                        <td>$5,000</td>
+                        <td>25,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>$200,000</td>
+                        <td>$195,000</td>
+                        <td>$5,000</td>
+                        <td>25,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>$600,000</td>
+                        <td>$580,000</td>
+                        <td>$20,000</td>
+                        <td>400,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>$350,000</td>
+                        <td>$340,000</td>
+                        <td>$10,000</td>
+                        <td>100,000,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="answer">
+            <strong>Solution:</strong><br>
+            Sum of squared differences = 100M + 25M + 25M + 400M + 100M = 650,000,000<br><br>
+            
+            $$\text{MSE} = \frac{650,000,000}{5} = 130,000,000$$
+            
+            <div class="warning-box" style="margin-top: 10px;">
+                <strong>Interpretation:</strong> The large MSE is mainly due to House 4's prediction error. Notice how one large error (20,000) contributes 400M to the total, while three smaller errors (5,000 each) contributed only 75M combined. This shows MSE's sensitivity to outliers.
+            </div>
+        </div>
+        
+        <h3 id="mae">9.2 Mean Absolute Error (MAE)</h3>
+        
+        <div class="highlight-box">
+            <h4>Definition:</h4>
+            <p><span class="key-term">Mean Absolute Error (MAE)</span> is the average of the absolute differences between actual values and predicted values.</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>MAE Formula:</strong></p>
+
+            $$\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$$
+            
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                Where:<br>
+                $|y_i - \hat{y}_i|$ = absolute difference (ignores sign)
+            </p>
+        </div>
+        
+        <div class="success-box">
+            <h4>✓ Key Characteristics of MAE:</h4>
+            <ul>
+                <li><strong>Linear penalty:</strong> Errors are penalized proportionally to their magnitude</li>
+                <li><strong>Robust to outliers:</strong> Less sensitive to large errors compared to MSE</li>
+                <li><strong>Easy to interpret:</strong> Same units as the original data (e.g., dollars if predicting prices)</li>
+                <li><strong>Not differentiable at zero:</strong> Has a "kink" at zero, which can make optimization harder</li>
+                <li><strong>Lower is better:</strong> Perfect prediction gives MAE = 0</li>
+            </ul>
+        </div>
+        
+        <h4>MAE for the Same House Price Example:</h4>
+        
+        <div class="answer">
+            <strong>Solution:</strong><br>
+            Sum of absolute differences = 10,000 + 5,000 + 5,000 + 20,000 + 10,000 = 50,000<br><br>
+            
+            $$\text{MAE} = \frac{50,000}{5} = 10,000$$
+            
+            <div class="success-box" style="margin-top: 10px;">
+                <strong>Interpretation:</strong> On average, our predictions are $10,000 off from the actual prices. This is intuitive and easy to understand - much more interpretable than MSE's 130,000,000 value!
+            </div>
+        </div>
+        
+        <h3>MSE vs. MAE Comparison</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Mean Squared Error (MSE)</th>
+                    <th>Mean Absolute Error (MAE)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Formula</strong></td>
+                    <td>Average of squared differences</td>
+                    <td>Average of absolute differences</td>
+                </tr>
+                <tr>
+                    <td><strong>Penalty for Large Errors</strong></td>
+                    <td><strong>Very high</strong> (quadratic: error²)</td>
+                    <td><strong>Linear</strong> (proportional)</td>
+                </tr>
+                <tr>
+                    <td><strong>Outlier Sensitivity</strong></td>
+                    <td><strong>Very sensitive</strong> - heavily penalizes outliers</td>
+                    <td><strong>Robust</strong> - less affected by outliers</td>
+                </tr>
+                <tr>
+                    <td><strong>Units</strong></td>
+                    <td>Squared units of target variable</td>
+                    <td>Same units as target variable (more interpretable)</td>
+                </tr>
+                <tr>
+                    <td><strong>Differentiability</strong></td>
+                    <td>Fully differentiable everywhere<br>(easier for optimization)</td>
+                    <td>Not differentiable at zero<br>(can complicate gradient-based optimization)</td>
+                </tr>
+                <tr>
+                    <td><strong>Common Use Case</strong></td>
+                    <td>When large errors are particularly undesirable</td>
+                    <td>When you want interpretable, robust error measure</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="professor-note">
+            The professor mentioned that especially for regression tasks or counting tasks, MAE can be used where you take the average of absolute differences instead of squaring. This is sometimes used when you don't want outliers to have such a huge impact on your error metric.
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ When to Choose MSE vs. MAE?</h4>
+            <p><strong>Choose MSE when:</strong></p>
+            <ul>
+                <li>Large errors are particularly problematic</li>
+                <li>You want to heavily penalize outliers</li>
+                <li>Using gradient-based optimization (MSE is smooth)</li>
+                <li>Gaussian distributed errors are expected</li>
+            </ul>
+            
+            <p><strong>Choose MAE when:</strong></p>
+            <ul>
+                <li>You want an easily interpretable metric</li>
+                <li>Data has outliers you don't want to dominate the error</li>
+                <li>Error should scale linearly with magnitude</li>
+                <li>Robustness is more important than mathematical convenience</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Other Metrics - MSE & MAE)</h4>
+            <p>Classification ke metrics ke alawa regression tasks ke liye bhi metrics hain. MSE (Mean Squared Error) aur MAE (Mean Absolute Error) do main metrics hain. MSE mein hum actual aur predicted value ke difference ko square karke average karte hain. Iska formula hai: (1/n)Σ(yᵢ - ŷᵢ)². MSE large errors ko bahut heavy penalty deta hai kyunki square karne se badi galti aur bhi badi ho jaati hai. MAE mein hum absolute difference (sign ignore karke) ka average lete hain: (1/n)Σ|yᵢ - ŷᵢ|. MAE outliers ke liye robust hai aur interpretable hai (same units). House price example mein MSE = 130 million tha jo samajhna mushkil tha, lekin MAE = $10,000 tha jo easily samajh aa gaya. MSE optimization ke liye easy hai (differentiable) lekin outliers ko affect zyada hota hai. MAE robust hai lekin zero pe differentiable nahi hai.</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> For predictions [2, 4, 6] and actual values [1, 4, 8], calculate MSE and MAE.
+            </div>
+            <div class="answer">
+                <strong>Calculating errors:</strong><br>
+                House 1: |2-1| = 1, (2-1)² = 1<br>
+                House 2: |4-4| = 0, (4-4)² = 0<br>
+                House 3: |6-8| = 2, (6-8)² = 4<br><br>
+                
+                <strong>MSE:</strong> (1 + 0 + 4)/3 = 5/3 ≈ 1.667<br><br>
+                
+                <strong>MAE:</strong> (1 + 0 + 2)/3 = 3/3 = 1
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why might a company prefer MAE over MSE for predicting delivery times?
+            </div>
+            <div class="answer">
+                <strong>MAE is preferred because:</strong>
+                <ul>
+                    <li><strong>Interpretability:</strong> "On average, we're 10 minutes off" is clearer than "MSE of 100 minutes-squared"</li>
+                    <li><strong>Customer communication:</strong> Easy to explain average delay to customers</li>
+                    <li><strong>Robustness:</strong> One extremely late delivery (outlier) won't disproportionately skew the metric</li>
+                    <li><strong>Fair evaluation:</strong> All errors treated equally based on magnitude, not squared</li>
+                </ul>
+                For delivery times, occasional large delays happen (traffic, weather), but shouldn't dominate the evaluation metric.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> In what scenario would MSE be strictly better than MAE for model training?
+            </div>
+            <div class="answer">
+                <strong>MSE is better when:</strong>
+                <ul>
+                    <li><strong>Gradient-based optimization:</strong> MSE is differentiable everywhere, making gradient descent smooth and stable</li>
+                    <li><li><strong>Gaussian errors:</strong> When error distribution is normal, MSE corresponds to maximum likelihood estimation</li>
+                <li><strong>Large errors are critical:</strong> When being far off is much worse than being slightly off (e.g., missile guidance, medical dosing)</li>
+            </ul>
+            <strong>Example:</strong> Predicting drug dosage - being off by 2x is 4x worse than being off by 1.5x, making the quadratic penalty appropriate.
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>MSE = average of squared errors; heavily penalizes large errors</li>
+                <li>MAE = average of absolute errors; robust and interpretable</li>
+                <li>MSE is sensitive to outliers; MAE is robust to outliers</li>
+                <li>MSE units are squared; MAE units match target variable</li>
+                <li>MSE is differentiable everywhere (optimization-friendly)</li>
+                <li>Choose based on problem: MSE for critical large errors, MAE for robustness</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 10: SUMMARY AND KEY TAKEAWAYS
+         ============================================ -->
+    <div class="content-section" id="summary">
+        <h2>10. Summary and Key Takeaways</h2>
+        
+        <p>In this lecture, we've covered a comprehensive set of performance metrics essential for evaluating Machine Learning and Pattern Recognition systems. Let's summarize what we've learned and provide guidance on when to use each metric.</p>
+        
+        <h3>Complete Performance Metrics Toolkit</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric Category</th>
+                    <th>Metric Name</th>
+                    <th>Formula</th>
+                    <th>When to Use</th>
+                    <th>Key Insight</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="6"><strong>Classification (Binary)</strong></td>
+                    <td>Accuracy</td>
+                    <td>$(TP+TN)/(TP+FP+TN+FN)$</td>
+                    <td>Balanced datasets</td>
+                    <td>Overall correctness</td>
+                </tr>
+                <tr>
+                    <td>Precision</td>
+                    <td>$TP/(TP+FP)$</td>
+                    <td>Minimize false alarms (FP)</td>
+                    <td>Quality of positive predictions</td>
+                </tr>
+                <tr>
+                    <td>Recall</td>
+                    <td>$TP/(TP+FN)$</td>
+                    <td>Minimize missed cases (FN)</td>
+                    <td>Coverage of positive class</td>
+                </tr>
+                <tr>
+                    <td>F1-Score</td>
+                    <td>$2PR/(P+R)$</td>
+                    <td>Imbalanced datasets</td>
+                    <td>Balance of P & R</td>
+                </tr>
+                <tr>
+                    <td>TPR / Sensitivity</td>
+                    <td>$TP/(TP+FN)$</td>
+                    <td>ROC curves</td>
+                    <td>Same as Recall</td>
+                </tr>
+                <tr>
+                    <td>FPR / 1-Specificity</td>
+                    <td>$FP/(FP+TN)$</td>
+                    <td>ROC curves</td>
+                    <td>False alarm rate</td>
+                </tr>
+                <tr>
+                    <td rowspan="2"><strong>Regression</strong></td>
+                    <td>MSE</td>
+                    <td>$(1/n)Σ(y_i-ŷ_i)^2$</td>
+                    <td>Large errors critical</td>
+                    <td>Punishes outliers heavily</td>
+                </tr>
+                <tr>
+                    <td>MAE</td>
+                    <td>$(1/n)Σ|y_i-ŷ_i|$</td>
+                    <td>Robust, interpretable</td>
+                    <td>Linear error penalty</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Decision Tree: Choosing the Right Metric</h3>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Flowchart for metric selection]
+            <br><br>
+            <ul style="text-align: left; display: inline-block;">
+                <li><strong>Is it classification?</strong></li>
+                <ul>
+                    <li><strong>Is data imbalanced?</strong> → Use F1-Score (or PR curve)</li>
+                    <li><strong>Are false positives costly?</strong> → Prioritize Precision</li>
+                    <li><strong>Are false negatives costly?</strong> → Prioritize Recall</li>
+                    <li><strong>Are classes balanced?</strong> → Accuracy is acceptable</li>
+                    <li><strong>Comparing models?</strong> → Use ROC/AUC</li>
+                </ul>
+                <li><strong>Is it regression?</strong></li>
+                <ul>
+                    <li><strong>Need robustness?</strong> → Use MAE</li>
+                    <li><strong>Large errors critical?</strong> → Use MSE</li>
+                </ul>
+            </ul>
+        </div>
+        
+        <h3>Critical Guidelines from Professor</h3>
+        
+        <div class="professor-note">
+            The professor emphasized several key points throughout the lecture:
+            <ol>
+                <li><strong>Performance metrics are essential</strong> for any ML/PR task - remember the PTE framework (Performance, Task, Experience)</li>
+                <li><strong>Accuracy can be misleading</strong> - always check for class imbalance before relying on accuracy</li>
+                <li><strong>F1-Score is preferred for imbalanced classes</strong> - it gives a more realistic picture than accuracy</li>
+                <li><strong>False negatives can be dangerous</strong> - especially in medical applications where missing cases can be life-threatening</li>
+                <li><strong>Threshold matters</strong> - ROC curves help you understand performance across all thresholds, not just one</li>
+            </ol>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Common Pitfalls to Avoid</h4>
+            <ul>
+                <li><strong>Blindly trusting accuracy:</strong> A model can have 99% accuracy but fail completely on the minority class</li>
+                <li><strong>Ignoring the cost of errors:</strong> False positives and false negatives often have different real-world costs</li>
+                <li><strong>Using accuracy for imbalanced data:</strong> This is a classic mistake that can lead to deploying useless models</li>
+                <li><strong>Not considering the application:</strong> A metric that works for spam detection may be terrible for disease screening</li>
+                <li><strong>Single metric obsession:</strong> Always look at the confusion matrix for a complete picture</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>✓ Best Practices Checklist</h4>
+            <ul>
+                <li>✓ Always start with a confusion matrix to see the full picture</li>
+                <li>✓ Check class distribution before choosing metrics</li>
+                <li>✓ For imbalanced data: Report F1-Score, Precision, Recall (not just accuracy)</li>
+                <li>✓ Consider the business/application cost of different error types</li>
+                <li>✓ Use ROC/AUC when comparing models across thresholds</li>
+                <li>✓ For regression: Choose MSE vs. MAE based on outlier sensitivity needs</li>
+                <li>✓ When in doubt, report multiple metrics</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Final)</h4>
+            <p>Yeh lecture mein humne performance metrics ke baare mein sab kuch seekha. Ab tak humne decision theory aur Naive Bayes seekha tha, par ab hume pata hai ki model ka performance kaise measure karein. Sabse pehle accuracy dekha jo basic hai lekin imbalanced data mein misleading ho sakta hai. Phir confusion matrix seekha jo batata hai ki kaunsi class ko kis class se confuse kiya. TP, FP, TN, FN ke concepts seekhe jo binary classification ke foundation hain. Precision aur Recall mein samjha ki quality aur coverage alag cheezein hain. F1-Score se dono ko combine kiya. ROC curve aur AUC se threshold-independent evaluation seekha. Regression ke liye MSE aur MAE dekhe. Professor ne kaha ki imbalanced classes mein F1-Score accuracy se better hai aur false negatives medical cases mein bahut dangerous hote hain. Agla lecture clustering pe hoga!</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Final Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> You have a dataset with 95% negative and 5% positive samples. Which metric should you primarily use and why?
+            </div>
+            <div class="answer">
+                <strong>Answer:</strong> Use <strong>F1-Score</strong> (or Precision-Recall curve, AUC).<br><br>
+                <strong>Why:</strong><br>
+                - A model predicting all negatives would get 95% accuracy but be useless<br>
+                - F1-Score balances precision and recall, revealing true performance<br>
+                - For rare event detection (5% positive), you need to ensure you're detecting positives, not just getting high accuracy by predicting the majority class
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> A model has the following confusion matrix for a rare disease test (1000 people tested):
+                <table style="margin: 10px 0;">
+                    <tr><th></th><th>Predicted Positive</th><th>Predicted Negative</th></tr>
+                    <tr><th>Actually Positive</th><td>8</td><td>2</td></tr>
+                    <tr><th>Actually Negative</th><td>50</td><td>940</td></tr>
+                </table>
+                Calculate all relevant metrics and interpret.
+            </div>
+            <div class="answer">
+                <strong>TP = 8, FP = 50, TN = 940, FN = 2, Total = 1000</strong><br><br>
+                
+                <strong>Accuracy:</strong> (8+940)/1000 = 94.8%<br>
+                <strong>Precision:</strong> 8/(8+50) = 8/58 ≈ 13.8%<br>
+                <strong>Recall:</strong> 8/(8+2) = 8/10 = 80%<br>
+                <strong>F1-Score:</strong> 2×(0.138×0.80)/(0.138+0.80) ≈ 24%<br><br>
+                
+                <strong>Interpretation:</strong><br>
+                - High accuracy (94.8%) is misleading due to class imbalance<br>
+                - Low precision (13.8%): Many false alarms - 50 healthy people wrongly flagged<br>
+                - Good recall (80%): Catches most disease cases (8/10)<br>
+                - Low F1 (24%): Overall performance is poor due to many false positives<br>
+                - <strong>Conclusion:</strong> Model needs improvement to reduce false positives
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> When would you use ROC curve over Precision-Recall curve?
+            </div>
+            <div class="answer">
+                <strong>Use ROC curve when:</strong><br>
+                <ul>
+                    <li>Classes are relatively balanced</li>
+                    <li>Both TPR and FPR are important to evaluate</li>
+                    <li>You want threshold-independent comparison</li>
+                    <li>You're comparing multiple models directly</li>
+                    <li>False positive rate is a meaningful metric for the application</li>
+                </ul>
+                
+                <strong>Prefer PR curve when:</strong><br>
+                <ul>
+                    <li>Extreme class imbalance (e.g., <10% positive)</li>
+                    <li>Positive class is much more important</li>
+                    <li>You care more about precision than false positive rate</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways from Entire Lecture</h4>
+            <ul>
+                <li>Performance metrics are essential for evaluating and comparing ML/PR systems</li>
+                <li>Accuracy is simple but can be misleading with imbalanced datasets</li>
+                <li>Confusion matrix provides complete picture of classification performance</li>
+                <li>TP, FP, TN, FN are foundational concepts for all classification metrics</li>
+                <li>Precision focuses on prediction quality; Recall focuses on coverage</li>
+                <li>F1-Score balances precision and recall; preferred for imbalanced data</li>
+                <li>ROC curve shows performance across all thresholds; AUC summarizes it</li>
+                <li>MSE and MAE are primary metrics for regression tasks</li>
+                <li>Always consider the application context when choosing metrics</li>
+                <li>When in doubt, report multiple metrics and show confusion matrix</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 11: COMPREHENSIVE MIND MAP
+         ============================================ -->
+    <div class="content-section" id="mind-map">
+        <h2>11. Comprehensive Mind Map</h2>
+        
+        <div class="mind-map">
+            <div class="mind-map-container">
+                <div class="central-topic">
+                    Performance Metrics in Pattern Recognition
+                </div>
+                
+                <div class="branches">
+                    <!-- Branch 1: Classification Metrics -->
+                    <div class="branch">
+                        <h4>📊 Classification Metrics</h4>
+                        <ul>
+                            <li><strong>Basic Metrics</strong>
+                                <ul>
+                                    <li>Accuracy</li>
+                                    <li>Confusion Matrix</li>
+                                </ul>
+                            </li>
+                            <li><strong>Fundamental Components</strong>
+                                <ul>
+                                    <li>True Positive (TP)</li>
+                                    <li>False Positive (FP)</li>
+                                    <li>True Negative (TN)</li>
+                                    <li>False Negative (FN)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Advanced Metrics</strong>
+                                <ul>
+                                    <li>Precision (TP/(TP+FP))</li>
+                                    <li>Recall/Sensitivity (TP/(TP+FN))</li>
+                                    <li>F1-Score (2PR/(P+R))</li>
+                                </ul>
+                            </li>
+                            <li><strong>Graphical Analysis</strong>
+                                <ul>
+                                    <li>ROC Curve</li>
+                                    <li>AUC (Area Under Curve)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 2: Regression Metrics -->
+                    <div class="branch">
+                        <h4>📈 Regression Metrics</h4>
+                        <ul>
+                            <li><strong>MSE</strong>
+                                <ul>
+                                    <li>Mean Squared Error</li>
+                                    <li>Formula: (1/n)Σ(yᵢ-ŷᵢ)²</li>
+                                    <li>Penalizes large errors heavily</li>
+                                    <li>Outlier sensitive</li>
+                                </ul>
+                            </li>
+                            <li><strong>MAE</strong>
+                                <ul>
+                                    <li>Mean Absolute Error</li>
+                                    <li>Formula: (1/n)Σ|yᵢ-ŷᵢ|</li>
+                                    <li>Robust to outliers</li>
+                                    <li>Interpretable units</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 3: Key Concepts -->
+                    <div class="branch">
+                        <h4>💡 Key Concepts</h4>
+                        <ul>
+                            <li><strong>Class Imbalance</strong>
+                                <ul>
+                                    <li>Accuracy becomes misleading</li>
+                                    <li>Preference for F1-Score</li>
+                                    <li>Consider PR curves</li>
+                                </ul>
+                            </li>
+                            <li><strong>Trade-offs</strong>
+                                <ul>
+                                    <li>Precision vs. Recall</li>
+                                    <li>TPR vs. FPR</li>
+                                    <li>Conservative vs. Liberal threshold</li>
+                                </ul>
+                            </li>
+                            <li><strong>Application Context</strong>
+                                <ul>
+                                    <li>Cost of FP vs. FN</li>
+                                    <li>Medical: High recall critical</li>
+                                    <li>Spam: High precision important</li>
+                                    <li>Fraud: Balance both</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 4: Implementation -->
+                    <div class="branch">
+                        <h4>💻 Implementation</h4>
+                        <ul>
+                            <li><strong>Python Libraries</strong>
+                                <ul>
+                                    <li>sklearn.metrics</li>
+                                    <li>confusion_matrix()</li>
+                                    <li>precision_score()</li>
+                                    <li>recall_score()</li>
+                                    <li>f1_score()</li>
+                                    <li>roc_curve()</li>
+                                    <li>auc()</li>
+                                </ul>
+                            </li>
+                            <li><strong>Visualization</strong>
+                                <ul>
+                                    <li>MATLAB plotting</li>
+                                    <li>Matplotlib/Seaborn</li>
+                                    <li>Confusion matrix heatmap</li>
+                                    <li>ROC curve plotting</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 5: Framework -->
+                    <div class="branch">
+                        <h4>🎯 Framework</h4>
+                        <ul>
+                            <li><strong>PTE Framework</strong>
+                                <ul>
+                                    <li>Performance (metrics)</li>
+                                    <li>Task (problem definition)</li>
+                                    <li>Experience (training data)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Evaluation Strategy</strong>
+                                <ul>
+                                    <li>Start with confusion matrix</li>
+                                    <li>Check class balance</li>
+                                    <li>Choose appropriate metrics</li>
+                                    <li>Consider multiple metrics</li>
+                                    <li>Visualize with graphs</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 6: Next Steps -->
+                    <div class="branch">
+                        <h4>🔄 Next Topics</h4>
+                        <ul>
+                            <li><strong>Upcoming Lectures</strong>
+                                <ul>
+                                    <li>Clustering techniques</li>
+                                    <li>K-means clustering</li>
+                                    <li>Advanced ML methods</li>
+                                </ul>
+                            </li>
+                            <li><strong>Further Study</strong>
+                                <ul>
+                                    <li>Cross-validation</li>
+                                    <li>Hyperparameter tuning</li>
+                                    <li>Model selection strategies</li>
+                                    <li>Ensemble methods</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Connections Map -->
+                <div class="branch" style="margin-top: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h4 style="color: white;">🔗 Connections Between Concepts</h4>
+                    <ul style="color: white;">
+                        <li>Confusion Matrix → TP, FP, TN, FN (Foundation)</li>
+                        <li>TP, FP, TN, FN → Precision, Recall (Derivatives)</li>
+                        <li>Precision, Recall → F1-Score (Combination)</li>
+                        <li>TP, FN → Recall/TPR (Same concept)</li>
+                        <li>TPR, FPR → ROC Curve (Visualization)</li>
+                        <li>ROC Curve → AUC (Summary)</li>
+                        <li>Class Balance → Metric Choice (Accuracy vs. F1)</li>
+                        <li>Application → FP/FN Cost (Trade-off decisions)</li>
+                        <li>Threshold → All Metrics (Performance variation)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary (Mind Map)</h4>
+            <p>Yeh mind map poora lecture summarize kar raha hai. Center mein Performance Metrics hai. Classification metrics ek main branch hai jisme Accuracy, Confusion Matrix, TP/FP/TN/FN, Precision/Recall/F1, aur ROC/AUC hain. Regression metrics branch mein MSE aur MAE hain. Key concepts branch mein class imbalance, trade-offs, aur application context hain. Implementation branch mein Python libraries aur visualization techniques hain. Framework branch mein PTE aur evaluation strategy hai. Last mein connections dikhaye hain kaunse concept kahan se derive hote hain. Agla lecture clustering pe hoga. Yeh map poori cheezein ek saath dikhata hai jisse revision easy ho jaata hai!</p>
+        </div>
+        
+        <div class="practice-section">
+            <h4>🎯 Final Challenge Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Design a metric evaluation strategy for a self-driving car's pedestrian detection system. Which metrics would you prioritize and why?
+            </div>
+            <div class="answer">
+                <strong>Recommended Strategy:</strong>
+                <ul>
+                    <li><strong>Primary: Recall (TPR) = 99%+</strong> - Must catch all pedestrians (minimize FN) as missing one is fatal</li>
+                    <li><strong>Secondary: Precision</strong> - Minimize false positives to avoid unnecessary emergency braking</li>
+                    <li><strong>Tertiary: F1-Score</strong> - Balance between catching pedestrians and avoiding false alarms</li>
+                    <li><strong>Must monitor:</strong> AUC-ROC to ensure good discrimination across all confidence thresholds</li>
+                    <li><strong>Real-time: Latency + Throughput</strong> alongside accuracy metrics</li>
+                    <li><strong>Context:</strong> Different thresholds for highway vs. city driving</li>
+                </ul>
+                <strong>Why:</strong> In safety-critical systems, false negatives (missing pedestrians) are catastrophic, so recall is paramount, but too many false positives reduce system usability.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Create a decision matrix for choosing between MSE and MAE for three scenarios: (a) Stock price prediction, (b) Temperature forecasting, (c) Rare event impact prediction
+            </div>
+            <div class="answer">
+                <table style="margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Preferred Metric</th>
+                            <th>Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Stock Price Prediction</strong></td>
+                            <td>MAE</td>
+                            <td>Market volatility creates outliers; MAE is robust. "Average $5 error" is more interpretable than squared errors.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temperature Forecasting</strong></td>
+                            <td>MAE</td>
+                            <td>Small errors expected; outliers rare. "Average 2°C error" is intuitive for weather reports.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rare Event Impact</strong></td>
+                            <td>MSE</td>
+                            <td>Missing a rare event's impact (e.g., earthquake magnitude) is catastrophic. Squaring penalizes large errors severely.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Your model has AUC = 0.95 but F1-Score = 0.45 on the same test set. Explain this discrepancy and what it tells you about your data/problem.
+            </div>
+            <div class="answer">
+                <strong>Explanation:</strong>
+                <ul>
+                    <li><strong>High AUC (0.95):</strong> Model ranks positive samples well above negatives; excellent discrimination ability</li>
+                    <li><strong>Low F1 (0.45):</strong> At the chosen operating threshold, there's a severe imbalance between precision and recall</li>
+                </ul>
+                
+                <strong>What this reveals:</strong>
+                <ol>
+                    <li><strong>Class imbalance:</strong> Likely very few positive samples (<5% of data)</li>
+                    <li><strong>Threshold choice:</strong> Current threshold is suboptimal - either:
+                        <ul>
+                            <li>Too high: High precision, low recall (missing many positives)</li>
+                            <li>Too low: High recall, low precision (many false alarms)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Solution:</strong> Adjust decision threshold to balance precision/recall, or use PR curve to find optimal threshold</li>
+                </ol>
+                This is common in rare event detection (fraud, disease, click prediction) where model discrimination is good but threshold tuning is critical.
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🔑 Complete Lecture Summary</h4>
+            <ul>
+                <li>Performance metrics form the backbone of ML evaluation using the PTE framework</li>
+                <li>Classification metrics: Accuracy → Confusion Matrix → TP/FP/TN/FN → Precision/Recall → F1-Score → ROC/AUC</li>
+                <li>Regression metrics: MSE (sensitive) vs. MAE (robust) - choose based on outlier importance</li>
+                <li>Always visualize: Confusion matrix for details, ROC curve for threshold analysis</li>
+                <li>Class imbalance demands F1-Score over accuracy</li>
+                <li>Application context determines FP vs. FN cost trade-off</li>
+                <li>Next lecture: Clustering techniques (K-means, etc.)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-top: 30px; text-align: center;">
+           <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        </div>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

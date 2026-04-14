@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundations of Statistics & Probability: Applying Bayes' Theorem</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 35px 0 15px 0;
+            border-left: 5px solid #764ba2;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 25px 0 12px 0;
+            border-left: 3px solid #ddd;
+            padding-left: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.1em;
+            margin: 15px 0 10px 0;
+        }
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            color: #555;
+        }
+
+        .key-term {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            border-left: 3px solid #ffc107;
+        }
+
+        .hinglish-summary {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #2e7d32;
+        }
+
+        .hinglish-summary h4 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .practice-questions {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .practice-questions h4 {
+            color: #1565c0;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .question {
+            margin: 12px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 8px;
+        }
+
+        .answer-text {
+            color: #555;
+            padding-left: 15px;
+            border-left: 3px solid #2196f3;
+        }
+
+        .key-takeaways {
+            background: #fce4ec;
+            border-left: 5px solid #e91e63;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .key-takeaways h4 {
+            color: #880e4f;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .takeaway-item {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .takeaway-item:before {
+            content: "★";
+            color: #e91e63;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .example-box {
+            background: #f0f4ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example-box h4 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .formula-box {
+            background: #fff8e1;
+            border: 2px solid #fbc02d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .insight-box {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .insight-box h4 {
+            color: #6a1b9a;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .diagram-placeholder {
+            background: #e8eaf6;
+            border: 2px dashed #3f51b5;
+            padding: 40px;
+            text-align: center;
+            color: #3f51b5;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+
+        .mindmap {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .mindmap h3 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            border: none;
+            padding: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-top: 3px solid #667eea;
+        }
+
+        .footer-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .footer-author {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            h2 {
+                font-size: 1.3em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        blockquote {
+            border-left: 5px solid #667eea;
+            margin: 20px 0;
+            padding-left: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Applying Bayes' Theorem</h1>
+            <p>Foundations of Statistics & Probability</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Module 03 | AIL1020</p>
+        </header>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#intro">1. Introduction to Bayes' Theorem</a></li>
+                <li><a href="#quality">2. Quality Control in a Factory</a></li>
+                <li><a href="#spam">3. Spam Email Detection</a></li>
+                <li><a href="#resume">4. Resume Screening in Job Applications</a></li>
+                <li><a href="#insights">5. Key Insights and Applications</a></li>
+                <li><a href="#mindmap">6. Concept Map</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <h1 id="intro">Introduction to Bayes' Theorem</h1>
+
+            <p>
+                <span class="key-term">Bayes' Theorem</span> is one of the most powerful concepts in probability theory and statistics. It provides a mathematical framework for updating our beliefs about events when we receive new evidence. In practical terms, Bayes' Theorem helps us answer questions like: "What is the probability that something is true given that we observed something else?" This is called <span class="key-term">conditional probability</span>, and it forms the foundation of modern applications in machine learning, medical diagnosis, spam filtering, and many other fields.
+            </p>
+
+            <p>
+                The general form of Bayes' Theorem is expressed mathematically as:
+            </p>
+
+            <div class="formula-box">
+                \[P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}\]
+            </div>
+
+            <p>
+                In this formula:
+            </p>
+
+            <ul>
+                <li><span class="key-term">P(A|B)</span> is the <strong>posterior probability</strong> — the probability of event A occurring after we observe event B. This is what we want to find.</li>
+                <li><span class="key-term">P(B|A)</span> is the <strong>likelihood</strong> — the probability of observing event B given that event A is true.</li>
+                <li><span class="key-term">P(A)</span> is the <strong>prior probability</strong> — our initial belief about the probability of event A before considering any new evidence.</li>
+                <li><span class="key-term">P(B)</span> is the <strong>evidence</strong> or <strong>total probability</strong> — the overall probability of observing event B across all possible scenarios.</li>
+            </ul>
+
+            <p>
+                The beauty of Bayes' Theorem lies in its ability to combine what we already know (prior probability) with new evidence (likelihood) to arrive at an updated belief (posterior probability). Professor mentioned in class: This process of updating beliefs based on evidence is fundamental to scientific reasoning and decision-making under uncertainty.
+            </p>
+
+            <p>
+                To calculate P(B), we often use the <span class="key-term">Law of Total Probability</span>, which states that if events \(A_1, A_2, ..., A_n\) form a complete partition of the sample space, then:
+            </p>
+
+            <div class="formula-box">
+                \[P(B) = \sum_{i=1}^{n} P(B|A_i) \cdot P(A_i)\]
+            </div>
+
+            <p>
+                This means we consider all possible ways event B can occur, weighted by the probability of each path.
+            </p>
+
+            <div class="hinglish-summary">
+                <h4>सरल भाषा में समझें:</h4>
+                <p>Bayes' Theorem मतलब है कि जब हमें नई जानकारी मिली, तो हम अपने पुराने विचार को update कर सकते हैं। जैसे अगर किसी को flu आने की संभावना है, और फिर वो cough करने लगे, तो flu होने की संभावना ज्यादा हो जाती है। यही Bayes' Theorem करता है — नई evidence देखकर हमारे probability beliefs को बेहतर बनाता है।</p>
+            </div>
+
+            <h1 id="quality">Quality Control in a Factory</h1>
+
+            <h2>Problem Statement</h2>
+
+            <p>
+                Consider a realistic manufacturing scenario: A factory produces widgets using two machines. Machine A produces 60% of all widgets, while Machine B produces the remaining 40%. However, the machines have different defect rates:
+            </p>
+
+            <ul>
+                <li>2% of widgets from Machine A are defective</li>
+                <li>5% of widgets from Machine B are defective</li>
+            </ul>
+
+            <p>
+                A widget is randomly selected from the production line and found to be <strong>defective</strong>. The critical question is: <span class="key-term">What is the probability that this defective widget was produced by Machine B?</span>
+            </p>
+
+            <p>
+                This problem is excellent for understanding Bayes' Theorem because it asks us to reverse the conditional probability. We know the probability of defects given the machine (P(D|Machine)), but we need to find the probability of the machine given that the widget is defective (P(Machine|D)).
+            </p>
+
+            <h2>Setting Up the Problem</h2>
+
+            <p>
+                The first and most important step in solving any probability problem is to <span class="key-term">define events clearly</span>. Let us define:
+            </p>
+
+            <ul>
+                <li><strong>D</strong> = Event that a widget is defective</li>
+                <li><strong>A</strong> = Event that a widget was produced by Machine A</li>
+                <li><strong>B</strong> = Event that a widget was produced by Machine B</li>
+            </ul>
+
+            <p>
+                From the problem statement, we can immediately extract:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Probability</th>
+                    <th>Value</th>
+                    <th>Meaning</th>
+                </tr>
+                <tr>
+                    <td>P(A)</td>
+                    <td>0.60</td>
+                    <td>Probability widget comes from Machine A</td>
+                </tr>
+                <tr>
+                    <td>P(B)</td>
+                    <td>0.40</td>
+                    <td>Probability widget comes from Machine B</td>
+                </tr>
+                <tr>
+                    <td>P(D|A)</td>
+                    <td>0.02</td>
+                    <td>Probability of defect given Machine A</td>
+                </tr>
+                <tr>
+                    <td>P(D|B)</td>
+                    <td>0.05</td>
+                    <td>Probability of defect given Machine B</td>
+                </tr>
+            </table>
+
+            <p>
+                We want to find: <span class="key-term">P(B|D)</span> = Probability that widget comes from Machine B given that it is defective
+            </p>
+
+            <h2>Applying Bayes' Theorem</h2>
+
+            <p>
+                Using Bayes' Theorem, we have:
+            </p>
+
+            <div class="formula-box">
+                \[P(B|D) = \frac{P(D|B) \cdot P(B)}{P(D)}\]
+            </div>
+
+            <p>
+                We know P(D|B) = 0.05 and P(B) = 0.40, but we need to calculate P(D), the overall probability that a randomly selected widget is defective. This is where the Law of Total Probability comes in.
+            </p>
+
+            <p>
+                Since machines A and B are the only sources of widgets (they partition the sample space completely), we can write:
+            </p>
+
+            <div class="formula-box">
+                \[P(D) = P(D|A) \cdot P(A) + P(D|B) \cdot P(B)\]
+            </div>
+
+            <p>
+                Professor mentioned in class: It is absolutely critical that when applying the Law of Total Probability, all the conditions you consider must be <span class="key-term">exhaustive</span> (they cover all possibilities) and <span class="key-term">mutually exclusive</span> (no overlap). In this case, a widget must come from either Machine A or Machine B, with no other possibility.
+            </p>
+
+            <h2>Step-by-Step Calculation</h2>
+
+            <h3>Step 1: Calculate P(D)</h3>
+
+            <p>
+                Substituting the values into the Law of Total Probability:
+            </p>
+
+            <div class="formula-box">
+                \[P(D) = (0.02)(0.60) + (0.05)(0.40) = 0.012 + 0.020 = 0.032\]
+            </div>
+
+            <p>
+                This tells us that <strong>3.2% of all widgets are defective</strong>, considering the output from both machines weighted by their production volumes.
+            </p>
+
+            <h3>Step 2: Apply Bayes' Theorem</h3>
+
+            <p>
+                Now we can complete the calculation:
+            </p>
+
+            <div class="formula-box">
+                \[P(B|D) = \frac{(0.05)(0.40)}{0.032} = \frac{0.020}{0.032} = 0.625\]
+            </div>
+
+            <h2>Interpretation of Results</h2>
+
+            <div class="example-box">
+                <h4>Key Finding</h4>
+                <p>
+                    <strong>There is a 62.5% probability that a randomly selected defective widget was produced by Machine B.</strong>
+                </p>
+            </div>
+
+            <p>
+                This result is quite insightful. Although Machine B only produces 40% of all widgets, it produces 62.5% of all defective widgets. Why? Because Machine B has a 5% defect rate, which is 2.5 times higher than Machine A's 2% defect rate. So, when we observe a defect, it's more likely to have come from the higher-defect-rate machine.
+            </p>
+
+            <div class="insight-box">
+                <h4>Understanding the Shift in Probability</h4>
+                <p>
+                    Before we know the widget is defective, the probability it comes from Machine B is just 40% (its production share). But once we observe that the widget is defective, this probability jumps to 62.5%. This demonstrates how <strong>evidence updates our beliefs</strong> through Bayes' Theorem.
+                </p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                <div class="question">
+                    <div class="question-text">Q1: If a widget is selected at random (before knowing if it's defective), what is the probability it came from Machine B?</div>
+                    <div class="answer-text">A: 0.40 or 40% (this is the prior probability, also called the base rate)</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q2: Why is P(B|D) greater than P(B)?</div>
+                    <div class="answer-text">A: Because Machine B has a higher defect rate (5% vs 2%), observing a defect increases the likelihood that the widget came from Machine B.</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q3: What would P(A|D) be? (Probability the widget came from Machine A given it's defective)</div>
+                    <div class="answer-text">A: P(A|D) = (0.02)(0.60) / 0.032 = 0.012/0.032 = 0.375 or 37.5%. Note that P(B|D) + P(A|D) = 62.5% + 37.5% = 100%, which makes sense.</div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <div class="takeaway-item">Bayes' Theorem allows us to reverse conditional probabilities — from P(evidence|hypothesis) to P(hypothesis|evidence)</div>
+                <div class="takeaway-item">The Law of Total Probability is essential for finding the denominator in Bayes' Theorem</div>
+                <div class="takeaway-item">The prior probability (P(B) = 40%) is updated to the posterior probability (P(B|D) = 62.5%) based on new evidence</div>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>सरल भाषा में समझें:</h4>
+                <p>Factory में दो machines हैं। Machine B कम widgets बनाता है (40%) लेकिन ज्यादा खराब बनाता है (5% defective)। अगर हमें खराब widget मिला, तो बहुत संभव है कि वो Machine B से आया है। Bayes' Theorem से हमने गणना की और पाया कि 62.5% chance है कि खराब widget Machine B से है। यही evidence-based decision making है!</p>
+            </div>
+
+            <h1 id="spam">Spam Email Detection</h1>
+
+            <h2>Problem Statement</h2>
+
+            <p>
+                In today's digital world, email spam is a massive problem. An email service provider has implemented a spam detection filter and wants to understand its effectiveness. From historical data, the following information is known:
+            </p>
+
+            <ul>
+                <li>20% of all incoming emails are spam</li>
+                <li>The word "free" appears in 40% of spam emails</li>
+                <li>The word "free" appears in only 5% of legitimate (non-spam) emails</li>
+            </ul>
+
+            <p>
+                The practical question is: <span class="key-term">If an email contains the word "free", what is the probability that it is actually spam?</span> This is a critical question for designing effective email filters.
+            </p>
+
+            <h2>Event Definitions</h2>
+
+            <p>
+                Let us define the relevant events:
+            </p>
+
+            <ul>
+                <li><strong>S</strong> = Event that an email is spam</li>
+                <li><strong>F</strong> = Event that an email contains the word "free"</li>
+            </ul>
+
+            <p>
+                From the problem, we can identify:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Probability</th>
+                    <th>Value</th>
+                    <th>Terminology</th>
+                    <th>Meaning</th>
+                </tr>
+                <tr>
+                    <td>P(S)</td>
+                    <td>0.20</td>
+                    <td>Prior Probability</td>
+                    <td>Probability an email is spam (without any other information)</td>
+                </tr>
+                <tr>
+                    <td>P(F|S)</td>
+                    <td>0.40</td>
+                    <td>Likelihood (True Positive)</td>
+                    <td>Probability of "free" appearing in spam emails</td>
+                </tr>
+                <tr>
+                    <td>P(F|¬S)</td>
+                    <td>0.05</td>
+                    <td>Likelihood (False Alarm)</td>
+                    <td>Probability of "free" appearing in non-spam emails</td>
+                </tr>
+            </table>
+
+            <p>
+                We want to find: <span class="key-term">P(S|F)</span> = The posterior probability that an email is spam given that it contains "free"
+            </p>
+
+            <h2>Applying Bayes' Theorem</h2>
+
+            <p>
+                Using Bayes' Theorem:
+            </p>
+
+            <div class="formula-box">
+                \[P(S|F) = \frac{P(F|S) \cdot P(S)}{P(F)}\]
+            </div>
+
+            <p>
+                To find P(F), we use the Law of Total Probability. An email either is spam or is not spam, so:
+            </p>
+
+            <div class="formula-box">
+                \[P(F) = P(F|S) \cdot P(S) + P(F|\neg S) \cdot P(\neg S)\]
+            </div>
+
+            <p>
+                Note that \(\neg S\) represents "not spam" (the complement of S), and \(P(\neg S) = 1 - P(S) = 1 - 0.20 = 0.80\).
+            </p>
+
+            <h2>Step-by-Step Calculation</h2>
+
+            <h3>Step 1: Calculate the Total Probability P(F)</h3>
+
+            <div class="formula-box">
+                \[P(F) = (0.40)(0.20) + (0.05)(0.80) = 0.08 + 0.04 = 0.12\]
+            </div>
+
+            <p>
+                This tells us that <strong>12% of all emails contain the word "free"</strong>, considering both spam and non-spam emails. This is the total evidence we observe.
+            </p>
+
+            <h3>Step 2: Calculate the Posterior Probability P(S|F)</h3>
+
+            <div class="formula-box">
+                \[P(S|F) = \frac{(0.40)(0.20)}{0.12} = \frac{0.08}{0.12} = 0.6667\]
+            </div>
+
+            <h2>Interpretation and Practical Implications</h2>
+
+            <div class="example-box">
+                <h4>Significant Finding</h4>
+                <p>
+                    <strong>When an email contains the word "free", the probability that it is spam increases from 20% to approximately 66.67%.</strong>
+                </p>
+            </div>
+
+            <p>
+                This result demonstrates the power of Bayes' Theorem in practice. Although only 20% of emails globally are spam, the presence of the word "free" dramatically shifts our belief. The word "free" is much more common in spam emails (appearing in 40% of them) than in legitimate emails (appearing in only 5%).
+            </p>
+
+            <p>
+                From a practical standpoint, if the email filter uses a threshold probability of 0.5 (50%), then any email containing "free" with a calculated spam probability above 50% would be flagged and moved to the spam folder. In this case, 66.67% exceeds 50%, so the email would likely be filtered as spam.
+            </p>
+
+            <div class="insight-box">
+                <h4>How Belief Updates Work</h4>
+                <p>
+                    This is a perfect illustration of Bayes' Theorem's core principle: <span class="key-term">updating beliefs with evidence</span>. Our prior belief was that 20% of emails are spam. When we observe the word "free" (the evidence), we update our belief to 66.67%. This is exactly how modern machine learning systems work — they continuously update probability estimates as new data arrives.
+                </p>
+            </div>
+
+            <p>
+                Professor mentioned in class: The word "free" is just one feature. Real spam filters analyze hundreds or thousands of features (words, sender reputation, formatting, links, etc.) and combine them using Bayesian approaches to make more accurate decisions. This is the foundation of Naive Bayes classifiers, which are still widely used despite being conceptually simple.
+            </p>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                <div class="question">
+                    <div class="question-text">Q1: What is the probability that a legitimate (non-spam) email contains "free"?</div>
+                    <div class="answer-text">A: We already know this is 5%, or P(F|¬S) = 0.05</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q2: What is P(¬S|F) — the probability that an email containing "free" is legitimate?</div>
+                    <div class="answer-text">A: P(¬S|F) = 1 - P(S|F) = 1 - 0.6667 = 0.3333 or 33.33%. This makes sense: if there's a 66.67% chance it's spam, there's a 33.33% chance it's legitimate.</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q3: If an email does NOT contain "free", what is the probability it's spam?</div>
+                    <div class="answer-text">A: We would calculate P(S|¬F). Using Bayes' theorem: P(S|¬F) = P(¬F|S)·P(S) / P(¬F), where P(¬F|S) = 0.60 (since 40% have "free", 60% don't), and P(¬F) = 1 - 0.12 = 0.88. This gives P(S|¬F) = (0.60)(0.20)/(0.88) ≈ 0.136 or 13.6% — lower than the prior of 20%.</div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <div class="takeaway-item">Evidence (presence of "free") significantly shifts our belief about spam probability</div>
+                <div class="takeaway-item">Spam filters use multiple features combined through Bayesian reasoning</div>
+                <div class="takeaway-item">The distinction between likelihood P(F|S) and posterior P(S|F) is crucial — they answer different questions</div>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>सरल भाषा में समझें:</h4>
+                <p>Email filter को देखना है कि कौन से emails spam हैं। आम तौर पर 20% emails spam होते हैं। लेकिन अगर email में "free" word है, तो spam होने की संभावना बढ़कर 67% हो जाती है! ये इसलिए क्योंकि spam emails में "free" word ज्यादा आता है। Bayes' theorem से हम calculation करते हैं और पता लगाते हैं कि कितनी संभावना है spam होने की।</p>
+            </div>
+
+            <h1 id="resume">Resume Screening in Job Applications</h1>
+
+            <h2>Problem Statement</h2>
+
+            <p>
+                Automated resume screening has become increasingly common in large companies that receive thousands of applications. A company wants to evaluate the reliability of its resume-screening algorithm. From historical data, the company knows:
+            </p>
+
+            <ul>
+                <li>Only 20% of applicants are actually qualified</li>
+                <li>The algorithm correctly identifies 90% of truly qualified candidates (true positive rate)</li>
+                <li>The algorithm mistakenly flags 30% of unqualified candidates as qualified (false positive rate)</li>
+            </ul>
+
+            <p>
+                The critical question is: <span class="key-term">If the algorithm flags an applicant's resume as positive (qualified), what is the probability that the applicant is actually qualified?</span> This is a crucial question because hiring decisions based on false positives waste resources and may miss better candidates.
+            </p>
+
+            <h2>Event Definitions and Prior Information</h2>
+
+            <p>
+                Let us define:
+            </p>
+
+            <ul>
+                <li><strong>Q</strong> = Event that an applicant is truly qualified</li>
+                <li><strong>Positive (+)</strong> = Event that the algorithm flags the applicant as positive/qualified</li>
+            </ul>
+
+            <p>
+                The given information can be organized as:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Probability</th>
+                    <th>Value</th>
+                    <th>Terminology</th>
+                    <th>Interpretation</th>
+                </tr>
+                <tr>
+                    <td>P(Q)</td>
+                    <td>0.20</td>
+                    <td>Prior Probability (Base Rate)</td>
+                    <td>Belief about qualification before seeing algorithm's result</td>
+                </tr>
+                <tr>
+                    <td>P(+|Q)</td>
+                    <td>0.90</td>
+                    <td>Likelihood / True Positive Rate</td>
+                    <td>Probability algorithm flags a qualified person as positive</td>
+                </tr>
+                <tr>
+                    <td>P(+|¬Q)</td>
+                    <td>0.30</td>
+                    <td>Likelihood / False Positive Rate</td>
+                    <td>Probability algorithm flags an unqualified person as positive</td>
+                </tr>
+                <tr>
+                    <td>P(¬Q)</td>
+                    <td>0.80</td>
+                    <td>Prior Probability (Complement)</td>
+                    <td>Probability an applicant is unqualified</td>
+                </tr>
+            </table>
+
+            <p>
+                We want to find: <span class="key-term">P(Q|+)</span> = Posterior probability that an applicant is actually qualified given that the algorithm flagged them as positive
+            </p>
+
+            <h2>Why This Problem Is Particularly Instructive</h2>
+
+            <p>
+                This problem highlights a common misconception about algorithm accuracy. Many people assume that if an algorithm is "90% accurate," then a positive result indicates a 90% probability of the outcome being true. However, this is incorrect and demonstrates a misunderstanding of <span class="key-term">base rates</span> (prior probabilities). The actual probability depends not only on the algorithm's accuracy but also on how rare the condition being detected is.
+            </p>
+
+            <h2>Applying Bayes' Theorem</h2>
+
+            <div class="formula-box">
+                \[P(Q|+) = \frac{P(+|Q) \cdot P(Q)}{P(+)}\]
+            </div>
+
+            <p>
+                We need to calculate P(+), the total probability that the algorithm gives a positive flag:
+            </p>
+
+            <div class="formula-box">
+                \[P(+) = P(+|Q) \cdot P(Q) + P(+|\neg Q) \cdot P(\neg Q)\]
+            </div>
+
+            <h2>Step-by-Step Calculation</h2>
+
+            <h3>Step 1: Calculate P(+) Using the Law of Total Probability</h3>
+
+            <div class="formula-box">
+                \[P(+) = (0.90)(0.20) + (0.30)(0.80) = 0.18 + 0.24 = 0.42\]
+            </div>
+
+            <p>
+                This tells us that the algorithm flags 42% of all applicants as qualified, combining both true positives (18%) and false positives (24%).
+            </p>
+
+            <h3>Step 2: Apply Bayes' Theorem to Get P(Q|+)</h3>
+
+            <div class="formula-box">
+                \[P(Q|+) = \frac{(0.90)(0.20)}{0.42} = \frac{0.18}{0.42} ≈ 0.4286\]
+            </div>
+
+            <h2>Surprising Result: Understanding the Paradox</h2>
+
+            <div class="example-box">
+                <h4>The Key Finding</h4>
+                <p>
+                    <strong>Even though the algorithm has a 90% true positive rate, the probability that a flagged applicant is actually qualified is only about 42.86%!</strong>
+                </p>
+            </div>
+
+            <p>
+                This result surprises many people, but it perfectly demonstrates the importance of base rates. Let's understand why:
+            </p>
+
+            <ul>
+                <li><span class="key-term">Only 20% of applicants are qualified</span> — this base rate is low, meaning qualified candidates are rare.</li>
+                <li><span class="key-term">The algorithm has a high false positive rate of 30%</span> — it incorrectly flags 30% of unqualified candidates as qualified.</li>
+                <li><span class="key-term">There are 4 times as many unqualified applicants (80%) as qualified ones (20%)</span>, so even though only 30% of unqualified candidates are falsely flagged, this still generates many false positives.</li>
+            </ul>
+
+            <p>
+                Let's visualize this with actual numbers from a sample of 1000 applicants:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Total Number</th>
+                    <th>Algorithm Says "Positive"</th>
+                </tr>
+                <tr>
+                    <td>Actually Qualified (20%)</td>
+                    <td>200</td>
+                    <td>200 × 0.90 = 180 (true positives)</td>
+                </tr>
+                <tr>
+                    <td>Actually Unqualified (80%)</td>
+                    <td>800</td>
+                    <td>800 × 0.30 = 240 (false positives)</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Positive Flags</strong></td>
+                    <td>—</td>
+                    <td><strong>180 + 240 = 420</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Accuracy Rate</strong></td>
+                    <td>—</td>
+                    <td><strong>180 / 420 = 42.86%</strong></td>
+                </tr>
+            </table>
+
+            <p>
+                Out of 420 positive flags, only 180 are actually qualified. This means 240 (57.14%) are false positives! This is a critical insight for hiring managers: the algorithm would incorrectly flag more unqualified candidates than qualified ones.
+            </p>
+
+            <div class="insight-box">
+                <h4>The Base Rate Fallacy</h4>
+                <p>
+                    This scenario illustrates the <span class="key-term">base rate fallacy</span> — the tendency to ignore the base rate (how common something is) when making probability judgments. Many people see "90% accurate" and assume a positive result means 90% probability of the outcome. The reality depends critically on how rare the condition is. When the base rate is low (qualified candidates are rare), even a "good" test produces more false positives than true positives.
+                </p>
+            </div>
+
+            <p>
+                Professor mentioned in class: This principle is incredibly important in medical testing, fraud detection, and any field where you're screening for rare conditions or events. A test that is 99% accurate sounds very good, but if you're screening for a disease that affects only 0.1% of the population, most "positive" test results will be false alarms. This is why doctors rarely rely on a single test for diagnosis; they use multiple tests and clinical judgment.
+            </p>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                <div class="question">
+                    <div class="question-text">Q1: If an applicant is flagged as positive, what is the probability they are actually unqualified?</div>
+                    <div class="answer-text">A: P(¬Q|+) = 1 - P(Q|+) = 1 - 0.4286 = 0.5714 or 57.14%. More than half of the "positive" flags are false alarms!</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q2: What does a "true positive rate of 90%" mean?</div>
+                    <div class="answer-text">A: It means that among truly qualified candidates, the algorithm correctly identifies 90% of them. In other words, P(+|Q) = 0.90. It does NOT mean that 90% of positive results are correct.</div>
+                </div>
+                <div class="question">
+                    <div class="question-text">Q3: How could the company improve the reliability of its resume screening?</div>
+                    <div class="answer-text">A: They could reduce the false positive rate (currently 30%), improve the algorithm's true positive rate (currently 90%), or combine this algorithm with other screening methods. They could also manually review borderline cases rather than relying solely on the algorithm's decision.</div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <div class="takeaway-item">Algorithm accuracy alone does not determine the probability of an outcome given a positive result</div>
+                <div class="takeaway-item">The base rate (how common the condition is) is crucial — low base rates produce high false positive rates</div>
+                <div class="takeaway-item">True positive rate P(+|Q) and posterior probability P(Q|+) are fundamentally different concepts</div>
+                <div class="takeaway-item">This principle applies to medical testing, fraud detection, hiring, and many other fields</div>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>सरल भाषा में समझें:</h4>
+                <p>Company को applications मिलते हैं, और उसका algorithm देखता है कि कौन qualified है। Algorithm 90% सही है qualified candidates को identify करने में। लेकिन, जब algorithm कहता है "यह candidate qualified है," तो सिर्फ 43% chance है कि वो सच में qualified हो! ऐसा क्यों? क्योंकि ज्यादातर candidates unqualified हैं (80%), और algorithm उनमें से कुछको गलती से qualified मान लेता है (30% false positive)। तो गलत choices बहुत ज्यादा हो जाते हैं!</p>
+            </div>
+
+            <h1 id="insights">Key Insights and Applications of Bayes' Theorem</h1>
+
+            <h2>Insight 1: Base Rate Matters</h2>
+
+            <p>
+                The most important lesson from these examples is that <span class="key-term">base rates matter enormously</span>. The base rate is the prior probability — how common something is without any additional information. In all three examples, we saw that the prior probability dramatically affects our conclusions:
+            </p>
+
+            <ul>
+                <li>In the factory example, Machine B's 40% production share affected how we interpret the defect signal</li>
+                <li>In the spam example, the fact that 20% of emails are spam initially is what we update from</li>
+                <li>In the resume example, only 20% of applicants being qualified means most algorithm flags are false alarms</li>
+            </ul>
+
+            <p>
+                Professor mentioned in class: Many intelligent people fall into the "base rate fallacy" trap by ignoring prior probabilities. When a doctor tells you that you tested positive for a rare disease, and the test is "99% accurate," your risk is NOT 99%. Your actual risk depends on how common the disease is. If it only affects 1 in 100,000 people, your risk is much lower even with a positive test.
+            </p>
+
+            <h2>Insight 2: Bayes' Theorem Quantifies Trust</h2>
+
+            <p>
+                <span class="key-term">Bayes' Theorem provides a mathematical framework for updating our confidence</span> when we receive new evidence. It prevents us from over-reacting to evidence (overconfidence) or under-reacting to evidence (neglect). The theorem tells us precisely how much to update our beliefs:
+            </p>
+
+            <ul>
+                <li>If we observe evidence that is much more likely under one hypothesis than another, Bayes' Theorem tells us to shift our belief strongly toward that hypothesis</li>
+                <li>If the evidence is equally likely under multiple hypotheses, Bayes' Theorem tells us not to update much</li>
+                <li>If the base rate is very low, even strong evidence only partially updates our belief (as we saw in the resume screening example)</li>
+            </ul>
+
+            <h2>Insight 3: The Order of Evidence Matters (Technically)</h2>
+
+            <p>
+                One fascinating property of Bayes' Theorem is that the order in which evidence arrives doesn't change the final conclusion — only the intermediate calculations differ. Mathematically, this is because multiplication is commutative. In practical terms, this means:
+            </p>
+
+            <ul>
+                <li>Whether you consider evidence A first then B, or B first then A, you reach the same posterior probability</li>
+                <li>The posterior probability from step 1 becomes the prior probability for step 2</li>
+                <li>This allows us to sequentially update beliefs as more information arrives</li>
+            </ul>
+
+            <h2>Real-World Applications of Bayes' Theorem</h2>
+
+            <div class="insight-box">
+                <h4>Where Bayes' Theorem Is Used</h4>
+
+                <h3 style="margin-top: 0; border: none; padding: 0;">Medical Diagnosis</h3>
+                <p>
+                    Doctors use Bayesian reasoning when interpreting test results. A positive test for a rare disease doesn't necessarily mean you have it. Doctors consider:
+                </p>
+                <ul style="margin-bottom: 15px;">
+                    <li>Prior probability: How common is the disease?</li>
+                    <li>Test accuracy: What's the true positive and false positive rates?</li>
+                    <li>Other symptoms: What other evidence suggests this diagnosis?</li>
+                </ul>
+
+                <h3 style="border: none; padding: 0;">Spam and Malware Detection</h3>
+                <p>
+                    Modern email filters, antivirus software, and intrusion detection systems use Bayesian approaches. They analyze thousands of features and update probabilities as new data arrives, making decisions in real-time.
+                </p>
+
+                <h3 style="border: none; padding: 0;">Machine Learning and AI</h3>
+                <p>
+                    Naive Bayes classifiers are fundamental machine learning algorithms. They're used in:
+                </p>
+                <ul style="margin-bottom: 15px;">
+                    <li>Text classification (spam detection, sentiment analysis)</li>
+                    <li>Document categorization</li>
+                    <li>Recommendation systems</li>
+                </ul>
+
+                <h3 style="border: none; padding: 0;">Fraud Detection</h3>
+                <p>
+                    Banks and credit card companies use Bayesian models to detect fraudulent transactions. They combine features like:
+                </p>
+                <ul style="margin-bottom: 15px;">
+                    <li>Geographic location (is this transaction from the customer's usual location?)</li>
+                    <li>Spending pattern (is this purchase typical for this customer?)</li>
+                    <li>Transaction amount (is this more than usual?)</li>
+                    <li>Merchant category</li>
+                </ul>
+                <p>
+                    Each feature updates the probability that the transaction is fraudulent.
+                </p>
+
+                <h3 style="border: none; padding: 0;">Drug Testing and Safety</h3>
+                <p>
+                    Pharmaceutical companies use Bayes' Theorem in clinical trials to update their beliefs about drug effectiveness and safety as data accumulates. This is called Bayesian inference in clinical trials.
+                </p>
+
+                <h3 style="border: none; padding: 0;">Legal and Criminal Justice</h3>
+                <p>
+                    Lawyers and judges use Bayesian reasoning (sometimes intuitively) when evaluating evidence. The probability that someone is guilty depends on:
+                </p>
+                <ul style="margin-bottom: 15px;">
+                    <li>Prior probability: Base rate of guilt in similar cases</li>
+                    <li>Evidence: How likely is this evidence if guilty? If innocent?</li>
+                </ul>
+            </div>
+
+            <h2>Common Misconceptions About Bayes' Theorem</h2>
+
+            <table>
+                <tr>
+                    <th>Misconception</th>
+                    <th>Reality</th>
+                </tr>
+                <tr>
+                    <td>"If a test is 95% accurate, a positive result means 95% chance of being positive"</td>
+                    <td>The actual probability depends on the base rate. If what you're testing for is rare, most positive results will be false alarms.</td>
+                </tr>
+                <tr>
+                    <td>"We can ignore the prior probability and just focus on the likelihood"</td>
+                    <td>Prior probability is essential. Ignoring it leads to the base rate fallacy and incorrect conclusions.</td>
+                </tr>
+                <tr>
+                    <td>"Bayes' Theorem only applies to medical testing or email filtering"</td>
+                    <td>Bayes' Theorem applies anywhere you have prior beliefs and new evidence. This includes hiring, legal decisions, scientific inference, and everyday reasoning.</td>
+                </tr>
+                <tr>
+                    <td>"If you have two pieces of evidence that both suggest X, you can just add the probabilities"</td>
+                    <td>You must apply Bayes' Theorem properly using the multiplication and law of total probability. You cannot simply add probabilities.</td>
+                </tr>
+            </table>
+
+            <h2>Bayesian vs. Frequentist Thinking</h2>
+
+            <p>
+                Bayes' Theorem is the foundation of <span class="key-term">Bayesian statistics</span>, which views probability as a degree of belief that updates with evidence. This contrasts with <span class="key-term">frequentist statistics</span>, which views probability as the long-run frequency of events. The debate between these approaches is deep and philosophical, but practically:
+            </p>
+
+            <ul>
+                <li><strong>Bayesian approach:</strong> Start with a prior belief, collect evidence, update your belief. Allows subjective prior knowledge. Naturally handles complex, real-world scenarios.</li>
+                <li><strong>Frequentist approach:</strong> Collect data, calculate probabilities based on how often events occur. No prior beliefs. Works well for large samples but struggles with rare events or sequential decisions.</li>
+            </ul>
+
+            <h1 id="mindmap">Concept Map: Bayes' Theorem and Applications</h1>
+
+            <div class="mindmap">
+                <h3>Comprehensive Overview of Bayes' Theorem</h3>
+
+                <div class="diagram-placeholder">
+                    <strong>Visual Concept Map (SVG)</strong><br>
+                    <br>
+                    Central Node: Bayes' Theorem<br>
+                    ↓<br>
+                    <br>
+                    Three Main Components:<br>
+                    • Prior P(A) — Initial Belief<br>
+                    • Likelihood P(B|A) — Evidence Support<br>
+                    • Posterior P(A|B) — Updated Belief<br>
+                    <br>
+                    ↓<br>
+                    <br>
+                    Foundation: Law of Total Probability<br>
+                    ↓<br>
+                    <br>
+                    Key Principle: Base Rate Matters<br>
+                    <br>
+                    ↓↓↓<br>
+                    <br>
+                    Real-World Applications:<br>
+                    <br>
+                    Left Branch: Medical & Testing<br>
+                    • Disease Diagnosis<br>
+                    • Test Interpretation<br>
+                    • Clinical Trials<br>
+                    <br>
+                    Center Branch: Detection Systems<br>
+                    • Spam Filtering<br>
+                    • Fraud Detection<br>
+                    • Malware Detection<br>
+                    <br>
+                    Right Branch: Machine Learning & AI<br>
+                    • Naive Bayes Classifiers<br>
+                    • Recommendation Systems<br>
+                    • Pattern Recognition<br>
+                    <br>
+                    Bottom Branch: Human Decision-Making<br>
+                    • Hiring & Recruitment<br>
+                    • Legal Decisions<br>
+                    • Risk Assessment<br>
+                </div>
+
+                <h3>Learning Progression</h3>
+
+                <p style="text-align: center; margin-top: 30px;">
+                    <strong>Beginner Level:</strong> Understand basic formula and apply to simple two-event scenarios<br>
+                    ↓<br>
+                    <strong>Intermediate Level:</strong> Handle multiple events using Law of Total Probability<br>
+                    ↓<br>
+                    <strong>Advanced Level:</strong> Apply to complex, real-world multi-step inference problems<br>
+                    ↓<br>
+                    <strong>Expert Level:</strong> Understand limitations, design better systems, recognize base rate fallacies in others
+                </p>
+
+            </div>
+
+            <h2>Summary of Key Equations</h2>
+
+            <div style="background: #fff3cd; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 5px solid #ffc107;">
+                <h4 style="color: #856404; margin-top: 0;">Bayes' Theorem</h4>
+                \[P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}\]
+
+                <h4 style="color: #856404;">Law of Total Probability</h4>
+                \[P(B) = \sum_{i=1}^{n} P(B|A_i) \cdot P(A_i)\]
+
+                <h4 style="color: #856404;">For Two Events</h4>
+                \[P(B) = P(B|A) \cdot P(A) + P(B|\neg A) \cdot P(\neg A)\]
+            </div>
+
+            <h1>Conclusion</h1>
+
+            <p>
+                Bayes' Theorem is not just a mathematical formula — it's a powerful framework for reasoning under uncertainty. Whether you're a doctor interpreting a medical test, an engineer designing a spam filter, a manager making hiring decisions, or a researcher analyzing data, Bayes' Theorem provides a principled way to combine prior knowledge with new evidence to reach well-calibrated conclusions.
+            </p>
+
+            <p>
+                The examples presented in this lecture — quality control, spam detection, and resume screening — demonstrate that Bayes' Theorem applies across diverse domains. The same mathematical principle that helps factories minimize defects helps email services filter spam and helps companies make better hiring decisions. Understanding this theorem and recognizing common pitfalls like the base rate fallacy can significantly improve decision-making in your personal and professional life.
+            </p>
+
+            <p>
+                As we move forward in this course, we'll explore related concepts like random variables, probability distributions, and expectations, which build upon the foundation of conditional probability and Bayes' Theorem. These tools will enable you to analyze complex systems, make data-driven decisions, and understand the probabilistic world around us.
+            </p>
+
+            <div class="hinglish-summary">
+                <h4>अंतिम सारांश (Final Summary):</h4>
+                <p>Bayes' Theorem हमें बताता है कि जब नई information मिले, तो अपने पुराने विचार को कैसे update करें। यह सब जगह काम आता है — medical tests से लेकर spam emails तक, hiring से लेकर fraud detection तक। सबसे महत्वपूर्ण बात यह है कि base rate को हमेशा याद रखें — कितनी rare है वो चीज जो हम ढूंढ रहे हैं। यही Bayes' Theorem की असली power है!</p>
+            </div>
+
+        </div>
+
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

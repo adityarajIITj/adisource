@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nash Equilibrium and Strict Dominance - Lecture Notes</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/api/latest/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>    
+    <style>
+        /* Global Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* Header Styling */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* Table of Contents Styling */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .toc ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        /* Section Styling */
+        section {
+            margin: 50px 0;
+            padding: 30px;
+            border-radius: 10px;
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        /* Paragraph and Text Styling */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Payoff Matrix Styling */
+        .payoff-matrix {
+            margin: 30px auto;
+            text-align: center;
+        }
+        
+        .payoff-matrix table {
+            margin: 0 auto;
+            max-width: 500px;
+        }
+        
+        .payoff-matrix th {
+            background: #667eea;
+            text-align: center;
+        }
+        
+        .payoff-matrix td {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        /* Professor's Note Box */
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        /* Hinglish Summary Box */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .hinglish-summary h4 {
+            color: #4a148c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            color: #2c003e;
+            line-height: 1.8;
+        }
+        
+        /* Key Takeaways Box */
+        .key-takeaways {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            margin-left: 25px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            color: #155724;
+        }
+        
+        /* Practice Questions Box */
+        .practice-questions {
+            background: #cce5ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #004085;
+        }
+        
+        .practice-questions h4 {
+            color: #004085;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #0056b3;
+        }
+        
+        .question strong {
+            color: #0056b3;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .answer {
+            background: #e7f3ff;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #28a745;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Formula Box */
+        .formula-box {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #e9ecef;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        /* Mind Map Styling */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .main-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .subtopics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .subtopic {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .subtopic:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .subtopic h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .subtopic ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .subtopic li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .subtopic li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.2em;
+            }
+        }
+        
+        /* Print Styling */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>Nash Equilibrium and Strict Dominance</h1>
+            <p>Created by Armaan Kachhawa</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Game Theory Applications in AI</p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction to Nash Equilibrium</a></li>
+                <li><a href="#prisoners-dilemma">2. Prisoner's Dilemma - Classic Example</a></li>
+                <li><a href="#nash-equilibrium-definition">3. Nash Equilibrium - Formal Definition</a></li>
+                <li><a href="#strict-dominance">4. Strict Dominance Strategy</a></li>
+                <li><a href="#applications">5. Real-World Applications</a>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><a href="#military-conflict">5.1 Military Conflict Scenario</a></li>
+                        <li><a href="#trade-war">5.2 International Trade Wars</a></li>
+                        <li><a href="#advertising">5.3 Corporate Advertising Competition</a></li>
+                    </ul>
+                </li>
+                <li><a href="#key-insights">6. Key Insights and Takeaways</a></li>
+                <li><a href="#mind-map">7. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content Sections -->
+        
+        <!-- Section 1: Introduction -->
+        <section id="introduction">
+            <h2>1. Introduction to Nash Equilibrium</h2>
+            
+            <p>Welcome to this comprehensive lecture on <strong>Nash Equilibrium</strong> and its applications in game theory. While we have previously reviewed this concept, today we will delve deeper into its practical applications and real-world scenarios where Nash equilibrium plays a crucial role.</p>
+            
+            <p>In this lecture, we will specifically focus on <strong>strict dominance</strong> - a special case of Nash equilibrium where one strategy consistently outperforms another regardless of opponent's choices. Understanding these concepts is fundamental to artificial intelligence, particularly in multi-agent systems, decision-making algorithms, and strategic planning.</p>
+            
+            <div class="professor-note">
+                We have discussed Nash equilibrium in previous lectures, but not many examples were given or situations where it is applicable were explored. Today we will focus on applications and real-life scenarios where Nash equilibrium actually comes into play.
+            </div>
+            
+            <h3>What Will We Cover?</h3>
+            <ul style="margin-left: 30px; margin-top: 15px;">
+                <li>Detailed analysis of <strong>Prisoner's Dilemma</strong></li>
+                <li>Understanding <strong>strict dominance</strong> in game theory</li>
+                <li>Real-world applications in military conflicts, trade wars, and business competition</li>
+                <li>Mathematical formalization of Nash equilibrium</li>
+                <li>Why Nash equilibrium doesn't always lead to optimal outcomes</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Is lecture mein hum Nash equilibrium ke bare mein detail se padhenge. Pehle humne isko briefly dekha tha, lekin ab hum iske practical applications aur real-life examples dekhenge. Hum strict dominance ko samjhenge - jab ek strategy dusre se hamesha better hoti hai. Ye concept AI mein bahut important hai, especially jab multiple agents ko decisions lene hote hain. Hum prisoner's dilemma, war scenarios, trade wars, aur company competition jaise examples dekhenge.</p>
+            </div>
+        </section>
+        
+        <!-- Section 2: Prisoner's Dilemma -->
+        <section id="prisoners-dilemma">
+            <h2>2. Prisoner's Dilemma - The Classic Example</h2>
+            
+            <h3>2.1 The Scenario</h3>
+            <p>The <strong>Prisoner's Dilemma</strong> is one of the most famous examples in game theory that perfectly illustrates Nash equilibrium and strategic decision-making under uncertainty. Let's understand this scenario step by step.</p>
+            
+            <h4>Setup:</h4>
+            <ul style="margin-left: 30px; margin-top: 15px;">
+                <li>Two prisoners: <strong>Prisoner 1 (P1)</strong> and <strong>Prisoner 2 (P2)</strong></li>
+                <li>Both are held in separate cells and cannot communicate</li>
+                <li>Each has two possible <strong>actions/strategies</strong>:
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Q (Quiet)</strong>: Remain silent about their crimes</li>
+                        <li><strong>C (Confess)</strong>: Confess to their crimes</li>
+                    </ul>
+                </li>
+                <li>The judge will determine jail time (payoffs) based on their choices</li>
+            </ul>
+            
+            <h3>2.2 The Payoff Matrix</h3>
+            <p>The outcomes are represented in a <strong>payoff matrix</strong>, where each cell contains an ordered pair (P1's payoff, P2's payoff). The payoffs represent years of jail time (negative values indicate time in jail):</p>
+            
+            <div class="payoff-matrix">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Prisoner 1 \ Prisoner 2</th>
+                            <th>Quiet (Q)</th>
+                            <th>Confess (C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quiet (Q)</strong></td>
+                            <td style="background: #d4edda;">(-1, -1)</td>
+                            <td style="background: #f8d7da;">(-12, 0)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Confess (C)</strong></td>
+                            <td style="background: #f8d7da;">(0, -12)</td>
+                            <td style="background: #fff3cd;">(-8, -8)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h4>Understanding the Payoffs:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>P1's Action</th>
+                        <th>P2's Action</th>
+                        <th>Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Both Quiet</td>
+                        <td>Q</td>
+                        <td>Q</td>
+                        <td>Both get 1 year jail time (-1, -1)</td>
+                    </tr>
+                    <tr>
+                        <td>P1 Quiet, P2 Confesses</td>
+                        <td>Q</td>
+                        <td>C</td>
+                        <td>P1 gets 12 years, P2 goes free (-12, 0)</td>
+                    </tr>
+                    <tr>
+                        <td>P1 Confesses, P2 Quiet</td>
+                        <td>C</td>
+                        <td>Q</td>
+                        <td>P1 goes free, P2 gets 12 years (0, -12)</td>
+                    </tr>
+                    <tr>
+                        <td>Both Confess</td>
+                        <td>C</td>
+                        <td>C</td>
+                        <td>Both get 8 years jail time (-8, -8)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>2.3 Strategic Analysis - Finding the Best Strategy</h3>
+            
+            <p>The critical question is: <strong>What should each prisoner choose?</strong> The challenge lies in the uncertainty - Prisoner 1 doesn't know what Prisoner 2 will do, and vice versa. Let's analyze this systematically.</p>
+            
+            <h4>From Prisoner 1's Perspective:</h4>
+            
+            <p><strong>Case 1: If P1 knows that P2 will remain Quiet (Q)</strong></p>
+            <div class="formula-box">
+                <p>P1's choices when P2 chooses Q:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>If P1 chooses Q: Gets -1 year (1 year jail)</li>
+                    <li>If P1 chooses C: Gets 0 years (goes free) ✓ <strong>Better!</strong></li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>Result: P1 will choose C (Confess)</strong></p>
+            </div>
+            
+            <p><strong>Case 2: If P1 knows that P2 will Confess (C)</strong></p>
+            <div class="formula-box">
+                <p>P1's choices when P2 chooses C:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>If P1 chooses Q: Gets -12 years (12 years jail)</li>
+                    <li>If P1 chooses C: Gets -8 years (8 years jail) ✓ <strong>Better!</strong></li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>Result: P1 will choose C (Confess)</strong></p>
+            </div>
+            
+            <div class="professor-note">
+                Notice that irrespective of what P2 chooses (whether Quiet or Confess), P1's best option is always to Confess. This means Confess (C) dominates over Quiet (Q) for Prisoner 1.
+            </div>
+            
+            <h4>From Prisoner 2's Perspective:</h4>
+            
+            <p><strong>Case 1: If P2 knows that P1 will remain Quiet (Q)</strong></p>
+            <div class="formula-box">
+                <p>P2's choices when P1 chooses Q:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>If P2 chooses Q: Gets -1 year (1 year jail)</li>
+                    <li>If P2 chooses C: Gets 0 years (goes free) ✓ <strong>Better!</strong></li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>Result: P2 will choose C (Confess)</strong></p>
+            </div>
+            
+            <p><strong>Case 2: If P2 knows that P1 will Confess (C)</strong></p>
+            <div class="formula-box">
+                <p>P2's choices when P1 chooses C:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>If P2 chooses Q: Gets -12 years (12 years jail)</li>
+                    <li>If P2 chooses C: Gets -8 years (8 years jail) ✓ <strong>Better!</strong></li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>Result: P2 will choose C (Confess)</strong></p>
+            </div>
+            
+            <h3>2.4 The Nash Equilibrium Solution</h3>
+            
+            <p>From the above analysis, we can conclude:</p>
+            <ul style="margin-left: 30px; margin-top: 15px;">
+                <li>P1's best strategy is to <strong>Confess (C)</strong> regardless of P2's choice</li>
+                <li>P2's best strategy is to <strong>Confess (C)</strong> regardless of P1's choice</li>
+                <li>Therefore, the <strong>Nash Equilibrium is (C, C)</strong> - both prisoners confess</li>
+                <li>At this equilibrium, both prisoners get <strong>8 years of jail time</strong> each</li>
+            </ul>
+            
+            <div class="formula-box" style="background: #fff3cd; border-color: #ffc107;">
+                <h4 style="color: #856404;">⚠️ The Paradox</h4>
+                <p>Notice something interesting: If both prisoners had chosen <strong>(Q, Q)</strong> - both remaining quiet - they would each get only <strong>1 year of jail time</strong>, which is much better than 8 years!</p>
+                <p style="margin-top: 10px;">However, <strong>(Q, Q) is NOT a Nash equilibrium</strong> because each prisoner has an incentive to deviate and confess to get an even better outcome (0 years).</p>
+            </div>
+            
+            <h3>2.5 Why Don't They Choose (Q, Q)?</h3>
+            
+            <p>The reason both prisoners end up with the suboptimal outcome (C, C) instead of the better (Q, Q) is due to <strong>lack of cooperation and communication</strong>:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>No Communication</strong></td>
+                        <td>Prisoners are held separately and cannot coordinate their strategies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Trust</strong></td>
+                        <td>Even if they could communicate, there's no guarantee the other will keep their promise</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Individual Rationality</strong></td>
+                        <td>Each prisoner acts in their own self-interest based on rational analysis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Aversion</strong></td>
+                        <td>If one chooses Q and the other chooses C, the outcome is catastrophic (-12 years)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                This is a non-cooperative game. If the prisoners could cooperate with each other and trust each other, they may have chosen (Q, Q) strategy. But because they cannot cooperate and don't know what the other will do, both settle for the Nash equilibrium of (C, C), which gives them 8 years each instead of 1 year each.
+            </div>
+            
+            <h3>2.6 Exercise: Alternative Payoff Matrix</h3>
+            
+            <p>Let's consider a modified version of the prisoner's dilemma with different payoffs:</p>
+            
+            <div class="payoff-matrix">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Prisoner 1 \ Prisoner 2</th>
+                            <th>Quiet (Q)</th>
+                            <th>Confess (C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quiet (Q)</strong></td>
+                            <td style="background: #d4edda;">(-3, -3)</td>
+                            <td style="background: #f8d7da;">(-4, -1)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Confess (C)</strong></td>
+                            <td style="background: #f8d7da;">(-1, -4)</td>
+                            <td style="background: #fff3cd;">(-2, -2)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="professor-note">
+                This is an exercise for you. Please analyze this payoff matrix to determine: (1) Which strategy dominates for each player? (2) What is the Nash equilibrium? (3) Is there strict dominance in this case? Follow the same process we used - consider each player's perspective knowing what the other might choose.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Prisoner's dilemma ek classic game theory example hai jisme do prisoners ko decide karna hai ki confess karein ya quiet rahein. Dono alag cells mein hain aur communicate nahi kar sakte. Analysis se pata chalta hai ki dono ke liye confess karna best strategy hai, chahe doosra kuch bhi kare. Isliye Nash equilibrium (C, C) hai jisme dono ko 8 saal jail milti hai. Interesting baat ye hai ki agar dono quiet rahte to sirf 1 saal jail milti, jo better hai! Lekin cooperation aur trust na hone ki wajah se dono confess kar dete hain. Yahi game theory ka paradox hai - individual rationality collective optimal solution nahi deta.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Prisoner's Dilemma</h4>
+                <ul>
+                    <li>Prisoner's Dilemma demonstrates strategic decision-making under uncertainty and lack of communication</li>
+                    <li>Confess (C) strictly dominates Quiet (Q) for both players - it's always the better choice regardless of opponent's action</li>
+                    <li>The Nash equilibrium is (C, C) with both players getting 8 years jail time</li>
+                    <li>Nash equilibrium doesn't always produce the optimal outcome - (Q, Q) would give both only 1 year</li>
+                    <li>The paradox arises from lack of cooperation, trust, and communication between players</li>
+                    <li>This is a non-cooperative game where individual rationality leads to a collectively suboptimal result</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📚 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What is the main uncertainty in the Prisoner's Dilemma?</strong>
+                    <div class="answer">Each prisoner doesn't know what strategy the other prisoner will choose, and they cannot communicate with each other to coordinate their decisions.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why is (C, C) the Nash equilibrium even though (Q, Q) gives better outcomes?</strong>
+                    <div class="answer">At (C, C), neither prisoner can improve their outcome by unilaterally changing their strategy. However, at (Q, Q), each prisoner has an incentive to deviate to C to get an even better outcome.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: What does it mean when we say "Confess dominates Quiet"?</strong>
+                    <div class="answer">It means that choosing Confess always gives a better (or at least equal) payoff than choosing Quiet, regardless of what the other player chooses.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: If prisoners could communicate and trust each other, what would they choose?</strong>
+                    <div class="answer">They would likely choose (Q, Q) - both remain quiet - which would give them only 1 year jail time each, the best possible cooperative outcome.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5: What happens if one prisoner chooses Q while the other chooses C?</strong>
+                    <div class="answer">The prisoner who confesses (C) goes free (0 years), while the prisoner who remained quiet (Q) gets the worst outcome of 12 years jail time.</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Nash Equilibrium Definition -->
+        <section id="nash-equilibrium-definition">
+            <h2>3. Nash Equilibrium - Formal Definition</h2>
+            
+            <h3>3.1 What is Nash Equilibrium?</h3>
+            
+            <div class="formula-box">
+                <h4>Nash Equilibrium Definition:</h4>
+                <p style="font-size: 1.1em; margin-top: 15px;">In a game situation, <strong>Nash equilibrium</strong> is a situation where <strong>no player could gain more by changing their own strategy</strong>, holding all other players' strategies fixed in the game.</p>
+            </div>
+            
+            <p>Let's break down this definition to understand what it really means:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Game Situation</strong></td>
+                        <td>A scenario where multiple players make strategic decisions that affect each other's outcomes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Player Could Gain More</strong></td>
+                        <td>Each player is already making their best possible choice given the circumstances</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Changing Their Own Strategy</strong></td>
+                        <td>If a player unilaterally changes their decision (acts alone)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Holding Other Players' Strategies Fixed</strong></td>
+                        <td>Assuming all other players continue with their current choices</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>3.2 Characteristics of Nash Equilibrium</h3>
+            
+            <h4>1. Stability</h4>
+            <p>At Nash equilibrium, the system is <strong>stable</strong> - no player has an incentive to deviate from their current strategy. If all players are at Nash equilibrium, they will continue to stay there because moving away would make them worse off.</p>
+            
+            <h4>2. Self-Enforcing</h4>
+            <p>Nash equilibrium is <strong>self-enforcing</strong> - once reached, no external enforcement is needed to maintain it. Each player voluntarily chooses their equilibrium strategy because it's in their own best interest.</p>
+            
+            <h4>3. Not Necessarily Optimal</h4>
+            <p>Crucially, Nash equilibrium <strong>does NOT guarantee the optimal outcome</strong> for the group. As we saw in the Prisoner's Dilemma, both players would be better off at (Q, Q), but the Nash equilibrium is (C, C).</p>
+            
+            <h4>4. Multiple Equilibria</h4>
+            <p>A game can have <strong>multiple Nash equilibria</strong>, or sometimes no Nash equilibrium in pure strategies (requiring mixed strategies).</p>
+            
+            <h3>3.3 Nash Equilibrium in Non-Cooperative Games</h3>
+            
+            <p>Nash equilibrium is particularly important and applicable in <strong>non-cooperative games</strong>, where:</p>
+            
+            <ul style="margin-left: 30px; margin-top: 15px;">
+                <li>Players <strong>cannot communicate</strong> or coordinate their strategies</li>
+                <li>There is <strong>no binding agreement</strong> between players</li>
+                <li>Each player acts <strong>independently</strong> in their own self-interest</li>
+                <li>Players must make decisions <strong>under uncertainty</strong> about others' choices</li>
+            </ul>
+            
+            <div class="professor-note">
+                Nash equilibrium is a concept for non-cooperative games. In the prisoner's dilemma, the prisoners are not cooperating with each other. If they were cooperating with each other, they could have achieved a better outcome (Q, Q). But because they're not cooperating, they end up at the Nash equilibrium (C, C).
+            </div>
+            
+            <h3>3.4 Why Nash Equilibrium Matters</h3>
+            
+            <p>Nash equilibrium is crucial in game theory and AI because it:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Importance</th>
+                        <th>Application</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Predicts Behavior</strong></td>
+                        <td>Helps predict how rational agents will behave in strategic situations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Designs Systems</strong></td>
+                        <td>Used to design multi-agent AI systems and autonomous agents</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analyzes Markets</strong></td>
+                        <td>Explains competitive behavior in economics and business</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resolves Conflicts</strong></td>
+                        <td>Provides insight into conflict resolution and negotiation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Strategic Planning</strong></td>
+                        <td>Informs strategic decision-making in competitive environments</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>3.5 Mathematical Representation</h3>
+            
+            <div class="formula-box">
+                <h4>Formal Definition:</h4>
+                <p>A strategy profile \( (s_1^*, s_2^*, \ldots, s_n^*) \) is a Nash equilibrium if for each player \( i \):</p>
+                <p style="font-size: 1.2em; margin: 20px 0;">
+
+                    \[ u_i(s_i^*, s_{-i}^*) \geq u_i(s_i, s_{-i}^*) \]
+                </p>
+                <p>for all possible strategies \( s_i \) of player \( i \), where:</p>
+                <ul style="list-style: none; text-align: left; margin-top: 15px;">
+                    <li>\( u_i \) = utility/payoff function for player \( i \)</li>
+                    <li>\( s_i^* \) = equilibrium strategy of player \( i \)</li>
+                    <li>\( s_{-i}^* \) = equilibrium strategies of all other players</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Nash equilibrium ek stable situation hai jisme koi bhi player apni strategy change karke zyada benefit nahi le sakta, jab tak doosre players apni strategy same rakhte hain. Ye non-cooperative games ke liye bahut important concept hai jahan players communicate nahi kar sakte. Important baat ye hai ki Nash equilibrium hamesha optimal solution nahi deta - matlab sabke liye best outcome nahi hota. Prisoner's dilemma mein humne dekha ki Nash equilibrium (C,C) tha lekin (Q,Q) sabke liye better hota. Ye concept AI systems, economics, business strategy aur conflict resolution mein bahut use hota hai.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Nash Equilibrium</h4>
+                <ul>
+                    <li>Nash equilibrium is a stable state where no player benefits from unilaterally changing their strategy</li>
+                    <li>It is self-enforcing and doesn't require external enforcement</li>
+                    <li>Nash equilibrium is most relevant for non-cooperative games without communication</li>
+                    <li>It does NOT always produce the optimal outcome for all players collectively</li>
+                    <li>A game can have multiple Nash equilibria or none in pure strategies</li>
+                    <li>Critical for predicting behavior in AI multi-agent systems and strategic planning</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📚 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What makes a Nash equilibrium "stable"?</strong>
+                    <div class="answer">A Nash equilibrium is stable because no player has an incentive to deviate from their current strategy, assuming other players keep their strategies unchanged.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why is Nash equilibrium important for non-cooperative games?</strong>
+                    <div class="answer">In non-cooperative games, players cannot communicate or coordinate, so Nash equilibrium helps predict stable outcomes where each player independently makes their best decision.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: Can a Nash equilibrium be suboptimal for all players?</strong>
+                    <div class="answer">Yes, as shown in the Prisoner's Dilemma where Nash equilibrium (C,C) gives both players 8 years, while (Q,Q) would give both only 1 year.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: What is meant by "holding other players' strategies fixed"?</strong>
+                    <div class="answer">It means we evaluate whether a player can improve their outcome by changing only their own strategy, while assuming all other players continue with their current choices.</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: Strict Dominance -->
+        <section id="strict-dominance">
+            <h2>4. Strict Dominance Strategy</h2>
+            
+            <h3>4.1 Definition of Strict Dominance</h3>
+            
+            <div class="formula-box">
+                <h4>Strict Dominance Definition:</h4>
+                <p style="font-size: 1.1em; margin-top: 15px;">A strategy <strong>X strictly dominates</strong> strategy <strong>Y</strong> if strategy X provides a <strong>greater payoff</strong> for that player than strategy Y, <strong>regardless of what the other players do</strong>.</p>
+            </div>
+            
+            <p>In simpler terms, if choosing strategy X <strong>always</strong> gives you a better outcome than choosing strategy Y, no matter what your opponents choose, then X strictly dominates Y.</p>
+            
+            <h3>4.2 Understanding Dominance</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Meaning</th>
+                        <th>Example from Prisoner's Dilemma</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dominant Strategy</strong></td>
+                        <td>A strategy that is best regardless of others' choices</td>
+                        <td>Confess (C) is the dominant strategy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dominated Strategy</strong></td>
+                        <td>A strategy that is always worse than another</td>
+                        <td>Quiet (Q) is dominated by Confess (C)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Strict Dominance</strong></td>
+                        <td>Dominant strategy gives strictly better payoffs (not just equal)</td>
+                        <td>C gives strictly better payoffs than Q in all cases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Weak Dominance</strong></td>
+                        <td>Dominant strategy gives better or equal payoffs</td>
+                        <td>Not present in our example</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>4.3 How to Identify Strict Dominance</h3>
+            
+            <p>To determine if strategy X strictly dominates strategy Y for a player:</p>
+            
+            <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; border-left: 5px solid #0056b3; margin: 20px 0;">
+                <h4 style="color: #0056b3;">Step-by-Step Process:</h4>
+                <ol style="margin-left: 20px; margin-top: 15px;">
+                    <li><strong>List all possible strategies</strong> of the other players</li>
+                    <li><strong>For each opponent strategy</strong>, compare the payoffs of X and Y</li>
+                    <li><strong>Check if X gives a higher payoff than Y</strong> in every single case</li>
+                    <li><strong>If yes for all cases</strong>, then X strictly dominates Y</li>
+                    <li><strong>The dominated strategy</strong> (Y) should never be played by a rational player</li>
+                </ol>
+            </div>
+            
+            <h3>4.4 Example: Analyzing the Original Prisoner's Dilemma</h3>
+            
+            <p>Let's formally prove that Confess (C) strictly dominates Quiet (Q) in the prisoner's dilemma:</p>
+            
+            <div class="payoff-matrix">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>P1 \ P2</th>
+                            <th>Quiet (Q)</th>
+                            <th>Confess (C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Quiet (Q)</strong></td>
+                            <td>(-1, -1)</td>
+                            <td>(-12, 0)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Confess (C)</strong></td>
+                            <td style="background: #d4edda;">(0, -12)</td>
+                            <td style="background: #d4edda;">(-8, -8)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h4>For Prisoner 1 (P1):</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>P2's Strategy</th>
+                        <th>P1 chooses Q</th>
+                        <th>P1 chooses C</th>
+                        <th>Better Choice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>P2 chooses Q</td>
+                        <td>-1 year</td>
+                        <td style="background: #d4edda;">0 years ✓</td>
+                        <td><strong>C is better</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P2 chooses C</td>
+                        <td>-12 years</td>
+                        <td style="background: #d4edda;">-8 years ✓</td>
+                        <td><strong>C is better</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 20px;"><strong>Conclusion:</strong> Since C gives P1 a better payoff than Q in both possible scenarios (whether P2 chooses Q or C), we can conclude that <strong>C strictly dominates Q for P1</strong>.</p>
+            
+            <h4>For Prisoner 2 (P2):</h4>
+            <p>By symmetry, the same analysis applies to P2. Confess strictly dominates Quiet for P2 as well.</p>
+            
+            <div class="professor-note">
+                In the prisoner's dilemma, Confess strictly dominates Quiet. That means the action C or strategy C dominates over or strictly dominates over action Q or strategy Q. This is why both prisoners will choose to confess - it's their strictly dominant strategy.
+            </div>
+            
+            <h3>4.5 Properties of Strict Dominance</h3>
+            
+            <ul style="margin-left: 30px; margin-top: 15px;">
+                <li><strong>Rationality Assumption:</strong> A rational player will never choose a strictly dominated strategy</li>
+                <li><strong>Elimination:</strong> Strictly dominated strategies can be eliminated from consideration in game analysis</li>
+                <li><strong>Uniqueness:</strong> If all players have a strictly dominant strategy, the Nash equilibrium is unique</li>
+                <li><strong>Simplification:</strong> Identifying dominance simplifies game analysis by reducing the strategy space</li>
+            </ul>
+            
+            <h3>4.6 Important Note: Not All Games Have Strict Dominance</h3>
+            
+            <div class="formula-box" style="background: #fff3cd; border-color: #ffc107;">
+                <h4 style="color: #856404;">⚠️ Important Observation</h4>
+                <p>It is <strong>not always true</strong> that every game will have strict dominance. There can be situations where:</p>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li><strong>No dominance exists:</strong> No strategy consistently beats another</li>
+                    <li><strong>Mixed dominance:</strong> For Player 1, strategy A might dominate, while for Player 2, strategy B dominates</li>
+                    <li><strong>Conditional dominance:</strong> One strategy is better in some scenarios but not others</li>
+                    <li><strong>Multiple equilibria:</strong> Games can have multiple Nash equilibria without strict dominance</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                In the context of this lecture, we are only talking about strict dominance. But remember, there can be scenarios where you have mixed dominance - sometimes for player 1 maybe confess is the dominant factor, whereas for player 2 quiet can be the dominant factor. Those kinds of scenarios can happen.
+            </div>
+            
+            <h3>4.7 Strict Dominance vs. Nash Equilibrium</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Strict Dominance</th>
+                        <th>Nash Equilibrium</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Definition</strong></td>
+                        <td>One strategy always beats another</td>
+                        <td>No player benefits from unilateral deviation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Perspective</strong></td>
+                        <td>Compares strategies for a single player</td>
+                        <td>Considers all players' strategies together</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Existence</strong></td>
+                        <td>May or may not exist in a game</td>
+                        <td>Every finite game has at least one (in mixed strategies)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relationship</strong></td>
+                        <td>If all players have strict dominant strategies, their combination forms Nash equilibrium</td>
+                        <td>Nash equilibrium may exist even without strict dominance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rationality</strong></td>
+                        <td>Playing strictly dominated strategy is irrational</td>
+                        <td>All strategies at Nash equilibrium are rational choices</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Strict dominance ka matlab hai ki ek strategy doosri strategy se hamesha better hai, chahe opponent kuch bhi kare. Jaise prisoner's dilemma mein Confess (C) strategy hamesha Quiet (Q) se better hai, isliye C strictly dominates Q. Agar kisi player ke paas strictly dominant strategy hai, to wo rational player us strategy ko definitely choose karega. Lekin dhyan rahe - har game mein strict dominance nahi hoti. Kuch games mein mixed dominance ho sakta hai ya bilkul dominance na ho. Jab sabhi players ke paas strictly dominant strategy ho, to unka combination hi Nash equilibrium banta hai.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Strict Dominance</h4>
+                <ul>
+                    <li>Strategy X strictly dominates Y if X always gives better payoffs than Y, regardless of opponents' choices</li>
+                    <li>Rational players never choose strictly dominated strategies</li>
+                    <li>In the Prisoner's Dilemma, Confess strictly dominates Quiet for both players</li>
+                    <li>Not all games have strict dominance - some have mixed or no dominance</li>
+                    <li>When all players have strictly dominant strategies, their combination is a unique Nash equilibrium</li>
+                    <li>Playing a strictly dominated strategy is considered irrational in game theory</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📚 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: What is the difference between strict and weak dominance?</strong>
+                    <div class="answer">Strict dominance means one strategy always gives strictly better payoffs. Weak dominance means one strategy gives better or equal payoffs, with at least one case being strictly better.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: Why would a rational player never choose a strictly dominated strategy?</strong>
+                    <div class="answer">Because by definition, there exists another strategy that always gives better outcomes, so choosing the dominated strategy would be irrational and suboptimal.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: If Player 1 has a strictly dominant strategy, does this guarantee Player 2 also has one?</strong>
+                    <div class="answer">No, each player's dominance is independent. Player 1 might have strict dominance while Player 2 might not, or they might have different types of dominance.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: In the Prisoner's Dilemma, why does Confess strictly dominate Quiet?</strong>
+                    <div class="answer">Because choosing Confess gives a better payoff than Quiet in both possible scenarios: when the other player is Quiet (0 vs -1) and when they Confess (-8 vs -12).</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Real-World Applications -->
+        <section id="applications">
+            <h2>5. Real-World Applications of Nash Equilibrium</h2>
+            
+            <p>Nash equilibrium and strict dominance are not just theoretical concepts - they have numerous real-world applications in military strategy, international trade, business competition, and more. Let's explore these applications in detail.</p>
+            
+            <!-- Application 1: Military Conflict -->
+            <div id="military-conflict">
+                <h3>5.1 Military Conflict: Attack vs. Defend</h3>
+                
+                <h4>The Scenario</h4>
+                <p>Consider two countries in a potential conflict situation. Each country must decide whether to <strong>attack</strong> first or adopt a <strong>defensive</strong> posture. This represents a strategic dilemma similar to the prisoner's dilemma.</p>
+                
+                <div class="professor-note">
+                    There are a lot of times we have seen that two countries are considering whether to go to war. This is also a kind of game they have to play - a mind game. They need to look at their strength and decide whether they should attack or defend.
+                </div>
+                
+                <h4>Game Setup</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Players</strong></td>
+                            <td>Country 1 and Country 2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strategies</strong></td>
+                            <td>Defend (D) or Attack (A)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Payoffs</strong></td>
+                            <td>Measured in terms of losses (lives lost, resources depleted)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Key Factor</strong></td>
+                            <td>Military technology gives advantage to the side that strikes first</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Payoff Matrix</h4>
+                <div class="payoff-matrix">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Country 1 \ Country 2</th>
+                                <th>Defend (D)</th>
+                                <th>Attack (A)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Defend (D)</strong></td>
+                                <td style="background: #d4edda;">(-3, -3)</td>
+                                <td style="background: #f8d7da;">(-4, -1)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Attack (A)</strong></td>
+                                <td style="background: #f8d7da;">(-1, -4)</td>
+                                <td style="background: #fff3cd;">(-2, -2)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4>Understanding the Payoffs</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Both Defend (D, D):</strong> Both remain peaceful, minimal losses (-3, -3) - best collective outcome</li>
+                    <li><strong>Country 1 Defends, Country 2 Attacks (D, A):</strong> Country 2 has advantage of first strike, Country 1 suffers heavy losses (-4, -1)</li>
+                    <li><strong>Country 1 Attacks, Country 2 Defends (A, D):</strong> Country 1 has first-strike advantage, Country 2 suffers (-1, -4)</li>
+                    <li><strong>Both Attack (A, A):</strong> Full-scale war with mutual destruction (-2, -2)</li>
+                </ul>
+                
+                <div class="professor-note">
+                    When any country is going for war, irrespective of who is starting it first, there will be loss of lives. Either they can remain peaceful (defend), in which case nobody will lose any life, or they have to attack. Whoever is attacking first has the advantage because modern military technology gives advantage to the attacker.
+                </div>
+                
+                <h4>Strategic Analysis</h4>
+                <p>Let's determine the dominant strategy for each country:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Opponent's Strategy</th>
+                            <th>Country 1: Defend</th>
+                            <th>Country 1: Attack</th>
+                            <th>Better Choice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Country 2 Defends</td>
+                            <td>-3</td>
+                            <td style="background: #d4edda;">-1 ✓</td>
+                            <td><strong>Attack</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Country 2 Attacks</td>
+                            <td>-4</td>
+                            <td style="background: #d4edda;">-2 ✓</td>
+                            <td><strong>Attack</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="formula-box">
+                    <h4>Conclusion:</h4>
+                    <p><strong>Attack strictly dominates Defend</strong> for both countries.</p>
+                    <p><strong>Nash Equilibrium: (Attack, Attack)</strong> with payoffs (-2, -2)</p>
+                    <p style="margin-top: 15px; color: #dc3545;">⚠️ <strong>Paradox:</strong> Both countries would be better off if they both chose Defend (-3, -3 is better than -2, -2), but the Nash equilibrium drives them to mutual attack!</p>
+                </div>
+                
+                <h4>Real-World Implications</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Arms Races:</strong> Explains why countries engage in expensive military buildups even when peace would be better for all</li>
+                    <li><strong>Preemptive Strikes:</strong> Game theory shows why first-strike advantage can lead to instability</li>
+                    <li><strong>Deterrence:</strong> Understanding these dynamics helps design better deterrence strategies</li>
+                    <li><strong>International Treaties:</strong> Peace treaties can help achieve the cooperative (D, D) outcome by providing enforcement mechanisms</li>
+                </ul>
+            </div>
+            
+            <!-- Application 2: Trade War -->
+            <div id="trade-war" style="margin-top: 50px;">
+                <h3>5.2 International Trade Wars: Tariff vs. Free Trade</h3>
+                
+                <h4>The Scenario</h4>
+                <p>In international trade, countries face a decision about whether to impose <strong>tariffs</strong> (taxes on imported goods) or practice <strong>free trade</strong> (no taxes). This creates a strategic situation similar to the prisoner's dilemma.</p>
+                
+                <div class="professor-note">
+                    Right now there are a lot of wars - military wars. Let's talk about trade wars. Right now we can see that America is doing this trade war with all other countries. It imposes a lot of taxes on India and other nations.
+                </div>
+                
+                <h4>Why Countries Impose Tariffs</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reason</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Protect Domestic Industries</strong></td>
+                            <td>Makes imported goods more expensive, giving domestic producers an advantage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Generate Revenue</strong></td>
+                            <td>Tariffs bring tax revenue to the government</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Negotiate Leverage</strong></td>
+                            <td>Can be used as negotiating tools in trade agreements</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Political Pressure</strong></td>
+                            <td>Domestic industries lobby for protection from foreign competition</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Trade-offs</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Best Individual Outcome:</strong> Tax imports while other countries don't tax your exports - domestic industry protected at home, competitive abroad, plus tax revenue</li>
+                    <li><strong>Worst Individual Outcome:</strong> No tax on imports while other countries tax your exports - domestic industries suffer, exports reduced</li>
+                    <li><strong>Best Collective Outcome:</strong> Free trade for all - maximum economic efficiency and consumer welfare</li>
+                    <li><strong>Nash Equilibrium:</strong> Both countries tax each other - protective but inefficient</li>
+                </ul>
+                
+                <h4>Payoff Matrix</h4>
+                <div class="payoff-matrix">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Country 1 \ Country 2</th>
+                                <th>No Tax (NT)</th>
+                                <th>Tax (T)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>No Tax (NT)</strong></td>
+                                <td style="background: #d4edda;">(-3, -3)</td>
+                                <td style="background: #f8d7da;">(-4, -1)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tax (T)</strong></td>
+                                <td style="background: #f8d7da;">(-1, -4)</td>
+                                <td style="background: #fff3cd;">(-2, -2)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p style="margin-top: 20px;"><em>Note: Negative values represent economic inefficiency and loss of welfare. Lower absolute values are better.</em></p>
+                
+                <h4>Strategic Analysis</h4>
+                <p>Following the same analysis as before:</p>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li>If Country 2 chooses No Tax, Country 1 is better off choosing Tax (-1 vs -3)</li>
+                    <li>If Country 2 chooses Tax, Country 1 is better off choosing Tax (-2 vs -4)</li>
+                    <li><strong>Tax strictly dominates No Tax</strong> for both countries</li>
+                    <li><strong>Nash Equilibrium: (Tax, Tax)</strong> with payoffs (-2, -2)</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Because of this trade-off, and because Tax dominates No Tax, that is why Tax-Tax is going to be the Nash equilibrium. Both countries will tax each other, even though both would gain more from free trade.
+                </div>
+                
+                <h4>Real-World Examples</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trade Conflict</th>
+                            <th>Nash Equilibrium Outcome</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>US-China Trade War</strong></td>
+                            <td>Both impose tariffs on each other's goods</td>
+                            <td>Higher prices for consumers, reduced trade volume</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Brexit Trade Negotiations</strong></td>
+                            <td>Barriers between UK and EU</td>
+                            <td>Reduced efficiency compared to free trade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Agricultural Subsidies</strong></td>
+                            <td>Multiple countries subsidize/protect agriculture</td>
+                            <td>Global market distortions</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>How to Escape the Dilemma</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Trade Agreements:</strong> WTO, NAFTA, EU - provide enforcement mechanisms for cooperation</li>
+                    <li><strong>Repeated Interactions:</strong> Long-term relationships encourage cooperation</li>
+                    <li><strong>International Institutions:</strong> Provide forums for negotiation and dispute resolution</li>
+                    <li><strong>Reputation Effects:</strong> Countries care about their reputation as reliable trade partners</li>
+                </ul>
+            </div>
+            
+            <!-- Application 3: Advertising Competition -->
+            <div id="advertising" style="margin-top: 50px;">
+                <h3>5.3 Corporate Advertising Competition</h3>
+                
+                <h4>The Scenario</h4>
+                <p>Two competing companies must decide whether to invest in advertising for their products. Advertising is expensive, but can capture market share from competitors. This creates another prisoner's dilemma situation.</p>
+                
+                <h4>Game Setup</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Players</strong></td>
+                            <td>Company 1 and Company 2 (competitors in the same market)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strategies</strong></td>
+                            <td>Advertise (Ad) or No Advertisement (No Ad)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costs</strong></td>
+                            <td>Advertising requires significant investment</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Benefits</strong></td>
+                            <td>Can capture market share if only one company advertises</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Strategic Considerations</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Both No Ad:</strong> Save advertising costs, split market equally - best collective outcome</li>
+                    <li><strong>One Advertises, Other Doesn't:</strong> Advertiser captures large market share despite costs, non-advertiser loses market</li>
+                    <li><strong>Both Advertise:</strong> High costs for both, market share remains roughly equal - wasteful arms race</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Let's say two companies are competitive companies, and they are thinking about whether to go for an advertisement of a product. One may go for the advertisement, the other one may not go for the advertisement. When you are doing advertisement, you need to spend money on that also. If you are not doing advertisement and the other company is doing advertisement, they will gain a lot.
+                </div>
+                
+                <h4>Payoff Matrix</h4>
+                <div class="payoff-matrix">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company 1 \ Company 2</th>
+                                <th>No Ad</th>
+                                <th>Ad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>No Ad</strong></td>
+                                <td style="background: #d4edda;">(4, 4)</td>
+                                <td style="background: #f8d7da;">(1, 2)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ad</strong></td>
+                                <td style="background: #f8d7da;">(2, 1)</td>
+                                <td style="background: #fff3cd;">(2, 2)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p style="margin-top: 20px;"><em>Note: Positive values represent profit levels (higher is better).</em></p>
+                
+                <h4>Strategic Analysis</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Opponent's Strategy</th>
+                            <th>Company 1: No Ad</th>
+                            <th>Company 1: Ad</th>
+                            <th>Better Choice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Company 2: No Ad</td>
+                            <td>4</td>
+                            <td style="background: #d4edda;">2 → Actually 4 > 2</td>
+                            <td><strong>Depends on payoff structure</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Company 2: Ad</td>
+                            <td>1</td>
+                            <td style="background: #d4edda;">2 ✓</td>
+                            <td><strong>Ad</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="formula-box" style="background: #fff3cd; border-color: #ffc107;">
+                    <h4 style="color: #856404;">Note on This Example:</h4>
+                    <p>With the payoff matrix (4,1,2,2), this game shows that both companies will choose to advertise, creating Nash equilibrium at (Ad, Ad) with payoffs (2, 2), even though (No Ad, No Ad) giving (4, 4) would be collectively better.</p>
+                </div>
+                
+                <h4>Real-World Examples</h4>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Coca-Cola vs. Pepsi:</strong> Both spend billions on advertising despite similar market shares</li>
+                    <li><strong>Political Campaigns:</strong> Candidates advertise heavily even though both could save money</li>
+                    <li><strong>Pharmaceutical Marketing:</strong> Drug companies advertise aggressively to doctors and consumers</li>
+                    <li><strong>Tech Company Promotions:</strong> Apple vs. Samsung - constant advertising despite established brands</li>
+                </ul>
+                
+                <h4>Industry Implications</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Implication</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Advertising Arms Race</strong></td>
+                            <td>Companies locked in costly advertising competition with no net benefit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Barriers to Entry</strong></td>
+                            <td>New entrants must match advertising spending, creating entry barriers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consumer Impact</strong></td>
+                            <td>Advertising costs passed to consumers through higher prices</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Market Inefficiency</strong></td>
+                            <td>Resources spent on advertising instead of product improvement</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Nash equilibrium ke bahut practical applications hain real world mein. Military conflicts mein countries ko attack ya defend choose karna hota hai - game theory batata hai ki dono attack choose karenge jabki peace dono ke liye better hota. International trade mein countries tariffs lagate hain halanki free trade sabke liye better hota. Business competition mein companies advertising par bahut paisa kharch karti hain, jabki koi bhi advertising na kare to dono ke liye better hota. Ye sab prisoner's dilemma ke examples hain jahan individual rational choices collective suboptimal outcomes dete hain. International agreements aur cooperation se in situations ko improve kiya ja sakta hai.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Applications</h4>
+                <ul>
+                    <li>Nash equilibrium explains many real-world competitive situations across different domains</li>
+                    <li>Military conflicts show how rational strategies can lead to arms races and preemptive strikes</li>
+                    <li>Trade wars demonstrate why countries impose tariffs despite free trade being collectively better</li>
+                    <li>Advertising competition explains costly marketing spending that benefits neither competitor</li>
+                    <li>All these scenarios share the prisoner's dilemma structure with strict dominance</li>
+                    <li>Cooperation mechanisms (treaties, agreements, institutions) can help achieve better outcomes</li>
+                    <li>Understanding game theory helps design better policies and business strategies</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📚 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1: Why do countries end up in trade wars despite free trade being better for all?</strong>
+                    <div class="answer">Because imposing tariffs is the dominant strategy for each country individually - it protects domestic industries and generates revenue, regardless of what other countries do.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2: How can international trade agreements help escape the tariff dilemma?</strong>
+                    <div class="answer">Trade agreements provide enforcement mechanisms and binding commitments that enable countries to cooperate and achieve the mutually beneficial free trade outcome.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3: Why do competing companies spend heavily on advertising?</strong>
+                    <div class="answer">Advertising is a dominant strategy - if the competitor advertises and you don't, you lose market share. So both advertise even though neither advertising would save both companies money.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4: What gives the first-strike advantage in military conflicts?</strong>
+                    <div class="answer">Modern military technology and strategic positioning give significant advantages to the side that attacks first, making attack a more attractive option than defend.</div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5: What common pattern do all these applications share?</strong>
+                    <div class="answer">They all follow the prisoner's dilemma structure where individual rational choices lead to collectively suboptimal outcomes, and cooperation would benefit everyone.</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 6: Key Insights and Takeaways -->
+        <section id="key-insights">
+            <h2>6. Key Insights and Comprehensive Takeaways</h2>
+            
+            <h3>6.1 Fundamental Principles from This Lecture</h3>
+            
+            <div class="formula-box" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
+                <h4>Core Takeaway Points:</h4>
+                <ul style="text-align: left; margin-top: 15px; line-height: 2;">
+                    <li><strong>Payoff Matrix:</strong> A game matrix represents a player's preferences according to the assumptions made about the game</li>
+                    <li><strong>Strict Dominance:</strong> Strategy X dominates or strictly dominates strategy Y if it produces a greater payoff or higher payoff than Y regardless of what all other players do</li>
+                    <li><strong>Rationality:</strong> Playing a strictly dominated strategy is irrational - another strategy always yields a better outcome</li>
+                    <li><strong>Nash Equilibrium:</strong> The outcome where no player can improve by unilaterally changing their strategy</li>
+                    <li><strong>Non-optimality:</strong> Nash equilibrium does not always produce the optimal outcome for all players</li>
+                </ul>
+            </div>
+            
+            <h3>6.2 Summary Table: Comparing All Examples</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Players</th>
+                        <th>Strategies</th>
+                        <th>Dominant Strategy</th>
+                        <th>Nash Equilibrium</th>
+                        <th>Better Cooperative Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Prisoner's Dilemma</strong></td>
+                        <td>2 Prisoners</td>
+                        <td>Quiet / Confess</td>
+                        <td>Confess</td>
+                        <td>(C, C): -8, -8</td>
+                        <td>(Q, Q): -1, -1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Military Conflict</strong></td>
+                        <td>2 Countries</td>
+                        <td>Defend / Attack</td>
+                        <td>Attack</td>
+                        <td>(A, A): -2, -2</td>
+                        <td>(D, D): -3, -3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trade War</strong></td>
+                        <td>2 Countries</td>
+                        <td>No Tax / Tax</td>
+                        <td>Tax</td>
+                        <td>(T, T): -2, -2</td>
+                        <td>(NT, NT): -3, -3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Advertising Competition</strong></td>
+                        <td>2 Companies</td>
+                        <td>No Ad / Ad</td>
+                        <td>Ad</td>
+                        <td>(Ad, Ad): 2, 2</td>
+                        <td>(No Ad, No Ad): 4, 4</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>6.3 Important Observations</h3>
+            
+            <h4>1. The Paradox of Rationality</h4>
+            <p>In all examples, <strong>individual rationality leads to collective irrationality</strong>. Each player makes the best choice for themselves, but together they achieve a worse outcome than if they had cooperated.</p>
+            
+            <h4>2. The Role of Communication and Trust</h4>
+            <p><strong>Lack of communication and trust</strong> is the root cause of suboptimal outcomes. If players could credibly commit to cooperation, they would achieve better results.</p>
+            
+            <h4>3. The Importance of Repeated Interactions</h4>
+            <p>In <strong>repeated games</strong>, players can develop cooperation over time through reputation effects and the shadow of the future.</p>
+            
+            <h4>4. Institutional Solutions</h4>
+            <p><strong>Institutions, agreements, and enforcement mechanisms</strong> can help players escape prisoner's dilemmas by making cooperation enforceable and defection costly.</p>
+            
+            <h3>6.4 When Nash Equilibrium Fails to Predict</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Limitation</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Irrational Players</strong></td>
+                        <td>Nash equilibrium assumes rational players; real humans may be emotional or bounded</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multiple Equilibria</strong></td>
+                        <td>Some games have multiple Nash equilibria; theory doesn't predict which will occur</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mixed Strategies</strong></td>
+                        <td>Pure strategy equilibria may not exist; players may need to randomize</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incomplete Information</strong></td>
+                        <td>Players may not know payoffs or strategies available to others</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Learning and Adaptation</strong></td>
+                        <td>Players may learn and change strategies over time, moving toward equilibrium gradually</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>6.5 Relevance to Artificial Intelligence</h3>
+            
+            <p>Nash equilibrium and game theory are fundamental to many AI applications:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>AI Application</th>
+                        <th>How Game Theory Is Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Multi-Agent Systems</strong></td>
+                        <td>Predicting and designing behavior for multiple autonomous agents</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reinforcement Learning</strong></td>
+                        <td>Finding optimal policies in competitive or cooperative environments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Algorithmic Game Theory</strong></td>
+                        <td>Designing mechanisms, auctions, and market systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adversarial AI</strong></td>
+                        <td>Security, cybersecurity, and robust AI systems against attacks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Negotiation Agents</strong></td>
+                        <td>Automated negotiation and bargaining systems</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                What are the takeaway points from this lecture? The payoffs in a game matrix represent a player's preferences according to the assumptions. Strategy X dominates or strictly dominates strategy Y if it produces a greater payoff than Y regardless of what all other players do. And playing a strictly dominated strategy is irrational - another strategy always yields a better outcome.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Is lecture se humne seekha ki game theory aur Nash equilibrium real-world situations ko samajhne aur predict karne ke liye bahut powerful tools hain. Sabse important lesson ye hai ki individual rationality hamesha collective optimality nahi deti. Prisoner's dilemma, military conflicts, trade wars aur advertising competition - sab mein yahi pattern dikhta hai. Strict dominance matlab ek strategy hamesha better hoti hai, aur Nash equilibrium woh stable point hai jahan se koi deviate nahi karna chahta. Lekin ye optimal nahi hota. Cooperation, trust, institutions aur repeated interactions se better outcomes achieve kiye ja sakte hain. Ye concepts AI mein bahut important hain, especially multi-agent systems aur strategic decision making mein.</p>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Final Key Takeaways</h4>
+                <ul>
+                    <li>Game theory provides a mathematical framework for analyzing strategic interactions</li>
+                    <li>Nash equilibrium is stable but not always optimal for all players</li>
+                    <li>Strict dominance simplifies analysis - rational players always choose dominant strategies</li>
+                    <li>Prisoner's dilemma appears across many real-world scenarios from war to business</li>
+                    <li>Individual rationality often leads to collectively suboptimal outcomes</li>
+                    <li>Cooperation, communication, trust, and enforcement can help achieve better outcomes</li>
+                    <li>Game theory is fundamental to AI, especially multi-agent systems and strategic planning</li>
+                    <li>Understanding these concepts helps design better policies, strategies, and AI systems</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Section 7: Mind Map -->
+        <section id="mind-map">
+            <div class="mind-map">
+                <h3>🧠 Comprehensive Concept Mind Map</h3>
+                
+                <div class="mind-map-container">
+                    <div class="main-topic">
+                        Nash Equilibrium & Strict Dominance
+                    </div>
+                    
+                    <div class="subtopics">
+                        <div class="subtopic">
+                            <h4>Core Concepts</h4>
+                            <ul>
+                                <li>Nash Equilibrium Definition</li>
+                                <li>Non-cooperative Games</li>
+                                <li>Payoff Matrix</li>
+                                <li>Dominant Strategy</li>
+                                <li>Strictly Dominated Strategy</li>
+                                <li>Stability and Self-enforcement</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Prisoner's Dilemma</h4>
+                            <ul>
+                                <li>Two prisoners, no communication</li>
+                                <li>Strategies: Quiet vs Confess</li>
+                                <li>Confess strictly dominates Quiet</li>
+                                <li>Nash Equilibrium: (C, C)</li>
+                                <li>Better outcome: (Q, Q)</li>
+                                <li>Demonstrates suboptimality</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Strict Dominance</h4>
+                            <ul>
+                                <li>Always gives better payoffs</li>
+                                <li>Independent of opponent's choice</li>
+                                <li>Rational players choose dominant strategy</li>
+                                <li>Not all games have strict dominance</li>
+                                <li>Can be mixed for different players</li>
+                                <li>Simplifies game analysis</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Military Applications</h4>
+                            <ul>
+                                <li>Attack vs Defend dilemma</li>
+                                <li>First-strike advantage</li>
+                                <li>Arms races explanation</li>
+                                <li>Nash Equilibrium: mutual attack</li>
+                                <li>Better outcome: mutual defense</li>
+                                <li>Role of deterrence and treaties</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Trade War Applications</h4>
+                            <ul>
+                                <li>Tariff vs Free Trade</li>
+                                <li>Protect domestic industries</li>
+                                <li>Tax strictly dominates No Tax</li>
+                                <li>Nash Equilibrium: mutual tariffs</li>
+                                <li>Better outcome: free trade</li>
+                                <li>Role of trade agreements</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Business Competition</h4>
+                            <ul>
+                                <li>Advertising competition</li>
+                                <li>Ad vs No Ad dilemma</li>
+                                <li>Costly arms race</li>
+                                <li>Nash Equilibrium: both advertise</li>
+                                <li>Better outcome: neither advertises</li>
+                                <li>Market inefficiency</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>Key Insights</h4>
+                            <ul>
+                                <li>Individual rationality ≠ collective optimality</li>
+                                <li>Lack of trust causes suboptimal outcomes</li>
+                                <li>Cooperation requires enforcement</li>
+                                <li>Repeated games enable cooperation</li>
+                                <li>Institutions can help escape dilemmas</li>
+                                <li>Fundamental to AI and multi-agent systems</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic">
+                            <h4>AI Relevance</h4>
+                            <ul>
+                                <li>Multi-agent systems design</li>
+                                <li>Reinforcement learning</li>
+                                <li>Algorithmic game theory</li>
+                                <li>Adversarial AI and security</li>
+                                <li>Automated negotiation</li>
+                                <li>Strategic decision-making</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FOOTER -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong><br>
+                Probability and Statistics in AI<br>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

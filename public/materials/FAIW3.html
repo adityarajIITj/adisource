@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation of AI - Search Algorithms</title>
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fafafa
+        }
+
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-info {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .toc {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .toc h2 {
+            color: #667eea;
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+
+        .toc a {
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #667eea;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .key-term {
+            background: linear-gradient(120deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .definition-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example-box {
+            background: #f0fff4;
+            border: 2px solid #90ee90;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .algorithm-box {
+            background: #fff5ee;
+            border: 2px solid #ffa500;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .diagram-placeholder {
+            background: #e8f4f8;
+            border: 2px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .image-container {
+            max-width: 900px;
+            margin: 20px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(12, 18, 36, 0.08);
+            border: 1px solid #e6eef8;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .image-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 16/9;
+        }
+
+        .image-caption,
+        .image-container figcaption {
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: #475569;
+            text-align: center;
+            background: #fff;
+        }
+
+        /* keep existing dashed placeholder style usable as fallback */
+        .image-placeholder {
+            display: none;
+            /* hide text placeholders when real images are present */
+        }
+
+        @media (max-width: 600px) {
+            .image-container {
+                margin: 12px;
+                border-radius: 10px;
+            }
+
+            .image-caption {
+                font-size: 0.88rem;
+                padding: 8px 10px;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 5px solid #ff6b6b;
+            font-style: italic;
+        }
+
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+
+        .practice-questions {
+            background: #f1f3f4;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 5px solid #4285f4;
+        }
+
+        .practice-questions h4 {
+            color: #4285f4;
+            margin-top: 0;
+        }
+
+        .key-takeaways {
+            background: #e8f5e8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 5px solid #28a745;
+        }
+
+        .key-takeaways h4 {
+            color: #28a745;
+            margin-top: 0;
+        }
+
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+
+        .key-takeaways li {
+            margin: 8px 0;
+            font-weight: 500;
+        }
+
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .mind-map h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .mind-map-node {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .mind-map-subnode {
+            display: inline-block;
+            background: #f8f9ff;
+            color: #667eea;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            font-size: 0.9em;
+        }
+
+        .formula {
+            background: #f8f9ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border: 1px solid #667eea;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .professor-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #f39c12;
+        }
+
+        .professor-note strong {
+            color: #e67e22;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Foundation of AI</h1>
+        <div style="font-size: 1.2em; margin-top: 10px;">Search Algorithms in Artificial Intelligence</div>
+    </div>
+
+    <div class="toc">
+        <h2>📚 Table of Contents</h2>
+        <ul>
+            <li><a href="#search-problem">1. Search Problem in AI</a></li>
+            <li><a href="#breadth-first-search">2. Breadth-First Search (BFS)</a></li>
+            <li><a href="#depth-first-search">3. Depth-First Search (DFS)</a></li>
+            <li><a href="#uniform-cost-search">4. Uniform Cost Search (UCS)</a></li>
+            <li><a href="#a-star-search">5. A* Search</a></li>
+            <li><a href="#completeness-optimality">6. Completeness and Optimality</a></li>
+            <li><a href="#algorithm-comparison">7. Algorithm Comparison</a></li>
+            <li><a href="#mind-map">8. Complete Mind Map</a></li>
+        </ul>
+    </div>
+
+    <div class="section" id="search-problem">
+        <h2>1. Search Problem in AI</h2>
+
+        <div class="definition-box">
+            <strong>Search in AI:</strong> <span class="key-term">Search</span> is the process of navigating a <span
+                class="key-term">problem space</span> (also called <span class="key-term">search space</span>) to find a
+            <span class="key-term">solution</span>.
+        </div>
+
+        <p>In artificial intelligence, search algorithms are fundamental tools that help AI agents decide which actions
+            to take in an environment. The main goal is to find a path from an <span class="key-term">initial
+                state</span> to a <span class="key-term">goal state</span>.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "A solution means we want to find a path from initial state
+            to goal state. There might be multiple goals also, and AI agents should use these search algorithms to
+            decide which actions to take in that particular search environment."
+        </div>
+
+        <h3>Types of Search Algorithms</h3>
+
+        <table>
+            <tr>
+                <th>Search Type</th>
+                <th>Alternative Name</th>
+                <th>Characteristics</th>
+                <th>Examples</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Uninformed Search</span></td>
+                <td>Blind Search</td>
+                <td>No additional information about the goal location</td>
+                <td>BFS, DFS</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Informed Search</span></td>
+                <td>Heuristic Search</td>
+                <td>Uses heuristic information to guide the search</td>
+                <td>UCS, A*</td>
+            </tr>
+        </table>
+
+
+
+        <h3>Graph Representation</h3>
+
+        <p>Search problems are typically represented as <span class="key-term">directed graphs</span> where:</p>
+        <ul>
+            <li><strong>Nodes (States):</strong> Represent different states in the problem space</li>
+            <li><strong>Edges (Actions):</strong> Show possible transitions between states</li>
+            <li><strong>Direction:</strong> Edges have direction - you can reach from C to F, but not necessarily from F
+                to C</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "When you are trying to find the neighbor or the adjacency
+            list of any node, we need to consider only those nodes that are connected through directed edges."
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🎯 Hinglish Summary</h4>
+            <p>Search algorithm ka matlab hai ki hum ek problem space mein navigate karte hain solution dhundne ke liye.
+                Yahan hum initial state se goal state tak ka path dhundte hain. Do types hain - uninformed (blind) aur
+                informed (heuristic) search. Graph representation use karte hain jahan nodes states hain aur edges
+                actions hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🧠 Practice Questions</h4>
+            <ol>
+                <li><strong>Q:</strong> What is the difference between uninformed and informed search?<br>
+                    <strong>A:</strong> Uninformed search has no additional information about goal location and explores
+                    blindly (like BFS, DFS). Informed search uses heuristic information to guide the search more
+                    efficiently (like UCS, A*).
+                </li>
+
+                <li><strong>Q:</strong> Why do we use directed graphs for search problems?<br>
+                    <strong>A:</strong> Directed graphs represent real-world constraints where actions may be one-way.
+                    For example, you might be able to go from state A to B, but not necessarily from B to A.
+                </li>
+
+                <li><strong>Q:</strong> What constitutes a solution in a search problem?<br>
+                    <strong>A:</strong> A solution is a path from the initial state to any one of the goal states,
+                    following the directed edges in the graph.
+                </li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Search involves navigating problem spaces to find solutions</li>
+                <li>Two main categories: uninformed (blind) and informed (heuristic) search</li>
+                <li>Problems are represented as directed graphs with states and actions</li>
+                <li>Goal is to find path from initial state to goal state</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="breadth-first-search">
+        <h2>2. Breadth-First Search (BFS)</h2>
+
+        <div class="definition-box">
+            <strong>Breadth-First Search (BFS):</strong> Explores all nodes at one <span class="key-term">depth
+                level</span> before moving to the next deeper level. Uses a <span class="key-term">queue (FIFO)</span>
+            to manage nodes.
+        </div>
+
+        <h3>How BFS Works</h3>
+
+        <div class="algorithm-box">
+            <h4>BFS Algorithm Steps:</h4>
+            <ol>
+                <li>Start with initial state S</li>
+                <li>Check if S is goal state</li>
+                <li>If not, add all neighbors of S to queue</li>
+                <li>Mark S as visited</li>
+                <li>Take first node from queue</li>
+                <li>Repeat until goal is found</li>
+            </ol>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "BFS explores breadth-wise first before exploring depth-wise
+            search. It will go breadth-wise first before exploring the depth. This algorithm provides us with the
+            shortest path from our initial state to goal state."
+        </div>
+
+        <h3>BFS Example Walkthrough</h3>
+
+        <div class="example-box">
+            <h4>Step-by-Step Execution:</h4>
+
+            <p><strong>Step 1:</strong> Start with S, adjacency = {A, B, D}</p>
+            <p><strong>Step 2:</strong> Explore A first (alphabetical order), adjacency of A = {B, G1}</p>
+            <p><strong>Step 3:</strong> But we must explore all Level 1 nodes first (A, B, D)</p>
+            <p><strong>Step 4:</strong> Explore B, adjacency = {A, C} (ignore already visited A)</p>
+            <p><strong>Step 5:</strong> Explore D, adjacency = {S, C, E} (ignore already visited S)</p>
+            <p><strong>Step 6:</strong> Now move to Level 2: explore G1 (goal found!)</p>
+
+            <div class="formula">
+                Path: S → A → G1
+            </div>
+        </div>
+
+
+        <figure class="image-container">
+            <img src="src/W3/FOAW3I1.jpeg"
+                alt="Search Space Graph showing Initial State S, Goal States G1, G2, G3, and intermediate states A, B, C, D, E, F with directed edges">
+            <figcaption class="image-caption">Figure: Search Space Graph showing Initial State S, Goal States G1, G2,
+                G3, and intermediate states A, B, C, D, E, F with directed edges</figcaption>
+        </figure>
+
+        <h3>Key Characteristics</h3>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>BFS</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Completeness</span></td>
+                <td>Yes</td>
+                <td>Will find solution if one exists</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Optimality</span></td>
+                <td>Yes</td>
+                <td>Finds shortest path (if all actions have same cost)</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Data Structure</span></td>
+                <td>Queue (FIFO)</td>
+                <td>First in, first out</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Memory Usage</span></td>
+                <td>High</td>
+                <td>Stores all nodes at current level</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "We can keep track of visited nodes to avoid infinite loops.
+            If we are not following this, we might form infinite loops when nodes connect back to already visited
+            nodes."
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🎯 Hinglish Summary</h4>
+            <p>BFS matlab breadth-first search - yeh level by level explore karta hai. Pehle sabhi depth 1 ke nodes,
+                phir depth 2 ke, aur aise hi. Queue use karta hai (FIFO). Yeh guarantee karta hai ki shortest path
+                milega agar sab actions ka cost same hai. Memory zyada lagti hai lekin optimal solution deta hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🧠 Practice Questions</h4>
+            <ol>
+                <li><strong>Q:</strong> Why does BFS guarantee the shortest path?<br>
+                    <strong>A:</strong> Because it explores all nodes at depth d before exploring nodes at depth d+1,
+                    ensuring the first goal found is at minimum depth.
+                </li>
+
+                <li><strong>Q:</strong> What data structure does BFS use and why?<br>
+                    <strong>A:</strong> Queue (FIFO) because we need to process nodes in the order they were discovered
+                    to maintain level-by-level exploration.
+                </li>
+
+                <li><strong>Q:</strong> When should we use BFS?<br>
+                    <strong>A:</strong> When we need the shortest path and all actions have the same cost, or when the
+                    search space is not too large.
+                </li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Explores level by level using queue (FIFO)</li>
+                <li>Guarantees shortest path for uniform cost actions</li>
+                <li>Complete algorithm - will find solution if exists</li>
+                <li>High memory usage but optimal results</li>
+                <li>Avoid infinite loops by tracking visited nodes</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="depth-first-search">
+        <h2>3. Depth-First Search (DFS)</h2>
+
+        <div class="definition-box">
+            <strong>Depth-First Search (DFS):</strong> Explores as deep as possible along a branch before <span
+                class="key-term">backtracking</span>. Uses a <span class="key-term">stack (LIFO)</span> for node
+            management or can be implemented recursively.
+        </div>
+
+        <h3>How DFS Works</h3>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "Instead of going breadth-wise, we will now go deeper and
+            deeper into the search space to find a path from our initial state to goal state. If we are stuck then we
+            will backtrack - if there is a node from where we cannot go to any other unvisited nodes, then we will
+            backtrack and go to its parent node."
+        </div>
+
+        <div class="algorithm-box">
+            <h4>DFS Algorithm Steps:</h4>
+            <ol>
+                <li>Start with initial state S</li>
+                <li>Check if current state is goal</li>
+                <li>If not, pick first unvisited neighbor</li>
+                <li>Go deep into that path</li>
+                <li>If stuck (no unvisited neighbors), backtrack</li>
+                <li>Repeat until goal found or all paths explored</li>
+            </ol>
+        </div>
+
+        <h3>DFS Example Walkthrough</h3>
+
+        <div class="example-box">
+            <h4>Step-by-Step Execution:</h4>
+
+            <p><strong>Step 1:</strong> Start with S, adjacency = {A, B, D}</p>
+            <p><strong>Step 2:</strong> Go deep: S → A (mark S visited)</p>
+            <p><strong>Step 3:</strong> From A, adjacency = {B, G1}, go to B (mark A visited)</p>
+            <p><strong>Step 4:</strong> From B, adjacency = {A, C}, A already visited, go to C</p>
+            <p><strong>Step 5:</strong> From C, adjacency = {F, G2}, go to F</p>
+            <p><strong>Step 6:</strong> From F, adjacency = {D, G3}, go to D</p>
+            <p><strong>Step 7:</strong> From D, adjacency = {S, C, E}, S and C visited, go to E</p>
+            <p><strong>Step 8:</strong> From E, adjacency = {G3}, reach goal G3!</p>
+
+            <div class="formula">
+                Path: S → A → B → C → F → D → E → G3
+            </div>
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: DFS tree showing deep exploration path from S through A,B,C,F,D,E to G3, with backtracking
+            arrows]
+        </div>
+
+        <h3>Key Characteristics</h3>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>DFS</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Completeness</span></td>
+                <td>No*</td>
+                <td>May get stuck in infinite loops or infinite paths</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Optimality</span></td>
+                <td>No</td>
+                <td>May not find shortest path</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Data Structure</span></td>
+                <td>Stack (LIFO)</td>
+                <td>Last in, first out (or recursion)</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Memory Usage</span></td>
+                <td>Low</td>
+                <td>Only stores current path</td>
+            </tr>
+        </table>
+
+        <p><em>*Complete in finite search spaces</em></p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "DFS is not able to provide the shortest path because we can
+            see that we have reached to our goal state in a much longer path compared to BFS. However, it's
+            memory-efficient because we only need to store the current path."
+        </div>
+
+        <h3>Comparison with BFS</h3>
+
+        <div class="example-box">
+            <h4>Path Length Comparison:</h4>
+            <ul>
+                <li><strong>BFS Path:</strong> S → A → G1 (3 nodes, shorter)</li>
+                <li><strong>DFS Path:</strong> S → A → B → C → F → D → E → G3 (8 nodes, longer)</li>
+            </ul>
+            <p>This shows that DFS doesn't guarantee the shortest path, but it uses less memory.</p>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🎯 Hinglish Summary</h4>
+            <p>DFS matlab depth-first search - yeh jitna deep ja sakta hai utna jata hai, phir backtrack karta hai.
+                Stack use karta hai (LIFO). Memory kam lagti hai lekin shortest path guarantee nahi hai. Agar infinite
+                loop ho sakta hai toh visited nodes track karna zaroori hai. BFS se longer path mil sakta hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🧠 Practice Questions</h4>
+            <ol>
+                <li><strong>Q:</strong> Why is DFS memory-efficient compared to BFS?<br>
+                    <strong>A:</strong> DFS only needs to store the current path from root to current node, while BFS
+                    stores all nodes at the current level.
+                </li>
+
+                <li><strong>Q:</strong> When would you prefer DFS over BFS?<br>
+                    <strong>A:</strong> When memory is limited, when solutions are likely to be found deep in the search
+                    tree, or when you need to explore all possible paths.
+                </li>
+
+                <li><strong>Q:</strong> How does backtracking work in DFS?<br>
+                    <strong>A:</strong> When a node has no unvisited neighbors, DFS returns to the parent node and tries
+                    other unvisited neighbors.
+                </li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Explores deep paths before backtracking using stack (LIFO)</li>
+                <li>Memory-efficient but may not find shortest path</li>
+                <li>Not complete in infinite spaces, not optimal</li>
+                <li>Good when memory is limited or solutions are deep</li>
+                <li>Must track visited nodes to avoid infinite loops</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="uniform-cost-search">
+        <h2>4. Uniform Cost Search (UCS)</h2>
+
+        <div class="definition-box">
+            <strong>Uniform Cost Search (UCS):</strong> Expands the node with the lowest <span class="key-term">path
+                cost g(n)</span>. Uses a <span class="key-term">priority queue</span> ordered by path cost. Guarantees
+            optimal path regardless of action costs.
+        </div>
+
+        <h3>How UCS Works</h3>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "Now we have a weighted directed graph. We can think about
+            these weights as the cost of reaching from one state to another state. Uniform cost search works by
+            searching those states which take the least cost."
+        </div>
+
+        <div class="algorithm-box">
+            <h4>UCS Algorithm Steps:</h4>
+            <ol>
+                <li>Start with initial state S, g(S) = 0</li>
+                <li>Maintain priority queue ordered by g(n)</li>
+                <li>Expand node with lowest g(n)</li>
+                <li>Calculate g(child) = g(parent) + edge_cost</li>
+                <li>If better path found, update costs</li>
+                <li>Stop when goal is expanded</li>
+            </ol>
+        </div>
+
+        <h3>UCS Example Walkthrough</h3>
+
+        <div class="example-box">
+            <h4>Weighted Graph Example:</h4>
+
+            <p><strong>Initial:</strong> S with neighbors A(5), B(9), D(6)</p>
+            <p><strong>Step 1:</strong> Expand A (lowest cost = 5)</p>
+            <p><strong>Step 2:</strong> From A: B(5+3=8), G1(5+9=14)</p>
+            <p><strong>Step 3:</strong> Expand B (cost = 8, better than 9)</p>
+            <p><strong>Step 4:</strong> From B: C(8+1=9)</p>
+            <p><strong>Step 5:</strong> Expand D (cost = 6)</p>
+            <p><strong>Step 6:</strong> From D: C(6+2=8), E(6+5=11)</p>
+            <p><strong>Step 7:</strong> Expand C (cost = 8, better path than 9)</p>
+            <p><strong>Step 8:</strong> From C: F(8+7=15), G2(8+5=13)</p>
+            <p><strong>Step 9:</strong> Expand E (cost = 11)</p>
+            <p><strong>Step 10:</strong> From E: G3(11+7=18)</p>
+            <p><strong>Step 11:</strong> Expand G2 (cost = 13) - GOAL FOUND!</p>
+
+            <div class="formula">
+                Optimal Path: S → D → C → G2 (Cost = 6 + 2 + 5 = 13)
+            </div>
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Weighted graph showing all nodes with edge costs and g(n) values, highlighting optimal path
+            S→D→C→G2]
+        </div>
+
+        <h3>Key Features</h3>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "At any point of time we can see that if we are following
+            this S to D to C, we are reaching with less cost, whereas if we are following S to A to B to C, it is taking
+            more cost. So maybe we can discard or announce that we will not advance in this path anymore - we can call
+            it as a dead end."
+        </div>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>UCS</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Completeness</span></td>
+                <td>Yes</td>
+                <td>Will find solution if one exists</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Optimality</span></td>
+                <td>Yes</td>
+                <td>Always finds least-cost solution</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Data Structure</span></td>
+                <td>Priority Queue</td>
+                <td>Ordered by path cost g(n)</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Cost Function</span></td>
+                <td>g(n)</td>
+                <td>Cumulative cost from start to node n</td>
+            </tr>
+        </table>
+
+        <h3>Cost Calculation</h3>
+
+        <div class="formula">
+            g(n) = g(parent) + cost(parent, n)
+        </div>
+
+        <p>Where:</p>
+        <ul>
+            <li><strong>g(n):</strong> Total cost from initial state to node n</li>
+            <li><strong>cost(parent, n):</strong> Cost of edge from parent to node n</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>🎯 Hinglish Summary</h4>
+            <p>UCS matlab Uniform Cost Search - yeh weighted graphs ke liye use hota hai. Sabse kam cost wala node pehle
+                expand karta hai. Priority queue use karta hai jo cost ke hisab se arrange hoti hai. Yeh guarantee karta
+                hai ki optimal (sabse kam cost wala) path milega. Better path milne par purane path ko discard kar deta
+                hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🧠 Practice Questions</h4>
+            <ol>
+                <li><strong>Q:</strong> How does UCS differ from BFS?<br>
+                    <strong>A:</strong> BFS treats all edges as having equal cost, while UCS considers actual edge
+                    weights and always expands the lowest-cost node first.
+                </li>
+
+                <li><strong>Q:</strong> Why does UCS use a priority queue?<br>
+                    <strong>A:</strong> To efficiently maintain and access the node with the lowest path cost g(n) at
+                    each step.
+                </li>
+
+                <li><strong>Q:</strong> When should we use UCS over other algorithms?<br>
+                    <strong>A:</strong> When edge costs vary and we need the optimal (minimum cost) solution, but don't
+                    have heuristic information.
+                </li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Expands nodes with lowest path cost g(n) first</li>
+                <li>Uses priority queue for efficient cost-based ordering</li>
+                <li>Guarantees optimal solution for varying edge costs</li>
+                <li>Can discard paths when better alternatives are found</li>
+                <li>Complete and optimal algorithm</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="a-star-search">
+        <h2>5. A* Search</h2>
+
+        <div class="definition-box">
+            <strong>A* Search:</strong> Combines UCS with <span class="key-term">heuristics</span>. Uses evaluation
+            function <span class="key-term">f(n) = g(n) + h(n)</span> where g(n) is path cost and h(n) is heuristic
+            estimate to goal. Finds optimal path if heuristic is <span class="key-term">admissible</span>.
+        </div>
+
+        <h3>The A* Formula</h3>
+
+        <div class="formula">
+            f(n) = g(n) + h(n)
+        </div>
+
+        <p>Where:</p>
+        <ul>
+            <li><strong>f(n):</strong> Total estimated cost (A* score)</li>
+            <li><strong>g(n):</strong> Actual cost from start to node n</li>
+            <li><strong>h(n):</strong> Heuristic estimate from node n to goal</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "A* search has a heuristic value of the estimated cost to
+            reach from that particular state to the goal state. It will find optimal path if the heuristic is
+            admissible, meaning it never overestimates."
+        </div>
+
+        <h3>Admissible Heuristic</h3>
+
+        <div class="definition-box">
+            <strong>Admissible Heuristic:</strong> A heuristic h(n) is admissible if it <span class="key-term">never
+                overestimates</span> the actual cost to reach the goal from node n.
+            <br><br>
+            <strong>Mathematical condition:</strong> h(n) ≤ h*(n) for all n
+            <br>
+            Where h*(n) is the true minimum cost from n to goal.
+        </div>
+
+        <h3>A* Example Walkthrough</h3>
+
+        <div class="example-box">
+            <h4>Weighted Graph with Heuristics:</h4>
+
+            <p><strong>Heuristic values (h(n)):</strong></p>
+            <ul>
+                <li>h(S) = 5, h(A) = 7, h(B) = 3, h(C) = 4, h(D) = 6, h(E) = 5, h(F) = 6</li>
+                <li>h(G1) = 0, h(G2) = 0, h(G3) = 0 (goals)</li>
+            </ul>
+
+            <p><strong>Step-by-Step Execution:</strong></p>
+            <p><strong>Step 1:</strong> Start S, f(S) = 0 + 5 = 5</p>
+            <p><strong>Step 2:</strong> Expand S → A(f=5+7=12), B(f=9+3=12), D(f=6+6=12)</p>
+            <p><strong>Step 3:</strong> Expand A (alphabetical among equal f-values)</p>
+            <p><strong>Step 4:</strong> A → B(f=8+3=11), G1(f=14+0=14)</p>
+            <p><strong>Step 5:</strong> Expand B (f=11, lowest)</p>
+            <p><strong>Step 6:</strong> B → C(f=9+4=13)</p>
+            <p><strong>Step 7:</strong> Expand D (f=12)</p>
+            <p><strong>Step 8:</strong> D → C(f=8+4=12), E(f=11+5=16)</p>
+            <p><strong>Step 9:</strong> Expand C (f=12, better path than f=13)</p>
+            <p><strong>Step 10:</strong> C → F(f=15+6=21), G2(f=13+0=13)</p>
+            <p><strong>Step 11:</strong> Expand G2 (f=13) - GOAL FOUND!</p>
+
+            <div class="formula">
+                Optimal Path: S → D → C → G2 (Cost = 13, f(G2) = 13)
+            </div>
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: A* search tree showing f(n), g(n), and h(n) values for each node, with optimal path
+            highlighted]
+        </div>
+
+        <h3>Heuristic Verification</h3>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> "Let's verify admissibility: From S to G2 via S→D→C→G2 costs
+            13, but h(S)=5 which is less than 13. From S to G1 via S→A→G1 costs 14, but h(S)=5 which is less than 14. So
+            our heuristic never overestimates - it's admissible."
+        </div>
+
+        <div class="example-box">
+            <h4>Admissibility Check:</h4>
+            <ul>
+                <li><strong>Path S→D→C→G2:</strong> Actual cost = 6+2+5 = 13, h(S) = 5 ≤ 13 ✓</li>
+                <li><strong>Path S→A→G1:</strong> Actual cost = 5+9 = 14, h(S) = 5 ≤ 14 ✓</li>
+                <li><strong>All heuristic values are underestimates or exact</strong></li>
+            </ul>
+        </div>
+
+        <h3>Key Characteristics</h3>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>A*</th>
+                <th>Condition</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Completeness</span></td>
+                <td>Yes</td>
+                <td>Always (if heuristic is finite)</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Optimality</span></td>
+                <td>Yes</td>
+                <td>If heuristic is admissible</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Data Structure</span></td>
+                <td>Priority Queue</td>
+                <td>Ordered by f(n) = g(n) + h(n)</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Efficiency</span></td>
+                <td>High</td>
+                <td>Better than UCS with good heuristic</td>
+            </tr>
+        </table>
+
+        <h3>Advantages of A*</h3>
+
+        <ul>
+            <li><strong>Optimal:</strong> Finds best solution when heuristic is admissible</li>
+            <li><strong>Efficient:</strong> Uses heuristic to guide search toward goal</li>
+            <li><strong>Complete:</strong> Will find solution if one exists</li>
+            <li><strong>Flexible:</strong> Performance depends on quality of heuristic</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>🎯 Hinglish Summary</h4>
+            <p>A* search sabse intelligent algorithm hai jo UCS aur heuristic dono use karta hai. Formula hai f(n) =
+                g(n) + h(n). Yahan g(n) actual cost hai aur h(n) estimated cost hai goal tak. Heuristic admissible hona
+                chahiye matlab overestimate nahi karna chahiye. Yeh optimal path guarantee karta hai aur fast bhi hai
+                kyunki heuristic se guided hota hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🧠 Practice Questions</h4>
+            <ol>
+                <li><strong>Q:</strong> What makes A* more efficient than UCS?<br>
+                    <strong>A:</strong> A* uses heuristic information h(n) to estimate remaining cost to goal, guiding
+                    the search toward the target more directly than UCS which only considers past costs.
+                </li>
+
+                <li><strong>Q:</strong> Why must the heuristic be admissible for A* to be optimal?<br>
+                    <strong>A:</strong> If the heuristic overestimates, A* might skip the optimal path thinking it's
+                    more expensive than it actually is.
+                </li>
+
+                <li><strong>Q:</strong> How do you design a good heuristic?<br>
+                    <strong>A:</strong> It should be admissible (never overestimate), consistent, and as close to the
+                    true cost as possible without exceeding it.
+                </li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🔑 Key Takeaways</h4>
+            <ul>
+                <li>Combines actual cost g(n) with heuristic estimate h(n)</li>
+                <li>Uses f(n) = g(n) + h(n) for node evaluation</li>
+                <li>Optimal if heuristic is admissible (never overestimates)</li>
+                <li>More efficient than UCS due to goal-directed search</li>
+                <li>Quality of heuristic determines performance</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="completeness-optimality">
+        <h2>6. Completeness and Optimality</h2>
+
+        <div class="definition-box">
+            <strong>Completeness:</strong> A search algorithm is <span class="key-term">complete</span> if it is
+            guaranteed to find a solution when one exists.
+            <br><br>
+            <strong>Optimality:</strong> A search algorithm is <span class="key-term">optimal</span> if it always finds
+            the least-cost solution (shortest path or minimum cost).
+        </div>
+
+        <h3>Detailed Analysis</h3>
+
+        <table>
+            <tr>
+                <th>Algorithm</th>
+                <th>Complete?</th>
+                <th>Optimal?</th>
+                <th>Conditions</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">BFS</span></td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>Complete for finite spaces; optimal if all actions have same cost</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">DFS</span></td>
+                <td>No*</td>
+                <td>No</td>
+                <td>*Complete only in finite spaces; may get stuck in infinite branches</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">UCS</span></td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>Complete and optimal for any non-negative edge costs</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">A*</span></td>
+                <td>Yes</td>
+                <td>Yes**</td>
+                <td>**Optimal only if heuristic is admissible</td>
+            </tr>
+        </table>
+
+        <h3>Why Completeness Matters</h3>
+
+        <div class="example-box">
+            <h4>Completeness Examples:</h4>
+
+            <p><strong>BFS Complete:</strong> Systematically explores all nodes at each level, so will eventually find
+                any existing solution.</p>
+
+            <p><strong>DFS Incomplete:</strong> May get stuck in infinite paths or cycles, never reaching the goal even
+                if it exists.</p>
+
+            <p><strong>UCS Complete:</strong> Always expands least-cost nodes, ensuring all possible solutions are
+                considered.</p>
+
+            <p><strong>A* Complete:</strong> Combines benefits of UCS with heuristic guidance, maintaining completeness.
+            </p>
+        </div>
+
+        <h3>Why Optimality Matters</h3>
+
+        <div class="example-box">
+            <h4>Optimality Examples:</h4>
+
+            <p><strong>BFS Optimal:</strong> First solution found is at minimum depth (optimal for uniform costs).</p>
+
+            <p><strong>DFS Not Optimal:</strong> May find a long path to goal while shorter paths exist.</p>
+
+            <p><strong>UCS Optimal:</strong> Always expands lowest-cost nodes first, ensuring optimal solution.</p>
+
+            <p><strong>A* Optimal with Admissible Heuristic:</strong> Never overestimates, so won't miss optimal
+                solution.</p>
+            </example-box>
+
+            <h3>Trade-offs</h3>
+
+            <table>
+                <tr>
+                    <th>Property</th>
+                    <th>BFS</th>
+                    <th>DFS</th>
+                    <th>UCS</th>
+                    <th>A*</th>
+                </tr>
+                <tr>
+                    <td><span class="key-term">Time Complexity</span></td>
+                    <td>O(b^d)</td>
+                    <td>O(b^m)</td>
+                    <td>O(b^(C*/ε))</td>
+                    <td>O(b^d)</td>
+                </tr>
+                <tr>
+                    <td><span class="key-term">Space Complexity</span></td>
+                    <td>O(b^d)</td>
+                    <td>O(bm)</td>
+                    <td>O(b^(C*/ε))</td>
+                    <td>O(b^d)</td>
+                </tr>
+                <tr>
+                    <td><span class="key-term">Memory Usage</span></td>
+                    <td>High</td>
+                    <td>Low</td>
+                    <td>High</td>
+                    <td>High</td>
+                </tr>
+            </table>
+
+            <p><em>Where: b = branching factor, d = depth of solution, m = maximum depth, C* = optimal cost, ε = minimum
+                    edge cost</em></p>
+
+            <div class="hinglish-summary">
+                <h4>🎯 Hinglish Summary</h4>
+                <p>Completeness matlab algorithm guaranteed solution dhoond dega agar exist karta hai. Optimality matlab
+                    best solution milega. BFS aur UCS dono complete aur optimal hain. DFS fast hai lekin optimal nahi.
+                    A* sabse best hai agar admissible heuristic use karo - complete bhi hai aur optimal bhi. Trade-off
+                    hai memory aur time ke beech mein.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🧠 Practice Questions</h4>
+                <ol>
+                    <li><strong>Q:</strong> Why is DFS not complete in infinite search spaces?<br>
+                        <strong>A:</strong> DFS can get stuck going down an infinite path and never backtrack to explore
+                        other branches that might contain the goal.
+                    </li>
+
+                    <li><strong>Q:</strong> When would you sacrifice optimality for memory efficiency?<br>
+                        <strong>A:</strong> When memory is severely limited and finding any solution is more important
+                        than finding the best solution.
+                    </li>
+
+                    <li><strong>Q:</strong> How can you make DFS complete?<br>
+                        <strong>A:</strong> Use depth-limited DFS or iterative deepening DFS to avoid infinite paths.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Completeness ensures solution will be found if it exists</li>
+                    <li>Optimality ensures best solution will be found</li>
+                    <li>BFS: complete and optimal for uniform costs</li>
+                    <li>DFS: incomplete and not optimal, but memory efficient</li>
+                    <li>UCS: complete and optimal for any costs</li>
+                    <li>A*: complete and optimal with admissible heuristic</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="algorithm-comparison">
+            <h2>7. Algorithm Comparison</h2>
+
+            <div class="definition-box">
+                <strong>Summary Table:</strong> Comprehensive comparison of all search algorithms covered in the
+                lecture.
+            </div>
+
+            <h3>Complete Comparison Table</h3>
+
+            <table>
+                <tr>
+                    <th>Algorithm</th>
+                    <th>Strategy</th>
+                    <th>Data Structure</th>
+                    <th>Complete</th>
+                    <th>Optimal</th>
+                    <th>Time Complexity</th>
+                    <th>Space Complexity</th>
+                </tr>
+                <tr>
+                    <td><span class="key-term">BFS</span></td>
+                    <td>FIFO (Queue)</td>
+                    <td>Queue</td>
+                    <td>Yes</td>
+                    <td>Yes*</td>
+                    <td>O(b^d)</td>
+                    <td>O(b^d)</td>
+                </tr>
+                <tr>
+                    <td><span class="key-term">DFS</span></td>
+                    <td>LIFO (Stack)</td>
+                    <td>Stack</td>
+                    <td>No**</td>
+                    <td>No</td>
+                    <td>O(b^m)</td>
+                    <td>O(bm)</td>
+                </tr>
+                <tr>
+                    <td><span class="key-term">UCS</span></td>
+                    <td>Lowest Cost First</td>
+                    <td>Priority Queue</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>O(b^(C*/ε))</td>
+                    <td>O(b^(C*/ε))</td>
+                </tr>
+                <tr>
+                    <td><span class="key-term">A*</span></td>
+                    <td>Lowest f(n) = g(n) + h(n)</td>
+                    <td>Priority Queue</td>
+                    <td>Yes</td>
+                    <td>Yes***</td>
+                    <td>O(b^d)</td>
+                    <td>O(b^d)</td>
+                </tr>
+            </table>
+
+            <p><em>*Optimal if all actions have same cost<br>
+                    **Complete only in finite search spaces<br>
+                    ***Optimal if heuristic is admissible</em></p>
+
+            <h3>When to Use Each Algorithm</h3>
+
+            <div class="algorithm-box">
+                <h4>Algorithm Selection Guide:</h4>
+
+                <p><strong>Use BFS when:</strong></p>
+                <ul>
+                    <li>All actions have the same cost</li>
+                    <li>You need the shortest path (minimum steps)</li>
+                    <li>Memory is not a major constraint</li>
+                    <li>Solution is not too deep</li>
+                </ul>
+
+                <p><strong>Use DFS when:</strong></p>
+                <ul>
+                    <li>Memory is very limited</li>
+                    <li>Solutions are likely to be found deep in the tree</li>
+                    <li>You need to explore all possible paths</li>
+                    <li>Finding any solution is more important than optimal solution</li>
+                </ul>
+
+                <p><strong>Use UCS when:</strong></p>
+                <ul>
+                    <li>Actions have different costs</li>
+                    <li>You need the minimum cost solution</li>
+                    <li>No heuristic information is available</li>
+                    <li>Optimality is crucial</li>
+                </ul>
+
+                <p><strong>Use A* when:</strong></p>
+                <ul>
+                    <li>You have a good admissible heuristic</li>
+                    <li>You need optimal solution efficiently</li>
+                    <li>Actions have different costs</li>
+                    <li>You want best performance with optimality guarantee</li>
+                </ul>
+            </div>
+
+            <h3>Performance Comparison</h3>
+
+            <div class="example-box">
+                <h4>Practical Performance (for same problem):</h4>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>BFS</th>
+                        <th>DFS</th>
+                        <th>UCS</th>
+                        <th>A*</th>
+                    </tr>
+                    <tr>
+                        <td>Nodes Expanded</td>
+                        <td>High</td>
+                        <td>Variable</td>
+                        <td>High</td>
+                        <td>Low (with good heuristic)</td>
+                    </tr>
+                    <tr>
+                        <td>Memory Usage</td>
+                        <td>High</td>
+                        <td>Low</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Solution Quality</td>
+                        <td>Optimal*</td>
+                        <td>Suboptimal</td>
+                        <td>Optimal</td>
+                        <td>Optimal**</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Time</td>
+                        <td>Slow</td>
+                        <td>Fast (but may be wrong path)</td>
+                        <td>Slow</td>
+                        <td>Fast (with good heuristic)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Real-World Applications</h3>
+
+            <div class="example-box">
+                <h4>Practical Use Cases:</h4>
+
+                <p><strong>BFS Applications:</strong></p>
+                <ul>
+                    <li>Social network analysis (shortest connection path)</li>
+                    <li>Web crawling (level-by-level exploration)</li>
+                    <li>Puzzle solving (minimum moves)</li>
+                </ul>
+
+                <p><strong>DFS Applications:</strong></p>
+                <ul>
+                    <li>Maze solving (when memory is limited)</li>
+                    <li>Topological sorting</li>
+                    <li>Cycle detection</li>
+                </ul>
+
+                <p><strong>UCS Applications:</strong></p>
+                <ul>
+                    <li>Network routing (minimum cost paths)</li>
+                    <li>Resource allocation</li>
+                    <li>Transportation planning</li>
+                </ul>
+
+                <p><strong>A* Applications:</strong></p>
+                <ul>
+                    <li>GPS navigation (shortest route)</li>
+                    <li>Video game AI (pathfinding)</li>
+                    <li>Robotics (motion planning)</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🎯 Hinglish Summary</h4>
+                <p>Sabse important comparison yeh hai - BFS shortest path deta hai uniform cost mein, DFS memory
+                    efficient hai but optimal nahi, UCS weighted graphs ke liye best hai, aur A* sabse intelligent hai
+                    good heuristic ke saath. Choose karna padega based on requirements - memory constraint hai ya time
+                    constraint hai, optimal solution chahiye ya koi bhi solution chalega.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🧠 Practice Questions</h4>
+                <ol>
+                    <li><strong>Q:</strong> For GPS navigation, which algorithm would be most suitable and why?<br>
+                        <strong>A:</strong> A* search because it can use geographical distance as an admissible
+                        heuristic, making it both optimal and efficient for finding shortest routes.
+                    </li>
+
+                    <li><strong>Q:</strong> If you have unlimited memory but limited time, which algorithm would you
+                        choose?<br>
+                        <strong>A:</strong> A* with a good heuristic, as it will find the optimal solution most quickly
+                        by focusing the search toward the goal.
+                    </li>
+
+                    <li><strong>Q:</strong> When would DFS be the best choice despite its limitations?<br>
+                        <strong>A:</strong> When memory is severely constrained, solutions are likely to be deep, or
+                        when you need to explore all possible paths rather than just find one optimal path.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>No single algorithm is best for all scenarios</li>
+                    <li>Choice depends on problem constraints and requirements</li>
+                    <li>BFS: good for uniform costs, guaranteed shortest path</li>
+                    <li>DFS: memory efficient but not optimal</li>
+                    <li>UCS: optimal for weighted graphs without heuristics</li>
+                    <li>A*: best overall performance with good heuristics</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mind-map" id="mind-map">
+            <h2>🧠 Complete Mind Map: Search Algorithms</h2>
+
+            <div style="margin: 20px 0;">
+                <div class="mind-map-node">SEARCH ALGORITHMS</div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <div class="mind-map-node">UNINFORMED SEARCH</div>
+                <div class="mind-map-node">INFORMED SEARCH</div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <div class="mind-map-subnode">BFS (Queue/FIFO)</div>
+                <div class="mind-map-subnode">DFS (Stack/LIFO)</div>
+                <div class="mind-map-subnode">UCS (Priority Queue)</div>
+                <div class="mind-map-subnode">A* (f=g+h)</div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <div class="mind-map-node">KEY PROPERTIES</div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <div class="mind-map-subnode">Completeness</div>
+                <div class="mind-map-subnode">Optimality</div>
+                <div class="mind-map-subnode">Time Complexity</div>
+                <div class="mind-map-subnode">Space Complexity</div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <div class="mind-map-node">APPLICATIONS</div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <div class="mind-map-subnode">Social Networks</div>
+                <div class="mind-map-subnode">GPS Navigation</div>
+                <div class="mind-map-subnode">Game AI</div>
+                <div class="mind-map-subnode">Robotics</div>
+            </div>
+
+            <div style="margin: 40px 0; padding: 20px; background: #f8f9ff; border-radius: 10px;">
+                <h3 style="color: #667eea; text-align: center;">🔗 Algorithm Relationships</h3>
+                <div style="text-align: left; margin: 20px;">
+                    <p><strong>BFS → UCS:</strong> Add cost consideration</p>
+                    <p><strong>UCS → A*:</strong> Add heuristic guidance</p>
+                    <p><strong>DFS ↔ BFS:</strong> Different exploration strategies</p>
+                    <p><strong>All → Optimality:</strong> Depends on problem constraints</p>
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <div class="mind-map-node">DECISION FACTORS</div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <div class="mind-map-subnode">Memory Constraints</div>
+                <div class="mind-map-subnode">Time Constraints</div>
+                <div class="mind-map-subnode">Solution Quality</div>
+                <div class="mind-map-subnode">Heuristic Availability</div>
+            </div>
+        </div>
+
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+
+</html>

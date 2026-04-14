@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundations of Statistics & Probability: Hypothesis Testing & Statistical Significance</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #667eea;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        nav ul {
+            list-style: none;
+            columns: 2;
+            gap: 20px;
+        }
+
+        nav li {
+            margin-bottom: 10px;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin: 40px 0 20px 0;
+            font-size: 2em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin: 35px 0 15px 0;
+            padding-left: 10px;
+            border-left: 4px solid #764ba2;
+            font-size: 1.6em;
+        }
+
+        h3 {
+            color: #667eea;
+            margin: 25px 0 10px 0;
+            font-size: 1.3em;
+        }
+
+        h4 {
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            line-height: 1.9;
+        }
+
+        .key-term {
+            background: linear-gradient(120deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .note-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .note-box strong {
+            color: #667eea;
+        }
+
+        .example-box {
+            background: #f0f8ff;
+            border-left: 4px solid #764ba2;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example-box strong {
+            color: #764ba2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tbody tr:hover {
+            background: #f5f7fa;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .formula {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-size: 1.05em;
+        }
+
+        .practice-section {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .practice-section h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .qa-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .qa-item strong {
+            color: #667eea;
+        }
+
+        .answer {
+            color: #2e7d32;
+            margin-top: 8px;
+            padding-left: 15px;
+            border-left: 2px solid #4caf50;
+        }
+
+        .key-takeaways {
+            background: #fff9c4;
+            border: 2px solid #ffeb3b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .key-takeaways h4 {
+            color: #f57f17;
+            margin-bottom: 15px;
+        }
+
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-takeaways li {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .key-takeaways li:before {
+            content: "★";
+            position: absolute;
+            left: 0;
+            color: #f57f17;
+            font-size: 1.2em;
+        }
+
+        .hinglish {
+            background: #ede7f6;
+            border: 2px dashed #7c4dff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #512da8;
+        }
+
+        .hinglish strong {
+            color: #512da8;
+        }
+
+        .svg-mindmap {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-top: 2px solid #667eea;
+        }
+
+        .footer-text {
+            font-size: 1em;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .footer-author {
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 5px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .comparison-table {
+            margin: 20px 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Foundations of Statistics & Probability</h1>
+            <p>Hypothesis Testing & Statistical Significance</p>
+        </header>
+
+        <nav>
+            <h3>📑 Table of Contents</h3>
+            <ul>
+                <li><a href="#intro">Introduction to Hypothesis Testing</a></li>
+                <li><a href="#hypothesis">Hypotheses & Null/Alternative Hypotheses</a></li>
+                <li><a href="#significance">Statistical Significance</a></li>
+                <li><a href="#pvalue">Understanding P-Values</a></li>
+                <li><a href="#ttest">The T-Test</a></li>
+                <li><a href="#two-sample">Two-Sample T-Test</a></li>
+                <li><a href="#probability-dist">Probability Distribution Functions</a></li>
+                <li><a href="#practice">Practice Problems & Solutions</a></li>
+                <li><a href="#mindmap">Concept Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content">
+            <h1 id="intro">Introduction to Hypothesis Testing</h1>
+
+            <p>Hypothesis testing is one of the most fundamental and powerful tools in statistical inference. Throughout this course, you have learned about data collection, sample means, and sample variance. Now, when we need to make statistical inferences about populations based on sample data, hypothesis testing becomes indispensable. This module introduces you to the key concepts and techniques that allow us to determine whether observed differences in our data are statistically significant or merely due to random chance.</p>
+
+            <p>Statistical inference often involves asking critical questions about populations based on data collected from relatively small samples. For instance, if a pharmaceutical company claims that a new drug reduces blood pressure by an average of 10 mmHg, how can we verify this claim? Or if an educational researcher proposes a new teaching method, how can we determine whether it genuinely improves student performance compared to traditional methods? These questions lie at the heart of hypothesis testing.</p>
+
+            <p>By the end of this module, you will be able to define and explain key statistical terms including <span class="key-term">hypotheses</span>, <span class="key-term">null and alternative hypotheses</span>, <span class="key-term">p-values</span>, <span class="key-term">T-statistics</span>, and <span class="key-term">degrees of freedom</span>. You will also master the ability to apply the correct steps to perform a two-sample T-test using a T-distribution table to determine the statistical significance of observations.</p>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> Hypothesis testing ek tarika hai jisse hum samajhte hain ke kya hamara observations bas chance se aye hain ya phir koi real difference hai. Agar aap ek naya teaching method try karte ho aur students ke marks thoda zyada aaते hain, to yeh decide karna mushkil hota hai ke kya yeh method really behtar hai ya bas coincidence hai. Isliye hum statistical tools use karte hain!
+            </div>
+
+            <h2 id="hypothesis">Hypotheses & Null/Alternative Hypotheses</h2>
+
+            <h3>What is a Hypothesis?</h3>
+
+            <p>A <span class="key-term">hypothesis</span> is a formal statement or assumption about a population parameter—such as a mean, proportion, or variance—that we want to test using sample data. Think of it as a scientific guess about something in the real world. Rather than making a vague claim, we formalize it into a testable statement that we can verify using statistical methods.</p>
+
+            <p>Consider a practical example: A mobile phone company claims that its battery lasts, on average, for 10 hours on a single charge. This is a hypothesis about the population of all batteries produced by this company. To verify whether this claim is reasonable, we would collect a sample of phones, measure their battery lives, and use statistical tests to determine if the claimed average of 10 hours holds true for the entire population.</p>
+
+            <h3>Null and Alternative Hypotheses</h3>
+
+            <p>In hypothesis testing, we work with two competing claims. The first is called the <span class="key-term">null hypothesis</span>, denoted as \(H_0\). The null hypothesis represents the default assumption—it typically states that nothing has changed, there is no effect, or there is no difference between populations being compared. The null hypothesis is what we assume to be true until we have sufficient evidence to suggest otherwise.</p>
+
+            <p>The second claim is called the <span class="key-term">alternative hypothesis</span>, denoted as \(H_1\) or \(H_A\). The alternative hypothesis represents what we suspect might be true instead of the null hypothesis. It is what we hope to find evidence for through our statistical analysis.</p>
+
+            <div class="example-box">
+                <strong>📊 Example: Battery Life Testing</strong>
+                <p>Company Claim: Battery lasts 10 hours on average.</p>
+                <p><strong>Null Hypothesis \((H_0)\):</strong> \(\mu = 10\) hours (The population mean battery life is exactly 10 hours)</p>
+                <p><strong>Alternative Hypothesis \((H_1)\):</strong> \(\mu < 10\) hours (The population mean battery life is less than 10 hours)</p>
+                <p>Note: \(\mu\) represents the population mean, not the sample mean \((\bar{x})\).</p>
+            </div>
+
+            <h3>Single Sample vs. Two-Sample Comparisons</h3>
+
+            <p>The example above represents a single-sample scenario where we are testing whether a population parameter equals a specific value. However, hypothesis testing can also involve comparing between two or more groups. In a two-sample scenario, we might compare the experiences or outcomes of two groups that have undergone different treatments or interventions.</p>
+
+            <div class="example-box">
+                <strong>📊 Example: Teaching Method Comparison</strong>
+                <p>Suppose we want to test whether a new teaching method produces better results than the traditional method.</p>
+                <p><strong>Null Hypothesis \((H_0)\):</strong> \(\mu_{\text{new}} = \mu_{\text{traditional}}\) (No difference in mean outcomes)</p>
+                <p><strong>Alternative Hypothesis \((H_1)\):</strong> \(\mu_{\text{new}} > \mu_{\text{traditional}}\) (New method produces higher mean outcomes)</p>
+            </div>
+
+            <p>The fundamental principle remains the same: the null hypothesis represents the default assumption of no effect or no difference, while the alternative hypothesis represents our suspicion or expectation of a real difference. Based on our sample data, we will decide whether to reject the null hypothesis in favor of the alternative hypothesis or to fail to reject it.</p>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> Null hypothesis matlab "kuch nahi hua, sab same hai". Alternative hypothesis matlab "haan bhai, kuch change hua hai". Jab hum data collect karte hain aur analyze karte hain, to decide karte hain ke kaun sa hypothesis sahi hai. Agar strong evidence mile, to null hypothesis ko reject kar dete hain!
+            </div>
+
+            <h2 id="significance">Statistical Significance</h2>
+
+            <p><span class="key-term">Statistical significance</span> is a term we frequently hear when validating statistical studies and making inferences. It refers to whether an observed effect or difference is real and not merely due to random chance. This concept is crucial because when analyzing data, we often observe correlations or differences in our samples, but this doesn't automatically mean that the same pattern exists in the broader population.</p>
+
+            <p>Consider a study examining the relationship between study time and exam scores. Suppose we compute a correlation coefficient and find that these two variables are positively correlated in our sample. However, just because we observe a non-zero correlation in our sample doesn't necessarily mean there is a real, statistically significant relationship in the population from which the sample was drawn. The correlation we observed could be a fluke—a random occurrence that is unlikely to hold true in future studies or in the population as a whole.</p>
+
+            <p>This leads to a critical question: <em>Is this observed correlation statistically significant, or could it have happened by random chance?</em> In other words, is the correlation strong enough that we can confidently claim there is a real relationship between the two variables in the population? Or is it merely the result of random variation in our sample?</p>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> Statistical significance ka matlab hai ki jo aapne observe kiya vo real hai, sirf luck ya coincidence nahi. Agar aapko students ka 0.35 correlation dikhe study time aur exam scores ke beech, to sochna padta hai—kya yeh pattern sach mein population mein exist karta hai ya bass hamari sample mein by chance aya?
+            </div>
+
+            <h2 id="pvalue">Understanding P-Values</h2>
+
+            <h3>What is a P-Value?</h3>
+
+            <p>The <span class="key-term">p-value</span> is a foundational concept in statistical inference that allows us to determine whether our observed results are statistically significant. Formally, the p-value is <strong>the probability of obtaining a correlation (or test statistic) as extreme as the one observed, if the true correlation in the population were actually zero (or the null hypothesis were true)</strong>.</p>
+
+            <p>Let's unpack this definition carefully. In hypothesis testing, we assume that the null hypothesis is true. Given this assumption, the p-value answers the question: "What is the probability that we would randomly obtain a sample correlation or difference as large as (or larger than) what we actually observed?" If the population truly had zero correlation or no difference, how likely would it be for us to see the sample results that we did?</p>
+
+            <div class="example-box">
+                <strong>📊 Example: Correlation Between Sleep and Screen Time</strong>
+                <p>Suppose we collect a sample of 50 students and calculate the correlation between daily screen time and sleep duration. We find \(r = -0.35\), indicating a moderate negative correlation.</p>
+                <p><strong>Null Hypothesis:</strong> \(\rho = 0\) (No correlation in the population)</p>
+                <p><strong>P-Value Interpretation:</strong> If there truly were no correlation in the population (\(\rho = 0\)), the p-value tells us the probability of obtaining a sample correlation of -0.35 or more extreme, just by random chance.</p>
+            </div>
+
+            <h3>Interpreting P-Values</h3>
+
+            <p>A <strong>low p-value</strong> (typically less than 0.05) indicates that the observed result is unlikely to have occurred by random chance if the null hypothesis were true. This suggests that the observed effect or difference is statistically significant. In practical terms, a low p-value means: <em>"It's very unlikely that I would see this result if nothing were actually happening."</em></p>
+
+            <p>A <strong>high p-value</strong> (typically greater than 0.05) indicates that the observed result could easily have occurred by random chance even if the null hypothesis were true. This suggests that the observed effect or difference is <strong>not</strong> statistically significant. A high p-value means: <em>"It's quite plausible that I would see this result even if nothing were actually happening."</em></p>
+
+            <h3>Significance Level (Alpha)</h3>
+
+            <p>Before conducting any statistical test, researchers set a threshold called the <span class="key-term">significance level</span>, denoted as \(\alpha\). This is the p-value threshold below which we will reject the null hypothesis and conclude that our result is statistically significant. The most commonly used significance level is \(\alpha = 0.05\), which means we are willing to accept a 5% probability of incorrectly rejecting the null hypothesis (a Type I error). Other common choices include \(\alpha = 0.01\) (1% threshold) or \(\alpha = 0.10\) (10% threshold).</p>
+
+            <p>The decision rule is simple: <strong>If p-value < \(\alpha\), reject \(H_0\) and accept \(H_1\). If p-value ≥ \(\alpha\), fail to reject \(H_0\).</strong></p>
+
+            <div class="example-box">
+                <strong>📊 Decision Making Example</strong>
+                <p><strong>Scenario 1:</strong> We set \(\alpha = 0.05\). Our statistical test yields a p-value of 0.03.</p>
+                <p><strong>Decision:</strong> Since 0.03 < 0.05, we reject the null hypothesis. We conclude that our result is statistically significant.</p>
+                <p><strong>Interpretation:</strong> There is strong evidence supporting the alternative hypothesis. We can confidently claim that a real effect exists in the population, accepting only a 3% risk of being wrong.</p>
+                <p></p>
+                <p><strong>Scenario 2:</strong> We set \(\alpha = 0.05\). Our statistical test yields a p-value of 0.12.</p>
+                <p><strong>Decision:</strong> Since 0.12 > 0.05, we fail to reject the null hypothesis.</p>
+                <p><strong>Interpretation:</strong> There is insufficient evidence to support the alternative hypothesis. We cannot confidently claim that a real effect exists.</p>
+            </div>
+
+            <div class="note-box">
+                <strong>⚠️ Important Clarification:</strong> The p-value is NOT the probability that the null hypothesis is true. It is the probability of observing the data (or more extreme data) given that the null hypothesis is true. This subtle distinction is crucial and often misunderstood!
+            </div>
+
+            <h3>Key Properties of P-Values</h3>
+
+            <ul>
+                <li><strong>Correlation Strength & Sample Size Matter:</strong> The stronger the correlation and the larger the sample size, the lower the p-value tends to be. Even a seemingly modest correlation of 0.6 might not be statistically significant if the sample size is very small.</li>
+                <li><strong>P-Value vs. Effect Size:</strong> The p-value does NOT tell you how big the correlation or effect is. It only tells you whether the effect is real or likely due to chance. You must also report the correlation coefficient or effect size to describe the magnitude of the relationship.</li>
+                <li><strong>P-Value is a Probability:</strong> Like all probabilities, it ranges from 0 to 1. A p-value of 0.001 is extremely small and indicates strong evidence against the null hypothesis. A p-value of 0.8 indicates weak evidence against the null hypothesis.</li>
+            </ul>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> P-value ek tarika hai samajhne ka ke hamara observation sach mein real hai ya sirf luck hai. Agar p-value 0.05 se kam hai (generally), to hum kah sakte hain "Haan, yeh real hai!" Agar p-value zyada hai, to kahenge "Yeh toh by chance ho sakta tha." Yaad rakho—p-value small = evidence strong, p-value large = evidence weak!
+            </div>
+
+            <h2 id="ttest">The T-Test</h2>
+
+            <h3>What is a T-Test?</h3>
+
+            <p>A <span class="key-term">t-test</span> is a statistical hypothesis test used to compare a sample with a known population value or to compare two independent samples. T-tests are particularly useful in situations where:</p>
+
+            <ul>
+                <li>The sample size is small to moderate (not very large)</li>
+                <li>The population standard deviation (\(\sigma\)) is unknown</li>
+                <li>The data are approximately normally distributed</li>
+            </ul>
+
+            <p>The t-test uses the t-distribution, which accounts for the added uncertainty that comes from estimating the population standard deviation from the sample. When sample sizes are very large, the t-distribution approaches the normal distribution, and we could use a z-test instead. However, for typical study scenarios with moderate sample sizes, the t-test is the preferred choice.</p>
+
+            <div class="note-box">
+                <strong>📌 When to Use T-Test vs. Z-Test:</strong> Use the t-test when the sample size is small to moderate and the population standard deviation is unknown. Use the z-test when the population standard deviation is known OR when the sample size is very large (typically n > 30).
+            </div>
+
+            <h3>The t-Statistic</h3>
+
+            <p>The <span class="key-term">t-statistic</span> (or t-value) is a standardized measure that tells us how many standard errors the sample mean is away from the hypothesized population mean. Alternatively, in a two-sample t-test, it tells us how many standard errors the difference between two sample means is away from zero.</p>
+
+            <p>The t-statistic is calculated as:</p>
+
+            <div class="formula">
+                \[ t = \frac{\text{Observed Difference}}{\text{Standard Error}} \]
+            </div>
+
+            <p>A larger absolute value of t (whether positive or negative) indicates a more substantial difference relative to the variability in the data. A t-value close to zero suggests that any observed difference is small relative to the natural variation in the data.</p>
+
+            <h3>Degrees of Freedom</h3>
+
+            <p><span class="key-term">Degrees of freedom</span> (denoted as df) refer to the number of independent values that can vary in a calculation without violating a constraint. In simpler terms, degrees of freedom tell us how much freedom our data has to vary, given that we're already estimating some parameters.</p>
+
+            <div class="example-box">
+                <strong>📊 Intuitive Example of Degrees of Freedom</strong>
+                <p>Imagine you have three test scores and you're told that their average is 70. You are free to choose any values for the first two scores. However, once you've chosen the first two scores, the third score is determined—it must be whatever value makes the average equal to 70. Therefore, out of three values, only two are "free to vary." Hence, degrees of freedom = 3 - 1 = 2.</p>
+            </div>
+
+            <p>For statistical tests, the degrees of freedom depend on the sample size(s) and the type of test being performed. For a single-sample t-test, df = n - 1. For a two-sample t-test (which we'll discuss next), the calculation is more complex and depends on whether the variances of the two samples are equal or unequal.</p>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> Degrees of freedom matlab kitne values freely choose kar sakte ho. Agar aapke pass 10 numbers hain aur average pata hai, toh sirf 9 numbers freely choose kar sakte ho—10th automatically decide ho jaata hai. Similarly, statistical tests mein bhi yeh concept apply hota hai!
+            </div>
+
+            <h2 id="two-sample">Two-Sample T-Test</h2>
+
+            <h3>Purpose and Setup</h3>
+
+            <p>A <span class="key-term">two-sample t-test</span> compares the means of two independent groups to determine whether there is statistical evidence that their associated population means are different. This test is extremely common in real-world research, from comparing treatment outcomes to evaluating differences in performance between groups.</p>
+
+            <div class="example-box">
+                <strong>📊 Practical Example: Comparing Teaching Methods</strong>
+                <p>Suppose an instructor wants to test whether a new interactive teaching method improves student test scores compared to a traditional lecture-based approach. The instructor divides a class into two groups:</p>
+                <ul>
+                    <li><strong>Group A (Traditional Method):</strong> 15 students, mean score = 72%, standard deviation = 6</li>
+                    <li><strong>Group B (New Interactive Method):</strong> 15 students, mean score = 78%, standard deviation = 5</li>
+                </ul>
+                <p>The observed difference is 78% - 72% = 6 percentage points. But is this difference statistically significant, or could it have occurred by random chance?</p>
+            </div>
+
+            <h3>Step-by-Step Procedure for Two-Sample T-Test</h3>
+
+            <h4>Step 1: Define Hypotheses</h4>
+
+            <p>First, we set up our null and alternative hypotheses. For the teaching method example:</p>
+
+            <p><strong>Null Hypothesis \((H_0)\):</strong> \(\mu_{\text{new}} \leq \mu_{\text{traditional}}\) or \(\mu_{\text{new}} = \mu_{\text{traditional}}\)</p>
+            <p>(The new method does not improve scores, or they are equal)</p>
+
+            <p><strong>Alternative Hypothesis \((H_1)\):</strong> \(\mu_{\text{new}} > \mu_{\text{traditional}}\)</p>
+            <p>(The new method produces higher scores)</p>
+
+            <p>Note: Because we're testing whether one value is greater than another (not just different), this is a <strong>one-tailed test</strong>, specifically a <strong>right-tailed test</strong>. If we had tested whether the means are simply different (not specifying direction), we would use a <strong>two-tailed test</strong>.</p>
+
+            <h4>Step 2: Calculate the T-Statistic</h4>
+
+            <p>The t-statistic is calculated as:</p>
+
+            <div class="formula">
+                \[ t = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} \]
+            </div>
+
+            <p>Where:</p>
+            <ul>
+                <li>\(\bar{x}_1, \bar{x}_2\) = sample means for groups 1 and 2</li>
+                <li>\(\mu_1, \mu_2\) = hypothesized population means (typically, \(\mu_1 - \mu_2 = 0\) under the null hypothesis)</li>
+                <li>\(s_1^2, s_2^2\) = sample variances</li>
+                <li>\(n_1, n_2\) = sample sizes</li>
+            </ul>
+
+            <p>The numerator represents the observed difference between the sample means. The denominator is called the <strong>standard error of the difference</strong> and represents the combined variability from both samples.</p>
+
+            <div class="example-box">
+                <strong>📊 Calculating T-Statistic for Teaching Method Example</strong>
+                <p>Using our earlier data:</p>
+                <p>\[ t = \frac{(78 - 72) - 0}{\sqrt{\frac{6^2}{15} + \frac{5^2}{15}}} = \frac{6}{\sqrt{\frac{36}{15} + \frac{25}{15}}} = \frac{6}{\sqrt{4.07}} \approx 2.97 \]</p>
+                <p>Our calculated t-value is approximately 2.97. (Note: Exact calculations may vary slightly based on rounding.)</p>
+            </div>
+
+            <h4>Step 3: Calculate Degrees of Freedom</h4>
+
+            <p>When variances are assumed to be unequal (which is often the case), degrees of freedom are calculated using the Welch-Satterthwaite equation:</p>
+
+            <div class="formula">
+                \[ df = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2}{\frac{(s_1^2/n_1)^2}{n_1-1} + \frac{(s_2^2/n_2)^2}{n_2-1}} \]
+            </div>
+
+            <p>When variances are assumed to be equal, the simpler formula is: \(df = n_1 + n_2 - 2\).</p>
+
+            <div class="example-box">
+                <strong>📊 Calculating Degrees of Freedom</strong>
+                <p>For our teaching method example with unequal variances, using the Welch-Satterthwaite equation:</p>
+                <p>\[ df \approx 27-28 \]</p>
+                <p>(Detailed calculation omitted for brevity, but the result is approximately 27 or 28 degrees of freedom)</p>
+            </div>
+
+            <h4>Step 4: Find P-Value Using T-Table</h4>
+
+            <p>Once we have the t-statistic and degrees of freedom, we use a t-distribution table to find the p-value. The t-table shows the relationship between t-values, degrees of freedom, and p-values.</p>
+
+            <div class="note-box">
+                <strong>📌 Reading a T-Table:</strong> Locate the row corresponding to your degrees of freedom. Scan across that row to find where your t-value falls. The column header(s) containing that range indicate the p-value. Remember to use the one-tailed or two-tailed columns depending on your test.
+            </div>
+
+            <p>For a t-value of 2.97 with df ≈ 27 in a one-tailed test, the p-value is approximately 0.003 to 0.005 (between 0.003 and 0.005).</p>
+
+            <h4>Step 5: Interpret Results and Make a Decision</h4>
+
+            <p>Finally, we compare the p-value to our pre-set significance level (\(\alpha\)):</p>
+
+            <p><strong>If p-value < \(\alpha\) (typically 0.05):</strong> Reject \(H_0\). We have sufficient evidence to support the alternative hypothesis.</p>
+            <p><strong>If p-value ≥ \(\alpha\):</strong> Fail to reject \(H_0\). We do not have sufficient evidence to support the alternative hypothesis.</p>
+
+            <div class="example-box">
+                <strong>📊 Final Decision for Teaching Method Example</strong>
+                <p><strong>Significance Level:</strong> \(\alpha = 0.05\)</p>
+                <p><strong>Calculated P-Value:</strong> 0.004 (between 0.003 and 0.005)</p>
+                <p><strong>Decision:</strong> Since 0.004 < 0.05, we reject \(H_0\).</p>
+                <p><strong>Conclusion:</strong> There is strong statistical evidence that the new interactive teaching method significantly improves test scores compared to the traditional method. The 6-point increase in mean scores is not likely due to random chance.</p>
+            </div>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> Two-sample t-test mein hum do groups ko compare karte hain. Steps simple hain: (1) Hypotheses define karo, (2) T-statistic calculate karo, (3) Degrees of freedom find karo, (4) T-table se p-value nikalo, (5) Decide karo ke null hypothesis reject karoona reject karo. Agar p-value alpha se kam hai, to reject kar do!
+            </div>
+
+            <h2 id="probability-dist">Probability Distribution Functions & Normal Distribution</h2>
+
+            <h3>Understanding Probability Density Functions (PDF)</h3>
+
+            <p>A <span class="key-term">Probability Density Function (PDF)</span> is a mathematical function that describes the likelihood of different values occurring in a continuous probability distribution. Unlike probability mass functions for discrete distributions, which give exact probabilities, a PDF gives the relative likelihood or density at each point.</p>
+
+            <h3>The Normal Distribution</h3>
+
+            <p>The <span class="key-term">normal distribution</span> (also called the Gaussian distribution) is one of the most important probability distributions in statistics. It's characterized by a bell-shaped curve and is defined by two parameters:</p>
+
+            <ul>
+                <li><strong>Mean (\(\mu\)):</strong> The center of the distribution</li>
+                <li><strong>Standard Deviation (\(\sigma\)):</strong> The spread or width of the distribution</li>
+            </ul>
+
+            <p>The PDF of the normal distribution is given by:</p>
+
+            <div class="formula">
+                \[ f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} \]
+            </div>
+
+            <h3>The Standard Normal Distribution</h3>
+
+            <p>The <span class="key-term">standard normal distribution</span> is a special case of the normal distribution with \(\mu = 0\) and \(\sigma = 1\). Any normal distribution can be converted to the standard normal distribution using the <strong>z-score transformation</strong>:</p>
+
+            <div class="formula">
+                \[ Z = \frac{X - \mu}{\sigma} \]
+            </div>
+
+            <p>The PDF of the standard normal distribution is:</p>
+
+            <div class="formula">
+                \[ f(z) = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}} \]
+            </div>
+
+            <h3>Interpreting PDF Values</h3>
+
+            <p>It's crucial to understand that a PDF value is <strong>NOT</strong> a probability. Instead, it represents the <strong>density</strong> or height of the curve at that point. The density indicates how tightly packed values are around that location on the distribution.</p>
+
+            <div class="example-box">
+                <strong>📊 Example: IQ Scores with Normal Distribution</strong>
+                <p>Suppose IQ scores follow a normal distribution with \(\mu = 100\) and \(\sigma = 15\).</p>
+                <p><strong>Question:</strong> What is the probability density at an IQ score of 130?</p>
+                <p><strong>Step 1 - Calculate Z-score:</strong></p>
+                <p>\[ Z = \frac{130 - 100}{15} = \frac{30}{15} = 2 \]</p>
+                <p><strong>Step 2 - Find PDF value at Z = 2:</strong></p>
+                <p>\[ f(2) = \frac{1}{\sqrt{2\pi}} e^{-\frac{2^2}{2}} = \frac{1}{\sqrt{2\pi}} e^{-2} \approx 0.054 \]</p>
+                <p><strong>Interpretation:</strong> The value 0.054 represents the height (density) of the normal curve at Z = 2. It indicates how tightly packed IQ values are around 130. A higher density means values are more concentrated at that point.</p>
+            </div>
+
+            <h3>PDF vs. Probability: A Critical Distinction</h3>
+
+            <p>This is a fundamental point that often causes confusion: <strong>The PDF value is NOT the probability of getting exactly that value.</strong> In continuous distributions, the probability of any exact value is technically zero (since there are infinitely many possible values).</p>
+
+            <p>Instead, probabilities in continuous distributions are calculated over <strong>intervals</strong>. For example:</p>
+
+            <ul>
+                <li>\(P(X = 130) = 0\) (Probability of exactly 130)</li>
+                <li>\(P(128 < X < 132)\) ≈ 0.271 (Probability of an interval)</li>
+            </ul>
+
+            <p>The PDF is used to calculate these interval probabilities. Specifically, the probability of a value falling within an interval is the <strong>area under the curve</strong> between the two interval boundaries.</p>
+
+            <div class="note-box">
+                <strong>⚠️ Common Misconception:</strong> "If the PDF value is 0.054, then there's a 5.4% chance of getting that value." This is INCORRECT. The PDF value represents density, not probability. To find the probability, we must integrate the PDF over an interval.
+            </div>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश:</strong> PDF ek function hai jo batata hai ki curve kitna "tall" ya "short" ek specific point pe hai. Yeh probability nahi hai! Probability find karne ke liye, hume curve ke neeche ke area ko calculate karna padta hai (integral). Normal distribution bell-shaped curve hota hai—zyada se zyada values mean ke paas cluster karte hain.
+            </div>
+
+            <h2 id="practice">Practice Problems & Solutions</h2>
+
+            <h3>Problem 1: Understanding Z-Scores and PDF</h3>
+
+            <div class="practice-section">
+                <h4>Question</h4>
+                <p>The IQ scores of a large population follow a normal distribution with mean \(\mu = 100\) and standard deviation \(\sigma = 15\).</p>
+                <ol>
+                    <li>Calculate the Z-score for an individual with an IQ of 130.</li>
+                    <li>Using the standard normal PDF, estimate the probability density at that Z-score.</li>
+                    <li>Interpret what the PDF value at that Z-score represents.</li>
+                    <li>Why is this PDF value NOT the probability of getting an IQ score exactly equal to 130?</li>
+                </ol>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q1: Z-Score Calculation</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    \[ Z = \frac{X - \mu}{\sigma} = \frac{130 - 100}{15} = \frac{30}{15} = 2 \]
+                    <p>The Z-score is 2, meaning an IQ of 130 is 2 standard deviations above the mean.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q2: Standard Normal PDF at Z = 2</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    \[ f(z) = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}} \]
+                    \[ f(2) = \frac{1}{\sqrt{2\pi}} e^{-\frac{4}{2}} = \frac{1}{\sqrt{2\pi}} e^{-2} \approx 0.054 \]
+                    <p>The PDF value at Z = 2 is approximately 0.054.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q3: Interpretation of PDF Value</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p>The value 0.054 represents the <strong>height of the normal curve</strong> at Z = 2. It indicates the <strong>density</strong> or concentration of values at that point. Specifically, it tells us how tightly packed IQ values are around the score of 130. A higher density means values are more densely clustered at that location.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q4: Why PDF ≠ Probability</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p>The PDF value is not a probability for two fundamental reasons:</p>
+                    <ul>
+                        <li><strong>Continuous distributions:</strong> In continuous probability distributions, the probability of any exact value (e.g., P(X = 130)) is mathematically zero, because there are infinitely many possible values between any two points.</li>
+                        <li><strong>PDF is density, not probability:</strong> To calculate probabilities, we must compute the area under the PDF curve over an interval. For example, \(P(128 < X < 132)\) would require integrating the PDF from 128 to 132. This area represents the probability, not the height of the curve at a single point.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Problem 2: Two-Sample T-Test</h3>
+
+            <div class="practice-section">
+                <h4>Question</h4>
+                <p>A researcher wants to compare two training programs' effectiveness. Group A (Traditional Program) has 20 participants with a mean test score of 65 and standard deviation of 8. Group B (New Program) has 20 participants with a mean test score of 72 and standard deviation of 7. Using a significance level of \(\alpha = 0.05\) and assuming a one-tailed test (new program produces higher scores):</p>
+                <ol>
+                    <li>Set up the null and alternative hypotheses.</li>
+                    <li>Calculate the t-statistic.</li>
+                    <li>Determine the degrees of freedom.</li>
+                    <li>Interpret the result using a t-table.</li>
+                </ol>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q1: Hypotheses</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p><strong>Null Hypothesis \((H_0)\):</strong> \(\mu_{\text{Traditional}} \geq \mu_{\text{New}}\) or \(\mu_{\text{Traditional}} = \mu_{\text{New}}\)</p>
+                    <p><strong>Alternative Hypothesis \((H_1)\):</strong> \(\mu_{\text{New}} > \mu_{\text{Traditional}}\)</p>
+                    <p>(This is a one-tailed, right-tailed test because we're testing if the new program produces higher scores.)</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q2: T-Statistic Calculation</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    \[ t = \frac{(\bar{x}_{\text{new}} - \bar{x}_{\text{traditional}})}{\sqrt{\frac{s_{\text{new}}^2}{n_{\text{new}}} + \frac{s_{\text{traditional}}^2}{n_{\text{traditional}}}}} \]
+                    \[ t = \frac{(72 - 65)}{\sqrt{\frac{7^2}{20} + \frac{8^2}{20}}} = \frac{7}{\sqrt{\frac{49}{20} + \frac{64}{20}}} = \frac{7}{\sqrt{5.65}} \approx \frac{7}{2.38} \approx 2.94 \]
+                    <p>The t-statistic is approximately 2.94.</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q3: Degrees of Freedom</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p>Using the Welch-Satterthwaite formula or assuming equal sample sizes and unequal variances:</p>
+                    <p>\[ df \approx n_1 + n_2 - 2 = 20 + 20 - 2 = 38 \]</p>
+                    <p>(With unequal variance adjustments, df might be slightly different, but approximately 37-38.)</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <strong>Q4: Interpretation Using T-Table</strong>
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p>Using a t-table with df ≈ 38 and t ≈ 2.94:</p>
+                    <ul>
+                        <li>Looking up the t-table for 38 degrees of freedom in a one-tailed test, a t-value of 2.94 corresponds to a p-value of approximately 0.003.</li>
+                        <li>Since 0.003 < 0.05 (our significance level), we <strong>reject the null hypothesis</strong>.</li>
+                        <li><strong>Conclusion:</strong> There is strong statistical evidence that the new training program produces significantly higher test scores than the traditional program.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways from This Problem</h4>
+                <ul>
+                    <li>Even though the observed difference (7 points) might seem modest, it's statistically significant because it's large relative to the within-group variability.</li>
+                    <li>The t-statistic standardizes the difference by accounting for the standard error.</li>
+                    <li>A low p-value (0.003) indicates strong evidence against the null hypothesis.</li>
+                    <li>Statistical significance means we're confident the effect is real, not due to random chance.</li>
+                </ul>
+            </div>
+
+            <h2 id="mindmap">Comprehensive Concept Mind Map</h2>
+
+            <p>The following visual representation shows how the key concepts in hypothesis testing and statistical significance relate to one another:</p>
+
+            <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
+                <!-- Define styles -->
+                <defs>
+                    <style>
+                        .node-main { fill: #667eea; }
+                        .node-secondary { fill: #764ba2; }
+                        .node-tertiary { fill: #f08080; }
+                        .node-text { font-size: 12px; font-weight: bold; fill: white; }
+                        .edge { stroke: #999; stroke-width: 2; fill: none; }
+                        .label-text { font-size: 11px; fill: #333; }
+                    </style>
+                </defs>
+
+                <!-- Central node -->
+                <circle cx="500" cy="100" r="45" class="node-main"/>
+                <text x="500" y="105" text-anchor="middle" class="node-text">Hypothesis Testing</text>
+
+                <!-- Level 2 nodes -->
+                <!-- Left branch -->
+                <circle cx="200" cy="220" r="40" class="node-secondary"/>
+                <text x="200" y="220" text-anchor="middle" class="node-text" font-size="11">Hypotheses</text>
+                <text x="200" y="232" text-anchor="middle" class="node-text" font-size="10">(H₀, H₁)</text>
+
+                <!-- Center-left branch -->
+                <circle cx="380" cy="220" r="40" class="node-secondary"/>
+                <text x="380" y="220" text-anchor="middle" class="node-text" font-size="11">Test</text>
+                <text x="380" y="232" text-anchor="middle" class="node-text" font-size="11">Statistics</text>
+
+                <!-- Center-right branch -->
+                <circle cx="620" cy="220" r="40" class="node-secondary"/>
+                <text x="620" y="220" text-anchor="middle" class="node-text" font-size="10">Statistical</text>
+                <text x="620" y="232" text-anchor="middle" class="node-text" font-size="11">Significance</text>
+
+                <!-- Right branch -->
+                <circle cx="800" cy="220" r="40" class="node-secondary"/>
+                <text x="800" y="220" text-anchor="middle" class="node-text" font-size="11">P-value</text>
+                <text x="800" y="232" text-anchor="middle" class="node-text" font-size="9">&amp; Alpha</text>
+
+                <!-- Edges from central node -->
+                <line x1="465" y1="140" x2="225" y2="185" class="edge"/>
+                <line x1="485" y1="135" x2="395" y2="185" class="edge"/>
+                <line x1="515" y1="135" x2="605" y2="185" class="edge"/>
+                <line x1="535" y1="140" x2="775" y2="185" class="edge"/>
+
+                <!-- Level 3 nodes for Hypotheses -->
+                <circle cx="120" cy="340" r="35" class="node-tertiary"/>
+                <text x="120" y="340" text-anchor="middle" class="node-text" font-size="10">Null (H₀)</text>
+                <text x="120" y="352" text-anchor="middle" class="node-text" font-size="9">Default</text>
+
+                <circle cx="200" cy="340" r="35" class="node-tertiary"/>
+                <text x="200" y="340" text-anchor="middle" class="node-text" font-size="10">Alternative</text>
+                <text x="200" y="352" text-anchor="middle" class="node-text" font-size="9">(H₁)</text>
+
+                <circle cx="280" cy="340" r="35" class="node-tertiary"/>
+                <text x="280" y="340" text-anchor="middle" class="node-text" font-size="10">One vs.</text>
+                <text x="280" y="352" text-anchor="middle" class="node-text" font-size="9">Two-tailed</text>
+
+                <!-- Level 3 nodes for Test Statistics -->
+                <circle cx="300" cy="340" r="35" class="node-tertiary"/>
+                <text x="300" y="340" text-anchor="middle" class="node-text" font-size="10">T-Test</text>
+                <text x="300" y="352" text-anchor="middle" class="node-text" font-size="9">T-statistic</text>
+
+                <circle cx="380" cy="340" r="35" class="node-tertiary"/>
+                <text x="380" y="340" text-anchor="middle" class="node-text" font-size="10">Degrees of</text>
+                <text x="380" y="352" text-anchor="middle" class="node-text" font-size="9">Freedom (df)</text>
+
+                <circle cx="460" cy="340" r="35" class="node-tertiary"/>
+                <text x="460" y="340" text-anchor="middle" class="node-text" font-size="10">T-Table</text>
+                <text x="460" y="352" text-anchor="middle" class="node-text" font-size="9">Lookup</text>
+
+                <!-- Level 3 nodes for Significance -->
+                <circle cx="560" cy="340" r="35" class="node-tertiary"/>
+                <text x="560" y="340" text-anchor="middle" class="node-text" font-size="10">Real vs.</text>
+                <text x="560" y="352" text-anchor="middle" class="node-text" font-size="9">Chance</text>
+
+                <circle cx="640" cy="340" r="35" class="node-tertiary"/>
+                <text x="640" y="340" text-anchor="middle" class="node-text" font-size="10">Effect</text>
+                <text x="640" y="352" text-anchor="middle" class="node-text" font-size="9">Size</text>
+
+                <circle cx="720" cy="340" r="35" class="node-tertiary"/>
+                <text x="720" y="340" text-anchor="middle" class="node-text" font-size="10">Normal</text>
+                <text x="720" y="352" text-anchor="middle" class="node-text" font-size="9">Distribution</text>
+
+                <!-- Level 3 nodes for P-value -->
+                <circle cx="800" cy="340" r="35" class="node-tertiary"/>
+                <text x="800" y="340" text-anchor="middle" class="node-text" font-size="10">P-value</text>
+                <text x="800" y="352" text-anchor="middle" class="node-text" font-size="9">Probability</text>
+
+                <circle cx="880" cy="340" r="35" class="node-tertiary"/>
+                <text x="880" y="340" text-anchor="middle" class="node-text" font-size="10">Significance</text>
+                <text x="880" y="352" text-anchor="middle" class="node-text" font-size="9">Level (α)</text>
+
+                <!-- Connecting edges for level 3 -->
+                <line x1="190" y1="255" x2="120" y2="305" class="edge"/>
+                <line x1="200" y1="255" x2="200" y2="305" class="edge"/>
+                <line x1="210" y1="255" x2="280" y2="305" class="edge"/>
+
+                <line x1="365" y1="255" x2="300" y2="305" class="edge"/>
+                <line x1="380" y1="255" x2="380" y2="305" class="edge"/>
+                <line x1="395" y1="255" x2="460" y2="305" class="edge"/>
+
+                <line x1="605" y1="255" x2="560" y2="305" class="edge"/>
+                <line x1="625" y1="255" x2="640" y2="305" class="edge"/>
+                <line x1="640" y1="255" x2="720" y2="305" class="edge"/>
+
+                <line x1="785" y1="255" x2="800" y2="305" class="edge"/>
+                <line x1="815" y1="255" x2="880" y2="305" class="edge"/>
+
+                <!-- Bottom connections showing flow -->
+                <line x1="120" y1="375" x2="200" y2="430" class="edge" stroke-dasharray="5,5"/>
+                <line x1="200" y1="375" x2="380" y2="430" class="edge" stroke-dasharray="5,5"/>
+                <line x1="460" y1="375" x2="550" y2="430" class="edge" stroke-dasharray="5,5"/>
+                <line x1="800" y1="375" x2="650" y2="430" class="edge" stroke-dasharray="5,5"/>
+
+                <!-- Final decision node -->
+                <rect x="400" y="460" width="200" height="60" fill="#4caf50" rx="5"/>
+                <text x="500" y="485" text-anchor="middle" class="node-text" font-size="12">Compare p-value with α</text>
+                <text x="500" y="505" text-anchor="middle" class="node-text" font-size="11">p < α: Reject H₀</text>
+
+                <!-- Legend -->
+                <text x="50" y="620" font-weight="bold" font-size="12" fill="#333">Legend:</text>
+                <circle cx="60" cy="650" r="8" class="node-main"/>
+                <text x="80" y="655" font-size="11" fill="#333">Main Concept</text>
+
+                <circle cx="280" cy="650" r="8" class="node-secondary"/>
+                <text x="300" y="655" font-size="11" fill="#333">Key Components</text>
+
+                <circle cx="560" cy="650" r="8" class="node-tertiary"/>
+                <text x="580" y="655" font-size="11" fill="#333">Detailed Elements</text>
+            </svg>
+
+            <div class="hinglish">
+                <strong>हिंग्लिश सारांश - पूरा कोर्स:</strong> Hypothesis testing ka matlab hai ek structured way mein check karna ke kya hamara observation real hai ya luck. H₀ (null) default assumption hai—"kuch nahi hua". H₁ (alternative) hamara suspicion hai—"kuch hua hai". Hum t-test use karte hain, t-statistic calculate karte hain, degrees of freedom find karte hain, t-table se p-value nikaa lते हैं, aur phir decide karte hain. Agar p-value alpha (usually 0.05) se chhoti hai, toh H₀ reject kar dते हैं!
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

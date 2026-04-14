@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Optimization - Week 12: Barrier Function Method</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    
+    <style>
+        /* ==================== RESET & BASE STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc ul li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 10px;
+        }
+        
+        .toc ul ul {
+            margin-left: 30px;
+        }
+        
+        .toc ul ul li::before {
+            content: "◦";
+        }
+        
+        /* ==================== MAIN CONTENT CONTAINER ==================== */
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        /* ==================== HEADING STYLES ==================== */
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+        }
+        
+        h2 {
+            color: #764ba2;
+            font-size: 2em;
+            margin: 35px 0 18px 0;
+            padding-left: 15px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        /* ==================== PARAGRAPH & TEXT STYLES ==================== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong, b {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        em, i {
+            color: #764ba2;
+            font-style: italic;
+        }
+        
+        /* ==================== KEY TERM HIGHLIGHTING ==================== */
+        .key-term {
+            background: linear-gradient(120deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+        
+        /* ==================== PROFESSOR'S NOTE BOX ==================== */
+        .professor-note {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            border-left: 5px solid #00acc1;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            font-weight: bold;
+            color: #00838f;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        /* ==================== HINGLISH SUMMARY BOX ==================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary::before {
+            content: "📝 सारांश (Summary):";
+            font-weight: bold;
+            color: #e65100;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        /* ==================== EXAMPLE BOX ==================== */
+        .example {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .example::before {
+            content: "📚 Example:";
+            font-weight: bold;
+            color: #6a1b9a;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        /* ==================== IMPORTANT NOTE BOX ==================== */
+        .important {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .important::before {
+            content: "⚠️ Important:";
+            font-weight: bold;
+            color: #c62828;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        /* ==================== CONCEPT BOX ==================== */
+        .concept {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .concept::before {
+            content: "💡 Key Concept:";
+            font-weight: bold;
+            color: #2e7d32;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        /* ==================== TABLE STYLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+            transition: all 0.3s;
+        }
+        
+        /* ==================== LIST STYLES ==================== */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        ul li::marker {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        ol li::marker {
+            color: #764ba2;
+            font-weight: bold;
+        }
+        
+        /* ==================== DIAGRAM PLACEHOLDER ==================== */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border: 2px dashed #999;
+            padding: 40px;
+            margin: 25px 0;
+            text-align: center;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS SECTION ==================== */
+        .practice-questions {
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .practice-questions h3 {
+            color: #0277bd;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0277bd;
+        }
+        
+        .question strong {
+            color: #0277bd;
+        }
+        
+        .answer {
+            background: #f1f8e9;
+            padding: 15px;
+            margin: 10px 0 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #689f38;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #558b2f;
+        }
+        
+        /* ==================== KEY TAKEAWAYS SECTION ==================== */
+        .key-takeaways {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .key-takeaways h3 {
+            color: #f57f17;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul li {
+            margin: 12px 0;
+        }
+        
+        /* ==================== MIND MAP STYLES ==================== */
+        .mind-map {
+            background: white;
+            padding: 40px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3e8ef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .branch h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 10px;
+        }
+        
+        .branch ul li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .branch ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #764ba2;
+        }
+        
+        /* ==================== CODE BLOCKS ==================== */
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        pre code {
+            background: transparent;
+            color: #f8f8f2;
+        }
+        
+        /* ==================== MATHEMATICAL EQUATION BOX ==================== */
+        .equation-box {
+            background: #f9f9f9;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ==================== SCROLL TO TOP BUTTON ==================== */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== HEADER SECTION ==================== -->
+    <header>
+        <h1>📊 Numerical Optimization</h1>
+        <p>Week 12: Barrier Function Method</p>
+        <p style="font-size: 0.9em; margin-top: 10px;">Lecture 11 & 12 - Constrained Optimization Techniques</p>
+    </header>
+
+    <!-- ==================== TABLE OF CONTENTS ==================== -->
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#review">1. Review: Penalty Method</a>
+                <ul>
+                    <li><a href="#penalty-concept">1.1 Penalty Method Concept</a></li>
+                    <li><a href="#penalty-example">1.2 Penalty Method Example</a></li>
+                </ul>
+            </li>
+            <li><a href="#barrier-method">2. Barrier Function Method</a>
+                <ul>
+                    <li><a href="#barrier-philosophy">2.1 Philosophy of Barrier Method</a></li>
+                    <li><a href="#barrier-formulation">2.2 Mathematical Formulation</a></li>
+                    <li><a href="#barrier-types">2.3 Types of Barrier Functions</a></li>
+                </ul>
+            </li>
+            <li><a href="#examples">3. Worked Examples</a>
+                <ul>
+                    <li><a href="#example-1">3.1 One-Variable Example</a></li>
+                    <li><a href="#example-2">3.2 Two-Variable Example</a></li>
+                </ul>
+            </li>
+            <li><a href="#comparison">4. Comparison: Penalty vs Barrier Methods</a></li>
+            <li><a href="#convergence">5. Convergence Theory</a></li>
+            <li><a href="#svm-application">6. Application: Support Vector Machine</a></li>
+            <li><a href="#mind-map">7. Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+
+    <!-- ==================== MAIN CONTENT STARTS HERE ==================== -->
+    <div class="content">
+        
+        <!-- ==================== SECTION 1: REVIEW ==================== -->
+        <h1 id="review">1. Review: Penalty Method</h1>
+        
+        <h2 id="penalty-concept">1.1 Penalty Method Concept</h2>
+        
+        <p>In <span class="key-term">Numerical Optimization</span>, we often encounter <span class="key-term">constrained optimization problems</span>. The challenge is that we have well-developed methods for solving <strong>unconstrained</strong> optimization problems (like gradient descent, Newton's method, quasi-Newton methods), but constrained problems are more difficult to handle directly.</p>
+        
+        <div class="concept">
+            The <strong>Penalty Method</strong> converts a constrained optimization problem into a sequence of unconstrained optimization problems by adding a penalty term to the objective function that penalizes constraint violations.
+        </div>
+        
+        <h3>Original Constrained Problem</h3>
+        <div class="equation-box">
+
+            $$\min_{x} f(x) \quad \text{subject to} \quad x \in S$$
+        </div>
+        
+        <p>Where $S$ represents the <span class="key-term">feasible region</span>, which can be defined by equality constraints, inequality constraints, or more abstractly.</p>
+        
+        <h3>Penalty Function Formulation</h3>
+        <p>We construct a <span class="key-term">penalty function</span> $p(x)$ such that:</p>
+        
+        <div class="equation-box">
+
+            $$p(x) = \begin{cases} 
+            0 & \text{if } x \in S \\
+            > 0 & \text{if } x \notin S
+            \end{cases}$$
+        </div>
+        
+        <p>Then, instead of minimizing $f(x)$ subject to constraints, we minimize:</p>
+        
+        <div class="equation-box">
+
+            $$f(x) + \lambda p(x)$$
+        </div>
+        
+        <p>where $\lambda$ is the <span class="key-term">penalty parameter</span>. We solve a sequence of these unconstrained problems with increasing values of $\lambda$: $\lambda_1 < \lambda_2 < \lambda_3 < \ldots$</p>
+        
+        <div class="professor-note">
+            The professor emphasized that as we increase the penalty parameter $\lambda$, the cost of violating constraints becomes higher and higher. This forces the solution to move closer to the feasible region. Most importantly, in penalty methods, we typically <strong>start from outside the feasible region</strong> and gradually converge inward. This is why it's also called an <strong>exterior penalty method</strong>.
+        </div>
+        
+        <h2 id="penalty-example">1.2 Penalty Method Example</h2>
+        
+        <div class="example">
+            <strong>Problem:</strong> Minimize $f(x,y) = (x-1)^2 + (y-2)^2$ subject to $x + y = 1$
+            
+            <p><strong>Geometric Interpretation:</strong></p>
+            <ul>
+                <li>The objective function represents circles centered at $(1, 2)$</li>
+                <li>The constraint $x + y = 1$ is a straight line (feasible region)</li>
+                <li>We're looking for the point on the line that minimizes the distance to $(1, 2)$</li>
+            </ul>
+            
+            <p><strong>Solution Process:</strong></p>
+            <p>For different values of $p$ (where circles have radius $\sqrt{p}$), we check which is the smallest value we can achieve while remaining feasible. The solution occurs at the point $(0, 1)$ with minimum value $f = 2$.</p>
+        </div>
+        
+        <div class="professor-note">
+            The professor demonstrated this using a code example where they define the penalty function as $\frac{\mu}{2}(x + y - 1)^2$ and solve for increasing values of $\mu$. For $\mu = 1$, the solution was at $(0.5, 1.5)$, quite far from the true solution. But for $\mu = 10$, it was much closer, and as $\mu \to \infty$, the solution converges to the true optimal point $(0, 1)$.
+        </div>
+        
+        <h3>Drawbacks of Penalty Method</h3>
+        <ul>
+            <li><strong>Computational Cost:</strong> Must solve multiple unconstrained problems</li>
+            <li><strong>Ill-conditioning:</strong> For large penalty parameters, the Hessian becomes ill-conditioned</li>
+            <li><strong>Numerical Instability:</strong> Very large $\lambda$ values can cause numerical problems</li>
+            <li><strong>Starts Outside:</strong> Initial iterates violate constraints</li>
+        </ul>
+        
+        <!-- Hinglish Summary for Section 1 -->
+        <div class="hinglish-summary">
+            Penalty method mein hum constrained problem ko unconstrained problem mein convert karte hain. Ek penalty function banate hain jo constraint violate karne par penalty lagata hai. Jaise jaise penalty parameter $\lambda$ badhate hain, solution feasible region ke paas aata jaata hai. Lekin problem ye hai ki initially solution feasible region ke bahar hota hai aur bahut bada $\lambda$ use karne par numerical problems aa sakte hain.
+        </div>
+        
+        <!-- Practice Questions for Section 1 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: Penalty Method</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> What is the main difference between constrained and unconstrained optimization problems?
+            </div>
+            <div class="answer">
+                Constrained problems have restrictions (constraints) on the feasible values of variables, while unconstrained problems can take any value in the domain. Constrained problems are generally harder to solve.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why do we increase the penalty parameter $\lambda$ in penalty methods?
+            </div>
+            <div class="answer">
+                Increasing $\lambda$ makes constraint violation more costly, which forces the solution to move closer to the feasible region and eventually converge to the true constrained optimum.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What is meant by "exterior penalty method"?
+            </div>
+            <div class="answer">
+                An exterior penalty method starts with solutions outside the feasible region and gradually moves inward toward feasibility as the penalty parameter increases.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> What happens to the penalty function $p(x)$ when $x$ is inside the feasible region?
+            </div>
+            <div class="answer">
+                When $x$ is inside the feasible region (i.e., $x \in S$), the penalty function equals zero: $p(x) = 0$. There is no penalty for feasible points.
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 1 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: Review</h3>
+            <ul>
+                <li>Penalty methods convert constrained problems into sequences of unconstrained problems</li>
+                <li>Penalty function is zero inside feasible region, positive outside</li>
+                <li>Penalty parameter $\lambda$ increases: $\lambda_1 < \lambda_2 < \lambda_3 < \ldots$</li>
+                <li>Method typically starts from outside feasible region (exterior method)</li>
+                <li>Drawback: Poor numerical conditioning for large $\lambda$ values</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 2: BARRIER METHOD ==================== -->
+        <h1 id="barrier-method">2. Barrier Function Method</h1>
+        
+        <h2 id="barrier-philosophy">2.1 Philosophy of Barrier Method</h2>
+        
+        <div class="concept">
+            The <strong>Barrier Function Method</strong> is similar to the penalty method, but with a crucial philosophical difference: instead of penalizing constraint violations, we create a "barrier" that prevents leaving the feasible region in the first place.
+        </div>
+        
+        <p>The barrier method is mainly applicable for <span class="key-term">inequality constraint problems</span>:</p>
+        
+        <div class="equation-box">
+
+            $$\min_{x} f(x) \quad \text{subject to} \quad g_i(x) \leq 0, \quad i = 1, 2, \ldots, m$$
+        </div>
+        
+        <div class="professor-note">
+            The professor used a beautiful analogy to explain the barrier concept: Think of the <strong>Great Wall of China</strong>. What is its purpose? It's a barrier that prevents people from both sides from crossing easily - people inside cannot easily leave, and people outside cannot easily enter. Similarly, a barrier function prevents us from leaving the feasible region once we start inside it.
+        </div>
+        
+        <h3>Key Differences from Penalty Method</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Penalty Method</th>
+                    <th>Barrier Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Starting Point</strong></td>
+                    <td>Outside feasible region</td>
+                    <td>Inside feasible region</td>
+                </tr>
+                <tr>
+                    <td><strong>During Iteration</strong></td>
+                    <td>May violate constraints</td>
+                    <td>Always feasible</td>
+                </tr>
+                <tr>
+                    <td><strong>Parameter Direction</strong></td>
+                    <td>$\lambda \to \infty$</td>
+                    <td>$\gamma \to 0$</td>
+                </tr>
+                <tr>
+                    <td><strong>Function Behavior</strong></td>
+                    <td>Penalizes violations</td>
+                    <td>Prevents crossing boundary</td>
+                </tr>
+                <tr>
+                    <td><strong>Numerical Stability</strong></td>
+                    <td>Poor for large $\lambda$</td>
+                    <td>Better behaved</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2 id="barrier-formulation">2.2 Mathematical Formulation</h2>
+        
+        <p>For a constrained problem with inequality constraints, we define an <span class="key-term">auxiliary function</span> (also called augmented objective):</p>
+        
+        <div class="equation-box">
+
+            $$\Phi(x; \gamma) = f(x) + \gamma B(x)$$
+        </div>
+        
+        <p>where:</p>
+        <ul>
+            <li>$f(x)$ is the original objective function</li>
+            <li>$B(x)$ is the <span class="key-term">barrier function</span></li>
+            <li>$\gamma > 0$ is the <span class="key-term">barrier parameter</span></li>
+        </ul>
+        
+        <h3>Properties of Barrier Function $B(x)$</h3>
+        
+        <div class="important">
+            The barrier function $B(x)$ must satisfy:
+            <ol>
+                <li>$B(x) \geq 0$ for all $x$ in the <strong>strict interior</strong> of the feasible region (where all $g_i(x) < 0$)</li>
+                <li>$B(x) \to \infty$ as $x$ approaches the boundary (where at least one $g_i(x) \to 0$)</li>
+                <li>$B(x)$ is continuous and smooth in the interior</li>
+                <li>$B(x)$ is typically <strong>not defined</strong> outside the feasible region (we don't need it there!)</li>
+            </ol>
+        </div>
+        
+        <div class="professor-note">
+            The professor explained: "You see, if you take any direction from inside the feasible region, you won't move too much in that direction. Why? Because as you approach the boundary, the barrier function value becomes very high. So it will no longer be a descent direction - the function starts increasing because $B(x)$ is shooting up to infinity near the boundary. This is how the barrier keeps you inside!"
+        </div>
+        
+        <h2 id="barrier-types">2.3 Types of Barrier Functions</h2>
+        
+        <h3>Type 1: Inverse Barrier Function</h3>
+        
+        <div class="equation-box">
+
+            $$B(x) = \sum_{i=1}^{m} \frac{-1}{g_i(x)}$$
+        </div>
+        
+        <p><strong>Explanation:</strong></p>
+        <ul>
+            <li>Since $g_i(x) < 0$ in the feasible region, $-g_i(x) > 0$</li>
+            <li>Therefore, $\frac{-1}{g_i(x)} > 0$ (positive barrier)</li>
+            <li>As $g_i(x) \to 0^-$ (approaching boundary), $\frac{-1}{g_i(x)} \to +\infty$</li>
+        </ul>
+        
+        <h3>Type 2: Logarithmic Barrier Function (Frisch's Barrier)</h3>
+        
+        <div class="equation-box">
+
+            $$B(x) = -\sum_{i=1}^{m} \ln[-g_i(x)]$$
+        </div>
+        
+        <p><strong>Explanation:</strong></p>
+        <ul>
+            <li>Since $g_i(x) < 0$ in feasible region, $-g_i(x) > 0$, so $\ln[-g_i(x)]$ is well-defined</li>
+            <li>As $g_i(x) \to 0^-$, we have $-g_i(x) \to 0^+$, so $\ln[-g_i(x)] \to -\infty$</li>
+            <li>Therefore, $-\ln[-g_i(x)] \to +\infty$ (barrier effect)</li>
+            <li>This is the <strong>most popular</strong> barrier function in practice</li>
+        </ul>
+        
+        <div class="example">
+            <strong>Simple Illustration:</strong> Suppose $g(x) = x - 1 \leq 0$ (feasible region: $x \leq 1$).
+            <ul>
+                <li>At $x = 0.5$: $g(x) = -0.5$, so $-\ln(0.5) \approx 0.693$ (moderate barrier)</li>
+                <li>At $x = 0.9$: $g(x) = -0.1$, so $-\ln(0.1) \approx 2.303$ (higher barrier)</li>
+                <li>At $x = 0.99$: $g(x) = -0.01$, so $-\ln(0.01) \approx 4.605$ (very high barrier)</li>
+                <li>As $x \to 1^-$: barrier $\to \infty$ (prevents crossing)</li>
+            </ul>
+        </div>
+        
+        <h3>Algorithm Overview</h3>
+        
+        <div class="concept">
+            <strong>Barrier Method Algorithm:</strong>
+            <ol>
+                <li><strong>Initialize:</strong> Start with $x_0$ strictly inside feasible region and $\gamma_1 > 0$</li>
+                <li><strong>For</strong> $k = 1, 2, 3, \ldots$:
+                    <ul>
+                        <li>Solve unconstrained problem: $\min_x \Phi(x; \gamma_k) = f(x) + \gamma_k B(x)$</li>
+                        <li>Obtain solution $x_k$</li>
+                        <li><strong>Decrease</strong> barrier parameter: $\gamma_{k+1} < \gamma_k$ (e.g., $\gamma_{k+1} = 0.1 \gamma_k$)</li>
+                        <li>If converged, <strong>stop</strong>; else continue</li>
+                    </ul>
+                </li>
+                <li><strong>Output:</strong> $x^* = \lim_{k \to \infty} x_k$</li>
+            </ol>
+        </div>
+        
+        <div class="important">
+            <strong>Critical Note:</strong> We <strong>decrease</strong> $\gamma$ toward zero ($\gamma \to 0^+$), not increase it! This is opposite to penalty methods where $\lambda \to \infty$. As $\gamma \to 0$, the barrier term $\gamma B(x)$ diminishes, and we approach the true constrained optimum.
+        </div>
+        
+        <!-- Hinglish Summary for Section 2 -->
+        <div class="hinglish-summary">
+            Barrier method mein hum feasible region ke andar hi rehte hain. Ek barrier function banate hain jo boundary ke paas infinity tak jata hai. Isse kya hota hai ki jab bhi hum boundary ki taraf badhne ki koshish karte hain, function ki value bahut jyada badh jaati hai aur descent direction nahi rehta. Isliye hum kabhi feasible region ke bahar nahi jaate. Yahan parameter $\gamma$ ko <strong>decrease</strong> karte hain zero ki taraf, infinity ki taraf nahi. Ye penalty method se better hai kyunki numerically zyada stable hai.
+        </div>
+        
+        <!-- Practice Questions for Section 2 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: Barrier Method</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> Why is the barrier function not defined outside the feasible region?
+            </div>
+            <div class="answer">
+                We don't need to define it outside because we always start inside and the barrier prevents us from leaving. The local optimization methods ensure we never cross the boundary once we start feasible.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> In which direction does the barrier parameter change, and why?
+            </div>
+            <div class="answer">
+                The barrier parameter $\gamma$ decreases toward zero ($\gamma \to 0^+$). As $\gamma$ decreases, the influence of the barrier diminishes, allowing the solution to approach the true constrained optimum.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What happens to the logarithmic barrier $-\ln[-g_i(x)]$ as $x$ approaches the boundary?
+            </div>
+            <div class="answer">
+                As $x$ approaches the boundary, $g_i(x) \to 0^-$, so $-g_i(x) \to 0^+$, making $\ln[-g_i(x)] \to -\infty$, and thus $-\ln[-g_i(x)] \to +\infty$, creating the barrier effect.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Why is the barrier method considered more numerically stable than the penalty method?
+            </div>
+            <div class="answer">
+                Unlike penalty methods where $\lambda \to \infty$ causes ill-conditioning, barrier methods use $\gamma \to 0$, which doesn't create extreme scaling issues and maintains better numerical properties throughout the optimization.
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 2 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: Barrier Method</h3>
+            <ul>
+                <li>Barrier method maintains feasibility throughout the optimization process</li>
+                <li>Starts from strict interior of feasible region (all $g_i(x) < 0$)</li>
+                <li>Barrier function $B(x) \to \infty$ as $x$ approaches boundary</li>
+                <li>Two popular barriers: Inverse barrier $\sum \frac{-1}{g_i(x)}$ and Logarithmic barrier $-\sum \ln[-g_i(x)]$</li>
+                <li>Barrier parameter decreases: $\gamma \to 0^+$ (opposite of penalty method)</li>
+                <li>Better numerical stability compared to penalty methods</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 3: EXAMPLES ==================== -->
+        <h1 id="examples">3. Worked Examples</h1>
+        
+        <h2 id="example-1">3.1 One-Variable Example</h2>
+        
+        <div class="example">
+            <h3>Problem Statement</h3>
+            <p>Minimize $f(x) = x$ subject to $-x + 1 \leq 0$ (equivalently, $x \geq 1$)</p>
+            
+            <h4>Analytical Solution</h4>
+            <p>This is trivially simple: we want to minimize $x$ where $x \geq 1$. Obviously, the minimum is $x^* = 1$ with optimal value $f(x^*) = 1$.</p>
+            
+            <h4>Using Barrier Method</h4>
+            <p>Constraint: $g(x) = -x + 1 \leq 0$, so feasible region is $x \geq 1$.</p>
+            
+            <p><strong>Inverse Barrier:</strong> $B(x) = \frac{-1}{g(x)} = \frac{-1}{-x+1} = \frac{1}{x-1}$</p>
+            
+            <p><strong>Auxiliary Function:</strong></p>
+            <div class="equation-box">
+
+                $$\Phi(x; \gamma) = x + \frac{\gamma}{x-1}$$
+            </div>
+            
+            <p><strong>Step 1:</strong> Find critical points by setting $\frac{d\Phi}{dx} = 0$</p>
+            
+            <div class="equation-box">
+
+                $$\frac{d\Phi}{dx} = 1 - \frac{\gamma}{(x-1)^2} = 0$$
+
+                $$\Rightarrow (x-1)^2 = \gamma$$
+
+                $$\Rightarrow x - 1 = \pm\sqrt{\gamma}$$
+
+                $$\Rightarrow x = 1 \pm \sqrt{\gamma}$$
+            </div>
+            
+            <p><strong>Step 2:</strong> Choose the feasible solution</p>
+            <ul>
+                <li>$x = 1 - \sqrt{\gamma}$: This gives $x < 1$ (infeasible!)</li>
+                <li>$x = 1 + \sqrt{\gamma}$: This gives $x > 1$ (feasible! ✓)</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor emphasized: "See, the feasible region is $x \geq 1$. If we start from a point strictly greater than 1 and apply our local optimization methods, we will converge to $x = 1 + \sqrt{\gamma}$, not the other solution. That's because local methods starting from feasible points stay feasible due to the barrier."
+            </div>
+            
+            <p><strong>Step 3:</strong> Take the limit as $\gamma \to 0^+$</p>
+            
+            <div class="equation-box">
+
+                $$\lim_{\gamma \to 0^+} (1 + \sqrt{\gamma}) = 1$$
+            </div>
+            
+            <p><strong>Result:</strong> The barrier method converges to the true optimal solution $x^* = 1$! ✓</p>
+            
+            <h4>Verification with Second Derivative</h4>
+            <div class="equation-box">
+
+                $$\frac{d^2\Phi}{dx^2} = \frac{2\gamma}{(x-1)^3}$$
+            </div>
+            <p>At $x = 1 + \sqrt{\gamma}$: $(x-1)^3 = \gamma^{3/2} > 0$, so $\frac{d^2\Phi}{dx^2} > 0$. This confirms it's a minimum! ✓</p>
+        </div>
+        
+        <h2 id="example-2">3.2 Two-Variable Example</h2>
+        
+        <div class="example">
+            <h3>Problem Statement</h3>
+            <p>Minimize $f(x,y) = x^2 + y^2$ subject to $g(x,y) = 1 - x - y \leq 0$ (equivalently, $x + y \geq 1$)</p>
+            
+            <h4>Geometric Interpretation</h4>
+            <ul>
+                <li>Objective: $x^2 + y^2$ represents circles centered at origin</li>
+                <li>Constraint: $x + y \geq 1$ is the region above/right of the line $x + y = 1$</li>
+                <li>We seek the point on or above this line closest to the origin</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Feasible region is the half-plane where $x + y \geq 1$. Circles $x^2 + y^2 = c$ for increasing $c$. The smallest circle touching the line is at point $(0.5, 0.5)$ with radius $\sqrt{0.5}$.]
+            </div>
+            
+            <h4>Analytical Solution (without barrier method)</h4>
+            <p>The minimum occurs where the circle is tangent to the line $x + y = 1$. By symmetry and calculus, this is at $(0.5, 0.5)$ with minimum value $f = 0.5$.</p>
+            
+            <h4>Using Logarithmic Barrier Method</h4>
+            
+            <p><strong>Barrier Function:</strong></p>
+            <div class="equation-box">
+
+                $$B(x,y) = -\ln[-(1-x-y)] = -\ln(x+y-1)$$
+            </div>
+            
+            <p><strong>Auxiliary Function:</strong></p>
+            <div class="equation-box">
+
+                $$\Phi(x,y; \gamma) = x^2 + y^2 - \gamma \ln(x+y-1)$$
+            </div>
+            
+            <p><strong>Step 1:</strong> Compute gradient and set to zero</p>
+            
+            <div class="equation-box">
+
+                $$\nabla \Phi = \begin{pmatrix} 
+                2x - \frac{\gamma}{x+y-1} \\ 
+                2y - \frac{\gamma}{x+y-1}
+                \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+            </div>
+            
+            <p>This gives us:</p>
+            <div class="equation-box">
+
+                $$2x = \frac{\gamma}{x+y-1} \quad \text{and} \quad 2y = \frac{\gamma}{x+y-1}$$
+            </div>
+            
+            <p><strong>Step 2:</strong> From the equations above, $2x = 2y$, so $x = y$</p>
+            
+            <p><strong>Step 3:</strong> Substitute $x = y$ into the first equation:</p>
+            <div class="equation-box">
+
+                $$2x = \frac{\gamma}{2x-1}$$
+
+                $$\Rightarrow 2x(2x-1) = \gamma$$
+
+                $$\Rightarrow 4x^2 - 2x - \gamma = 0$$
+            </div>
+            
+            <p><strong>Step 4:</strong> Solve quadratic equation using quadratic formula:</p>
+            <div class="equation-box">
+
+                $$x = \frac{2 \pm \sqrt{4 + 16\gamma}}{8} = \frac{2 \pm \sqrt{4(1+4\gamma)}}{8} = \frac{2 \pm 2\sqrt{1+4\gamma}}{8} = \frac{1 \pm \sqrt{1+4\gamma}}{4}$$
+            </div>
+            
+            <p><strong>Step 5:</strong> Choose the feasible solution</p>
+            <ul>
+                <li>$x = \frac{1 - \sqrt{1+4\gamma}}{4}$: Since $\sqrt{1+4\gamma} > 1$ for $\gamma > 0$, this gives $x < 0$ (infeasible for our context)</li>
+                <li>$x = \frac{1 + \sqrt{1+4\gamma}}{4}$: This is positive and feasible ✓</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor explained: "One solution will lie within the feasible region and another will be much outside. Once you start your algorithm from inside, these local methods will always achieve the interior optimizer, not the exterior one. That's the beauty of the barrier method!"
+            </div>
+            
+            <p><strong>Step 6:</strong> Take limit as $\gamma \to 0^+$</p>
+            
+            <div class="equation-box">
+
+                $$x_\gamma = \frac{1 + \sqrt{1+4\gamma}}{4} \to \frac{1 + \sqrt{1}}{4} = \frac{2}{4} = 0.5$$
+            </div>
+            
+            <p>Since $y = x$, we also have $y \to 0.5$.</p>
+            
+            <p><strong>Result:</strong> $(x^*, y^*) = (0.5, 0.5)$ with $f(x^*, y^*) = 0.5$. This matches the true solution! ✓</p>
+            
+            <h4>Numerical Implementation</h4>
+            
+            <div class="professor-note">
+                The professor demonstrated this in code. Starting from a point inside the feasible region (e.g., $(2, 2)$ where $2+2 > 1$), they solved the unconstrained problem for decreasing values of $\gamma$:
+                <ul>
+                    <li>$\gamma = 1$: Solution close but not exact</li>
+                    <li>$\gamma = 0.1$: Much closer to $(0.5, 0.5)$</li>
+                    <li>$\gamma = 0.01$: Very close</li>
+                    <li>$\gamma = 0.0001$: Almost exactly $(0.50004, 0.50004)$</li>
+                </ul>
+                "You see, the progress is quite good! That's the difference between penalty and barrier methods. Here the convergence is smoother and numerically more stable."
+            </div>
+        </div>
+        
+        <!-- Hinglish Summary for Section 3 -->
+        <div class="hinglish-summary">
+            Pehle example mein ek simple problem tha: $x$ ko minimize karo jahan $x \geq 1$. Barrier method use karke hum $x = 1 + \sqrt{\gamma}$ par pahunche aur jab $\gamma \to 0$, to solution $x = 1$ mil gaya. Dusre example mein two variables the. Logarithmic barrier use kiya aur gradient zero karke system solve kiya. Mila ki $x = y$ hona chahiye aur quadratic equation solve karne par $x = \frac{1+\sqrt{1+4\gamma}}{4}$. Jab $\gamma \to 0$, to $(x,y) \to (0.5, 0.5)$ jo ki sahi answer hai!
+        </div>
+        
+        <!-- Practice Questions for Section 3 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: Examples</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> In the one-variable example, why did we reject the solution $x = 1 - \sqrt{\gamma}$?
+            </div>
+            <div class="answer">
+                Because $x = 1 - \sqrt{\gamma} < 1$ violates the constraint $x \geq 1$. Since barrier methods maintain feasibility, only the solution $x = 1 + \sqrt{\gamma} > 1$ is valid.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> In the two-variable example, why must $x = y$ at the optimal solution?
+            </div>
+            <div class="answer">
+                From the gradient equations, both $2x$ and $2y$ equal $\frac{\gamma}{x+y-1}$. Therefore, $2x = 2y$, which implies $x = y$ at the critical point.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What would happen if we started the barrier method from an infeasible point?
+            </div>
+            <div class="answer">
+                The barrier function would be undefined (or infinite) at infeasible points, and the method would fail. We must always start from a strictly feasible point.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> How do you verify that a critical point is a minimum rather than a maximum?
+            </div>
+            <div class="answer">
+                Check the second derivative (1D) or Hessian matrix (multi-D). For a minimum, second derivative must be positive (1D) or Hessian must be positive definite (multi-D).
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 3 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: Examples</h3>
+            <ul>
+                <li>One-variable example: $\min x$ s.t. $x \geq 1$ gives $x_\gamma = 1 + \sqrt{\gamma} \to 1$</li>
+                <li>Two-variable example: $\min x^2+y^2$ s.t. $x+y \geq 1$ gives $(x_\gamma, y_\gamma) \to (0.5, 0.5)$</li>
+                <li>Both examples converge to true optimal solution as $\gamma \to 0$</li>
+                <li>Must always choose the feasible solution among multiple critical points</li>
+                <li>Numerical implementation shows smooth, stable convergence</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 4: COMPARISON ==================== -->
+        <h1 id="comparison">4. Comparison: Penalty vs Barrier Methods</h1>
+        
+        <p>Now that we've studied both penalty and barrier methods in depth, let's make a comprehensive comparison to understand when to use which method.</p>
+        
+        <h2>Detailed Comparison Table</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Penalty Method</th>
+                    <th>Barrier Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Constraint Types</strong></td>
+                    <td>Handles both equality and inequality constraints</td>
+                    <td>Primarily for inequality constraints (can extend to equality via interior point methods)</td>
+                </tr>
+                <tr>
+                    <td><strong>Feasibility During Iteration</strong></td>
+                    <td>NOT guaranteed - typically starts and stays infeasible until convergence</td>
+                    <td>ALWAYS maintained - all iterates are strictly feasible</td>
+                </tr>
+                <tr>
+                    <td><strong>Starting Point</strong></td>
+                    <td>Can start from any point (usually infeasible)</td>
+                    <td>MUST start from strict interior (all $g_i(x) < 0$)</td>
+                </tr>
+                <tr>
+                    <td><strong>Parameter Direction</strong></td>
+                    <td>$\lambda \to \infty$ (increases)</td>
+                    <td>$\gamma \to 0^+$ (decreases)</td>
+                </tr>
+                <tr>
+                    <td><strong>Function Behavior</strong></td>
+                    <td>Penalty function $p(x) = 0$ if feasible, $> 0$ if infeasible</td>
+                    <td>Barrier function $B(x) \geq 0$ always, $\to \infty$ at boundary</td>
+                </tr>
+                <tr>
+                    <td><strong>Numerical Stability</strong></td>
+                    <td>Poor for large $\lambda$ - Hessian becomes ill-conditioned</td>
+                    <td>Better behaved - smoother convergence with decreasing $\gamma$</td>
+                </tr>
+                <tr>
+                    <td><strong>Convergence Pattern</strong></td>
+                    <td>Approaches feasible region from outside (exterior method)</td>
+                    <td>Approaches boundary from inside (interior method)</td>
+                </tr>
+                <tr>
+                    <td><strong>Practical Implementation</strong></td>
+                    <td>Easier to initialize (any starting point)</td>
+                    <td>Requires finding strictly feasible starting point</td>
+                </tr>
+                <tr>
+                    <td><strong>Computational Cost</strong></td>
+                    <td>May require many iterations with large $\lambda$</td>
+                    <td>Generally smoother, fewer issues with extreme parameters</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>Visualization of Key Differences</h2>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Two side-by-side plots showing:
+            <br>LEFT: Penalty method - iterates starting outside feasible region, moving inward as $\lambda$ increases
+            <br>RIGHT: Barrier method - iterates starting inside feasible region, approaching boundary as $\gamma$ decreases]
+        </div>
+        
+        <h2>When to Use Which Method?</h2>
+        
+        <div class="concept">
+            <h3>Use Penalty Method when:</h3>
+            <ul>
+                <li>You have <strong>equality constraints</strong> that are important</li>
+                <li>Finding a strictly feasible starting point is difficult</li>
+                <li>Some constraint violation during optimization is acceptable</li>
+                <li>The problem structure makes it hard to stay feasible</li>
+            </ul>
+            
+            <h3>Use Barrier Method when:</h3>
+            <ul>
+                <li>You have <strong>inequality constraints only</strong></li>
+                <li>A strictly feasible starting point is available</li>
+                <li>Maintaining feasibility throughout is important</li>
+                <li>Better numerical stability is desired</li>
+                <li>The problem is part of interior-point method framework</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            The professor noted: "In practice, barrier methods are quite popular, especially in the form of interior point methods which we might discuss next. The key advantage is numerical stability - you don't have the ill-conditioning problem that you get with large penalty parameters. That's why modern optimization software often uses barrier-based approaches."
+        </div>
+        
+        <h2>Mathematical Summary</h2>
+        
+        <div class="important">
+            <h3>Penalty Method:</h3>
+
+            $$\min_x \left[ f(x) + \lambda p(x) \right], \quad \lambda \to \infty$$
+            <ul>
+                <li>$p(x) = 0$ if $x \in S$ (feasible)</li>
+                <li>$p(x) > 0$ if $x \notin S$ (infeasible)</li>
+                <li>Larger $\lambda$ → higher penalty for violation</li>
+            </ul>
+            
+            <h3>Barrier Method:</h3>
+
+            $$\min_x \left[ f(x) + \gamma B(x) \right], \quad \gamma \to 0^+$$
+            <ul>
+                <li>$B(x) \geq 0$ for $x$ strictly feasible</li>
+                <li>$B(x) \to \infty$ as $x$ approaches boundary</li>
+                <li>Smaller $\gamma$ → less barrier influence, closer to true optimum</li>
+            </ul>
+        </div>
+        
+        <!-- Hinglish Summary for Section 4 -->
+        <div class="hinglish-summary">
+            Penalty aur Barrier methods mein main farak ye hai: Penalty method bahar se shuru hota hai aur parameter $\lambda$ ko infinity tak badhate hain, jabki Barrier method andar se shuru hota hai aur parameter $\gamma$ ko zero tak ghatate hain. Penalty method equality aur inequality dono constraints handle kar sakta hai, lekin numerical stability kam hai jab $\lambda$ bada ho. Barrier method sirf inequality ke liye better hai lekin zyada stable hai. Barrier methods modern optimization software mein popular hain kyunki unki convergence smooth aur stable hoti hai.
+        </div>
+        
+        <!-- Practice Questions for Section 4 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: Comparison</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> Why does the penalty method have numerical stability issues for large $\lambda$?
+            </div>
+            <div class="answer">
+                Large penalty parameters create extreme scaling in the Hessian matrix, making it ill-conditioned. This causes numerical precision problems and slow convergence in optimization algorithms.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Can you use barrier method for equality constraints directly?
+            </div>
+            <div class="answer">
+                Not directly, as standard barrier functions are designed for inequalities. However, equality constraints can be handled by splitting them into two inequalities or using interior-point method extensions.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What's the main advantage of barrier method maintaining feasibility?
+            </div>
+            <div class="answer">
+                It ensures all intermediate solutions are valid/usable. If optimization terminates early, you still have a feasible solution, which is valuable in practical applications where feasibility is critical.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Which method is part of the "interior point method" framework?
+            </div>
+            <div class="answer">
+                Barrier method forms the foundation of interior point methods, which are highly efficient algorithms used in modern optimization solvers for linear and nonlinear programming.
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 4 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: Comparison</h3>
+            <ul>
+                <li>Penalty: exterior method ($\lambda \to \infty$), Barrier: interior method ($\gamma \to 0$)</li>
+                <li>Penalty handles equality + inequality, Barrier primarily for inequalities</li>
+                <li>Barrier maintains feasibility, Penalty typically doesn't</li>
+                <li>Barrier has better numerical stability than Penalty for extreme parameters</li>
+                <li>Barrier methods are foundation of modern interior-point methods</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 5: CONVERGENCE ==================== -->
+        <h1 id="convergence">5. Convergence Theory</h1>
+        
+        <p>While we've seen that barrier methods work well in practice, it's important to understand under what conditions they are <strong>guaranteed to converge</strong> to the true optimal solution.</p>
+        
+        <div class="important">
+            Like any optimization algorithm, we cannot guarantee convergence for all possible functions and constraints. Convergence results always require certain assumptions and conditions. The question is: under what reasonable conditions does the barrier method work?
+        </div>
+        
+        <h2>Basic Convergence Result (Theorem 1)</h2>
+        
+        <div class="concept">
+            <h3>Assumptions:</h3>
+            <ol>
+                <li>$f$ and $g_1, \ldots, g_m$ are <strong>continuous functions</strong> on $\mathbb{R}^n$</li>
+                <li>The strict interior $\{x : g(x) < 0\}$ is <strong>non-empty</strong> (feasible region has interior)</li>
+                <li>$B$ is a <strong>barrier function</strong> continuous on $\{x : g(x) < 0\}$</li>
+                <li>For any $\gamma > 0$, if sequence $\{x_k\}$ satisfies:
+                    <ul>
+                        <li>$g(x_k) < 0$ (feasible)</li>
+                        <li>$f(x_k) + \gamma B(x_k) \to \theta(\gamma)$ (converges to optimal value)</li>
+                    </ul>
+                    Then $\{x_k\}$ has a <strong>convergent subsequence</strong>
+                </li>
+            </ol>
+            
+            <h3>Conclusions:</h3>
+            <ol>
+                <li><strong>Existence:</strong> For each $\gamma > 0$, there exists $x_\gamma$ with $g(x_\gamma) < 0$ such that:
+
+                    $$\theta(\gamma) = f(x_\gamma) + \gamma B(x_\gamma) = \inf\{f(x) + \gamma B(x) : g(x) < 0\}$$
+                </li>
+                
+                <li><strong>Upper Bound:</strong> The barrier method provides an upper bound on the true optimum:
+
+                    $$\inf\{f(x) : g(x) \leq 0\} \leq \inf\{\theta(\gamma) : \gamma > 0\}$$
+                </li>
+                
+                <li><strong>Monotonicity:</strong> As $\gamma$ varies:
+                    <ul>
+                        <li>$f(x_\gamma)$ is <strong>non-decreasing</strong> in $\gamma$</li>
+                        <li>$\theta(\gamma)$ is <strong>non-decreasing</strong> in $\gamma$</li>
+                        <li>$B(x_\gamma)$ is <strong>non-increasing</strong> in $\gamma$</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="professor-note">
+            The professor explained: "This first theorem tells us that we get an upper bound on the optimal value. As we keep decreasing $\gamma$, the barrier solutions form a monotonic sequence. It's like the penalty method but in reverse - there the values were lower bounds approaching from below, here they're upper bounds approaching from above."
+        </div>
+        
+        <h2>Exact Convergence Result (Theorem 2)</h2>
+        
+        <p>The first theorem gave us upper bounds. But when do we get <strong>exact convergence</strong> to the true optimal value? This requires stronger conditions.</p>
+        
+        <div class="concept">
+            <h3>Additional Assumptions:</h3>
+            <ol>
+                <li>All conditions from Theorem 1 hold</li>
+                <li>The primal problem has an optimal solution $\bar{x}$</li>
+                <li><strong>Slater-type condition:</strong> Given any neighborhood $N$ around $\bar{x}$, there exists $x \in N$ such that $g(x) < 0$ (strictly feasible points exist arbitrarily close to optimum)</li>
+            </ol>
+            
+            <h3>Strong Conclusion:</h3>
+            <div class="equation-box">
+
+                $$\min\{f(x) : g(x) \leq 0\} = \lim_{\gamma \to 0^+} \theta(\gamma) = \inf_{\gamma > 0} \theta(\gamma)$$
+            </div>
+            
+            <p>Furthermore:</p>
+            <ul>
+                <li>Any convergent subsequence of $\{x_\gamma\}$ converges to an <strong>optimal solution</strong></li>
+                <li>The barrier term vanishes: $\gamma B(x_\gamma) \to 0$ as $\gamma \to 0^+$</li>
+            </ul>
+        </div>
+        
+        <h2>Understanding the Slater Condition</h2>
+        
+        <div class="important">
+            The <strong>Slater condition</strong> (or Slater constraint qualification) is crucial for exact convergence. It essentially says: near the optimal solution, there should exist strictly feasible points (not just boundary points).
+            
+            <h4>Example of Slater Condition:</h4>
+            <p>Consider $\min f(x)$ subject to $x \geq 0, y \geq 0, x + y \geq 1$.</p>
+            <ul>
+                <li>Suppose optimum is at $(0.5, 0.5)$</li>
+                <li>Slater condition: We can find points like $(0.6, 0.6)$ or $(0.51, 0.51)$ that are strictly inside: $x > 0, y > 0, x+y > 1$ ✓</li>
+                <li>This ensures the barrier method can approach the optimum smoothly</li>
+            </ul>
+            
+            <h4>When Slater Fails:</h4>
+            <p>If the optimum is at a "corner" where multiple constraints are active and there's no interior nearby, Slater fails, and convergence may not be exact.</p>
+        </div>
+        
+        <h2>Practical Implications</h2>
+        
+        <div class="concept">
+            <h3>What the theorems tell us:</h3>
+            <ol>
+                <li><strong>Barrier methods work for nice problems:</strong> Continuous functions with non-empty interior feasible regions</li>
+                <li><strong>Always get upper bounds:</strong> Even without strong conditions, $\theta(\gamma)$ bounds the true optimum from above</li>
+                <li><strong>Exact convergence needs Slater:</strong> To guarantee convergence to the true optimum (not just a bound), we need the Slater-type condition</li>
+                <li><strong>Barrier term vanishes:</strong> At convergence, $\gamma B(x_\gamma) \to 0$, meaning we essentially solve the original problem</li>
+            </ol>
+        </div>
+        
+        <div class="professor-note">
+            "These convergence results might look technical, but the main message is clear: for well-behaved problems (continuous functions, non-degenerate constraints), the barrier method will converge to the true solution. The Slater condition is a regularity condition that's satisfied in most practical problems. So you can trust that the method works!"
+        </div>
+        
+        <!-- Hinglish Summary for Section 5 -->
+        <div class="hinglish-summary">
+            Convergence theory batati hai ki barrier method kab aur kyun kaam karta hai. Pehla theorem kehta hai ki har $\gamma$ ke liye solution milta hai aur ye true optimum se upar bound deta hai. Dusra theorem kehta hai ki agar Slater condition satisfy ho (matlab optimal point ke paas strictly feasible points hon), to jab $\gamma \to 0$ tab solution exactly true optimum par converge karta hai. Practical problems mein ye conditions mostly satisfy hoti hain, isliye barrier method reliable hai. Main point ye hai ki continuous functions aur non-empty interior wale problems ke liye barrier method guaranteed kaam karta hai.
+        </div>
+        
+        <!-- Practice Questions for Section 5 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: Convergence</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> What is the main difference between the upper bound result and exact convergence result?
+            </div>
+            <div class="answer">
+                The upper bound result (Theorem 1) guarantees that barrier method solutions bound the true optimum from above. Exact convergence (Theorem 2) requires additional Slater-type conditions to guarantee convergence to the exact optimal value.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> What does it mean that $f(x_\gamma)$ is non-decreasing in $\gamma$?
+            </div>
+            <div class="answer">
+                As $\gamma$ increases, the objective value at the barrier solution either stays the same or increases. This means smaller $\gamma$ values give better (lower) objective values, approaching the true optimum.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Why is the Slater condition important for convergence?
+            </div>
+            <div class="answer">
+                The Slater condition ensures strictly feasible points exist near the optimum. This prevents degeneracy and allows the barrier method to smoothly approach the solution without getting "stuck" at constraint boundaries.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> What does $\gamma B(x_\gamma) \to 0$ tell us?
+            </div>
+            <div class="answer">
+                It means the barrier term contribution vanishes at convergence. Even though $B(x_\gamma)$ may grow, the product $\gamma B(x_\gamma)$ approaches zero, so we effectively solve the original unconstrained problem.
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 5 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: Convergence</h3>
+            <ul>
+                <li>Barrier methods require continuous functions and non-empty interior feasible region</li>
+                <li>Basic result: barrier solutions provide upper bounds on true optimum</li>
+                <li>$f(x_\gamma)$ and $\theta(\gamma)$ are non-decreasing in $\gamma$</li>
+                <li>Exact convergence requires Slater-type constraint qualification</li>
+                <li>At convergence: $\gamma B(x_\gamma) \to 0$ (barrier term vanishes)</li>
+                <li>Most practical problems satisfy required conditions</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 6: SVM APPLICATION ==================== -->
+        <h1 id="svm-application">6. Application: Support Vector Machine</h1>
+        
+        <p>Now let's see how we can apply the barrier method to a real machine learning problem: <span class="key-term">Support Vector Machine (SVM)</span>.</p>
+        
+        <h2>Background: What is SVM?</h2>
+        
+        <div class="concept">
+            <strong>Support Vector Machine</strong> is a classification algorithm that finds the optimal hyperplane separating two classes of data points with maximum margin.
+            
+            <h3>Key Ideas:</h3>
+            <ul>
+                <li>Given two classes of data points (e.g., positive and negative examples)</li>
+                <li>Find a linear hyperplane that separates them</li>
+                <li>Among all separating hyperplanes, choose the one with <strong>maximum margin</strong> (distance to nearest points)</li>
+                <li>This is called the <strong>hard margin SVM</strong></li>
+            </ul>
+        </div>
+        
+        <h2>Simple Example Problem</h2>
+        
+        <div class="example">
+            <h3>Given Data:</h3>
+            <ul>
+                <li><strong>Class 1 (positive):</strong> Points $(1,0)$ and $(2,0)$</li>
+                <li><strong>Class 2 (negative):</strong> Points $(4,0)$ and $(5,0)$</li>
+            </ul>
+            
+            <h3>Observation:</h3>
+            <p>These points lie on the x-axis and are linearly separable. We can separate them with a vertical line.</p>
+            
+            <h3>Optimal Separating Line:</h3>
+            <p>By intuition and calculation, the line $x = 3$ provides equal maximum margin to both classes. This is the SVM solution!</p>
+        </div>
+        
+        <h2>SVM as Constrained Optimization</h2>
+        
+        <p>For a general SVM problem with training data $(x_i, y_i)$ where $y_i \in \{-1, +1\}$ (class labels), we formulate:</p>
+        
+        <div class="equation-box">
+
+            $$\min_{w, b} \frac{1}{2}\|w\|^2$$
+
+            $$\text{subject to } y_i(w^T x_i + b) \geq 1, \quad i = 1, 2, \ldots, n$$
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>$w$ is the normal vector to the hyperplane</li>
+            <li>$b$ is the bias term</li>
+            <li>$\|w\|^2$ is minimized to maximize the margin (margin = $\frac{2}{\|w\|}$)</li>
+            <li>Constraints ensure correct classification with margin at least 1</li>
+        </ul>
+        
+        <h2>Applying Barrier Method to SVM</h2>
+        
+        <div class="professor-note">
+            The professor demonstrated implementing SVM using the barrier method in code. "Here I'm formulating the SVM problem and using the logarithmic barrier function. You calculate the barrier function for each constraint, optimize using an unconstrained optimizer, and gradually decrease the barrier parameter."
+        </div>
+        
+        <h3>Barrier Formulation:</h3>
+        
+        <p>Convert inequality constraints $g_i(w,b) = 1 - y_i(w^T x_i + b) \leq 0$ to barrier form:</p>
+        
+        <div class="equation-box">
+
+            $$\Phi(w, b; \gamma) = \frac{1}{2}\|w\|^2 - \gamma \sum_{i=1}^{n} \ln[y_i(w^T x_i + b) - 1]$$
+        </div>
+        
+        <h3>Algorithm Steps:</h3>
+        <ol>
+            <li><strong>Initialize:</strong> Start with $(w_0, b_0)$ such that all constraints are strictly satisfied</li>
+            <li><strong>For each $\gamma$:</strong> Solve $\min_{w,b} \Phi(w, b; \gamma)$ using gradient descent or other method</li>
+            <li><strong>Decrease $\gamma$:</strong> Set $\gamma_{\text{new}} = 0.1 \times \gamma_{\text{old}}$</li>
+            <li><strong>Iterate</strong> until convergence</li>
+            <li><strong>Output:</strong> Final $(w^*, b^*)$ defines the optimal separating hyperplane</li>
+        </ol>
+        
+        <h3>Numerical Results</h3>
+        
+        <div class="professor-note">
+            "When I ran the code with initial $\gamma = 1$ and kept decreasing it, the solution converged nicely. For the simple 1D example with data at points 1, 2, 4, 5, the solution converged to a hyperplane at approximately $x = 3.00$something, very close to 3. This shows the barrier method works excellently for SVM!"
+        </div>
+        
+        <h2>Extensions and Practical Notes</h2>
+        
+        <div class="important">
+            <h3>Practical Considerations:</h3>
+            <ul>
+                <li><strong>Starting point:</strong> Must ensure all training points are strictly correctly classified initially</li>
+                <li><strong>Barrier parameter schedule:</strong> Common to use $\gamma_{k+1} = 0.1 \gamma_k$ or similar</li>
+                <li><strong>Stopping criterion:</strong> When $\|\gamma_k B(w_k, b_k)\| < \epsilon$ for small $\epsilon$</li>
+                <li><strong>Large datasets:</strong> May need more sophisticated optimization methods (stochastic gradient descent, etc.)</li>
+            </ul>
+            
+            <h3>Exercise (mentioned by professor):</h3>
+            <p>"Maybe in the tutorial session we'll work with larger real datasets, generate two types of data that are linearly classifiable, and draw the optimal hyperplane using the barrier method. You can also try implementing this using the penalty method as an exercise to compare both approaches!"</p>
+        </div>
+        
+        <h2>Why This Application Matters</h2>
+        
+        <div class="concept">
+            This SVM example demonstrates that barrier methods aren't just theoretical constructs - they're practical tools for solving real machine learning problems. The key advantages here:
+            <ul>
+                <li>Guarantees feasibility: All intermediate solutions correctly classify training data</li>
+                <li>Smooth convergence: No numerical instabilities typical of penalty methods</li>
+                <li>Natural formulation: SVM constraints fit perfectly with barrier framework</li>
+                <li>Scalable: Can extend to soft-margin SVM and kernel methods</li>
+            </ul>
+        </div>
+        
+        <!-- Hinglish Summary for Section 6 -->
+        <div class="hinglish-summary">
+            Support Vector Machine (SVM) ek classification algorithm hai jo do classes ke beech mein maximum margin wali line (hyperplane) dhoondhta hai. Isko constrained optimization problem ke roop mein formulate kar sakte hain jahan hum $\frac{1}{2}\|w\|^2$ minimize karte hain aur constraint hai ki har point correctly classify ho margin ke saath. Barrier method use karke hum logarithmic barrier function banaते hain aur $\gamma$ ko gradually decrease karte hain. Professor ne code mein dikhaya ki simple example (points at 1,2,4,5) ke liye solution x=3 ke paas converge hota hai. Ye real machine learning problem hai aur barrier method perfectly kaam karta hai!
+        </div>
+        
+        <!-- Practice Questions for Section 6 -->
+        <div class="practice-questions">
+            <h3>Practice Questions: SVM Application</h3>
+            
+            <div class="question">
+                <strong>Q1:</strong> What does "maximum margin" mean in the context of SVM?
+            </div>
+            <div class="answer">
+                Maximum margin means the largest possible distance between the separating hyperplane and the nearest data points from both classes. This gives the most robust classification boundary.
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Why do we minimize $\|w\|^2$ in the SVM formulation?
+            </div>
+            <div class="answer">
+                The margin is $\frac{2}{\|w\|}$, so minimizing $\|w\|^2$ (or equivalently $\|w\|$) maximizes the margin. Smaller $\|w\|$ means larger separation between classes.
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What must be true about the starting point $(w_0, b_0)$ for barrier method on SVM?
+            </div>
+            <div class="answer">
+                All training points must be strictly correctly classified with margin > 0, i.e., $y_i(w_0^T x_i + b_0) > 1$ for all $i$. This ensures we start in the strict interior.
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> How would you extend this to handle non-linearly separable data?
+            </div>
+            <div class="answer">
+                Use soft-margin SVM by introducing slack variables and adding them to the objective with a penalty parameter, or apply kernel trick to map data to higher-dimensional space where it becomes linearly separable.
+            </div>
+        </div>
+        
+        <!-- Key Takeaways for Section 6 -->
+        <div class="key-takeaways">
+            <h3>Key Takeaways: SVM Application</h3>
+            <ul>
+                <li>SVM finds maximum-margin hyperplane for binary classification</li>
+                <li>Formulated as: $\min \frac{1}{2}\|w\|^2$ s.t. $y_i(w^T x_i + b) \geq 1$</li>
+                <li>Barrier method naturally applies to SVM constraints</li>
+                <li>Must start with point that correctly classifies all training data</li>
+                <li>Convergence is smooth and numerically stable</li>
+                <li>Demonstrates practical utility of barrier methods in machine learning</li>
+            </ul>
+        </div>
+        
+        <!-- ==================== FINAL SECTION: MIND MAP ==================== -->
+        <h1 id="mind-map">7. Comprehensive Mind Map</h1>
+        
+    </div>
+    
+    <!-- ==================== MIND MAP VISUALIZATION ==================== -->
+    <div class="mind-map">
+        <h2>🧠 Complete Concept Mind Map</h2>
+        
+        <div class="mind-map-container">
+            <div class="central-node">
+                Barrier Function Method
+            </div>
+            
+            <div class="branches">
+                <!-- Branch 1: Core Concept -->
+                <div class="branch">
+                    <h4>🎯 Core Concept</h4>
+                    <ul>
+                        <li>Interior point approach</li>
+                        <li>Prevents leaving feasible region</li>
+                        <li>Converts constrained → unconstrained</li>
+                        <li>Solves sequence of problems</li>
+                        <li>Parameter $\gamma \to 0^+$</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 2: Mathematical Formulation -->
+                <div class="branch">
+                    <h4>📐 Mathematical Formulation</h4>
+                    <ul>
+                        <li>Original: $\min f(x)$ s.t. $g_i(x) \leq 0$</li>
+                        <li>Auxiliary: $\Phi(x;\gamma) = f(x) + \gamma B(x)$</li>
+                        <li>Inverse barrier: $\sum \frac{-1}{g_i(x)}$</li>
+                        <li>Log barrier: $-\sum \ln[-g_i(x)]$</li>
+                        <li>Property: $B(x) \to \infty$ at boundary</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 3: Comparison with Penalty -->
+                <div class="branch">
+                    <h4>⚖️ vs Penalty Method</h4>
+                    <ul>
+                        <li>Barrier: interior, Penalty: exterior</li>
+                        <li>Barrier: $\gamma \to 0$, Penalty: $\lambda \to \infty$</li>
+                        <li>Barrier: always feasible</li>
+                        <li>Barrier: better stability</li>
+                        <li>Penalty: handles equality easily</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 4: Algorithm Steps -->
+                <div class="branch">
+                    <h4>🔄 Algorithm Steps</h4>
+                    <ul>
+                        <li>1. Find strictly feasible $x_0$</li>
+                        <li>2. Choose initial $\gamma_1 > 0$</li>
+                        <li>3. Solve unconstrained $\min \Phi(x;\gamma_k)$</li>
+                        <li>4. Decrease: $\gamma_{k+1} < \gamma_k$</li>
+                        <li>5. Check convergence</li>
+                        <li>6. If not, repeat step 3</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 5: Examples -->
+                <div class="branch">
+                    <h4>📚 Key Examples</h4>
+                    <ul>
+                        <li>1D: $\min x$ s.t. $x \geq 1$</li>
+                        <li>Solution: $x_\gamma = 1 + \sqrt{\gamma}$</li>
+                        <li>2D: $\min x^2+y^2$ s.t. $x+y \geq 1$</li>
+                        <li>Solution: $(x_\gamma, y_\gamma) = \frac{1+\sqrt{1+4\gamma}}{4}(1,1)$</li>
+                        <li>Both converge as $\gamma \to 0$</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 6: Convergence Theory -->
+                <div class="branch">
+                    <h4>📊 Convergence Theory</h4>
+                    <ul>
+                        <li>Requires continuous $f, g_i$</li>
+                        <li>Non-empty interior needed</li>
+                        <li>Basic: gives upper bounds</li>
+                        <li>Slater condition → exact convergence</li>
+                        <li>$f(x_\gamma)$ non-decreasing in $\gamma$</li>
+                        <li>$\gamma B(x_\gamma) \to 0$ at convergence</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 7: Practical Applications -->
+                <div class="branch">
+                    <h4>🚀 Applications</h4>
+                    <ul>
+                        <li>Support Vector Machines</li>
+                        <li>Interior point methods</li>
+                        <li>Linear programming</li>
+                        <li>Nonlinear programming</li>
+                        <li>Machine learning optimization</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 8: Advantages & Limitations -->
+                <div class="branch">
+                    <h4>✅ Pros & ❌ Cons</h4>
+                    <ul>
+                        <li>✅ Always feasible iterates</li>
+                        <li>✅ Better numerical stability</li>
+                        <li>✅ Smooth convergence</li>
+                        <li>✅ Foundation of interior-point</li>
+                        <li>❌ Need strictly feasible start</li>
+                        <li>❌ Primarily for inequalities</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 9: Key Properties -->
+                <div class="branch">
+                    <h4>🔑 Key Properties</h4>
+                    <ul>
+                        <li>$B(x) \geq 0$ in interior</li>
+                        <li>$B(x) \to \infty$ at boundary</li>
+                        <li>Smooth and continuous interior</li>
+                        <li>Undefined outside feasible region</li>
+                        <li>Local methods stay inside</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 10: Implementation Tips -->
+                <div class="branch">
+                    <h4>💻 Implementation</h4>
+                    <ul>
+                        <li>Use gradient descent / Newton</li>
+                        <li>Decrease schedule: $\gamma_{k+1} = 0.1\gamma_k$</li>
+                        <li>Stop when $\gamma B(x) < \epsilon$</li>
+                        <li>Verify strict feasibility at start</li>
+                        <li>Monitor barrier function values</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 11: Connections -->
+                <div class="branch">
+                    <h4>🔗 Connections</h4>
+                    <ul>
+                        <li>Part of constrained optimization</li>
+                        <li>Related to Lagrange multipliers</li>
+                        <li>Foundation for primal-dual methods</li>
+                        <li>Used in interior point algorithms</li>
+                        <li>Links to duality theory</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 12: Historical Context -->
+                <div class="branch">
+                    <h4>📜 Historical Notes</h4>
+                    <ul>
+                        <li>Frisch's logarithmic barrier (1955)</li>
+                        <li>Interior point revival (1984, Karmarkar)</li>
+                        <li>Modern SVM formulations</li>
+                        <li>Efficient large-scale solvers</li>
+                        <li>Still active research area</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ==================== FINAL THOUGHTS ==================== -->
+    <div class="content">
+        <h1>🎓 Closing Remarks</h1>
+        
+        <div class="professor-note">
+            <strong>Professor's Final Message:</strong>
+            <br><br>
+            "I hope you are enjoying this subject! Optimization is very much in trend right now. Once you master these methods, you can master many things in data science and machine learning. You're actually close to becoming a data scientist - optimization is a very prominent tool in modern AI and machine learning.
+            <br><br>
+            Please keep on learning! We can only supply some material and conduct tutorial sessions, but the real learning you have to do on your behalf. You have to read, you have to explore, and most importantly, you have to implement and experiment with these methods.
+            <br><br>
+            These techniques - penalty methods, barrier methods, interior point methods - they're not just theory. They're used in real optimization software, in training neural networks, in operations research, in finance, everywhere! So take this seriously and practice implementing them.
+            <br><br>
+            With that, we end for today. Keep learning, keep optimizing! Thank you."
+        </div>
+        
+        <div class="important">
+            <h2>📌 Summary of This Week's Learning</h2>
+            <ol>
+                <li>Reviewed <strong>Penalty Methods</strong> - exterior approach with $\lambda \to \infty$</li>
+                <li>Learned <strong>Barrier Methods</strong> - interior approach with $\gamma \to 0$</li>
+                <li>Understood mathematical formulation and types of barriers</li>
+                <li>Worked through detailed 1D and 2D examples</li>
+                <li>Compared penalty vs barrier methods comprehensively</li>
+                <li>Studied convergence theory and conditions</li>
+                <li>Applied barrier method to real ML problem (SVM)</li>
+                <li>Gained insight into modern interior-point methods</li>
+            </ol>
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>आखिरी सारांश (Final Summary):</strong>
+            <br><br>
+            Is lecture series mein humne seekha ki constrained optimization problems ko kaise solve karte hain. Penalty method bahar se shuru hota hai aur parameter badhate hain. Barrier method andar se shuru hota hai aur parameter ghatate hain. Barrier method zyada stable hai aur modern optimization software mein use hota hai. Humne do examples solve kiye - ek 1D aur ek 2D - dono mein barrier method perfectly kaam kiya. Convergence theory batati hai ki under reasonable conditions ye method guaranteed kaam karega. Finally, SVM problem mein practical application dekha. Ye sab knowledge aapko data science aur machine learning mein bahut kaam aayegi. Keep practicing!
+        </div>
+        
+        <h2>📖 Further Reading & Resources</h2>
+        <ul>
+            <li><strong>Textbooks:</strong>
+                <ul>
+                    <li>Nocedal & Wright: "Numerical Optimization" (Chapter on Interior Point Methods)</li>
+                    <li>Boyd & Vandenberghe: "Convex Optimization" (Chapter 11: Interior-point methods)</li>
+                </ul>
+            </li>
+            <li><strong>Topics to Explore Next:</strong>
+                <ul>
+                    <li>Primal-Dual Interior Point Methods</li>
+                    <li>Duality Theory and KKT Conditions</li>
+                    <li>Augmented Lagrangian Methods</li>
+                    <li>Sequential Quadratic Programming (SQP)</li>
+                </ul>
+            </li>
+            <li><strong>Software & Tools:</strong>
+                <ul>
+                    <li>Python: SciPy (optimize), CVXPY</li>
+                    <li>MATLAB: Optimization Toolbox</li>
+                    <li>Julia: JuMP, Optim.jl</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+        <!-- FOOTER -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong><br>
+                Probability and Statistics in AI<br>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+    
+
+
+    
+    <!-- ==================== JAVASCRIPT FOR INTERACTIVITY ==================== -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                ready: () => {
+                    console.log('MathJax is loaded and ready!');
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

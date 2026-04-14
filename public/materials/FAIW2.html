@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/fai/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foundations of AI: Graphs and Search Problems</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #1e3a8a;
+        border-bottom: 3px solid #3b82f6;
+        padding-bottom: 10px;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h2 {
+        color: #1e40af;
+        border-left: 4px solid #3b82f6;
+        padding-left: 15px;
+        margin-top: 40px;
+        margin-bottom: 20px;
+      }
+
+      h3 {
+        color: #1e40af;
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+
+      .key-term {
+        background-color: #fef3c7;
+        color: #92400e;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      .math-formula {
+        background-color: #f3f4f6;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        font-family: "Courier New", monospace;
+        font-size: 1.1em;
+        margin: 15px 0;
+        border-left: 4px solid #6366f1;
+      }
+
+      .professor-note {
+        background-color: #ecfdf5;
+        border-left: 4px solid #10b981;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .professor-note::before {
+        content: "🎓 Professor mentioned in class: ";
+        font-weight: bold;
+        color: #059669;
+      }
+
+      .image-container {
+        max-width: 900px;
+        margin: 20px auto;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(12, 18, 36, 0.08);
+        border: 1px solid #e6eef8;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      }
+
+      .image-container img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        aspect-ratio: 16/9;
+      }
+
+      .image-caption,
+      .image-container figcaption {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        color: #475569;
+        text-align: center;
+        background: #fff;
+      }
+
+      /* keep existing dashed placeholder style usable as fallback */
+      .image-placeholder {
+        display: none; /* hide text placeholders when real images are present */
+      }
+
+      /* small-screen tweaks */
+      @media (max-width: 600px) {
+        .image-container {
+          margin: 12px;
+          border-radius: 10px;
+        }
+        .image-caption {
+          font-size: 0.88rem;
+          padding: 8px 10px;
+        }
+      }
+
+      .hinglish-summary {
+        background-color: #fef7cd;
+        border: 2px solid #f59e0b;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+        font-style: italic;
+      }
+
+      .hinglish-summary::before {
+        content: "📝 Hinglish Summary: ";
+        font-weight: bold;
+        color: #d97706;
+        font-style: normal;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        border: 1px solid #e5e7eb;
+        padding: 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #3b82f6;
+        color: white;
+        font-weight: bold;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f8fafc;
+      }
+
+      .image-placeholder {
+        background-color: #e5e7eb;
+        border: 2px dashed #9ca3af;
+        padding: 40px;
+        text-align: center;
+        margin: 20px 0;
+        border-radius: 8px;
+        color: #6b7280;
+        font-style: italic;
+      }
+
+      .toc {
+        background-color: #f1f5f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+      }
+
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .toc li {
+        margin: 8px 0;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: #1e40af;
+        font-weight: 500;
+      }
+
+      .toc a:hover {
+        color: #3b82f6;
+        text-decoration: underline;
+      }
+
+      .practice-questions {
+        background-color: #fef2f2;
+        border: 2px solid #f87171;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 8px;
+      }
+
+      .practice-questions h4 {
+        color: #dc2626;
+        margin-top: 0;
+      }
+
+      .key-takeaways {
+        background-color: #f0f9ff;
+        border: 2px solid #38bdf8;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 8px;
+      }
+
+      .key-takeaways h4 {
+        color: #0284c7;
+        margin-top: 0;
+      }
+
+      .mind-map {
+        background-color: #f8fafc;
+        border: 2px solid #cbd5e1;
+        padding: 30px;
+        margin: 30px 0;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .mind-map-node {
+        background-color: #3b82f6;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        display: inline-block;
+        margin: 10px;
+        font-weight: bold;
+      }
+
+      .mind-map-subnode {
+        background-color: #60a5fa;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 15px;
+        display: inline-block;
+        margin: 5px;
+        font-size: 0.9em;
+      }
+
+      .course-header {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+      }
+
+      .course-header h1 {
+        border: none;
+        color: white;
+        margin: 0;
+      }
+
+      .course-info {
+        font-size: 0.9em;
+        margin-top: 10px;
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="course-header">
+        <h1>Foundations of AI: Graphs and Search Problems</h1>
+        
+      </div>
+
+      <div class="toc">
+        <h2>📚 Table of Contents</h2>
+        <ul>
+          <li>
+            <a href="#basics-of-graphs">1. Basics of Graphs</a>
+            <ul style="padding-left: 20px">
+              <li><a href="#what-is-graph">What is a Graph?</a></li>
+              <li><a href="#graph-terminology">Basic Graph Terminology</a></li>
+              <li><a href="#types-of-graphs">Types of Graphs</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#search-problem-ai">2. Search Problem in AI</a>
+            <ul style="padding-left: 20px">
+              <li>
+                <a href="#search-problem-definition"
+                  >Search Problem Definition</a
+                >
+              </li>
+              <li>
+                <a href="#search-formulation">Search Problem Formulation</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#search-using-graphs">3. Search Using Graphs</a>
+            <ul style="padding-left: 20px">
+              <li>
+                <a href="#graph-representation"
+                  >Graph Representation of Search Problems</a
+                >
+              </li>
+              <li><a href="#pathfinding-example">Pathfinding Example</a></li>
+              <li>
+                <a href="#formal-representation">Formal Graph Representation</a>
+              </li>
+              <li><a href="#ai-applications">Applications in AI</a></li>
+            </ul>
+          </li>
+          <li><a href="#summary">4. Summary</a></li>
+          <li><a href="#mind-map">5. Mind Map</a></li>
+        </ul>
+      </div>
+
+      <section id="basics-of-graphs">
+        <h2>1. Basics of Graphs</h2>
+
+        <div class="professor-note">
+          Welcome to this lecture on search problems and graphs! Previously, we
+          discussed artificial intelligence definitions, types of AI, and AI
+          agents. Now we understand that as intelligent agents, we are decision
+          makers who need to complete tasks efficiently - this is what makes us
+          intelligent. We want to teach machines the same capability to mimic
+          human intelligence.
+        </div>
+
+        <h3 id="what-is-graph">What is a Graph?</h3>
+
+        <p>
+          A <span class="key-term">graph</span> is a mathematical structure that
+          provides a powerful way to represent relationships and connections
+          between different entities. It consists of two main components:
+        </p>
+
+        <div class="math-formula">
+          <strong>G = (V, E)</strong>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Symbol</th>
+              <th>Description</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Vertices/Nodes</span></td>
+              <td>V</td>
+              <td>Set of individual points or entities</td>
+              <td>Cities in a travel network</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Edges</span></td>
+              <td>E ⊆ V × V</td>
+              <td>Set of connections between pairs of vertices</td>
+              <td>Flight routes between cities</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          Let me give you a practical example from our daily life. Imagine you
+          want to book tickets from Jodhpur to Kolkata. This becomes a network
+          representation where cities are our vertices and flight connections
+          are our edges. This real-world scenario perfectly demonstrates how
+          graphs help us visualize and solve problems!
+        </div>
+
+        <figure class="image-container">
+          <img
+            src="src\W2\FOAW2I1.png"
+            alt="Basic graph structure showing vertices and edges"
+          />
+          <figcaption class="image-caption">
+            Figure: Basic graph structure showing vertices (V) and edges (E)
+          </figcaption>
+        </figure>
+
+        <h3 id="graph-terminology">Basic Graph Terminology</h3>
+
+        <p>
+          Understanding key graph terminology is essential for working with
+          graph-based algorithms:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Term</th>
+              <th>Mathematical Definition</th>
+              <th>Simple Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Degree of a vertex</span></td>
+              <td>Number of edges incident to vertex v</td>
+              <td>How many connections a node has</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Path</span></td>
+              <td>Sequence (v₁, v₂, ..., vₖ) where (vᵢ, vᵢ₊₁) ∈ E</td>
+              <td>Route from one vertex to another through connected edges</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Cycle</span></td>
+              <td>Path where v₁ = vₖ</td>
+              <td>A path that starts and ends at the same vertex</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Connected Graph</span></td>
+              <td>Path exists between every pair of vertices</td>
+              <td>You can reach any vertex from any other vertex</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          Think about the degree of a vertex like this - if Jodhpur airport has
+          direct flights to Ahmedabad, Indore, Delhi, and Jaipur, then the
+          degree of Jodhpur vertex is 4. Each edge represents a direct
+          connection, and the more connections, the higher the degree.
+        </div>
+
+        <h3 id="types-of-graphs">Types of Graphs</h3>
+
+        <p>Graphs can be classified based on different characteristics:</p>
+
+        <h4>1. Direction-based Classification</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Edge Representation</th>
+              <th>Real-world Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Undirected Graph</span></td>
+              <td>Edges have no direction; two-way connections</td>
+              <td>{A, B} = {B, A}</td>
+              <td>Friendship on social media</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Directed Graph</span></td>
+              <td>Edges have specific direction; one-way connections</td>
+              <td>(A, B) ≠ (B, A)</td>
+              <td>Chemical reactions, Twitter following</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <figure class="image-container">
+          <img
+            src="https://cs226fa21.github.io/img/26/graph04.png"
+            alt="Diffrence between directed and Undirected Graph"
+            width="600"
+            height="400"
+          />
+          <figcaption class="image-caption">
+            Figure: Diffrence between directed and Undirected Graph
+          </figcaption>
+        </figure>
+        <div class="professor-note">
+          In our flight example, we initially considered it undirected because
+          we assumed flights operate in both directions. However, in real
+          scenarios, flight availability and costs might differ for each
+          direction, making it a directed graph. For instance, Jodhpur to
+          Ahmedabad might have different timing and fare compared to Ahmedabad
+          to Jodhpur.
+        </div>
+
+        <h4>2. Weight-based Classification</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Use Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Unweighted Graph</span></td>
+              <td>Edges have no associated cost or value</td>
+              <td>Simple connectivity problems</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Weighted Graph</span></td>
+              <td>Each edge has an associated weight/cost</td>
+              <td>Optimization problems (shortest path, minimum cost)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          When we add airfares to our flight network, it becomes a weighted
+          graph. For example, Jodhpur to Ahmedabad costs ₹3000, while Jodhpur to
+          Delhi costs ₹3000. Remember, weights must be in the same units - you
+          can't mix time (hours) with cost (rupees) in the same graph!
+        </div>
+
+        <figure class="image-container">
+          <img
+            src="src\W2\FOAW2I2.jpg"
+            alt="Wieghted graph example showing flight network with costs and travel times"
+          />
+          <figcaption class="image-caption">
+            Figure: Wieghted graph example showing flight network with costs and
+            travel times
+          </figcaption>
+        </figure>
+
+        <h4>3. Cycle-based Classification</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Characteristics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Cyclic Graph</span></td>
+              <td>Contains at least one cycle</td>
+              <td>You can return to starting vertex via different path</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Acyclic Graph</span></td>
+              <td>Contains no cycles</td>
+              <td>Tree-like structure, no loops</td>
+            </tr>
+          </tbody>
+        </table>
+        <figure class="image-container">
+          <img
+            src="src\W2\FOAW2I3.png"
+            alt="Diffrence between cyclic and acyclic graph "
+          />
+          <figcaption class="image-caption">
+            Figure: Diffrence between cyclic and acyclic graph 
+          </figcaption>
+        </figure>
+        <div class="hinglish-summary">
+          Graphs ka matlab hai do parts - vertices (nodes) aur edges
+          (connections). Jaise cities aur unke beech roads hote hain, waise hi
+          graph mein nodes aur edges hote hain. Directed graph mein one-way road
+          jaisa hota hai, undirected mein two-way. Weight add karne se cost ya
+          time ka calculation ho jata hai, jo optimization problems mein bahut
+          useful hai.
+        </div>
+
+        <div class="practice-questions">
+          <h4>🤔 Practice Questions</h4>
+          <ol>
+            <li>
+              <strong>Question:</strong> In a social media platform, if user A
+              follows user B, but user B doesn't follow user A back, what type
+              of graph would represent this relationship?<br />
+              <strong>Answer:</strong> Directed graph, because the "following"
+              relationship has a specific direction and is not necessarily
+              mutual.
+            </li>
+
+            <li>
+              <strong>Question:</strong> Calculate the degree of vertex A in a
+              graph where A is connected to vertices B, C, D, and E.<br />
+              <strong>Answer:</strong> The degree of vertex A is 4, as it has 4
+              edges connected to it.
+            </li>
+
+            <li>
+              <strong>Question:</strong> If you can travel from city X to city Y
+              via cities P and Q, and also return from Y to X via cities R and
+              S, what type of graph characteristic does this represent?<br />
+              <strong>Answer:</strong> This represents a cyclic graph, as you
+              can return to the starting point (X) via a different path.
+            </li>
+          </ol>
+        </div>
+
+        <div class="key-takeaways">
+          <h4>🎯 Key Takeaways - Basics of Graphs</h4>
+          <ul>
+            <li>
+              Graphs consist of vertices (V) and edges (E), represented as G =
+              (V, E)
+            </li>
+            <li>
+              Direction matters: undirected graphs allow two-way movement,
+              directed graphs have one-way connections
+            </li>
+            <li>
+              Weights add cost/distance information to edges for optimization
+              problems
+            </li>
+            <li>
+              Cycles allow returning to starting vertex via alternative paths
+            </li>
+            <li>
+              Graph terminology (degree, path, cycle, connectivity) is
+              fundamental for understanding algorithms
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="search-problem-ai">
+        <h2>2. Search Problem in AI</h2>
+
+        <div class="professor-note">
+          Now that we understand graphs, let's see how they help us solve AI
+          problems. As intelligent agents, we need to make decisions and
+          complete tasks efficiently. When we have a complex task, we break it
+          down into smaller steps - like having intermediate goals before
+          reaching our final goal.
+        </div>
+
+        <h3 id="search-problem-definition">What is a Search Problem in AI?</h3>
+
+        <p>
+          A <span class="key-term">search problem</span> in AI is a formalized
+          way of representing scenarios where an intelligent agent needs to find
+          a sequence of actions to reach a goal state from an initial state.
+        </p>
+
+        <div class="math-formula">
+          <strong>P = (S, A, s₀, G)</strong>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Symbol</th>
+              <th>Description</th>
+              <th>Flight Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">State Space</span></td>
+              <td>S</td>
+              <td>Set of all possible states</td>
+              <td>All cities in the network</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Action Set</span></td>
+              <td>A</td>
+              <td>Set of actions or operators</td>
+              <td>Flight, train, bus, road travel</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Initial State</span></td>
+              <td>s₀ ∈ S</td>
+              <td>Starting state</td>
+              <td>Jodhpur (current location)</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Goal States</span></td>
+              <td>G ⊆ S</td>
+              <td>Set of acceptable end states</td>
+              <td>Kolkata (destination)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="search-formulation">Search Problem Formulation</h3>
+
+        <p>
+          The objective of a search problem is to find a sequence of actions:
+        </p>
+
+        <div class="math-formula">
+          <strong>a₁, a₂, ..., aₙ</strong><br />
+          such that: <strong>aₙ(...a₂(a₁(s₀))...) ∈ G</strong>
+        </div>
+
+        <div class="professor-note">
+          Let me explain this with our travel example. Say you're in Jodhpur
+          (s₀) and want to reach Kolkata (G). You might take action a₁ (fly to
+          Delhi), which changes your state to Delhi. Then action a₂ (fly to
+          Kolkata) brings you to the goal state. The sequence of actions
+          transforms your initial state step by step until you reach your goal.
+        </div>
+
+        <h4>Understanding Actions and State Transitions</h4>
+
+        <p>
+          In a search problem, <span class="key-term">actions</span> are the
+          mechanisms that change states. Each action transforms the current
+          state into a new state:
+        </p>
+
+        <div class="math-formula">
+          <strong>s' = a(s)</strong><br />
+          where s is current state, a is action, s' is resulting state
+        </div>
+
+        <div class="professor-note">
+          Think about a Rubik's cube - each rotation is an action that changes
+          the cube's state (pattern of colors). Our goal state is when all faces
+          have matching colors. Similarly, in AI planning, each action moves us
+          closer to our objective.
+        </div>
+
+        <h4>Multiple Paths and Optimization</h4>
+
+        <p>
+          Often, multiple paths exist from initial state to goal state. The
+          challenge becomes choosing the
+          <span class="key-term">optimal path</span> based on specific criteria:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Optimization Criteria</th>
+              <th>Description</th>
+              <th>Example in Travel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Cost Minimization</span></td>
+              <td>Find path with minimum total cost</td>
+              <td>Cheapest airfare combination</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Time Minimization</span></td>
+              <td>Find fastest path to goal</td>
+              <td>Shortest travel time</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Multi-objective</span></td>
+              <td>Balance multiple criteria</td>
+              <td>Reasonable cost + reasonable time</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          In real life, we often have multiple objectives. We want reasonable
+          travel time AND reasonable cost. Sometimes we combine different modes
+          of transport - maybe train from Jodhpur to Delhi, then flight from
+          Delhi to Kolkata - to find the optimal balance between our
+          constraints.
+        </div>
+
+        <div class="image-placeholder">
+          [Insert diagram: Search problem representation showing initial state,
+          actions, intermediate states, and goal states with decision tree
+          structure]
+        </div>
+
+        <div class="hinglish-summary">
+          Search problem AI mein ek structured way hai to represent karna ki hum
+          kaise initial state se goal state tak pahunchte hain. Isme humein
+          states (cities), actions (travel methods), aur goals (destination)
+          define karne padte hain. Multiple paths available hote hain, aur hum
+          optimal path choose karte hain based on our constraints like cost,
+          time, ya dono.
+        </div>
+
+        <div class="practice-questions">
+          <h4>🤔 Practice Questions</h4>
+          <ol>
+            <li>
+              <strong>Question:</strong> In a chess game, what would be the
+              initial state, possible actions, and goal state?<br />
+              <strong>Answer:</strong> Initial state: Starting chess board
+              configuration. Actions: Legal chess moves (move piece from one
+              square to another). Goal state: Checkmate position where you win.
+            </li>
+
+            <li>
+              <strong>Question:</strong> Why do we have goal "states" (plural)
+              instead of just one goal "state"?<br />
+              <strong>Answer:</strong> There might be multiple acceptable end
+              conditions. For example, in a travel problem, any airport in the
+              destination city might be acceptable, or in a game, there might be
+              multiple winning configurations.
+            </li>
+
+            <li>
+              <strong>Question:</strong> If traveling from Jodhpur to Kolkata,
+              list three different action sequences (paths) possible.<br />
+              <strong>Answer:</strong> Path 1: Jodhpur→Ahmedabad→Kolkata (by
+              air). Path 2: Jodhpur→Delhi→Kolkata (by air). Path 3:
+              Jodhpur→Delhi (by train)→Kolkata (by air).
+            </li>
+          </ol>
+        </div>
+
+        <div class="key-takeaways">
+          <h4>🎯 Key Takeaways - Search Problems in AI</h4>
+          <ul>
+            <li>Search problems are formalized as P = (S, A, s₀, G)</li>
+            <li>Actions transform states: s' = a(s)</li>
+            <li>
+              Goal is finding optimal sequence of actions from initial to goal
+              state
+            </li>
+            <li>
+              Multiple paths usually exist; optimization criteria help choose
+              best path
+            </li>
+            <li>
+              Real-world problems often have multiple objectives requiring
+              balanced solutions
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="search-using-graphs">
+        <h2>3. Search Using Graphs</h2>
+
+        <h3 id="graph-representation">Search Problems as Graphs</h3>
+
+        <p>
+          The beauty of graph theory lies in its ability to transform abstract
+          search problems into visual, analyzable structures:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Search Problem Component</th>
+              <th>Graph Representation</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>States (S)</td>
+              <td>Vertices/Nodes</td>
+              <td>Each state becomes a node in the graph</td>
+            </tr>
+            <tr>
+              <td>Actions (A)</td>
+              <td>Directed Edges</td>
+              <td>Each action defines edge (s, s') where s' = a(s)</td>
+            </tr>
+            <tr>
+              <td>Action Costs</td>
+              <td>Edge Weights</td>
+              <td>Cost c(s, a, s') assigned to edge weights</td>
+            </tr>
+            <tr>
+              <td>Solution</td>
+              <td>Path</td>
+              <td>Sequence from s₀ to some g ∈ G</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          This transformation is powerful because once we represent a search
+          problem as a graph, we can use all the graph algorithms we know - BFS,
+          DFS, A*, Dijkstra's algorithm - to solve our AI problems efficiently!
+        </div>
+
+        <h3 id="pathfinding-example">Example: Pathfinding Problem</h3>
+
+        <p>Let's examine a concrete pathfinding scenario:</p>
+
+        <div class="image-placeholder">
+          [Insert diagram: Pathfinding graph showing cities A, B, C, D with
+          weighted edges representing distances/costs]
+        </div>
+
+        <h4>Graph Analysis:</h4>
+        <ul>
+          <li><strong>Goal:</strong> Minimize total cost (distance)</li>
+          <li><strong>Cities as states:</strong> A, B, C, D</li>
+          <li>
+            <strong>Roads as actions:</strong> Edge weights represent travel
+            costs
+          </li>
+          <li><strong>Sample path:</strong> A → B → C → D</li>
+          <li><strong>Total cost calculation:</strong> 2 + 3 + 1 = 6 units</li>
+        </ul>
+
+        <div class="professor-note">
+          Notice how the abstract travel problem becomes a concrete mathematical
+          problem once we represent it as a graph. Now we can apply algorithms
+          to find the shortest path, compare different routes, and make optimal
+          decisions.
+        </div>
+
+        <h3 id="formal-representation">Formal Representation in Graph Terms</h3>
+
+        <p>When we model search problems as graphs, we get:</p>
+
+        <div class="math-formula">
+          <strong>G = (S, E)</strong><br />
+          where:<br />
+          <strong>S:</strong> States as vertices<br />
+          <strong>E = {(s, s') | ∃a ∈ A : s' = a(s)}:</strong> Transitions as
+          edges
+        </div>
+
+        <h4>Solution Path and Cost Calculation</h4>
+
+        <p>
+          A <span class="key-term">solution</span> is represented as a path:
+        </p>
+
+        <div class="math-formula">
+          <strong>π = (s₀, s₁, s₂, ..., sₙ), where sₙ ∈ G</strong>
+        </div>
+
+        <p>The <span class="key-term">total cost</span> of the path is:</p>
+
+        <div class="math-formula">
+          <strong>Cost(π) = Σ(i=0 to n-1) c(sᵢ, sᵢ₊₁)</strong>
+        </div>
+
+        <div class="professor-note">
+          This mathematical formulation allows us to precisely calculate and
+          compare different paths. The summation symbol Σ means we add up all
+          individual edge costs along our chosen path.
+        </div>
+
+        <h3 id="ai-applications">Applications in AI</h3>
+
+        <p>Graph-based search problems appear throughout AI applications:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Application Domain</th>
+              <th>States Represent</th>
+              <th>Actions Represent</th>
+              <th>Goal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="key-term">Route Finding</span></td>
+              <td>Geographic locations</td>
+              <td>Movement between locations</td>
+              <td>Reach destination optimally</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Robot Motion Planning</span></td>
+              <td>Robot positions/configurations</td>
+              <td>Motor commands/movements</td>
+              <td>Reach target position safely</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Game Playing</span></td>
+              <td>Game board configurations</td>
+              <td>Legal moves</td>
+              <td>Achieve winning position</td>
+            </tr>
+            <tr>
+              <td><span class="key-term">Automated Planning</span></td>
+              <td>World states</td>
+              <td>Available operations</td>
+              <td>Achieve desired world state</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="professor-note">
+          Google Maps is a perfect example of this in action! Every time you
+          search for directions, it's solving a graph search problem where
+          intersections are nodes, roads are edges with weights (travel
+          time/distance), and your destination is the goal state. The app uses
+          advanced algorithms like A* to find optimal routes.
+        </div>
+
+        <h4>Real-world Example: Robot Vacuum Cleaner</h4>
+
+        <div class="professor-note">
+          Modern robot vacuum cleaners demonstrate AI search in action. The
+          robot maps your room (creating a graph of positions), plans optimal
+          cleaning paths (finding routes that cover all areas), and navigates
+          around obstacles (dynamic pathfinding). Each movement decision is
+          based on graph search algorithms!
+        </div>
+
+        <div class="image-placeholder">
+          [Insert diagram: Robot path planning showing room layout as graph with
+          obstacles, start position, and optimal cleaning path]
+        </div>
+
+        <div class="hinglish-summary">
+          Search problems ko graphs mein convert karna AI ka powerful technique
+          hai. States vertices ban jate hain, actions edges ban jate hain, aur
+          costs weights ban jate hain. Iska faida ye hai ki phir hum graph
+          algorithms use kar sakte hain like BFS, DFS, A* to solve complex
+          problems efficiently. Google Maps se lekar robot vacuum tak, sab kuch
+          search algorithms use karta hai.
+        </div>
+
+        <div class="practice-questions">
+          <h4>🤔 Practice Questions</h4>
+          <ol>
+            <li>
+              <strong>Question:</strong> In Google Maps route finding, what do
+              vertices, edges, and edge weights represent?<br />
+              <strong>Answer:</strong> Vertices: Intersections or locations.
+              Edges: Roads or paths between locations. Edge weights: Travel
+              time, distance, or traffic conditions.
+            </li>
+
+            <li>
+              <strong>Question:</strong> Calculate the total cost for path A→C→D
+              if A→C costs 5 units and C→D costs 3 units.<br />
+              <strong>Answer:</strong> Total cost = 5 + 3 = 8 units
+            </li>
+
+            <li>
+              <strong>Question:</strong> Why are edges in search problem graphs
+              typically directed?<br />
+              <strong>Answer:</strong> Because actions have specific directions
+              and effects. Moving from state A to state B via action 'a' is
+              different from moving B to A, which might require a different
+              action or might not be possible at all.
+            </li>
+          </ol>
+        </div>
+
+        <div class="key-takeaways">
+          <h4>🎯 Key Takeaways - Search Using Graphs</h4>
+          <ul>
+            <li>
+              Search problems map naturally to graphs: states→vertices,
+              actions→edges, costs→weights
+            </li>
+            <li>
+              Graph representation enables use of powerful graph algorithms
+              (BFS, DFS, A*, Dijkstra)
+            </li>
+            <li>
+              Path cost is sum of individual edge weights along the solution
+              path
+            </li>
+            <li>
+              Applications span from navigation systems to game AI to robotics
+            </li>
+            <li>
+              Real-world systems like Google Maps demonstrate practical
+              importance of graph search
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>4. Summary</h2>
+
+        <p>
+          This lecture has covered the fundamental relationship between graphs
+          and search problems in AI. Here are the key insights:
+        </p>
+
+        <h3>Core Concepts Covered</h3>
+
+        <ul>
+          <li>
+            <strong>Graph Fundamentals:</strong> Graphs G = (V, E) provide
+            powerful tools for representing relationships and connections in AI
+            problems
+          </li>
+          <li>
+            <strong>Search Problem Formalization:</strong> AI problems can be
+            structured as P = (S, A, s₀, G) for systematic solution
+          </li>
+          <li>
+            <strong>Graph-Search Integration:</strong> Search problems map
+            naturally to graphs, enabling algorithmic solutions
+          </li>
+          <li>
+            <strong>Practical Applications:</strong> From navigation systems to
+            game AI, graph search is ubiquitous in modern AI
+          </li>
+        </ul>
+
+        <h3>Mathematical Foundations</h3>
+
+        <p>The mathematical modeling provides several advantages:</p>
+        <ul>
+          <li>
+            <strong>Cost Analysis:</strong> Precise calculation of solution
+            optimality
+          </li>
+          <li>
+            <strong>Completeness:</strong> Guarantees about finding solutions
+            when they exist
+          </li>
+          <li>
+            <strong>Algorithm Selection:</strong> Framework for choosing
+            appropriate search algorithms (BFS, DFS, A*, etc.)
+          </li>
+        </ul>
+
+        <div class="professor-note">
+          Remember, this is just the foundation! Next, we'll dive into specific
+          graph algorithms like BFS, DFS, and A* that actually solve these
+          search problems efficiently. Understanding graphs and search problem
+          formulation is crucial for mastering these upcoming algorithms.
+        </div>
+
+        <h3>Looking Forward</h3>
+
+        <p>With this foundation in place, you're now ready to explore:</p>
+        <ul>
+          <li>Breadth-First Search (BFS) algorithms</li>
+          <li>Depth-First Search (DFS) algorithms</li>
+          <li>Heuristic search methods like A*</li>
+          <li>Advanced optimization techniques</li>
+        </ul>
+
+        <div class="hinglish-summary">
+          Is lecture mein humne dekha ki graphs kaise AI problems solve karne
+          mein help karte hain. Basic concept simple hai - states ko nodes bana
+          do, actions ko edges bana do, aur phir graph algorithms use karo. Real
+          life mein Google Maps, robot vacuum, games sab isi concept use karte
+          hain. Next hum actual algorithms sikhenge jo ye problems solve karte
+          hain.
+        </div>
+      </section>
+
+      <section id="mind-map">
+        <h2>5. Mind Map: Graphs and Search Problems in AI</h2>
+
+        <div class="mind-map">
+          <div class="mind-map-node">GRAPHS & SEARCH PROBLEMS</div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">GRAPH BASICS</div>
+            <div class="mind-map-subnode">Vertices (V)</div>
+            <div class="mind-map-subnode">Edges (E)</div>
+            <div class="mind-map-subnode">G = (V,E)</div>
+          </div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">GRAPH TYPES</div>
+            <div class="mind-map-subnode">Directed/Undirected</div>
+            <div class="mind-map-subnode">Weighted/Unweighted</div>
+            <div class="mind-map-subnode">Cyclic/Acyclic</div>
+          </div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">SEARCH PROBLEMS</div>
+            <div class="mind-map-subnode">States (S)</div>
+            <div class="mind-map-subnode">Actions (A)</div>
+            <div class="mind-map-subnode">Initial State (s₀)</div>
+            <div class="mind-map-subnode">Goal States (G)</div>
+          </div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">GRAPH REPRESENTATION</div>
+            <div class="mind-map-subnode">States → Vertices</div>
+            <div class="mind-map-subnode">Actions → Edges</div>
+            <div class="mind-map-subnode">Costs → Weights</div>
+          </div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">AI APPLICATIONS</div>
+            <div class="mind-map-subnode">Route Finding</div>
+            <div class="mind-map-subnode">Robot Planning</div>
+            <div class="mind-map-subnode">Game Playing</div>
+            <div class="mind-map-subnode">Automated Planning</div>
+          </div>
+
+          <div style="margin: 20px 0">
+            <div class="mind-map-node">ALGORITHMS</div>
+            <div class="mind-map-subnode">BFS</div>
+            <div class="mind-map-subnode">DFS</div>
+            <div class="mind-map-subnode">A*</div>
+            <div class="mind-map-subnode">Dijkstra</div>
+          </div>
+        </div>
+      </section>
+
+      <footer
+        style="
+          text-align: center;
+          margin-top: 50px;
+          padding: 20px;
+          background-color: #f8f9fa;
+          border-radius: 8px;
+        "
+      >
+         
+        <p>
+          Created by <a>Armaan Kachhawa </a>
+        </p>
+      </footer>
+    </div>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

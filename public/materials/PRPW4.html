@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition Principles - Lecture 4: Bayesian Decision Theory</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #4a90e2;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+        
+        h2 {
+            color: #2980b9;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h3 {
+            color: #16a085;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #8e44ad;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: none;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            padding: 8px 0;
+        }
+        
+        .toc ul li a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .toc ul li a:hover {
+            color: #3498db;
+            padding-left: 10px;
+        }
+        
+        .toc ul ul {
+            padding-left: 20px;
+        }
+        
+        strong, .key-term {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .professor-note {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note strong {
+            color: #0c5460;
+        }
+        
+        .hinglish-summary {
+            background: #fff8e1;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .hinglish-summary h4 {
+            color: #f57c00;
+            margin-top: 0;
+            font-style: normal;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .practice-questions {
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .practice-questions h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #c8e6c9;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways {
+            background: #fce4ec;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .key-takeaways h4 {
+            color: #c2185b;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 25px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        .mind-map {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .mind-map h2 {
+            color: white;
+            border-bottom: 2px solid white;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        
+        .mind-map-node {
+            background: white;
+            color: #333;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 250px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .mind-map-node h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .mind-map-node ul {
+            padding-left: 20px;
+        }
+        
+        .mind-map-node li {
+            margin: 8px 0;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        .recap-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+        }
+        
+        .example-box h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pattern Recognition Principles</h1>
+            <p class="subtitle">Lecture 4: Bayesian Decision Theory</p>
+            <p class="subtitle">~Armaan Kachhawa</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap of Previous Lecture</a></li>
+                <li><a href="#introduction">2. Today's Topics</a></li>
+                <li><a href="#bayesian-decision">3. Bayesian Decision Theory</a>
+                    <ul>
+                        <li><a href="#classification-intro">3.1 Introduction to Classification</a></li>
+                        <li><a href="#apple-orange">3.2 Apple vs Orange Example</a></li>
+                        <li><a href="#bayes-classification">3.3 Bayesian Classification Process</a></li>
+                        <li><a href="#decision-rule">3.4 Decision Rule</a></li>
+                    </ul>
+                </li>
+                <li><a href="#error-analysis">4. Error in Bayesian Classification</a></li>
+                <li><a href="#risk-analysis">5. Risk in Bayesian Classification</a>
+                    <ul>
+                        <li><a href="#risk-concept">5.1 Understanding Risk Concept</a></li>
+                        <li><a href="#loss-function">5.2 Loss Functions</a></li>
+                        <li><a href="#bayesian-risk">5.3 Bayesian Risk Formula</a></li>
+                        <li><a href="#numerical-example">5.4 Numerical Example: Salmon vs Sea Bass</a></li>
+                    </ul>
+                </li>
+                <li><a href="#discriminant-function">6. Introduction to Discriminant Function</a></li>
+                <li><a href="#mind-map">7. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Recap Section -->
+        <section id="recap">
+            <h2>1. Recap of Previous Lecture</h2>
+            
+            <div class="recap-box">
+                <h3>Key Concepts Covered Previously:</h3>
+                <ul>
+                    <li><strong>Conditional Probability</strong></li>
+                    <li><strong>Bayes Theorem</strong></li>
+                    <li><strong>Gaussian Distribution</strong></li>
+                    <li><strong>Uniform Distribution</strong></li>
+                </ul>
+            </div>
+
+            <h3>Bayes Theorem Review</h3>
+            <p>In the last lecture, we learned about <strong>conditional probability</strong> and how to compute the <strong>posterior</strong> given the <strong>likelihood</strong> and <strong>prior</strong>.</p>
+
+            <div class="formula-box">
+                <p><strong>Bayes Theorem:</strong></p>
+
+                $$P(\text{Posterior}) = \frac{P(\text{Likelihood}) \times P(\text{Prior})}{P(\text{Evidence})}$$
+                
+                <p style="margin-top: 20px;">Or more formally:</p>
+
+                $$P(\omega|X) = \frac{P(X|\omega) \times P(\omega)}{P(X)}$$
+            </div>
+
+            <p>We also discussed two important <strong>probability distributions</strong>:</p>
+            <ul>
+                <li><strong>Gaussian Distribution (Normal Distribution):</strong> This distribution will be frequently used in upcoming lectures, as we often assume data follows a Gaussian distribution.</li>
+                <li><strong>Uniform Distribution:</strong> A distribution where all outcomes are equally likely.</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "The Gaussian distribution is something we will keep seeing in the next few lectures as well, where we will be assuming that data is following Gaussian distribution."
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Previous lecture mein humne conditional probability aur Bayes theorem seekha tha. Bayes theorem basically kehta hai ki posterior probability ko calculate karne ke liye hume likelihood ko prior se multiply karke evidence se divide karna hota hai. Humne Gaussian aur Uniform distribution bhi padhe the jo bahut important probability distributions hain. Yeh concepts aage ke lectures mein bahut kaam aayenge especially jab hum classification problems solve karenge.</p>
+            </div>
+        </section>
+
+        <!-- Today's Topics -->
+        <section id="introduction">
+            <h2>2. Today's Topics</h2>
+            
+            <p>In today's lecture, we will cover three main topics:</p>
+            
+            <ol>
+                <li><strong>Bayesian Decision Theory:</strong> How to use Bayes' theorem for classification or decision making in particular.</li>
+                <li><strong>Error and Risk in Bayesian Classification:</strong> Understanding the error probability and risk associated with Bayesian classification.</li>
+                <li><strong>Introduction to Discriminant Function:</strong> A preview of discriminant functions which will be explored in detail in upcoming lectures.</li>
+            </ol>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Today we are going to discuss basically three topics. One is like Bayes' theorem in the decision theory or the classification in particular. So, how do we use Bayes' theorem for doing a classification?"
+            </div>
+        </section>
+
+        <!-- Bayesian Decision Theory -->
+        <section id="bayesian-decision">
+            <h2>3. Bayesian Decision Theory</h2>
+
+            <section id="classification-intro">
+                <h3>3.1 Introduction to Classification</h3>
+                
+                <p><strong>Classification</strong> is one of the core tasks of pattern recognition and machine learning. In classification, a data sample is classified into one of the <strong>K categories</strong>.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type of Classification</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Binary Classification</strong></td>
+                            <td>When K = 2 (two classes)</td>
+                            <td>Apple vs Orange, Spam vs Not Spam</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multi-class Classification</strong></td>
+                            <td>When K > 2 (more than two classes)</td>
+                            <td>Digit Recognition (0-9), Animal Classification</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Let's see how we apply Bayesian theorem for making classification decisions.</p>
+            </section>
+
+            <section id="apple-orange">
+                <h3>3.2 Apple vs Orange Example</h3>
+
+                <div class="example-box">
+                    <h4>🍎🍊 Real-World Scenario: The Farmer's Problem</h4>
+                    <p><strong>Problem Statement:</strong> A farmer has both apples and oranges in his farm. He wants a machine (robot) that can automatically classify fruits and put apples in an apple box and oranges in an orange box.</p>
+                    
+                    <p><strong>Your Task:</strong> As a Machine Learning engineer, your goal is to design an algorithm that can perform apple vs orange classification.</p>
+                </div>
+
+                <h4>Step 1: Define Classes</h4>
+                <p>Let's define our two classes:</p>
+                <ul>
+                    <li><strong>ω₁ (omega 1):</strong> Represents the <span class="key-term">Apple class</span></li>
+                    <li><strong>ω₂ (omega 2):</strong> Represents the <span class="key-term">Orange class</span></li>
+                </ul>
+
+                <h4>Step 2: Prior Knowledge</h4>
+                <p>The farmer provides us with some <strong>prior knowledge</strong>. He tells us that in his farm:</p>
+                <ul>
+                    <li>Apples are more abundant than oranges</li>
+                    <li>Roughly 60% are apples and 40% are oranges</li>
+                </ul>
+
+                <div class="formula-box">
+                    <p><strong>Prior Probabilities:</strong></p>
+
+                    $$P(\omega_1) = 0.6 \quad \text{(Probability of Apple)}$$
+
+                    $$P(\omega_2) = 0.4 \quad \text{(Probability of Orange)}$$
+                    
+                    <p style="margin-top: 15px;">Note that:</p>
+
+                    $$P(\omega_1) > P(\omega_2)$$
+                </div>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "With this prior knowledge, if I have to just randomly classify any fruit, what will I do? Because I have only this knowledge, I don't have any other knowledge to my system. Then in such case, I will be choosing any fruit as apple because there is a 60% chance that I will be getting these things right."
+                </div>
+
+                <h4>The Problem with Using Only Prior</h4>
+                <p>If we classify any fruit as apple without even looking at it, we would be correct 60% of the time. However, this is not a good solution because:</p>
+                <ul>
+                    <li>We're not using any <strong>observation</strong> about the fruit</li>
+                    <li>We're completely ignoring the actual characteristics of the fruit</li>
+                    <li>A good system should look at the fruit and give appropriate weightage to both prior knowledge AND observations</li>
+                </ul>
+
+                <h4>Step 3: Observation (Feature)</h4>
+                <p>We need to observe some feature of the fruit. In this case, we'll use <strong>color</strong> as our feature.</p>
+                
+                <p>Let <strong>X</strong> represent the color feature. We can model the <strong>likelihood</strong> or <strong>observation probability</strong>:</p>
+
+                <div class="formula-box">
+                    <p><strong>Likelihood Functions:</strong></p>
+
+                    $$P(X|\omega_1) = \text{Probability of observing color } X \text{ given it's an Apple}$$
+
+                    $$P(X|\omega_2) = \text{Probability of observing color } X \text{ given it's an Orange}$$
+                </div>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "P of X given ω₁, how do you get it? This is given that you have a lot of apples and you measure the color and then you try to find the distribution of color distribution in a class ω₁ or class apple. So that's P of X given ω₁."
+                </div>
+
+                <p><strong>Note:</strong> While we use color as a single feature in this example, X could be:</p>
+                <ul>
+                    <li>A single feature (like color)</li>
+                    <li>Multiple features (like weight, size, texture)</li>
+                    <li>A multi-dimensional feature vector</li>
+                </ul>
+            </section>
+
+            <section id="bayes-classification">
+                <h3>3.3 Bayesian Classification Process</h3>
+
+                <h4>What We Want to Find: Posterior Probability</h4>
+                <p>At test time, when we see a new fruit with color X, we want to know:</p>
+
+                <div class="formula-box">
+                    <p><strong>Posterior Probabilities (What we want to compute):</strong></p>
+
+                    $$P(\omega_1|X) = \text{Probability that it's an Apple given the observed color } X$$
+
+                    $$P(\omega_2|X) = \text{Probability that it's an Orange given the observed color } X$$
+                </div>
+
+                <p>These probabilities are called <strong class="key-term">Posterior Probabilities</strong>.</p>
+
+                <h4>Applying Bayes Theorem</h4>
+                <p>Now we can use Bayes theorem to compute the posterior probabilities:</p>
+
+                <div class="formula-box">
+                    <p><strong>Using Bayes Theorem:</strong></p>
+
+                    $$P(\omega_1|X) = \frac{P(\omega_1) \times P(X|\omega_1)}{P(X)}$$
+
+                    
+                    $$P(\omega_2|X) = \frac{P(\omega_2) \times P(X|\omega_2)}{P(X)}$$
+                    
+                    <p style="margin-top: 20px;"><strong>Where:</strong></p>
+                    <ul>
+                        <li>$P(\omega_1)$ and $P(\omega_2)$ are <strong>Prior probabilities</strong></li>
+                        <li>$P(X|\omega_1)$ and $P(X|\omega_2)$ are <strong>Likelihoods</strong></li>
+                        <li>$P(X)$ is the <strong>Evidence</strong></li>
+                    </ul>
+                </div>
+
+                <h4>Calculating Evidence P(X)</h4>
+                <p>The evidence P(X) can be computed using the <strong>Law of Total Probability</strong>:</p>
+
+                <div class="formula-box">
+
+                    $$P(X) = P(\omega_1) \times P(X|\omega_1) + P(\omega_2) \times P(X|\omega_2)$$
+                </div>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "P of X, by the way, what is P of X? P of X is the evidence and how do you compute P of X? P of X is nothing but P of ω₁ into P of X given ω₁ plus P of ω₂ into P of X given ω₂. This is what we have already seen how the total probability is computed in the last few lectures."
+                </div>
+            </section>
+
+            <section id="decision-rule">
+                <h3>3.4 Decision Rule</h3>
+
+                <p>Once we have computed the posterior probabilities, we need a <strong>decision rule</strong> to classify the fruit.</p>
+
+                <div class="formula-box">
+                    <h4>Basic Decision Rule:</h4>
+                    <p><strong>IF</strong> $P(\omega_1|X) > P(\omega_2|X)$</p>
+                    <p style="padding-left: 40px;"><strong>THEN</strong> Classify as Apple (ω₁)</p>
+                    <p><strong>ELSE</strong></p>
+                    <p style="padding-left: 40px;">Classify as Orange (ω₂)</p>
+                </div>
+
+                <h4>Simplified Decision Rule</h4>
+                <p>Notice that both posterior probabilities have the same denominator P(X). Therefore, we don't actually need to compute P(X)!</p>
+
+                <div class="formula-box">
+                    <h4>Simplified Decision Rule (Comparing Numerators Only):</h4>
+                    <p><strong>IF</strong> $P(\omega_1) \times P(X|\omega_1) \geq P(\omega_2) \times P(X|\omega_2)$</p>
+                    <p style="padding-left: 40px;"><strong>THEN</strong> Decide ω₁ (Apple)</p>
+                    <p><strong>ELSE</strong></p>
+                    <p style="padding-left: 40px;">Decide ω₂ (Orange)</p>
+                </div>
+
+                <p>This is much more efficient because we only need to compare the product of prior and likelihood for each class!</p>
+
+                <h4>Visual Representation</h4>
+                <div class="diagram-placeholder">
+                    [Insert diagram: Two overlapping probability distributions on X-axis (color). Red curve shows P(ω₁) × P(X|ω₁) and Green curve shows P(ω₂) × P(X|ω₂). The region where red curve is higher is classified as ω₁, and where green curve is higher is classified as ω₂. The intersection point is the decision boundary.]
+                </div>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "So these two distributions we have. Now what you can say that the region where we will be deciding ω₁ here and this is ω₂. So for the region where this curve is higher, this particular values of X we will be deciding ω₁ class. Beyond this point, we will be deciding ω₂ class."
+                </div>
+
+                <p>In the diagram:</p>
+                <ul>
+                    <li>The <strong>X-axis</strong> represents the feature (color)</li>
+                    <li>The <strong>Y-axis</strong> represents $P(\omega_i) \times P(X|\omega_i)$</li>
+                    <li>Two curves represent the two classes</li>
+                    <li>The <strong>decision boundary</strong> is where the two curves intersect</li>
+                    <li><strong>Left of boundary:</strong> Classify as ω₁ (Apple)</li>
+                    <li><strong>Right of boundary:</strong> Classify as ω₂ (Orange)</li>
+                </ul>
+            </section>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Bayesian Decision Theory mein hum classification ke liye Bayes theorem use karte hain. Ek farmer ka example liya jisme apple aur orange classify karna tha. Pehle humne prior knowledge li ki 60% apples aur 40% oranges hain. Phir humne fruit ka color observe kiya jo humara feature hai. Bayes theorem se hum posterior probability calculate karte hain - matlab given color X, fruit ka apple ya orange hone ki probability kya hai. Decision rule simple hai: jo class ki posterior probability zyada hai, us class mein classify kar do. Aur kyunki denominator same hai, hume sirf prior × likelihood compare karna padta hai har class ke liye. Jahan bhi ek class ki value zyada hai, wahi classify karo!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li><strong>Classification</strong> assigns data samples to one of K categories (Binary: K=2, Multi-class: K>2)</li>
+                    <li><strong>Prior knowledge</strong> gives us initial probabilities before observing any features</li>
+                    <li><strong>Observation/Likelihood</strong> provides information based on measured features</li>
+                    <li><strong>Posterior probability</strong> combines prior and likelihood using Bayes theorem</li>
+                    <li><strong>Decision rule</strong> compares posterior probabilities (or equivalently, prior × likelihood) to make classification decisions</li>
+                    <li>We don't need to calculate the evidence P(X) when comparing two classes as it's the same for both</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🤔 Practice Questions</h4>
+                
+                <div class="question">
+                    <p><strong>Q1:</strong> What is the difference between binary classification and multi-class classification?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> Binary classification involves classifying data into one of two classes (K=2), such as Apple vs Orange or Spam vs Not Spam. Multi-class classification involves classifying data into one of more than two classes (K>2), such as digit recognition (0-9) or classifying animals into different species.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q2:</strong> If we only use prior probabilities (P(ω₁) = 0.6, P(ω₂) = 0.4) without looking at any features, what would be our classification accuracy if we always predict the majority class?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> If we always predict Apple (ω₁) without looking at any features, we would be correct 60% of the time. However, this is not a good approach as it ignores actual observations about the fruit.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q3:</strong> Why can we ignore P(X) when comparing P(ω₁|X) and P(ω₂|X) in our decision rule?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> We can ignore P(X) because it appears in the denominator of both posterior probabilities. When comparing P(ω₁|X) > P(ω₂|X), the denominator P(X) is the same for both, so it cancels out. We only need to compare the numerators: P(ω₁) × P(X|ω₁) vs P(ω₂) × P(X|ω₂).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error in Bayesian Classification -->
+        <section id="error-analysis">
+            <h2>4. Error in Bayesian Classification</h2>
+
+            <p>Even with Bayesian classification, there is always some <strong>error probability</strong>. This error occurs because of the overlap between class distributions.</p>
+
+            <h3>Understanding Classification Error</h3>
+            <p>Let's visualize the posterior probabilities:</p>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: X-axis shows feature value (X), Y-axis shows posterior probability P(ωᵢ|X). Two curves showing P(ω₁|X) and P(ω₂|X). The overlapping region between the curves represents the error region. The curves intersect at the decision boundary.]
+            </div>
+
+            <p>In the diagram above:</p>
+            <ul>
+                <li>The blue curve represents <strong>P(ω₁|X)</strong> - posterior probability of class Apple</li>
+                <li>The green curve represents <strong>P(ω₂|X)</strong> - posterior probability of class Orange</li>
+                <li>The region where curves overlap is the <strong>error region</strong></li>
+            </ul>
+
+            <h3>Error at a Given Point</h3>
+            <p>At any given feature value X, the <strong>error probability</strong> depends on what we decide:</p>
+
+            <div class="formula-box">
+                <p><strong>Error Probability at point X:</strong></p>
+
+                $$P(\text{error}|X) = \begin{cases}
+                P(\omega_1|X) & \text{if we decide } \omega_2 \\
+                P(\omega_2|X) & \text{if we decide } \omega_1
+                \end{cases}$$
+            </div>
+
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li>If we classify a fruit as Orange (ω₂), but it's actually an Apple (ω₁), the error is P(ω₁|X)</li>
+                <li>If we classify a fruit as Apple (ω₁), but it's actually an Orange (ω₂), the error is P(ω₂|X)</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "At this point, we are deciding that this is ω₁ class but don't forget that there is some chance, this much chance, this class this sample to be ω₂ class right. So there is some chance of it being ω₂ class. So that chance is like if that chance is higher we have a higher chance of error."
+            </div>
+
+            <h3>Total Error Probability</h3>
+            <p>The <strong>total error probability</strong> is computed by integrating the error over all possible values of X:</p>
+
+            <div class="formula-box">
+                <p><strong>Total Error Probability:</strong></p>
+
+                $$P(\text{error}) = \int_{-\infty}^{\infty} P(\text{error}|X) \, P(X) \, dX$$
+                
+                <p style="margin-top: 15px;">This is also equal to the <strong>area under the error region</strong> in the probability distribution curves.</p>
+            </div>
+
+            <h3>When is Error High or Low?</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Distribution Overlap</th>
+                        <th>Error Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Classes are well-separated</strong></td>
+                        <td>Minimal overlap between P(ω₁|X) and P(ω₂|X)</td>
+                        <td><span style="color: green;">Low Error ✓</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Classes are mixed</strong></td>
+                        <td>High overlap between P(ω₁|X) and P(ω₂|X)</td>
+                        <td><span style="color: red;">High Error ✗</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Distributions are very similar</strong></td>
+                        <td>Distributions almost identical</td>
+                        <td><span style="color: red;">Very High Error ✗✗</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "When will be more error existing? When the classes will be more mixed, right? When the distribution of P of ω₁ given X and P of ω₂ given X are very, very similar, then the distributions, if their distributions are very, very similar, this error is going to be high. While if they are far apart, then the error will be low."
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Bayesian classification mein bhi kuch error hota hai. Yeh error tab hota hai jab two classes ke distributions overlap karte hain. Agar hum kisi point X pe decide karte hain ki yeh ω₁ hai, lekin actually ω₂ hone ka bhi kuch probability hai, toh wahi error hai. Total error nikalne ke liye hum sabhi X values pe error ko integrate karte hain. Jab classes well-separated hain toh error kam hota hai, aur jab distributions bahut similar ya mixed hain toh error zyada hota hai. Basically, jitna zyada overlap hoga classes mein, utna zyada error hoga!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Classification error is <strong>inevitable</strong> due to overlapping class distributions</li>
+                    <li>Error at point X equals the posterior probability of the class we <strong>didn't</strong> choose</li>
+                    <li>Total error is the <strong>integration</strong> of point-wise errors over all feature values</li>
+                    <li><strong>Well-separated classes</strong> lead to lower error</li>
+                    <li><strong>Mixed or similar distributions</strong> lead to higher error</li>
+                    <li>The error region is visualized as the <strong>overlapping area</strong> between class distributions</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🤔 Practice Questions</h4>
+                
+                <div class="question">
+                    <p><strong>Q1:</strong> If at a certain feature value X, P(ω₁|X) = 0.7 and P(ω₂|X) = 0.3, and we decide it's class ω₁, what is the error probability at this point?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> The error probability is P(ω₂|X) = 0.3 (30%), because there's a 30% chance that it's actually class ω₂ even though we decided it's ω₁.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q2:</strong> Why does more overlap between class distributions lead to higher classification error?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> More overlap means that for many feature values X, both classes have similar posterior probabilities. This creates ambiguity in classification - even when we choose the class with higher probability, there's still a significant probability that the sample belongs to the other class, resulting in higher error rates.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q3:</strong> In an ideal scenario with zero classification error, what would the class distributions look like?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> In an ideal scenario with zero error, the class distributions would be completely separated with no overlap. Each feature value X would unambiguously belong to one class only, meaning P(ω₁|X) would be either 1 or 0 for all X values (and correspondingly P(ω₂|X) would be 0 or 1).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Risk in Bayesian Classification -->
+        <section id="risk-analysis">
+            <h2>5. Risk in Bayesian Classification</h2>
+
+            <section id="risk-concept">
+                <h3>5.1 Understanding Risk Concept</h3>
+
+                <p>When we perform classification, we make <strong>decisions</strong>, and every decision carries some <strong>risk</strong>. The risk is not just about making errors, but also about the <strong>consequences</strong> of those errors.</p>
+
+                <div class="example-box">
+                    <h4>Why Risk Matters: Apple vs Orange Example</h4>
+                    <p>If our pattern recognition model classifies an apple as orange:</p>
+                    <ul>
+                        <li>Apples get placed in the orange box</li>
+                        <li>Oranges get placed in the apple box</li>
+                        <li>They have <strong>different prices</strong></li>
+                        <li>Customers expect what they ordered</li>
+                        <li>Selling the wrong fruit leads to <strong>customer dissatisfaction</strong></li>
+                        <li>There may be <strong>financial losses</strong></li>
+                    </ul>
+                    <p><strong>Conclusion:</strong> Different types of misclassifications have different consequences!</p>
+                </div>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "When we do some classification, we ideally take some decision, right? And that decision always has some risk. Any decision has some risk."
+                </div>
+            </section>
+
+            <section id="loss-function">
+                <h3>5.2 Loss Functions</h3>
+
+                <h4>Setting Up the Framework</h4>
+                <p>Let's define the mathematical framework for risk analysis:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Meaning</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>K</strong></td>
+                            <td>Number of classes</td>
+                            <td>Total number of categories in classification problem</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ω₁, ω₂, ..., ωₖ</strong></td>
+                            <td>Class labels</td>
+                            <td>The K different classes in our problem</td>
+                        </tr>
+                        <tr>
+                            <td><strong>X</strong></td>
+                            <td>Feature vector</td>
+                            <td>Observed features (scalar or multi-dimensional)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>α₁, α₂, ..., αₖ</strong></td>
+                            <td>Actions/Decisions</td>
+                            <td>The decision or action taken for each classification</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "For each class, each classification we take some action or sometime we call it decision, right? And these decisions are α₁, α₂ to αₖ. So these decisions are like for each classification we are taking certain decisions - selling it in the price of apple if you classify as apple, that's the action."
+                </div>
+
+                <h4>Defining Loss Function</h4>
+                <p>The <strong class="key-term">Loss Function</strong> λ(αᵢ|ωⱼ) quantifies the cost of taking action αᵢ when the true class is ωⱼ.</p>
+
+                <div class="formula-box">
+                    <p><strong>Loss Function Definition:</strong></p>
+
+                    $$\lambda(\alpha_i|\omega_j) = \text{Loss when true class is } \omega_j \text{ but we decide action } \alpha_i$$
+                </div>
+
+                <p><strong>Interpretation:</strong></p>
+                <ul>
+                    <li>If the actual class label is ωⱼ</li>
+                    <li>And we decide to take action αᵢ</li>
+                    <li>Then λ(αᵢ|ωⱼ) represents the loss or cost</li>
+                </ul>
+
+                <h4>0-1 Loss Function</h4>
+                <p>One of the most common loss functions is the <strong>0-1 Loss</strong>:</p>
+
+                <div class="formula-box">
+                    <p><strong>0-1 Loss Function:</strong></p>
+
+                    $$\lambda(\alpha_i|\omega_j) = \begin{cases}
+                    0 & \text{if } i = j \text{ (correct classification)} \\
+                    1 & \text{if } i \neq j \text{ (misclassification)}
+                    \end{cases}$$
+                </div>
+
+                <p><strong>Meaning:</strong></p>
+                <ul>
+                    <li><strong>No loss (0)</strong> when we make the correct decision (i = j)</li>
+                    <li><strong>Unit loss (1)</strong> for any misclassification (i ≠ j)</li>
+                    <li>All misclassifications are treated equally</li>
+                </ul>
+
+                <div class="example-box">
+                    <h4>Example: 0-1 Loss for Apple vs Orange</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Loss Term</th>
+                                <th>Scenario</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>λ(α₁|ω₁)</td>
+                                <td>Apple sold as Apple</td>
+                                <td>0 (No loss ✓)</td>
+                            </tr>
+                            <tr>
+                                <td>λ(α₂|ω₂)</td>
+                                <td>Orange sold as Orange</td>
+                                <td>0 (No loss ✓)</td>
+                            </tr>
+                            <tr>
+                                <td>λ(α₂|ω₁)</td>
+                                <td>Apple sold as Orange</td>
+                                <td>1 (Loss! ✗)</td>
+                            </tr>
+                            <tr>
+                                <td>λ(α₁|ω₂)</td>
+                                <td>Orange sold as Apple</td>
+                                <td>1 (Loss! ✗)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><strong>Note:</strong> In real-world scenarios, you can define custom loss functions where different types of misclassifications have different costs. For example, misclassifying a cancerous tumor as benign might have a much higher cost than the opposite error.</p>
+            </section>
+
+            <section id="bayesian-risk">
+                <h3>5.3 Bayesian Risk Formula</h3>
+
+                <p>Now that we have defined loss functions, we can calculate the <strong class="key-term">Bayesian Risk</strong> or <strong class="key-term">Expected Loss</strong>.</p>
+
+                <h4>Risk for Taking Action αᵢ Given Feature X</h4>
+
+                <div class="formula-box">
+                    <p><strong>Bayesian Risk (Conditional Risk):</strong></p>
+
+                    $$R(\alpha_i|X) = \sum_{j=1}^{K} \lambda(\alpha_i|\omega_j) \cdot P(\omega_j|X)$$
+                    
+                    <p style="margin-top: 15px;"><strong>Where:</strong></p>
+                    <ul>
+                        <li>$R(\alpha_i|X)$ = Risk of taking action $\alpha_i$ when observing feature $X$</li>
+                        <li>$\lambda(\alpha_i|\omega_j)$ = Loss of action $\alpha_i$ when true class is $\omega_j$</li>
+                        <li>$P(\omega_j|X)$ = Posterior probability of class $\omega_j$ given feature $X$</li>
+                        <li>Sum over all $K$ classes</li>
+                    </ul>
+                </div>
+
+                <p><strong>Why is this called Expected Loss?</strong></p>
+                <p>This formula is the <strong>expectation</strong> (weighted average) of the loss function, where the weights are the posterior probabilities. It tells us the average loss we can expect if we take action αᵢ.</p>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "This is expected loss, this is also called expected loss. Why it is called expected loss? Because if you remember the expected loss definition is like Σ x·P(x), right? So that's the expectation or mean what we have seen in random variables. It is very similar - expected loss is with probability you sum it over all the cases."
+                </div>
+
+                <h4>Optimal Decision Rule</h4>
+                <p>To minimize risk, we should choose the action that has the <strong>minimum risk</strong>:</p>
+
+                <div class="formula-box">
+                    <p><strong>Optimal Decision Rule:</strong></p>
+
+                    $$\text{Choose action } \alpha^* = \arg\min_{\alpha_i} R(\alpha_i|X)$$
+                    <p>Choose the action that minimizes the conditional risk given the observed feature X.</p>
+                </div>
+            </section>
+
+            <section id="numerical-example">
+                <h3>5.4 Numerical Example: Salmon vs Sea Bass</h3>
+
+                <div class="example-box">
+                    <h4>🐟 Problem Statement: Fish Classification</h4>
+                    <p>We want to classify fish as either <strong>Salmon</strong> or <strong>Sea Bass</strong> using Bayesian decision theory and compute the associated risk.</p>
+                </div>
+
+                <h4>Given Information</h4>
+
+                <p><strong>1. Class Definitions:</strong></p>
+                <ul>
+                    <li><strong>ω₁:</strong> Salmon</li>
+                    <li><strong>ω₂:</strong> Sea Bass</li>
+                </ul>
+
+                <p><strong>2. Prior Probabilities:</strong></p>
+                <div class="formula-box">
+
+                    $$P(\omega_1) = 0.6 \quad \text{(More Salmon)}$$
+
+                    $$P(\omega_2) = 0.4 \quad \text{(Less Sea Bass)}$$
+                </div>
+
+                <p><strong>3. Feature (Color):</strong> We observe whether the fish is Red or not</p>
+
+                <p><strong>4. Likelihoods:</strong></p>
+                <div class="formula-box">
+
+                    $$P(\text{Red}|\omega_1) = 0.8 \quad \text{(Salmon is typically reddish)}$$
+
+                    $$P(\text{Red}|\omega_2) = 0.2 \quad \text{(Sea Bass is pale)}$$
+                </div>
+
+                <p><strong>5. Actions/Decisions:</strong></p>
+                <ul>
+                    <li><strong>α₁:</strong> Sell at Salmon price</li>
+                    <li><strong>α₂:</strong> Sell at Sea Bass price</li>
+                </ul>
+
+                <p><strong>6. Loss Function (Custom Loss):</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Loss Term</th>
+                            <th>Scenario</th>
+                            <th>Value</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>λ(α₁|ω₁)</strong></td>
+                            <td>Salmon sold as Salmon</td>
+                            <td><strong>0</strong></td>
+                            <td>Correct! No loss ✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>λ(α₂|ω₂)</strong></td>
+                            <td>Sea Bass sold as Sea Bass</td>
+                            <td><strong>0</strong></td>
+                            <td>Correct! No loss ✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>λ(α₂|ω₁)</strong></td>
+                            <td>Salmon sold as Sea Bass</td>
+                            <td><strong>30</strong></td>
+                            <td>High loss! Customer wanted Salmon ✗</td>
+                        </tr>
+                        <tr>
+                            <td><strong>λ(α₁|ω₂)</strong></td>
+                            <td>Sea Bass sold as Salmon</td>
+                            <td><strong>10</strong></td>
+                            <td>Lower loss (customer gets premium fish) ✗</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "Why is it slightly less [λ(α₁|ω₂) = 10]? Because in this case of course there will be loss and customer may or may not be happy but more likely customer will be happy because Salmon has a higher price and people usually prefer Salmon. So there's a bit of less loss but there is still a loss."
+                </div>
+
+                <h4>Step-by-Step Solution</h4>
+
+                <p><strong>Step 1: Calculate Evidence P(Red)</strong></p>
+                <div class="formula-box">
+
+                    $$P(\text{Red}) = P(\omega_1) \cdot P(\text{Red}|\omega_1) + P(\omega_2) \cdot P(\text{Red}|\omega_2)$$
+
+                    $$P(\text{Red}) = (0.6 \times 0.8) + (0.4 \times 0.2)$$
+
+                    $$P(\text{Red}) = 0.48 + 0.08 = 0.56$$
+                </div>
+
+                <p><strong>Step 2: Calculate Posterior Probabilities</strong></p>
+                <div class="formula-box">
+                    <p><strong>Posterior for Salmon:</strong></p>
+
+                    $$P(\omega_1|\text{Red}) = \frac{P(\omega_1) \cdot P(\text{Red}|\omega_1)}{P(\text{Red})}$$
+
+                    $$P(\omega_1|\text{Red}) = \frac{0.6 \times 0.8}{0.56} = \frac{0.48}{0.56} = 0.857$$
+                    
+                    <p style="margin-top: 20px;"><strong>Posterior for Sea Bass:</strong></p>
+
+                    $$P(\omega_2|\text{Red}) = \frac{P(\omega_2) \cdot P(\text{Red}|\omega_2)}{P(\text{Red})}$$
+
+                    $$P(\omega_2|\text{Red}) = \frac{0.4 \times 0.2}{0.56} = \frac{0.08}{0.56} = 0.143$$
+                </div>
+
+                <p><strong>Step 3: Calculate Risk for Action α₁ (Sell as Salmon)</strong></p>
+                <div class="formula-box">
+
+                    $$R(\alpha_1|\text{Red}) = \sum_{j=1}^{2} \lambda(\alpha_1|\omega_j) \cdot P(\omega_j|\text{Red})$$
+
+                    $$R(\alpha_1|\text{Red}) = \lambda(\alpha_1|\omega_1) \cdot P(\omega_1|\text{Red}) + \lambda(\alpha_1|\omega_2) \cdot P(\omega_2|\text{Red})$$
+
+                    $$R(\alpha_1|\text{Red}) = 0 \times 0.857 + 10 \times 0.143$$
+
+                    $$R(\alpha_1|\text{Red}) = 0 + 1.43 = 1.43$$
+                </div>
+
+                <p><strong>Step 4: Calculate Risk for Action α₂ (Sell as Sea Bass)</strong></p>
+                <div class="formula-box">
+
+                    $$R(\alpha_2|\text{Red}) = \sum_{j=1}^{2} \lambda(\alpha_2|\omega_j) \cdot P(\omega_j|\text{Red})$$
+
+                    $$R(\alpha_2|\text{Red}) = \lambda(\alpha_2|\omega_1) \cdot P(\omega_1|\text{Red}) + \lambda(\alpha_2|\omega_2) \cdot P(\omega_2|\text{Red})$$
+
+                    $$R(\alpha_2|\text{Red}) = 30 \times 0.857 + 0 \times 0.143$$
+
+                    $$R(\alpha_2|\text{Red}) = 25.71 + 0 = 25.71$$
+                </div>
+
+                <h4>Decision and Interpretation</h4>
+                <div class="formula-box" style="background: #c8e6c9;">
+                    <p><strong>Optimal Decision:</strong></p>
+                    <p>Since $R(\alpha_1|\text{Red}) = 1.43 < R(\alpha_2|\text{Red}) = 25.71$</p>
+                    <p><strong>We should choose α₁: Sell the fish as Salmon</strong></p>
+                </div>
+
+                <p><strong>Interpretation:</strong></p>
+                <ul>
+                    <li>When we observe a <strong>red</strong> fish, selling it as Salmon (α₁) has an expected loss of only <strong>1.43</strong></li>
+                    <li>Selling it as Sea Bass (α₂) would have a much higher expected loss of <strong>25.71</strong></li>
+                    <li>Therefore, the optimal decision is to classify it as Salmon and sell it at Salmon price</li>
+                    <li>The risk analysis helps us make decisions that minimize expected losses</li>
+                </ul>
+
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong> "With all these information we can simply compute the risk. This is how we estimate the risk in the Bayesian classification."
+                </div>
+            </section>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Risk analysis mein hum sirf error hi nahi dekhte, balki har decision ka consequence bhi dekhte hain. Har classification ke liye hum ek action lete hain aur har action ka kuch loss hota hai agar galat decision ho jaye. Loss function λ(αᵢ|ωⱼ) yeh batata hai ki agar actual class ωⱼ hai aur hum action αᵢ lete hain toh kitna loss hoga. 0-1 loss sabse simple hai jisme correct decision pe 0 aur wrong decision pe 1 loss hota hai. Bayesian risk ya expected loss formula hai R(αᵢ|X) jo sabhi possible classes ke loss ko unki posterior probability se multiply karke sum karta hai. Optimal decision woh hai jisme minimum risk ho. Salmon vs Sea Bass example mein humne dekha ki red fish ko Salmon ki price pe bechne ka risk sirf 1.43 hai jabki Sea Bass ki price pe bechne ka risk 25.71 hai, isliye hum Salmon decision lenge!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li><strong>Risk analysis</strong> considers not just errors, but the consequences of those errors</li>
+                    <li><strong>Loss function λ(αᵢ|ωⱼ)</strong> quantifies the cost of taking action αᵢ when true class is ωⱼ</li>
+                    <li><strong>0-1 Loss</strong> treats all misclassifications equally (0 for correct, 1 for incorrect)</li>
+                    <li><strong>Custom loss functions</strong> can assign different costs to different types of errors</li>
+                    <li><strong>Bayesian Risk R(αᵢ|X)</strong> is the expected loss, computed as weighted sum of losses</li>
+                    <li><strong>Optimal decision</strong> minimizes the conditional risk given observed features</li>
+                    <li>Risk analysis helps make <strong>cost-aware decisions</strong> in real-world applications</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🤔 Practice Questions</h4>
+                
+                <div class="question">
+                    <p><strong>Q1:</strong> Why is Bayesian risk called "expected loss"? How is it related to the concept of expectation in probability?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> Bayesian risk is called "expected loss" because it calculates the weighted average of losses, where weights are posterior probabilities. In probability, expectation E[X] = Σ x·P(x). Similarly, R(αᵢ|X) = Σ λ(αᵢ|ωⱼ)·P(ωⱼ|X), which is the expected value of the loss function weighted by posterior probabilities.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q2:</strong> In the Salmon vs Sea Bass example, why is the loss for selling Sea Bass as Salmon (10) lower than selling Salmon as Sea Bass (30)?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> The loss is lower (10 vs 30) because Salmon typically has a higher price and is preferred by customers. If a customer orders Sea Bass but receives Salmon, they get a premium product, so they may actually be satisfied despite the error. However, if they order Salmon and receive Sea Bass, they get a lower-value product, causing more dissatisfaction and higher loss (30).
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q3:</strong> Given P(ω₁|X) = 0.9, P(ω₂|X) = 0.1, λ(α₁|ω₁) = 0, λ(α₁|ω₂) = 20, λ(α₂|ω₁) = 50, λ(α₂|ω₂) = 0. Calculate R(α₁|X) and R(α₂|X). Which action should we choose?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        R(α₁|X) = 0×0.9 + 20×0.1 = 2<br>
+                        R(α₂|X) = 50×0.9 + 0×0.1 = 45<br>
+                        Since R(α₁|X) = 2 < R(α₂|X) = 45, we should choose action α₁ as it has lower risk.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q4:</strong> How would you design a loss function for a medical diagnosis system that classifies tumors as benign or malignant?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> In medical diagnosis, different types of errors have vastly different consequences:<br>
+                        • λ(benign|benign) = 0 (correct, no loss)<br>
+                        • λ(malignant|malignant) = 0 (correct, no loss)<br>
+                        • λ(benign|malignant) = 1000 (very high loss - missing cancer is extremely dangerous)<br>
+                        • λ(malignant|benign) = 10 (lower loss - false alarm causes anxiety and extra tests but is safer)<br>
+                        This asymmetric loss function reflects that missing a cancer diagnosis is far more serious than a false positive.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Discriminant Function -->
+        <section id="discriminant-function">
+            <h2>6. Introduction to Discriminant Function</h2>
+
+            <p>In this section, we briefly introduce the concept of <strong class="key-term">Discriminant Functions</strong> and <strong>Decision Rules</strong>, which provide an alternative framework for classification.</p>
+
+            <h3>What is a Discriminant Function?</h3>
+            <p>A <strong>discriminant function</strong> is a function that we evaluate to perform classification. Instead of directly computing posterior probabilities and comparing them, we can define functions for each class and compare their values.</p>
+
+            <div class="formula-box">
+                <p><strong>Discriminant Function for Class ωᵢ:</strong></p>
+
+                $$g_i(X) = \text{Discriminant function for class } \omega_i$$
+                
+                <p style="margin-top: 15px;"><strong>Decision Rule:</strong></p>
+                <p>Assign X to class $\omega_i$ if $g_i(X) > g_j(X)$ for all $j \neq i$</p>
+            </div>
+
+            <p><strong>In the context of Bayesian classification:</strong></p>
+            <p>We can define discriminant functions based on posterior probabilities:</p>
+
+            <div class="formula-box">
+
+                $$g_i(X) = P(\omega_i|X)$$
+                
+                <p>Or equivalently (ignoring the common denominator):</p>
+
+                $$g_i(X) = P(X|\omega_i) \cdot P(\omega_i)$$
+                
+                <p>Or using log for numerical stability:</p>
+
+                $$g_i(X) = \log P(X|\omega_i) + \log P(\omega_i)$$
+            </div>
+
+            <h3>Types of Discriminant Functions</h3>
+            <p>There are various types of discriminant functions based on their mathematical form:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Linear Discriminant</strong></td>
+                        <td>Function is linear in features</td>
+                        <td>$g(X) = w^T X + w_0$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quadratic Discriminant</strong></td>
+                        <td>Function is quadratic (polynomial degree 2)</td>
+                        <td>$g(X) = X^T W X + w^T X + w_0$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Non-linear Discriminant</strong></td>
+                        <td>Function is non-linear (higher order or complex)</td>
+                        <td>Neural networks, kernel methods</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "This is where the next module will be and where we will try to discuss what type of discriminant functions are there. There are some discriminant functions which are linear in nature. There are polynomial discriminant function and non-linear discriminant functions. All of these discriminant functions are there that will be our next module."
+            </div>
+
+            <h3>Decision Boundaries</h3>
+            <p>The <strong>decision boundary</strong> is where discriminant functions of two classes are equal:</p>
+
+            <div class="formula-box">
+                <p><strong>Decision Boundary between Class ω₁ and ω₂:</strong></p>
+
+                $$g_1(X) = g_2(X)$$
+                
+                <p>Or equivalently:</p>
+
+                $$g_1(X) - g_2(X) = 0$$
+            </div>
+
+            <p><strong>For linear discriminants:</strong> Decision boundaries are hyperplanes (lines in 2D, planes in 3D)</p>
+            <p><strong>For quadratic discriminants:</strong> Decision boundaries are quadratic surfaces (parabolas, ellipses, hyperbolas)</p>
+
+            <h3>Advantages of Discriminant Functions</h3>
+            <ul>
+                <li><strong>Computational Efficiency:</strong> Often simpler to evaluate than full Bayesian calculations</li>
+                <li><strong>Geometric Interpretation:</strong> Provides clear decision boundaries in feature space</li>
+                <li><strong>Flexibility:</strong> Can design different types (linear, quadratic, non-linear) based on problem</li>
+                <li><strong>Scalability:</strong> Easier to extend to multi-class problems</li>
+            </ul>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D feature space with two classes. Show linear decision boundary (straight line), quadratic decision boundary (curved line), and non-linear decision boundary (complex curve). Points from two classes are separated by these boundaries.]
+            </div>
+
+            <p><strong>Note:</strong> Discriminant functions will be covered in much more detail in upcoming lectures, including their mathematical derivation, implementation, and applications.</p>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Discriminant function ek aisa function hai jo classification ke liye evaluate kiya jata hai. Posterior probability directly compare karne ki jagah, hum har class ke liye ek function define kar sakte hain aur unke values compare kar sakte hain. Teen main types hain: linear (seedhi line), quadratic (curved), aur non-linear (complex curves). Decision boundary woh jagah hai jahan do classes ke discriminant functions equal hote hain. Yeh approach computationally efficient hai aur geometric interpretation provide karta hai. Agle lectures mein hum isko detail mein padhenge including linear, quadratic aur non-linear discriminant functions ka mathematical derivation aur implementation!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li><strong>Discriminant function</strong> provides an alternative framework for classification</li>
+                    <li>We evaluate $g_i(X)$ for each class and choose the class with <strong>highest value</strong></li>
+                    <li>Can be derived from <strong>posterior probabilities</strong> or <strong>likelihood × prior</strong></li>
+                    <li><strong>Three main types:</strong> Linear, Quadratic, and Non-linear discriminant functions</li>
+                    <li><strong>Decision boundaries</strong> are where discriminant functions of different classes are equal</li>
+                    <li>Offers <strong>computational efficiency</strong> and <strong>geometric interpretation</strong></li>
+                    <li>Will be explored in detail in upcoming lectures</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🤔 Practice Questions</h4>
+                
+                <div class="question">
+                    <p><strong>Q1:</strong> If g₁(X) = 3.5 and g₂(X) = 2.1, which class should we assign X to?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> We should assign X to class ω₁ because g₁(X) = 3.5 > g₂(X) = 2.1. The discriminant function decision rule states that we choose the class with the highest discriminant function value.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q2:</strong> What is the decision boundary between two classes in terms of their discriminant functions?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> The decision boundary is defined as the set of points where g₁(X) = g₂(X), or equivalently g₁(X) - g₂(X) = 0. At the decision boundary, both classes have equal discriminant function values, and it's the boundary where classification changes from one class to another.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p><strong>Q3:</strong> What type of decision boundary does a linear discriminant function produce in 2D space?</p>
+                    <div class="answer">
+                        <strong>Answer:</strong> A linear discriminant function produces a straight line as the decision boundary in 2D space. This is because linear functions of the form g(X) = w₁x₁ + w₂x₂ + w₀ create linear decision boundaries (hyperplanes), which appear as straight lines in 2D.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mind Map -->
+        <section id="mind-map" class="mind-map">
+            <h2>7. Comprehensive Mind Map</h2>
+            <p style="color: white; margin-bottom: 20px;">Visual summary of all concepts covered in this lecture:</p>
+            
+            <div class="mind-map-container">
+                <div class="mind-map-node">
+                    <h3>🧠 Bayesian Decision Theory</h3>
+                    <ul>
+                        <li><strong>Classification:</strong> K classes (Binary or Multi-class)</li>
+                        <li><strong>Prior:</strong> P(ω) - Initial knowledge</li>
+                        <li><strong>Likelihood:</strong> P(X|ω) - Observations</li>
+                        <li><strong>Posterior:</strong> P(ω|X) - What we compute</li>
+                        <li><strong>Decision Rule:</strong> Choose class with max posterior</li>
+                        <li><strong>Simplification:</strong> Compare prior × likelihood</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>⚠️ Error Analysis</h3>
+                    <ul>
+                        <li><strong>Point Error:</strong> P(error|X) at specific X</li>
+                        <li><strong>Total Error:</strong> Integration over all X</li>
+                        <li><strong>Error Region:</strong> Overlap between distributions</li>
+                        <li><strong>High Error:</strong> Mixed/similar distributions</li>
+                        <li><strong>Low Error:</strong> Well-separated classes</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>💰 Risk Analysis</h3>
+                    <ul>
+                        <li><strong>Actions:</strong> α₁, α₂, ..., αₖ</li>
+                        <li><strong>Loss Function:</strong> λ(αᵢ|ωⱼ)</li>
+                        <li><strong>0-1 Loss:</strong> Simple binary loss</li>
+                        <li><strong>Custom Loss:</strong> Different error costs</li>
+                        <li><strong>Bayesian Risk:</strong> R(αᵢ|X) = Σ λ·P(ω|X)</li>
+                        <li><strong>Optimal Decision:</strong> Minimize risk</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>📐 Discriminant Functions</h3>
+                    <ul>
+                        <li><strong>Function:</strong> gᵢ(X) for each class</li>
+                        <li><strong>Decision:</strong> Choose max gᵢ(X)</li>
+                        <li><strong>Linear:</strong> Straight line boundaries</li>
+                        <li><strong>Quadratic:</strong> Curved boundaries</li>
+                        <li><strong>Non-linear:</strong> Complex boundaries</li>
+                        <li><strong>Advantages:</strong> Efficient & geometric</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>🍎 Key Example: Apple vs Orange</h3>
+                    <ul>
+                        <li><strong>Classes:</strong> ω₁ (Apple), ω₂ (Orange)</li>
+                        <li><strong>Prior:</strong> 60% apple, 40% orange</li>
+                        <li><strong>Feature:</strong> Color (X)</li>
+                        <li><strong>Process:</strong> Observe → Compute posterior → Decide</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>🐟 Key Example: Salmon vs Sea Bass</h3>
+                    <ul>
+                        <li><strong>Classes:</strong> ω₁ (Salmon), ω₂ (Sea Bass)</li>
+                        <li><strong>Feature:</strong> Red color</li>
+                        <li><strong>Custom Loss:</strong> Different error costs</li>
+                        <li><strong>Risk Calculation:</strong> Choose min R(α|X)</li>
+                        <li><strong>Result:</strong> Sell as Salmon (lower risk)</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>🔗 Connections</h3>
+                    <ul>
+                        <li>Bayes Theorem → Posterior Probability</li>
+                        <li>Posterior → Decision Rule → Classification</li>
+                        <li>Classification → Error Analysis</li>
+                        <li>Error + Consequences → Risk</li>
+                        <li>Risk → Optimal Decision</li>
+                        <li>Posterior → Discriminant Function</li>
+                        <li>All connected through Probability Theory</li>
+                    </ul>
+                </div>
+
+                <div class="mind-map-node">
+                    <h3>📚 Mathematical Foundations</h3>
+                    <ul>
+                        <li><strong>Bayes Theorem:</strong> P(ω|X) = P(X|ω)P(ω)/P(X)</li>
+                        <li><strong>Total Probability:</strong> P(X) = Σ P(ω)P(X|ω)</li>
+                        <li><strong>Expected Value:</strong> E[Loss] = Σ λ·P</li>
+                        <li><strong>Decision Theory:</strong> Optimization under uncertainty</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

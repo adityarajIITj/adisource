@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Visualization with Matplotlib - Complete Lecture Notes</title>
+<!-- MathJax for Mathematical Equations -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+<style>
+    /* ==========================
+       GENERAL STYLING
+       ========================== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.8;
+        color: #333;
+        background: linear-gradient(135deg, #f6f6f6 0%, #c0c0c0 100%);
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    /* ==========================
+       HEADER SECTION
+       ========================== */
+    .header {
+        text-align: center;
+        padding: 30px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 40px;
+    }
+    
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+    }
+    
+    /* ==========================
+       TABLE OF CONTENTS
+       ========================== */
+    .toc {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 40px;
+        border-left: 5px solid #667eea;
+    }
+    
+    .toc h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+    }
+    
+    .toc ul {
+        list-style: none;
+    }
+    
+    .toc ul li {
+        margin: 12px 0;
+        padding-left: 20px;
+    }
+    
+    .toc ul li a {
+        color: #495057;
+        text-decoration: none;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        display: block;
+        padding: 8px 10px;
+        border-radius: 5px;
+    }
+    
+    .toc ul li a:hover {
+        background: #667eea;
+        color: white;
+        padding-left: 20px;
+    }
+    
+    .toc ul ul {
+        margin-left: 30px;
+        margin-top: 10px;
+    }
+    
+    .toc ul ul li a {
+        font-size: 1em;
+        color: #6c757d;
+    }
+    
+    /* ==========================
+       SECTION HEADINGS
+       ========================== */
+    h2 {
+        color: #667eea;
+        font-size: 2em;
+        margin: 40px 0 20px 0;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+    }
+    
+    h3 {
+        color: #764ba2;
+        font-size: 1.5em;
+        margin: 30px 0 15px 0;
+        padding-left: 10px;
+        border-left: 4px solid #764ba2;
+    }
+    
+    h4 {
+        color: #495057;
+        font-size: 1.2em;
+        margin: 20px 0 10px 0;
+    }
+    
+    /* ==========================
+       TEXT FORMATTING
+       ========================== */
+    p {
+        margin: 15px 0;
+        text-align: justify;
+    }
+    
+    strong {
+        color: #764ba2;
+        font-weight: 600;
+    }
+    
+    em {
+        color: #667eea;
+        font-style: normal;
+        font-weight: 500;
+    }
+    
+    /* ==========================
+       CODE BLOCKS
+       ========================== */
+    .code-block {
+        background: #282c34;
+        color: #abb2bf;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95em;
+        line-height: 1.6;
+        border-left: 5px solid #667eea;
+    }
+    
+    .code-comment {
+        color: #5c6370;
+        font-style: italic;
+    }
+    
+    .code-keyword {
+        color: #c678dd;
+    }
+    
+    .code-function {
+        color: #61afef;
+    }
+    
+    .code-string {
+        color: #98c379;
+    }
+    
+    .code-number {
+        color: #d19a66;
+    }
+    
+    /* ==========================
+       SPECIAL BOXES
+       ========================== */
+    .note-box {
+        background: #e7f3ff;
+        border-left: 5px solid #2196F3;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 5px;
+    }
+    
+    .note-box h4 {
+        color: #2196F3;
+        margin-top: 0;
+    }
+    
+    .professor-note {
+        background: #fff3cd;
+        border-left: 5px solid #ffc107;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 5px;
+    }
+    
+    .professor-note h4 {
+        color: #856404;
+        margin-top: 0;
+    }
+    
+    .warning-box {
+        background: #f8d7da;
+        border-left: 5px solid #dc3545;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 5px;
+    }
+    
+    .warning-box h4 {
+        color: #721c24;
+        margin-top: 0;
+    }
+    
+    .hinglish-summary {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-left: 5px solid #ff6b6b;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 8px;
+        font-style: italic;
+    }
+    
+    .hinglish-summary h4 {
+        color: #c92a2a;
+        margin-top: 0;
+        font-style: normal;
+    }
+    
+    /* ==========================
+       TABLES
+       ========================== */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    tr:hover {
+        background: #e9ecef;
+    }
+    
+    /* ==========================
+       LISTS
+       ========================== */
+    ul, ol {
+        margin: 15px 0;
+        padding-left: 30px;
+    }
+    
+    li {
+        margin: 10px 0;
+    }
+    
+    /* ==========================
+       DIAGRAM PLACEHOLDER
+       ========================== */
+    .diagram-placeholder {
+        background: #f1f3f5;
+        border: 3px dashed #adb5bd;
+        padding: 40px;
+        margin: 25px 0;
+        text-align: center;
+        border-radius: 10px;
+        color: #495057;
+        font-style: italic;
+    }
+    
+    /* ==========================
+       PRACTICE QUESTIONS SECTION
+       ========================== */
+    .practice-section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+        margin: 40px 0;
+        border: 2px solid #667eea;
+    }
+    
+    .practice-section h3 {
+        color: #667eea;
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .question {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border-left: 4px solid #764ba2;
+    }
+    
+    .question h4 {
+        color: #764ba2;
+        margin-bottom: 15px;
+    }
+    
+    .answer {
+        background: #e7f3ff;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 5px;
+        border-left: 3px solid #2196F3;
+    }
+    
+    .answer strong {
+        color: #2196F3;
+    }
+    
+    /* ==========================
+       KEY TAKEAWAYS SECTION
+       ========================== */
+    .key-takeaways {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        padding: 25px;
+        border-radius: 10px;
+        margin: 30px 0;
+        border-left: 5px solid #38b2ac;
+    }
+    
+    .key-takeaways h3 {
+        color: #234e52;
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .key-takeaways ul li {
+        margin: 12px 0;
+        color: #2d3748;
+    }
+    
+    /* ==========================
+       MIND MAP SECTION
+       ========================== */
+    .mindmap-container {
+        background: #f8f9fa;
+        padding: 40px;
+        border-radius: 15px;
+        margin: 50px 0;
+        border: 3px solid #667eea;
+    }
+    
+    .mindmap-container h2 {
+        text-align: center;
+        color: #667eea;
+        margin-bottom: 40px;
+    }
+    
+    .mindmap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .mindmap-node {
+        background: white;
+        border: 3px solid #667eea;
+        border-radius: 10px;
+        padding: 15px 25px;
+        margin: 10px;
+        font-weight: 600;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .mindmap-node:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    
+    .mindmap-level-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 1.5em;
+    }
+    
+    .mindmap-level-2 {
+        background: #e7f3ff;
+        border-color: #764ba2;
+        color: #764ba2;
+        font-size: 1.2em;
+        margin-left: 50px;
+    }
+    
+    .mindmap-level-3 {
+        background: #fff3e0;
+        border-color: #ff6f00;
+        color: #ff6f00;
+        font-size: 1em;
+        margin-left: 100px;
+    }
+    
+    .mindmap-branch {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    /* ==========================
+       RESPONSIVE DESIGN
+       ========================== */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+        }
+        
+        h2 {
+            font-size: 1.6em;
+        }
+        
+        h3 {
+            font-size: 1.3em;
+        }
+        
+        .mindmap-level-2, .mindmap-level-3 {
+            margin-left: 20px;
+        }
+    }
+    
+    /* ==========================
+       SCROLL TO TOP BUTTON
+       ========================== */
+    .scroll-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 1.5em;
+    }
+    
+    .scroll-top:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+</style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- ============================================
+             HEADER SECTION
+             ============================================ -->
+        <header>
+            <h1>📊 Data Visualization: Subplots & Interactive Plotting</h1>
+            <p>Lecture Notes - VSDW7L1</p>
+
+        </header>
+
+        <!-- ============================================
+             TABLE OF CONTENTS
+             ============================================ -->
+
+
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc" id="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#intro-subplots">1. Introduction to Subplots</a>
+                <ul>
+                    <li><a href="#what-are-subplots">What are Subplots?</a></li>
+                    <li><a href="#when-to-use">When to Use Subplots?</a></li>
+                </ul>
+            </li>
+            <li><a href="#matplotlib-subplots">2. Subplots with Matplotlib</a>
+                <ul>
+                    <li><a href="#basic-subplot">Basic Subplots using plt.subplot()</a></li>
+                    <li><a href="#preferred-method">Using plt.subplots() - Preferred Method</a></li>
+                    <li><a href="#sharing-axes">Sharing Axes & Customizing Layout</a></li>
+                </ul>
+            </li>
+            <li><a href="#intro-plotly">3. Introduction to Plotly</a></li>
+            <li><a href="#interactive-subplots">4. Creating Interactive Subplots using Plotly</a></li>
+            <li><a href="#comprehensive-mindmap">5. Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+    
+    <!-- SECTION 1: INTRODUCTION TO SUBPLOTS -->
+    <section id="intro-subplots">
+        <h2>1. Introduction to Subplots</h2>
+        
+        <div id="what-are-subplots">
+            <h3>What are Subplots?</h3>
+            
+            <p><strong>Subplots</strong> are a way to display <em>multiple plots within a single figure</em>. Instead of creating separate figures for each visualization, subplots allow you to organize and present multiple related plots together on one canvas, making it easier to compare and analyze different datasets or aspects of the same data.</p>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor mentioned in class:</h4>
+                <p>"Think of your plotting canvas as being divided into sections - like dividing a paper into different parts. If we want to show multiple plots, we can use subplots to place particular plots at particular positions. Say you want to show 4 plots, so you can divide your complete canvas into 4 parts and then for each part you can show different plots."</p>
+            </div>
+            
+            <p>The beauty of subplots lies in their <strong>flexibility</strong>. You have various options for how these plots should be arranged:</p>
+            
+            <ul>
+                <li><strong>Horizontal arrangement:</strong> Plots placed side by side in a row</li>
+                <li><strong>Vertical arrangement:</strong> Plots stacked on top of each other in a column</li>
+                <li><strong>Grid arrangement:</strong> Plots organized in a matrix format (e.g., 2×2, 3×2, etc.)</li>
+                <li><strong>Shared axes:</strong> Multiple plots sharing a common X-axis or Y-axis</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Different subplot arrangements - horizontal, vertical, and grid layouts]
+            </div>
+        </div>
+        
+        <div id="when-to-use">
+            <h3>When to Use Subplots?</h3>
+            
+            <p>Subplots are particularly useful in the following scenarios:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Comparing Multiple Datasets</strong></td>
+                        <td>When you need to visually compare different datasets side by side</td>
+                        <td>Comparing sales data across different regions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Showing Related Metrics</strong></td>
+                        <td>Displaying different metrics or aspects of the same data</td>
+                        <td>Temperature, humidity, and pressure readings over time</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Before/After Comparisons</strong></td>
+                        <td>Visualizing data transformations or processing steps</td>
+                        <td>Original image vs. filtered image</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multiple Views of Data</strong></td>
+                        <td>Different visualizations of the same dataset</td>
+                        <td>Scatter plot, histogram, and box plot of the same data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time Series Analysis</strong></td>
+                        <td>Displaying multiple time-dependent variables together</td>
+                        <td>Stock prices of different companies over the same period</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note-box">
+                <h4>💡 Key Advantage</h4>
+                <p>When subplots are arranged horizontally, they can share a <strong>common Y-axis</strong>, making it easier to compare values. Similarly, vertically arranged subplots can share a <strong>common X-axis</strong>, which is especially useful for time-series data where you want to align events across different metrics.</p>
+            </div>
+        </div>
+        
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Subplots ka matlab hai ki aap ek hi figure mein multiple plots dikha sakte ho. Jaise ek canvas ko alag-alag parts mein divide kar ke, har part mein different graph dikha sakte ho. Yeh bahut flexible hai - aap plots ko horizontal (side by side), vertical (ek ke upar ek), ya grid format (2×2, 3×2 etc.) mein arrange kar sakte ho. Sabse important baat - agar plots horizontally arranged hain to common Y-axis share kar sakte ho, aur vertically arranged hain to common X-axis share kar sakte ho. Yeh comparison karne ke liye bahut useful hai!</p>
+        </div>
+        
+        <!-- PRACTICE QUESTIONS -->
+        <div class="practice-section">
+            <h3>📚 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Q1: What is the main advantage of using subplots over creating separate figures?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Subplots allow you to organize and display multiple related plots together on one canvas, making it easier to compare and analyze different datasets side by side without switching between different windows or figures.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q2: If you want to compare temperature and humidity readings over the same time period, which axis should be shared?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> The X-axis should be shared since both plots represent data over the same time period. This ensures that time points align perfectly across both subplots for easy comparison.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q3: Name three different arrangements possible with subplots.</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> (1) Horizontal arrangement (side by side), (2) Vertical arrangement (stacked), and (3) Grid arrangement (matrix format like 2×2).
+                </div>
+            </div>
+        </div>
+        
+        <!-- KEY TAKEAWAYS -->
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Subplots enable displaying multiple plots within a single figure</li>
+                <li>They can be arranged horizontally, vertically, or in a grid format</li>
+                <li>Subplots can share common axes (X-axis or Y-axis) for better comparison</li>
+                <li>Ideal for comparing datasets, showing related metrics, and time-series analysis</li>
+                <li>Provides a professional way to present multiple visualizations together</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- SECTION 2: SUBPLOTS WITH MATPLOTLIB -->
+    <section id="matplotlib-subplots">
+        <h2>2. Subplots with Matplotlib</h2>
+        
+        <p>Matplotlib provides several methods for creating subplots. In this section, we'll explore the most common approaches, from basic to advanced techniques.</p>
+        
+        <div id="basic-subplot">
+            <h3>Basic Subplots using plt.subplot()</h3>
+            
+            <p>The <code>plt.subplot()</code> function is the traditional way to create subplots. It allows you to specify the grid layout and position for each subplot individually.</p>
+            
+            <h4>Syntax</h4>
+            <p>The basic syntax is:</p>
+            <div class="code-block">
+plt.subplot(nrows, ncols, index)
+            </div>div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>nrows</code></td>
+                        <td>Number of rows in the subplot grid</td>
+                        <td>1, 2, 3...</td>
+                    </tr>
+                    <tr>
+                        <td><code>ncols</code></td>
+                        <td>Number of columns in the subplot grid</td>
+                        <td>1, 2, 3...</td>
+                    </tr>
+                    <tr>
+                        <td><code>index</code></td>
+                        <td>Position of the current subplot (1-indexed)</td>
+                        <td>1, 2, 3... (starts from 1)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note-box">
+                <h4>⚠️ Important Note</h4>
+                <p>In <code>plt.subplot()</code>, the indexing starts from <strong>1</strong>, not 0. The subplots are numbered from left to right, top to bottom.</p>
+            </div>
+            
+            <h4>Complete Example: Sine and Cosine Waves</h4>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor's Walkthrough:</h4>
+                <p>"Let me walk you through this code step by step. We'll create two subplots - one for sine wave and one for cosine wave. First, we'll import the necessary libraries, then generate data, and finally create the subplots horizontally - one row with two columns."</p>
+            </div>
+            
+            <pre><div class="code-block">
+# Step 1: Import necessary libraries 
+import matplotlib.pyplot as plt import numpy as np
+
+# Step 2: Generate data for plotting 
+# Create 100 evenly spaced points between 0 and 10 
+x = np.linspace(0, 10, 100)
+
+# Calculate sine values for each x point 
+y1 = np.sin(x)
+
+# Calculate cosine values for each x point 
+y2 = np.cos(x)
+
+# Step 3: Create a figure with specified size 
+# figsize=(width, height) in inches 
+plt.figure(figsize=(10, 4))
+
+# Step 4: Create first subplot (1 row, 2 columns, position 1) 
+plt.subplot(1, 2, 1) 
+plt.plot(x, y1, 'b', label='sin(x)') 
+
+# 'b' = blue color 
+plt.title('Sine Wave') 
+plt.xlabel('x') 
+plt.ylabel('sin(x)') 
+plt.legend()
+
+# Step 5: Create second subplot (1 row, 2 columns, position 2) 
+plt.subplot(1, 2, 2) 
+plt.plot(x, y2, 'r', label='cos(x)') 
+# 'r' = red color 
+plt.title('Cosine Wave') 
+plt.xlabel('x') 
+plt.ylabel('cos(x)') 
+plt.legend()
+
+# Step 6: Adjust layout to prevent overlapping 
+plt.tight_layout()
+
+# Step 7: Display the figure 
+plt.show()
+            </div></pre>
+
+            <h4>Code Explanation</h4>
+            
+            <ol>
+                <li><strong>Library Import:</strong> We import <code>matplotlib.pyplot</code> for plotting functions and <code>numpy</code> for numerical operations</li>
+                <li><strong>Data Generation:</strong> 
+                    <ul>
+                        <li><code>np.linspace(0, 10, 100)</code> creates 100 equally spaced points from 0 to 10</li>
+                        <li>We calculate sine and cosine values using NumPy's built-in functions</li>
+                    </ul>
+                </li>
+                <li><strong>Figure Creation:</strong> <code>plt.figure(figsize=(10, 4))</code> creates a canvas that's 10 inches wide and 4 inches tall</li>
+                <li><strong>First Subplot:</strong> <code>plt.subplot(1, 2, 1)</code> means 1 row, 2 columns, and this is position 1 (left side)</li>
+                <li><strong>Second Subplot:</strong> <code>plt.subplot(1, 2, 2)</code> places the plot at position 2 (right side)</li>
+                <li><strong>Layout Adjustment:</strong> <code>plt.tight_layout()</code> automatically adjusts spacing to prevent overlapping</li>
+                <li><strong>Display:</strong> <code>plt.show()</code> renders the complete figure</li>
+            </ol>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor explained:</h4>
+                <p>"When we run this code, we get two subplots side by side. The left side shows the sine wave in blue color, and the right side shows the cosine wave in red color. The x-axis ranges from 0 to 10 (100 data points), and the y-axis automatically adjusts from -1 to +1 because all sine and cosine values lie between -1 and +1."</p>
+            </div>
+            
+            <div class="note-box">
+                <h4>💡 Understanding np.linspace()</h4>
+                <p>The function <code>np.linspace(start, stop, num)</code> generates <code>num</code> evenly spaced numbers between <code>start</code> and <code>stop</code> (inclusive). For example:</p>
+                <ul>
+                    <li><code>np.linspace(0, 10, 5)</code> → [0, 2.5, 5.0, 7.5, 10.0]</li>
+                    <li><code>np.linspace(0, 10, 100)</code> → 100 points from 0 to 10</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h4>⚠️ Common Mistakes</h4>
+                <ul>
+                    <li>Forgetting to call <code>plt.figure()</code> before creating subplots</li>
+                    <li>Using wrong index numbers (remember: starts from 1, not 0)</li>
+                    <li>Not calling <code>plt.tight_layout()</code>, which may cause overlapping labels</li>
+                    <li>Placing <code>plt.show()</code> before all subplots are created</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p><code>plt.subplot()</code> ka use karke hum basic subplots bana sakte hain. Isme teen parameters hote hain - rows, columns aur position (jo 1 se start hota hai, 0 se nahi). Pehle <code>plt.figure()</code> se canvas banate hain with size, phir har subplot ke liye <code>plt.subplot()</code> call karte hain. Data generate karne ke liye <code>np.linspace()</code> use karte hain jo evenly spaced points deta hai. Last mein <code>plt.tight_layout()</code> se spacing adjust karte hain aur <code>plt.show()</code> se display karte hain. Example mein humne sine wave (blue) aur cosine wave (red) ko side by side dikhaya!</p>
+        </div>
+        
+        <div id="preferred-method">
+            <h3>Using plt.subplots() — Preferred Method</h3>
+            
+            <p>The <code>plt.subplots()</code> function (note the 's') is the <strong>modern and preferred way</strong> to create subplots. Unlike <code>plt.subplot()</code>, this function creates all subplots at once and returns both the figure and axes objects, giving you more control and cleaner code.</p>
+            
+            <h4>Why is plt.subplots() Preferred?</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>plt.subplot()</th>
+                        <th>plt.subplots()</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Creation Method</strong></td>
+                        <td>Creates subplots one at a time</td>
+                        <td>Creates all subplots at once</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Syntax</strong></td>
+                        <td>More verbose, repetitive</td>
+                        <td>Cleaner, more concise</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access Method</strong></td>
+                        <td>Current subplot is active</td>
+                        <td>Access via axes array (more flexible)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Indexing</strong></td>
+                        <td>Starts from 1</td>
+                        <td>Starts from 0 (Pythonic)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control</strong></td>
+                        <td>Less control over individual subplots</td>
+                        <td>Full control via axes objects</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Syntax</h4>
+            <pre><div class="code-block">
+fig, axs = plt.subplots(nrows, ncols, figsize=(width, height))
+            </div></pre>
+            <p><strong>Returns:</strong></p>
+            <ul>
+                <li><code>fig</code>: The figure object (entire canvas)</li>
+                <li><code>axs</code>: Array of axes objects (individual subplots)</li>
+            </ul>
+            
+            <h4>Complete Example: 2×2 Grid with Three Plots</h4>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor explained:</h4>
+                <p>"Now we'll use the preferred method. We have three datasets - y1 is linear (x), y2 is quadratic (x²), and y3 is square root (√x). We'll create a 2×2 grid, use three positions for plots, and leave one empty. The beauty here is that we can access each subplot using array indexing like axs[0,0], axs[0,1], etc."</p>
+            </div>
+            
+            <pre><div class="code-block">
+# Step 1: Import libraries 
+import matplotlib.pyplot as plt 
+import numpy as np
+
+# Step 2: Generate data 
+x = np.linspace(0, 5, 100)      # 100 points from 0 to 5 
+y1 = x                          # Linear: y = x 
+y2 = x**2                       # Quadratic: y = x² 
+y3 = np.sqrt(x)                 # Square root: y = √x
+
+# Step 3: Create subplots in a 2×2 grid 
+fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+
+# Step 4: Plot in position [0, 0] (top-left) 
+axs[0, 0].plot(x, y1, 'g')      # 'g' = green 
+axs[0, 0].set_title('Linear')
+
+# Step 5: Plot in position [0, 1] (top-right) 
+axs[0, 1].plot(x, y2, 'r')      # 'r' = red 
+axs[0, 1].set_title('Quadratic')
+
+# Step 6: Plot in position [1, 0] (bottom-left)    
+axs[1, 0].plot(x, y3, 'b')      # 'b' = blue 
+axs[1, 0].set_title('Square Root')
+
+# Step 7: Hide the empty subplot [1, 1] (bottom-right) 
+axs[1, 1].axis('off')
+
+# Step 8: Add overall title 
+fig.suptitle('Multiple Subplots Example', fontsize=16)
+
+# Step 9: Adjust layout 
+plt.tight_layout()
+
+# Step 10: Display 
+plt.show()
+            </div></pre>
+            <h4>Understanding the Indexing System</h4>
+            
+            <p>In a 2×2 grid, the positions are accessed as follows:</p>
+            
+            <pre><div class="code-block">
+[0, 0]	[0, 1]
+[1, 0]	[1, 1]
+            </div></pre>
+            
+            <div class="note-box">
+                <h4>💡 Array Indexing</h4>
+                <p>When using <code>plt.subplots()</code>, the indexing is <strong>0-based</strong> (Pythonic), unlike <code>plt.subplot()</code> which uses 1-based indexing. This makes it more consistent with Python's array indexing conventions.</p>
+            </div>
+            
+            <h4>Key Methods for Axes Objects</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>axs[i, j].plot()</code></td>
+                        <td>Create a line plot</td>
+                        <td><code>axs[0, 0].plot(x, y)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>axs[i, j].set_title()</code></td>
+                        <td>Set subplot title</td>
+                        <td><code>axs[0, 0].set_title('Linear')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>axs[i, j].set_xlabel()</code></td>
+                        <td>Set x-axis label</td>
+                        <td><code>axs[0, 0].set_xlabel('X values')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>axs[i, j].set_ylabel()</code></td>
+                        <td>Set y-axis label</td>
+                        <td><code>axs[0, 0].set_ylabel('Y values')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>axs[i, j].axis('off')</code></td>
+                        <td>Hide axes and ticks</td>
+                        <td><code>axs[1, 1].axis('off')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>fig.suptitle()</code></td>
+                        <td>Set main title for entire figure</td>
+                        <td><code>fig.suptitle('My Plots')</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor's tip:</h4>
+                <p>"Notice how we use <code>set_title()</code> with axes objects instead of just <code>title()</code>. This is because we're working with specific subplot objects. Also, we can hide unused subplots using <code>axis('off')</code> - this removes both axes and makes the subplot area invisible, which is perfect when you have an odd number of plots in a grid."</p>
+            </div>
+        </div>
+        
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p><code>plt.subplots()</code> (note the 's') modern aur preferred method hai subplots banane ka. Yeh ek saath figure aur axes objects return karta hai. Indexing 0 se start hoti hai (Pythonic way), jaise <code>axs[0,0]</code>, <code>axs[0,1]</code> etc. Har subplot ke liye methods hain jaise <code>set_title()</code>, <code>set_xlabel()</code> etc. Agar koi subplot empty rakhna ho, to <code>axis('off')</code> use karo. <code>fig.suptitle()</code> se overall title set kar sakte ho. Example mein humne 2×2 grid banaya with linear (green), quadratic (red), aur square root (blue) plots, aur ek position ko empty chhod diya!</p>
+        </div>
+        
+        <div id="sharing-axes">
+            <h3>Sharing Axes & Customizing Layout</h3>
+            
+            <p>One of the most powerful features of subplots is the ability to <strong>share axes</strong> between multiple plots. This is particularly useful when you want to compare data that exists on the same scale or time period.</p>
+            
+            <h4>Why Share Axes?</h4>
+            
+            <ul>
+                <li><strong>Easier Comparison:</strong> When X-axis is shared, vertical alignment helps identify patterns across different metrics</li>
+                <li><strong>Space Efficiency:</strong> Removes redundant axis labels, making plots cleaner</li>
+                <li><strong>Synchronized Zooming:</strong> In interactive plots, zooming on one subplot affects all shared-axis subplots</li>
+                <li><strong>Visual Clarity:</strong> Clearly shows that all plots represent the same time period or scale</li>
+            </ul>
+            
+            <h4>Sharing Axes Parameters</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Values</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>sharex</code></td>
+                        <td><code>True</code> / <code>False</code></td>
+                        <td>Share X-axis across all subplots</td>
+                    </tr>
+                    <tr>
+                        <td><code>sharey</code></td>
+                        <td><code>True</code> / <code>False</code></td>
+                        <td>Share Y-axis across all subplots</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Complete Example: Trigonometric Functions with Shared X-axis</h4>
+            
+            <div class="professor-note">
+                <h4>🎓 Professor explained:</h4>
+                <p>"Let's create three vertically stacked subplots showing sin(x), cos(x), and tan(x). Since all three functions are plotted over the same x range, we'll share the X-axis. This way, we can easily compare how these functions behave at the same x values. For tan(x), we need to be careful because it goes to infinity, so we'll limit the y-axis to -5 to +5."</p>
+            </div>
+            
+        <pre><div class="code-block">
+# Step 1: Import libraries (assuming already imported) 
+import matplotlib.pyplot as plt 
+import numpy as np
+
+# Step 2: Generate x data 
+x = np.linspace(0, 10, 100)
+
+# Step 3: Create 3 subplots vertically with shared x-axis 
+fig, axs = plt.subplots(3, 1, figsize=(8, 8), sharex=True)
+
+# Step 4: First subplot - Sine wave 
+axs[0].plot(x, np.sin(x)) 
+axs[0].set_title('sin(x)')
+
+# Step 5: Second subplot - Cosine wave 
+axs[1].plot(x, np.cos(x)) 
+axs[1].set_title('cos(x)')
+
+# Step 6: Third subplot - Tangent wave with limited y-axis 
+axs[2].plot(x, np.tan(x)) 
+axs[2].set_title('tan(x)') 
+axs[2].set_ylim(-5, 5) # Limit y-axis to prevent infinity issues
+
+# Step 7: Add overall figure title 
+fig.suptitle('Trigonometric Functions', fontsize=16)
+
+# Step 8: Adjust layout and display 
+plt.tight_layout() plt.show()
+</div></pre>
+            <h4>Code Explanation</h4>
+            
+            <ol>
+                <li><strong>Vertical Layout:</strong> <code>plt.subplots(3, 1, ...)</code> creates 3 rows and 1 column (vertical stack)</li>
+                <li><strong>Shared X-axis:</strong> <code>sharex=True</code> means all three subplots share the same x-axis scale</li>
+                <li><strong>1D Indexing:</strong> Since we have only one column, we use <code>axs[0]</code>, <code>axs[1]</code>, <code>axs[2]</code> (not 2D indexing)</li>
+                <li><strong>Y-axis Limiting:</strong> <code>set_ylim(-5, 5)</code> restricts the tangent plot's y-axis to avoid infinity values</li>
+            </ol>
+            
+            <div class="warning-box">
+                <h4>⚠️ The Tangent Function Problem</h4>
+                <p><strong>Problem:</strong> The tangent function, $\tan(x)$, has vertical asymptotes (approaches infinity) at $x = \frac{\pi}{2}, \frac{3\pi}{2}, \frac{5\pi}{2}, ...$</p>
+                <p><strong>Solution:</strong> Use <code>set_ylim()</code> to restrict the y-axis range. This prevents the plot from becoming unreadable due to extreme values.</p>
+                <p><strong>Professor's note:</strong> "Tangent varies from minus infinite to plus infinite. The -1 to +1 values may not be well represented graphically, so we limit the y-axis from -5 to +5. This is necessary to ensure all figures fit appropriately and remain readable."</p>
+            </div>
+            
+            <h4>Additional Customization Methods</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>set_xlim(min, max)</code></td>
+                        <td>Set X-axis range</td>
+                        <td><code>axs[0].set_xlim(0, 10)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>set_ylim(min, max)</code></td>
+                        <td>Set Y-axis range</td>
+                        <td><code>axs[2].set_ylim(-5, 5)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>set_xlabel(label)</code></td>
+                        <td>Set X-axis label</td>
+                        <td><code>axs[2].set_xlabel('x values')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>set_ylabel(label)</code></td>
+                        <td>Set Y-axis label</td>
+                        <td><code>axs[0].set_ylabel('Amplitude')</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>grid(True)</code></td>
+                        <td>Add grid lines</td>
+                        <td><code>axs[0].grid(True)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>legend()</code></td>
+                        <td>Show legend</td>
+                        <td><code>axs[0].legend()</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note-box">
+                <h4>💡 Best Practices for Shared Axes</h4>
+                <ul>
+                    <li><strong>Time-series data:</strong> Always share X-axis when comparing different metrics over time</li>
+                    <li><strong>Same units:</strong> Share Y-axis when all subplots use the same measurement units</li>
+                    <li><strong>Label placement:</strong> With shared X-axis, only label the bottom subplot's X-axis</li>
+                    <li><strong>Title clarity:</strong> Use descriptive titles to distinguish between subplots</li>
+                    <li><strong>Consistent styling:</strong> Use similar colors and line styles for related plots</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Shared axes ka matlab hai ki multiple subplots same X-axis ya Y-axis share kar sakte hain. Yeh comparison ke liye bahut useful hai. <code>sharex=True</code> parameter use karne se sabhi subplots ka X-axis common ho jata hai. Example mein humne 3 vertical subplots banaye - sin(x), cos(x) aur tan(x). Teeno ek hi x range use kar rahe hain, isliye humne X-axis share kiya. Tan(x) ke liye special dhyan dena pada kyunki yeh minus infinite se plus infinite tak ja sakta hai, isliye humne <code>set_ylim(-5, 5)</code> use karke y-axis ko limit kar diya. Yeh zaroori hai taaki graph properly readable rahe!</p>
+        </div>
+        
+        <!-- PRACTICE QUESTIONS -->
+        <div class="practice-section">
+            <h3>📚 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Q1: What is the main difference between plt.subplot() and plt.subplots()?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> plt.subplot() creates subplots one at a time with 1-based indexing, while plt.subplots() creates all subplots at once and returns figure and axes objects with 0-based indexing, providing better control and cleaner code.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q2: How would you create a 3×1 vertical subplot layout where all subplots share the same X-axis?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Use <code>fig, axs = plt.subplots(3, 1, sharex=True)</code>. This creates 3 rows, 1 column, with all subplots sharing the X-axis for easy comparison.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q3: Why do we need to use set_ylim() for the tangent function plot?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> The tangent function has vertical asymptotes and approaches infinity at certain points, making the plot unreadable. set_ylim() restricts the y-axis range (e.g., -5 to 5) to keep the visualization clear and meaningful.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q4: In a 2×2 grid created with plt.subplots(2, 2), how would you access the bottom-right subplot?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Use <code>axs[1, 1]</code> because indexing starts from 0. The bottom-right position is row 1, column 1.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q5: What does the tight_layout() function do?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> tight_layout() automatically adjusts subplot spacing to prevent overlapping of titles, labels, and other elements, ensuring a clean and professional-looking visualization.
+                </div>
+            </div>
+        </div>
+        
+        <!-- KEY TAKEAWAYS -->
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li><code>plt.subplot()</code> creates subplots one at a time with 1-based indexing</li>
+                <li><code>plt.subplots()</code> is the preferred modern method that creates all subplots at once</li>
+                <li>plt.subplots() uses 0-based indexing (Pythonic) and returns fig and axs objects</li>
+                <li>Shared axes (sharex, sharey) improve comparison and visual alignment</li>
+                <li>Use <code>set_ylim()</code> and <code>set_xlim()</code> to control axis ranges</li>
+                <li><code>axis('off')</code> hides empty subplots in grid layouts</li>
+                <li><code>fig.suptitle()</code> adds an overall title above all subplots</li>
+                <li><code>tight_layout()</code> prevents overlapping and improves visual clarity</li>
+                <li>For vertical layouts (n×1), indexing is 1D: axs[0], axs[1], etc.</li>
+                <li>For grid layouts (m×n), indexing is 2D: axs[row, col]</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- SECTION 3: INTRODUCTION TO PLOTLY -->
+    <section id="intro-plotly">
+        <h2>3. Introduction to Plotly</h2>
+        
+        <p><strong>Plotly</strong> is a powerful, modern graphing library that creates <em>interactive, publication-quality graphs</em> online. Unlike static visualizations produced by Matplotlib, Plotly graphs are <strong>interactive by default</strong>, allowing users to zoom, pan, hover for details, and more.</p>
+        
+        <h3>What Makes Plotly Special?</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Matplotlib</th>
+                    <th>Plotly</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Interactivity</strong></td>
+                    <td>Static images (by default)</td>
+                    <td>Interactive by default</td>
+                </tr>
+                <tr>
+                    <td><strong>Output Format</strong></td>
+                    <td>PNG, PDF, SVG</td>
+                    <td>HTML, PNG, PDF (web-ready)</td>
+                </tr>
+                <tr>
+                    <td><strong>User Interaction</strong></td>
+                    <td>Limited (requires additional libraries)</td>
+                    <td>Built-in zoom, pan, hover, select</td>
+                </tr>
+                <tr>
+                    <td><strong>Web Integration</strong></td>
+                    <td>Requires conversion</td>
+                    <td>Native HTML output</td>
+                </tr>
+                <tr>
+                    <td><strong>3D Plotting</strong></td>
+                    <td>Available but limited</td>
+                    <td>Excellent 3D support</td>
+                </tr>
+                <tr>
+                    <td><strong>Learning Curve</strong></td>
+                    <td>Moderate</td>
+                    <td>Easy to moderate</td>
+                </tr>
+                <tr>
+                    <td><strong>Use Case</strong></td>
+                    <td>Academic papers, static reports</td>
+                    <td>Dashboards, web apps, presentations</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Key Features of Plotly</h3>
+        
+        <ul>
+            <li><strong>Interactive Plots:</strong> Users can zoom, pan, hover over data points to see values, and toggle traces on/off</li>
+            <li><strong>Web-Ready:</strong> Generates HTML files that can be embedded directly in web pages</li>
+            <li><strong>Wide Range of Charts:</strong> Line, scatter, bar, pie, 3D surface, heatmaps, and many more</li>
+            <li><strong>Subplots Support:</strong> Create complex layouts with multiple interactive subplots</li>
+            <li><strong>Customizable:</strong> Full control over colors, fonts, layouts, and styling</li>
+            <li><strong>Export Options:</strong> Save as HTML, PNG, PDF, or SVG</li>
+            <li><strong>Animation Support:</strong> Create animated visualizations with ease</li>
+        </ul>
+        
+        <div class="professor-note">
+            <h4>🎓 Professor mentioned in class:</h4>
+            <p>"In today's class, we're learning about Plotly to make our visualizations more interactive. With Matplotlib, we get static images, but with Plotly, users can interact with the plots - zoom in, hover to see exact values, and explore the data dynamically. This is especially useful for dashboards and web applications where users need to interact with data."</p>
+        </div>
+        
+        <h3>Installing Plotly</h3>
+        
+        <pre><div class="code-block">
+# Install using pip 
+pip install plotly
+
+# Or using conda 
+conda install -c plotly plotly
+        </div></pre>
+        <h3>Basic Plotly Workflow</h3>
+        
+        <ol>
+            <li><strong>Import Library:</strong> Import plotly and necessary modules</li>
+            <li><strong>Prepare Data:</strong> Organize your data in lists, arrays, or dataframes</li>
+            <li><strong>Create Figure:</strong> Use plotly functions to create visualization</li>
+            <li><strong>Customize:</strong> Add titles, labels, colors, and other styling</li>
+            <li><strong>Display/Save:</strong> Show in browser or save as HTML/image</li>
+        </ol>
+        
+        <div class="note-box">
+            <h4>💡 Plotly Modules</h4>
+            <p>Plotly has several modules:</p>
+            <ul>
+                <li><code>plotly.graph_objects</code>: Low-level interface for creating figures</li>
+                <li><code>plotly.express</code>: High-level interface for quick plots</li>
+                <li><code>plotly.subplots</code>: Module for creating subplot layouts</li>
+            </ul>
+        </div>
+        
+        <h3>Simple Plotly Example</h3>
+        
+        <pre><div class="code-block">
+import plotly.graph_objects as go
+
+# Create data 
+x = [1, 2, 3, 4, 5] 
+y = [10, 15, 13, 17, 20]
+
+# Create figure 
+fig = go.Figure(data=go.Scatter(x=x, y=y, mode='lines+markers'))
+
+# Add title 
+fig.update_layout(title='My First Plotly Graph', xaxis_title='X Axis', yaxis_title='Y Axis')
+
+# Display (opens in browser) 
+fig.show()
+        </div></pre>
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Plotly ek modern graphing library hai jo interactive visualizations banata hai. Matplotlib se faraq yeh hai ki Matplotlib static images deta hai jabki Plotly interactive graphs banata hai by default. Users zoom kar sakte hain, pan kar sakte hain, hover karke exact values dekh sakte hain. Plotly HTML files generate karta hai jo directly web pages mein embed ho sakti hain. Installation simple hai - <code>pip install plotly</code>. Teen main modules hain - graph_objects (low-level), express (high-level quick plots), aur subplots (multiple plots ke liye). Yeh dashboards aur web applications ke liye perfect hai!</p>
+        </div>
+        
+        <!-- PRACTICE QUESTIONS -->
+        <div class="practice-section">
+            <h3>📚 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Q1: What is the main advantage of Plotly over Matplotlib?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Plotly creates interactive visualizations by default, allowing users to zoom, pan, hover for details, and explore data dynamically, while Matplotlib produces static images that require additional libraries for interactivity.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q2: In what format does Plotly output its graphs?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Plotly generates HTML files that can be directly embedded in web pages. It can also export to PNG, PDF, and SVG formats.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q3: Name the three main modules of Plotly.</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> (1) plotly.graph_objects - low-level interface, (2) plotly.express - high-level quick plots, and (3) plotly.subplots - for creating subplot layouts.
+                </div>
+            </div>
+        </div>
+        
+        <!-- KEY TAKEAWAYS -->
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Plotly creates interactive, web-ready visualizations by default</li>
+                <li>Unlike Matplotlib's static images, Plotly allows zoom, pan, and hover interactions</li>
+                <li>Generates HTML output perfect for dashboards and web applications</li>
+                <li>Three main modules: graph_objects, express, and subplots</li>
+                <li>Easy to install with pip: <code>pip install plotly</code></li>
+                <li>Excellent for 3D plotting and animated visualizations</li>
+                <li>Can export to multiple formats: HTML, PNG, PDF, SVG</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- SECTION 4: CREATING INTERACTIVE SUBPLOTS USING PLOTLY -->
+    <section id="interactive-subplots">
+        <h2>4. Creating Interactive Subplots using Plotly</h2>
+        
+        <p>Now that we understand both subplots and Plotly, let's combine them to create <strong>interactive subplots</strong>. Plotly's subplot functionality provides the same organizational benefits as Matplotlib subplots, but with the added advantage of interactivity.</p>
+        
+        <h3>Plotly Subplots Module</h3>
+        
+        <p>Plotly provides a dedicated module called <code>plotly.subplots</code> with a function <code>make_subplots()</code> that creates subplot layouts.</p>
+        
+        <pre><div class="code-block">
+from plotly.subplots 
+import make_subplots 
+import plotly.graph_objects as go
+        </div></pre>
+        <h3>make_subplots() Function</h3>
+        
+        <h4>Basic Syntax</h4>
+        <pre><div class="code-block">
+fig = make_subplots(rows=2, cols=2, 
+subplot_titles=('Plot 1', 'Plot 2', 'Plot 3', 'Plot 4'))
+            </div></pre>
+        <h4>Key Parameters</h4>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>rows</code></td>
+                    <td>Number of rows in the subplot grid</td>
+                    <td><code>rows=2</code></td>
+                </tr>
+                <tr>
+                    <td><code>cols</code></td>
+                    <td>Number of columns in the subplot grid</td>
+                    <td><code>cols=3</code></td>
+                </tr>
+                <tr>
+                    <td><code>subplot_titles</code></td>
+                    <td>Tuple of titles for each subplot</td>
+                    <td><code>('Plot A', 'Plot B')</code></td>
+                </tr>
+                <tr>
+                    <td><code>shared_xaxes</code></td>
+                    <td>Share X-axis across subplots</td>
+                    <td><code>shared_xaxes=True</code></td>
+                </tr>
+                <tr>
+                    <td><code>shared_yaxes</code></td>
+                    <td>Share Y-axis across subplots</td>
+                    <td><code>shared_yaxes=True</code></td>
+                </tr>
+                <tr>
+                    <td><code>vertical_spacing</code></td>
+                    <td>Vertical space between subplots (0 to 1)</td>
+                    <td><code>vertical_spacing=0.1</code></td>
+                </tr>
+                <tr>
+                    <td><code>horizontal_spacing</code></td>
+                    <td>Horizontal space between subplots (0 to 1)</td>
+                    <td><code>horizontal_spacing=0.1</code></td>
+                </tr>
+                <tr>
+                    <td><code>specs</code></td>
+                    <td>Specifications for subplot types</td>
+                    <td><code>specs=[[{'type': 'scatter'}]]</code></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Complete Example: Interactive Sine and Cosine Subplots</h3>
+        
+        <pre><div class="code-block">
+# Import required libraries 
+from plotly.subplots 
+import make_subplots 
+import plotly.graph_objects as go 
+import numpy as np
+
+# Generate data 
+x = np.linspace(0, 10, 100) 
+y1 = np.sin(x) 
+y2 = np.cos(x)
+
+# Create subplots (1 row, 2 columns) 
+fig = make_subplots(rows=1, cols=2, subplot_titles=('Sine Wave', 'Cosine Wave'))
+
+# Add sine wave to first subplot (row=1, col=1) 
+fig.add_trace( go.Scatter(x=x, y=y1, mode='lines', name='sin(x)', line=dict(color='blue')), row=1, col=1 )
+
+# Add cosine wave to second subplot (row=1, col=2) 
+fig.add_trace( go.Scatter(x=x, y=y2, mode='lines', name='cos(x)', line=dict(color='red')), row=1, col=2 )
+
+# Update layout 
+fig.update_layout( title_text='Interactive Trigonometric Functions', height=400, showlegend=True )
+
+# Update x and y axis labels 
+fig.update_xaxes(title_text='x', row=1, col=1) 
+fig.update_xaxes(title_text='x', row=1, col=2) 
+fig.update_yaxes(title_text='sin(x)', row=1, col=1) 
+fig.update_yaxes(title_text='cos(x)', row=1, col=2)
+
+# Display the figure 
+fig.show()
+        </div></pre>
+        <h3>Understanding the Code</h3>
+        
+        <ol>
+            <li><strong>make_subplots():</strong> Creates the subplot structure with 1 row and 2 columns</li>
+            <li><strong>add_trace():</strong> Adds plots to specific subplot positions using row and col parameters</li>
+            <li><strong>go.Scatter():</strong> Creates scatter/line plots (mode='lines' for line plots)</li>
+            <li><strong>update_layout():</strong> Sets overall figure properties like title and height</li>
+            <li><strong>update_xaxes() / update_yaxes():</strong> Updates axis labels for specific subplots</li>
+        </ol>
+        
+        <div class="note-box">
+            <h4>💡 Plotly Indexing</h4>
+            <p>Unlike Matplotlib's <code>plt.subplots()</code> which uses 0-based indexing, Plotly's <code>make_subplots()</code> uses <strong>1-based indexing</strong>. The first subplot is at <code>row=1, col=1</code>, not <code>row=0, col=0</code>.</p>
+        </div>
+        
+        <h3>Interactive Features</h3>
+        
+        <p>When you run the above code, the resulting plot will have several interactive features:</p>
+        
+        <ul>
+            <li><strong>Hover:</strong> Move your mouse over the plot to see exact (x, y) values</li>
+            <li><strong>Zoom:</strong> Click and drag to zoom into a specific region</li>
+            <li><strong>Pan:</strong> After zooming, click and drag to move around</li>
+            <li><strong>Reset:</strong> Double-click to reset to original view</li>
+            <li><strong>Toggle Traces:</strong> Click legend items to show/hide specific plots</li>
+            <li><strong>Box Select:</strong> Select specific data points</li>
+            <li><strong>Download:</strong> Save the plot as PNG image</li>
+        </ul>
+        
+        <div class="diagram-placeholder">
+            [Insert diagram: Screenshot of Plotly interactive toolbar showing zoom, pan, reset, and download options]
+        </div>
+        
+        <h3>Advanced Example: 2×2 Grid with Multiple Plot Types</h3>
+        
+        <pre><div class="code-block">
+from plotly.subplots 
+import make_subplots 
+import plotly.graph_objects as go 
+import numpy as np
+
+# Generate data 
+x = np.linspace(0, 5, 50) 
+y1 = x y2 = x**2 
+y3 = np.sqrt(x) 
+categories = ['A', 'B', 'C', 'D'] 
+values = [20, 35, 30, 15]
+
+# Create 2×2 subplot grid 
+fig = make_subplots( rows=2, cols=2, 
+subplot_titles=('Linear', 'Quadratic', 'Square Root', 'Bar Chart'), 
+specs=[[{'type': 'scatter'}, {'type': 'scatter'}], 
+        [{'type': 'scatter'}, {'type': 'bar'}]] )
+
+# Add linear plot (row=1, col=1) 
+fig.add_trace( go.Scatter(x=x, y=y1, mode='lines+markers', 
+        name='y = x', marker=dict(color='green')), row=1, col=1 )
+
+# Add quadratic plot (row=1, col=2) 
+fig.add_trace( go.Scatter(x=x, y=y2, mode='lines+markers', 
+        name='y = x²', marker=dict(color='red')), row=1, col=2 )
+
+# Add square root plot (row=2, col=1) 
+fig.add_trace( go.Scatter(x=x, y=y3, mode='lines+markers', 
+        name='y = √x', marker=dict(color='blue')), row=2, col=1 )
+
+# Add bar chart (row=2, col=2) 
+fig.add_trace( go.Bar(x=categories, y=values, name='Categories', 
+        marker=dict(color='orange')), row=2, col=2 )
+
+# Update layout 
+fig.update_layout( title_text='Interactive Multiple Plot Types', 
+        height=700, showlegend=True )
+
+# Display 
+fig.show()
+        </div></pre>
+        <div class="professor-note">
+            <h4>🎓 Professor's insight:</h4>
+            <p>"Notice how we can mix different plot types in the same figure! We have three scatter plots (line plots) and one bar chart, all in the same 2×2 grid. This is the power of Plotly - you can combine various visualization types and still maintain interactivity across all subplots."</p>
+        </div>
+        
+        <h3>Comparison Table: Matplotlib vs Plotly Subplots</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Matplotlib</th>
+                    <th>Plotly</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Interactivity</strong></td>
+                    <td>Static (requires additional setup)</td>
+                    <td>Interactive by default</td>
+                </tr>
+                <tr>
+                    <td><strong>Function Name</strong></td>
+                    <td><code>plt.subplots()</code></td>
+                    <td><code>make_subplots()</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Indexing</strong></td>
+                    <td>0-based (axs[0, 0])</td>
+                    <td>1-based (row=1, col=1)</td>
+                </tr>
+                <tr>
+                    <td><strong>Adding Plots</strong></td>
+                    <td><code>axs[i, j].plot()</code></td>
+                    <td><code>fig.add_trace(..., row=i, col=j)</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Output Format</strong></td>
+                    <td>PNG, PDF, SVG</td>
+                    <td>HTML, PNG, PDF</td>
+                </tr>
+                <tr>
+                    <td><strong>File Size</strong></td>
+                    <td>Smaller (static images)</td>
+                    <td>Larger (includes JavaScript)</td>
+                </tr>
+                <tr>
+                    <td><strong>Best For</strong></td>
+                    <td>Publications, reports, papers</td>
+                    <td>Dashboards, web apps, presentations</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="warning-box">
+            <h4>⚠️ When to Use Which?</h4>
+            <p><strong>Use Matplotlib when:</strong></p>
+            <ul>
+                <li>You need static images for academic papers or printed reports</li>
+                <li>File size is a concern</li>
+                <li>You're working offline without web browser access</li>
+                <li>You need fine-grained control over every visual element</li>
+            </ul>
+            <p><strong>Use Plotly when:</strong></p>
+            <ul>
+                <li>You need interactive visualizations</li>
+                <li>Building dashboards or web applications</li>
+                <li>Users need to explore data dynamically</li>
+                <li>You want zoom, pan, and hover functionality</li>
+            </ul>
+        </div>
+        
+        <!-- HINGLISH SUMMARY -->
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Plotly mein interactive subplots banane ke liye <code>make_subplots()</code> function use karte hain. Yeh function rows aur cols parameters leta hai grid layout define karne ke liye. Important baat - Plotly mein indexing 1 se start hoti hai (row=1, col=1), 0 se nahi! Plots add karne ke liye <code>add_trace()</code> use karte hain aur specific position batate hain using row aur col. Plotly mein alag-alag plot types mix kar sakte ho - scatter, bar, line sab ek saath! Interactive features automatic aate hain - zoom, pan, hover sab built-in hai. Matplotlib static images deta hai jabki Plotly HTML output deta hai jo web mein embed ho sakta hai. Web apps aur dashboards ke liye Plotly best hai!</p>
+        </div>
+        
+        <!-- PRACTICE QUESTIONS -->
+        <div class="practice-section">
+            <h3>📚 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Q1: What is the main function used to create subplots in Plotly?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> The <code>make_subplots()</code> function from the <code>plotly.subplots</code> module is used to create subplot layouts in Plotly.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q2: How does indexing differ between Matplotlib and Plotly subplots?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Matplotlib uses 0-based indexing (axs[0, 0] for first subplot), while Plotly uses 1-based indexing (row=1, col=1 for first subplot).
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q3: What are three interactive features available by default in Plotly plots?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> (1) Hover to see exact values, (2) Zoom by clicking and dragging, and (3) Pan to move around after zooming. Additional features include reset (double-click) and downloading as PNG.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q4: When should you use Matplotlib over Plotly?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Use Matplotlib when you need static images for academic papers or printed reports, when file size is a concern, or when working offline without web browser access.
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Q5: How do you add a plot to a specific subplot position in Plotly?</h4>
+                <div class="answer">
+                    <strong>Answer:</strong> Use <code>fig.add_trace(plot_object, row=row_number, col=col_number)</code> to add a plot to a specific position in the subplot grid.
+                </div>
+            </div>
+        </div>
+        
+        <!-- KEY TAKEAWAYS -->
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Plotly subplots are created using <code>make_subplots()</code> from plotly.subplots</li>
+                <li>Plotly uses 1-based indexing (row=1, col=1) unlike Matplotlib's 0-based system</li>
+                <li>Add plots to specific positions using <code>fig.add_trace(..., row=i, col=j)</code></li>
+                <li>Interactive features (zoom, pan, hover) are built-in by default</li>
+                <li>Can mix different plot types (scatter, bar, line) in the same subplot grid</li>
+                <li>Use <code>update_layout()</code> for overall figure properties</li>
+                <li>Use <code>update_xaxes()</code> and <code>update_yaxes()</code> for axis-specific updates</li>
+                <li>Plotly generates HTML output perfect for web applications and dashboards</li>
+                <li>Choose Matplotlib for static publications, Plotly for interactive web content</li>
+                <li>Plotly files are larger due to embedded JavaScript but provide rich interactivity</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- COMPREHENSIVE MIND MAP -->
+    <section id="comprehensive-mindmap">
+        <div class="mindmap-container">
+            <h2>📊 Comprehensive Mind Map</h2>
+            
+            <div class="mindmap">
+                <!-- Level 1: Main Topic -->
+                <div class="mindmap-node mindmap-level-1">
+                    Data Visualization: Subplots & Interactive Plotting
+                </div>
+                
+                <!-- Branch 1: Subplots Basics -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        📌 1. Introduction to Subplots
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Definition: Multiple plots in single figure
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Arrangements: Horizontal, Vertical, Grid
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Shared Axes: Common X or Y axis
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Use Cases: Comparison, Time-series, Multiple metrics
+                    </div>
+                </div>
+                
+                <!-- Branch 2: Matplotlib Subplots -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        📊 2. Matplotlib Subplots
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → plt.subplot(): 1-based indexing, one at a time
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → plt.subplots(): 0-based, all at once (preferred)
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Parameters: nrows, ncols, figsize, sharex, sharey
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Methods: set_title(), set_xlabel(), set_ylim()
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Layout: tight_layout(), axis('off')
+                    </div>
+                </div>
+                
+                <!-- Branch 3: Plotly -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        🎨 3. Plotly Interactive Plotting
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Features: Interactive, web-ready, HTML output
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Modules: graph_objects, express, subplots
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Advantages: Zoom, pan, hover, toggle traces
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Use Cases: Dashboards, web apps, presentations
+                    </div>
+                </div>
+                
+                <!-- Branch 4: Plotly Subplots -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        🔧 4. Plotly Subplots
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → make_subplots(): 1-based indexing
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → add_trace(): Position plots with row, col
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Parameters: rows, cols, subplot_titles, specs
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Mixed plots: Combine scatter, bar, line types
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Update methods: update_layout(), update_xaxes()
+                    </div>
+                </div>
+                
+                <!-- Branch 5: Comparison -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        ⚖️ 5. Matplotlib vs Plotly
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Matplotlib: Static, smaller files, publications
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Plotly: Interactive, HTML, dashboards
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Indexing: Matplotlib (0-based) vs Plotly (1-based)
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Output: PNG/PDF vs HTML
+                    </div>
+                </div>
+                
+                <!-- Branch 6: Best Practices -->
+                <div class="mindmap-branch">
+                    <div class="mindmap-node mindmap-level-2">
+                        ✅ 6. Best Practices
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Share axes for time-series data
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Use tight_layout() to prevent overlapping
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Limit axes (set_ylim) for functions with infinity
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Hide empty subplots with axis('off')
+                    </div>
+                    <div class="mindmap-node mindmap-level-3">
+                        → Choose tool based on use case (static vs interactive)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FINAL COMPREHENSIVE SUMMARY -->
+    <div class="key-takeaways" style="margin-top: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h3 style="color: white; border: none;">🎓 Final Comprehensive Summary</h3>
+        <p style="color: white; font-size: 1.1em; line-height: 2;">
+            In this lecture, we explored the powerful world of <strong>subplots and interactive visualizations</strong>. We started with understanding what subplots are - a way to display multiple plots within a single figure for better comparison and analysis. We learned two main methods in Matplotlib: the traditional <code>plt.subplot()</code> with 1-based indexing and the preferred <code>plt.subplots()</code> with 0-based indexing that gives us better control. We discovered how to share axes between subplots, customize layouts, and handle special cases like the tangent function that approaches infinity.
+            <br><br>
+            Then we moved to <strong>Plotly</strong>, a modern library that creates interactive visualizations by default. Unlike Matplotlib's static images, Plotly generates HTML-based plots with built-in zoom, pan, and hover capabilities. We learned how to use <code>make_subplots()</code> with 1-based indexing to create interactive subplot grids, mix different plot types, and leverage the full power of interactivity for dashboards and web applications.
+            <br><br>
+            The key takeaway is knowing <strong>when to use which tool</strong>: Matplotlib for static publications and reports, Plotly for interactive dashboards and web-based visualizations. Both are essential tools in a data scientist's toolkit, and mastering subplots in both libraries opens up endless possibilities for effective data communication!
+        </p>
+    </div>
+    
+
+    <!-- FOOTER -->
+<div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+
+</div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+
+</html>

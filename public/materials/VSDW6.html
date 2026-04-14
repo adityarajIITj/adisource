@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Visualization with Matplotlib - Complete Lecture Notes</title>
+
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* ============================================
+           GLOBAL STYLES & TYPOGRAPHY
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ============================================
+           HEADER SECTION
+           ============================================ */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* ============================================
+           TABLE OF CONTENTS
+           ============================================ */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc ul li {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .toc ul ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 5px;
+        }
+
+        /* ============================================
+           HEADINGS
+           ============================================ */
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #764ba2;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+
+        /* ============================================
+           CONTENT ELEMENTS
+           ============================================ */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           CODE BLOCKS
+           ============================================ */
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            border-left: 4px solid #61dafb;
+        }
+
+        .code-block code {
+            color: #61dafb;
+        }
+
+        .code-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        /* ============================================
+           TABLES
+           ============================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ============================================
+           SPECIAL BOXES
+           ============================================ */
+        .professor-note {
+            background: #e8f4f8;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            display: block;
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .hinglish-summary {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .hinglish-summary::before {
+            content: "🇮🇳 Hinglish Summary (सरल भाषा में):";
+            display: block;
+            font-weight: bold;
+            color: #ff9800;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .key-takeaways {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .key-takeaways::before {
+            content: "🎯 Key Takeaways:";
+            display: block;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+
+        .key-takeaways li {
+            margin: 8px 0;
+        }
+
+        /* ============================================
+           PRACTICE QUESTIONS
+           ============================================ */
+        .practice-section {
+            background: #f3e5f5;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border: 2px solid #9c27b0;
+        }
+
+        .practice-section h4 {
+            color: #9c27b0;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .answer {
+            color: #555;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .answer::before {
+            content: "💡 Answer: ";
+            font-weight: bold;
+            color: #9c27b0;
+        }
+
+        /* ============================================
+           VISUAL PLACEHOLDERS
+           ============================================ */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px dashed #2196F3;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #1976d2;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           LISTS
+           ============================================ */
+        ul,
+        ol {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        /* ============================================
+           MIND MAP SECTION
+           ============================================ */
+        .mindmap {
+            background: #fafafa;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 3px solid #667eea;
+        }
+
+        .mindmap h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+
+        .branch {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .branch-title {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .branch ul {
+            margin-left: 20px;
+        }
+
+        .branch li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            h3 {
+                font-size: 1.3em;
+            }
+
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- ============================================
+             HEADER SECTION
+             ============================================ -->
+        <header>
+            <h1>📊 Python Data Visualization with Matplotlib</h1>
+            <p>Complete Lecture Notes - VSDW Week 6</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Storytelling and Data Visualization Series</p>
+        </header>
+
+        <!-- ============================================
+             TABLE OF CONTENTS
+             ============================================ -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Python Visualization Ecosystem</a>
+                    <ul>
+                        <li><a href="#section1-1">1.1 Overview of Visualization Libraries</a></li>
+                        <li><a href="#section1-2">1.2 Why Matplotlib?</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section2">2. Introduction to Matplotlib</a>
+                    <ul>
+                        <li><a href="#section2-1">2.1 Two Main Interfaces</a></li>
+                        <li><a href="#section2-2">2.2 Basic Structure of Matplotlib Plot</a></li>
+                        <li><a href="#section2-3">2.3 Basic Setup and First Plot</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section3">3. Line Charts with Matplotlib</a>
+                    <ul>
+                        <li><a href="#section3-1">3.1 Simple Line Plot</a></li>
+                        <li><a href="#section3-2">3.2 Multiple Lines in One Plot</a></li>
+                        <li><a href="#section3-3">3.3 Line Styles and Markers</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section4">4. Bar Charts in Matplotlib</a>
+                    <ul>
+                        <li><a href="#section4-1">4.1 Bar Charts vs Histograms</a></li>
+                        <li><a href="#section4-2">4.2 Simple Vertical Bar Chart</a></li>
+                        <li><a href="#section4-3">4.3 Horizontal Bar Chart</a></li>
+                        <li><a href="#section4-4">4.4 Grouped Bar Chart</a></li>
+                        <li><a href="#section4-5">4.5 Stacked Bar Chart</a></li>
+                        <li><a href="#section4-6">4.6 Customizing Bar Charts</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section5">5. Histograms in Matplotlib</a>
+                    <ul>
+                        <li><a href="#section5-1">5.1 Basic Histogram</a></li>
+                        <li><a href="#section5-2">5.2 Changing Number of Bins</a></li>
+                        <li><a href="#section5-3">5.3 Normalized Histogram (Density Plot)</a></li>
+                        <li><a href="#section5-4">5.4 Overlapping Histograms</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mindmap-section">6. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             SECTION 1: PYTHON VISUALIZATION ECOSYSTEM
+             ============================================ -->
+        <section id="section1">
+            <h2>1. Python Visualization Ecosystem</h2>
+
+            <div id="section1-1">
+                <h3>1.1 Overview of Visualization Libraries</h3>
+
+                <p>Python offers a rich ecosystem of data visualization libraries, each designed for specific purposes
+                    and use cases. Understanding these libraries helps you choose the right tool for your visualization
+                    needs.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Library</th>
+                            <th>Purpose</th>
+                            <th>Key Features</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Matplotlib</strong></td>
+                            <td>Foundational plotting library</td>
+                            <td>Highly customizable, static plots</td>
+                            <td>Static visualizations, detailed control</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Seaborn</strong></td>
+                            <td>Statistical visualization</td>
+                            <td>Built on Matplotlib, beautiful defaults</td>
+                            <td>Statistical analysis, quick insights</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plotly</strong></td>
+                            <td>Interactive plots</td>
+                            <td>Web-based, hover interactions, animations</td>
+                            <td>Interactive dashboards, web applications</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pandas .plot()</strong></td>
+                            <td>Quick visualization</td>
+                            <td>Direct from DataFrames</td>
+                            <td>Rapid exploratory data analysis</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>Matplotlib is the most foundational library. Even though animation might not be there, or
+                        dynamically the plot might not be changing with the dataset, for static plots, Matplotlib is
+                        good enough. Seaborn also includes statistical visualization and is built with some animation
+                        features. With button clicks you can navigate somewhere, change the plot, or change the plot
+                        type.</p>
+                </div>
+            </div>
+
+            <div id="section1-2">
+                <h3>1.2 Why Matplotlib?</h3>
+
+                <p><strong class="highlight">Matplotlib</strong> stands as the most widely used plotting library in
+                    Python for several compelling reasons:</p>
+
+                <ul>
+                    <li><strong>Foundation of Python Visualization:</strong> Most other libraries like Seaborn are built
+                        on top of Matplotlib</li>
+                    <li><strong>Highly Customizable:</strong> You can customize virtually every aspect of your plots
+                    </li>
+                    <li><strong>Static Plot Excellence:</strong> Perfect for creating publication-quality static
+                        visualizations</li>
+                    <li><strong>Extensive Documentation:</strong> Large community support and comprehensive resources
+                    </li>
+                    <li><strong>Integration:</strong> Works seamlessly with NumPy, Pandas, and other scientific
+                        computing libraries</li>
+                </ul>
+
+                <p>While Matplotlib focuses on <strong>static plots</strong>, this doesn't limit its usefulness. Static
+                    plots are ideal for:</p>
+                <ul>
+                    <li>Research papers and academic publications</li>
+                    <li>Reports and presentations</li>
+                    <li>Exploratory data analysis</li>
+                    <li>Data documentation</li>
+                </ul>
+            </div>
+
+            <!-- Hinglish Summary for Section 1 -->
+            <div class="hinglish-summary">
+                <p>Python mein data visualization ke liye bahut saare libraries hain. <strong>Matplotlib</strong> sabse
+                    foundational aur popular library hai jo static plots banane ke liye best hai. Isme customization
+                    bahut zyada hai. <strong>Seaborn</strong> statistical visualization ke liye use hota hai aur
+                    Matplotlib pe hi based hai. <strong>Plotly</strong> interactive plots banata hai jahan user buttons
+                    click karke graphs ko change kar sakta hai. Agar aapko DataFrame se quickly plot chahiye, toh
+                    <strong>Pandas .plot()</strong> use kar sakte hain. Static plots ke liye Matplotlib perfect choice
+                    hai kyunki isme har cheez ko customize kar sakte hain.</p>
+            </div>
+
+            <!-- Key Takeaways for Section 1 -->
+            <div class="key-takeaways">
+                <ul>
+                    <li>Python has multiple visualization libraries, each serving different purposes</li>
+                    <li>Matplotlib is the foundational library for creating highly customizable static plots</li>
+                    <li>Seaborn builds on Matplotlib and specializes in statistical visualizations</li>
+                    <li>Plotly provides interactive plotting capabilities with animations</li>
+                    <li>For quick DataFrame visualizations, Pandas .plot() is most convenient</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions for Section 1 -->
+            <div class="practice-section">
+                <h4>📝 Practice Questions - Section 1</h4>
+
+                <div class="question">
+                    <div class="question-text">Q1. What is the main difference between Matplotlib and Plotly?</div>
+                    <div class="answer">Matplotlib creates static plots with high customization, while Plotly creates
+                        interactive plots where users can click buttons, hover over data points, and see animations.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q2. Why is Matplotlib called a "foundational" library?</div>
+                    <div class="answer">Matplotlib is called foundational because many other visualization libraries
+                        like Seaborn are built on top of it, and it provides the basic building blocks for creating all
+                        types of plots.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q3. Which library would you use for quick visualization directly from a
+                        Pandas DataFrame?</div>
+                    <div class="answer">You would use Pandas .plot() method which allows quick visualization directly
+                        from DataFrames without needing to write extensive code.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q4. What type of visualizations is Seaborn best suited for?</div>
+                    <div class="answer">Seaborn is best suited for statistical visualizations, as it's specifically
+                        designed for statistical data exploration and provides beautiful default styles.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECTION 2: INTRODUCTION TO MATPLOTLIB
+             ============================================ -->
+        <section id="section2">
+            <h2>2. Introduction to Matplotlib</h2>
+
+            <div id="section2-1">
+                <h3>2.1 Two Main Interfaces</h3>
+
+                <p>Matplotlib provides <strong>two distinct interfaces</strong> for creating visualizations, each
+                    catering to different programming styles and requirements:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Interface</th>
+                            <th>Description</th>
+                            <th>Use Case</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pyplot API</strong></td>
+                            <td>Simple, MATLAB-like interface</td>
+                            <td>Quick plots, scripts, beginners</td>
+                            <td>Low (easy to learn)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Object-Oriented API</strong></td>
+                            <td>Flexible, professional interface</td>
+                            <td>Complex plots, applications, professionals</td>
+                            <td>Higher (more control)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Pyplot API (Simple Interface)</h4>
+                <p>The <strong>Pyplot API</strong> provides a MATLAB-like interface that's perfect for beginners and
+                    quick plotting tasks:</p>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Simple Pyplot example</span>
+                    import matplotlib.pyplot as plt
+
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+
+                    plt.plot(x, y)
+                    plt.title("Simple Plot")
+                    plt.show()
+                </pre>
+
+                <h4>Object-Oriented API (Professional Interface)</h4>
+                <p>Th0e <strong>Object-Oriented API</strong> offers more flexibility and control, recommended for
+                    professional applications:</p>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Object-Oriented example</span>
+                    import matplotlib.pyplot as plt
+
+                    fig, ax = plt.subplots()
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+
+                    ax.plot(x, y)
+                    ax.set_title("Professional Plot")
+                    ax.set_xlabel("X-axis")
+                    ax.set_ylabel("Y-axis")
+                    plt.show()
+                </pre>
+
+                <div class="professor-note">
+                    <p>If you are writing professional code, you are going to use Object-Oriented APIs. They provide
+                        more flexibility and better control over your plots, especially when creating complex multi-plot
+                        figures.</p>
+                </div>
+            </div>
+
+            <div id="section2-2">
+                <h3>2.2 Basic Structure of Matplotlib Plot</h3>
+
+                <p>Understanding the anatomy of a Matplotlib plot is crucial for effective visualization. Every plot
+                    consists of several hierarchical components:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                            <th>Analogy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Figure</strong></td>
+                            <td>The whole window/canvas that contains everything</td>
+                            <td>Like a blank canvas or paper</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Axes</strong></td>
+                            <td>The area where data is actually plotted</td>
+                            <td>Like the drawing area on the canvas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Axis</strong></td>
+                            <td>The x-axis and y-axis lines (can be 3D or higher)</td>
+                            <td>The rulers showing scale</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Artists</strong></td>
+                            <td>Elements like lines, text, legends, markers</td>
+                            <td>The actual drawings and labels</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Matplotlib Plot Structure]
+                    <br><br>
+                    <strong>Visualization:</strong>
+                    <br>┌─────────────────────────────────────┐
+                    <br>│ FIGURE (Canvas) │
+                    <br>│ ┌───────────────────────────────┐ │
+                    <br>│ │ AXES (Plot Area) │ │
+                    <br>│ │ │ │
+                    <br>│ │ Y-AXIS │ │ │
+                    <br>│ │ │ Data Points │ │
+                    <br>│ │ │ Lines │ │
+                    <br>│ │ └────────── X-AXIS │ │
+                    <br>│ │ │ │
+                    <br>│ │ Artists: Lines, Labels, │ │
+                    <br>│ │ Legends, Markers │ │
+                    <br>│ └───────────────────────────────┘ │
+                    <br>└─────────────────────────────────────┘
+                </div>
+
+                <div class="professor-note">
+                    <p>When you are plotting, drawing that plot, there will be a canvas, and that canvas will be your
+                        Figure as part of your Matplotlib library. Then there is Axes - the area where data is actually
+                        plotted. The actual data points will be shown in this Axes area. This can be a 3D plot, 4D plot,
+                        so accordingly you will have different Axis. The Axis is the area where the data is actually
+                        plotted. Then we have Artists - elements like lines, text, labels, circles, or other types of
+                        shapes which can be used to draw your plot in this Axes area.</p>
+                </div>
+
+                <h4>Understanding the Hierarchy</h4>
+                <ul>
+                    <li><strong>Figure:</strong> Top-level container - you can have multiple plots in one figure</li>
+                    <li><strong>Axes:</strong> Individual plot area - you can have multiple axes in one figure
+                        (subplots)</li>
+                    <li><strong>Axis:</strong> The actual x, y (or z) dimension scales</li>
+                    <li><strong>Artists:</strong> Every visual element (lines, markers, text, etc.)</li>
+                </ul>
+            </div>
+
+            <div id="section2-3">
+                <h3>2.3 Basic Setup and First Plot</h3>
+
+                <p>Let's create our very first plot using Matplotlib. This will demonstrate the fundamental workflow.
+                </p>
+
+                <h4>Step 1: Import the Library</h4>
+                <p>First, we need to import Matplotlib's pyplot module. We commonly alias it as <code>plt</code> for
+                    convenience:</p>
+
+                <div class="code-block">
+                    <span class="code-comment"># Import matplotlib pyplot</span>
+                    import matplotlib.pyplot as plt
+                </div>
+
+                <p>The alias <strong>plt</strong> is a convention used throughout the Python community. It makes our
+                    code shorter and more readable.</p>
+
+                <h4>Step 2: Define Your Data</h4>
+                <p>Next, we need data to visualize. Let's create two simple lists representing x and y coordinates:</p>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Data points</span>
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+                </pre>
+
+                <div class="professor-note">
+                    <p>If you look at the relationship between y and x, you can see that y is 2 times of x. So that's
+                        the relationship which we are going to plot here. When $y = 2x$, we get a perfect straight line
+                        with slope 2.</p>
+                </div>
+
+                <h4>Step 3: Create the Plot</h4>
+                <p>Now we'll create a simple line plot and display it:</p>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Simple line chart</span>
+                    plt.plot(x, y)
+                    plt.show()
+                </pre>
+
+                <h4>Complete First Program</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Data</span>
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+
+                    <span class="code-comment"># Simple line chart</span>
+                    plt.plot(x, y)
+                    plt.show()
+                </pre>
+
+                <h4>Understanding Automatic Features</h4>
+                <p>When we run this simple code, Matplotlib automatically handles several things:</p>
+
+                <ul>
+                    <li><strong>Axis Ranges:</strong> X-axis shows 1 to 5, Y-axis shows 2 to 10 (automatically detected
+                        from data)</li>
+                    <li><strong>Line Color:</strong> Default blue color is applied</li>
+                    <li><strong>Axis Assignment:</strong> First parameter (x) is plotted on X-axis, second parameter (y)
+                        on Y-axis</li>
+                    <li><strong>Scale:</strong> Appropriate scale is chosen to fit all data points</li>
+                </ul>
+
+                <div class="professor-note">
+                    <p>We have not specified anything, but Matplotlib library has automatically done many things. The
+                        values on the x-axis are varying from 1 to 5, and on the y-axis from 2 to 10, which is the
+                        actual range of our data. We haven't specified the color of this line, which is coming in blue
+                        color. We also haven't specified whether x should be on the x-axis or y should be on the y-axis,
+                        but we specified the sequence, and whatever variable you mention first, that will be assumed as
+                        the x-axis for plotting purposes.</p>
+                </div>
+
+                <h4>Experimenting with Parameter Order</h4>
+                <p>Let's see what happens when we swap the parameters:</p>
+
+                <div class="code-block">
+                    <span class="code-comment"># Swapping x and y</span>
+                    plt.plot(y, x) <span class="code-comment"># Now y is on x-axis, x is on y-axis</span>
+                    plt.show()
+                </div>
+
+                <p>This demonstrates that the <strong>order of parameters matters</strong> - the first parameter is
+                    always plotted on the x-axis.</p>
+            </div>
+
+            <!-- Hinglish Summary for Section 2 -->
+            <div class="hinglish-summary">
+                <p>Matplotlib mein do tarah ke interfaces hain - <strong>Pyplot API</strong> jo MATLAB jaisa simple hai
+                    beginners ke liye, aur <strong>Object-Oriented API</strong> jo professional code ke liye zyada
+                    flexible hai. Har plot ke char main components hote hain: <strong>Figure</strong> (pura canvas),
+                    <strong>Axes</strong> (jahan data plot hota hai), <strong>Axis</strong> (x aur y ki lines), aur
+                    <strong>Artists</strong> (lines, text, legends). Pehla plot banane ke liye bas import karo
+                    <code>plt</code>, data define karo (x aur y), aur <code>plt.plot(x, y)</code> likh ke
+                    <code>plt.show()</code> karo. Matplotlib automatically bahut saari cheezein handle kar leta hai
+                    jaise colors, axis ranges, aur scales.</p>
+            </div>
+
+            <!-- Key Takeaways for Section 2 -->
+            <div class="key-takeaways">
+                <ul>
+                    <li>Matplotlib offers two interfaces: Pyplot API (simple) and Object-Oriented API (professional)
+                    </li>
+                    <li>A plot consists of four main components: Figure, Axes, Axis, and Artists</li>
+                    <li>Figure is the whole canvas, Axes is where data is plotted</li>
+                    <li>Basic plotting requires: import plt, define data, call plt.plot(), and plt.show()</li>
+                    <li>Matplotlib automatically handles axis ranges, colors, and scales based on data</li>
+                    <li>Parameter order matters: first parameter goes on x-axis, second on y-axis</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions for Section 2 -->
+            <div class="practice-section">
+                <h4>📝 Practice Questions - Section 2</h4>
+
+                <div class="question">
+                    <div class="question-text">Q1. What is the difference between Pyplot API and Object-Oriented API?
+                    </div>
+                    <div class="answer">Pyplot API is simple and MATLAB-like, best for beginners and quick plots.
+                        Object-Oriented API is more flexible and provides better control, recommended for professional
+                        code and complex visualizations.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q2. What is the difference between "Axes" and "Axis" in Matplotlib?</div>
+                    <div class="answer">Axes is the area where data is plotted (the plot region), while Axis refers to
+                        the actual x-axis and y-axis lines that show the scale.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q3. Why do we use "plt" as an alias when importing matplotlib.pyplot?
+                    </div>
+                    <div class="answer">Using "plt" as an alias is a community convention that makes code shorter, more
+                        readable, and consistent across different projects.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q4. What happens if you swap the x and y parameters in plt.plot(x, y)?
+                    </div>
+                    <div class="answer">The first parameter always goes on the x-axis and the second on the y-axis, so
+                        swapping them will flip your plot's orientation.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q5. What does the plt.show() function do?</div>
+                    <div class="answer">plt.show() displays the plot in a window or output cell. Without it, the plot is
+                        created but not displayed to the user.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECTION 3: LINE CHARTS WITH MATPLOTLIB
+             ============================================ -->
+        <section id="section3">
+            <h2>3. Line Charts with Matplotlib</h2>
+
+            <p><strong>Line charts</strong> are one of the most fundamental and widely used visualization types in data
+                analysis. They excel at showing continuous data and trends over time.</p>
+
+            <div id="section3-1">
+                <h3>3.1 Simple Line Plot</h3>
+
+                <p>Line charts are particularly useful for:</p>
+                <ul>
+                    <li><strong>Time-series data:</strong> Stock prices, temperature changes, sales over months</li>
+                    <li><strong>Trends:</strong> Showing how values increase or decrease over time</li>
+                    <li><strong>Continuous relationships:</strong> Mathematical functions, growth curves</li>
+                    <li><strong>Comparisons:</strong> Multiple datasets on the same plot</li>
+                </ul>
+
+                <h4>Creating a Simple Line Plot with Labels</h4>
+                <p>Let's enhance our basic plot by adding meaningful labels and a title:</p>
+
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Data</span>
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+
+                    <span class="code-comment"># Create plot with customizations</span>
+                    plt.plot(x, y)
+                    plt.title("Simple Line Chart")
+                    plt.xlabel("X Values")
+                    plt.ylabel("Y Values")
+                    plt.show()
+                </pre>
+
+                <h4>Understanding the Enhancements</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Purpose</th>
+                            <th>Importance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>plt.title()</code></td>
+                            <td>Adds a title at the top of the plot</td>
+                            <td>Tells viewers what the plot represents</td>
+                        </tr>
+                        <tr>
+                            <td><code>plt.xlabel()</code></td>
+                            <td>Labels the x-axis</td>
+                            <td>Explains what x-axis represents</td>
+                        </tr>
+                        <tr>
+                            <td><code>plt.ylabel()</code></td>
+                            <td>Labels the y-axis</td>
+                            <td>Explains what y-axis represents</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>We added three things here: title, x label, and y label. If you look at the plot now generated,
+                        the title comes at the top - "Our First Line Chart". On the x-axis we get the x label, and on
+                        the y-axis we get the y label. These labels make your chart understandable and professional.</p>
+                </div>
+            </div>
+
+            <div id="section3-2">
+                <h3>3.2 Multiple Lines in One Plot</h3>
+
+                <p>One of the powerful features of line charts is the ability to <strong>compare multiple
+                        datasets</strong> on the same plot. This helps viewers understand relationships and differences
+                    between datasets.</p>
+
+                <h4>Creating Multi-Line Plots</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Data</span>
+                    x = [1, 2, 3, 4, 5]
+                    y1 = [2, 4, 6, 8, 10] <span class="code-comment"># Double of x</span>
+                    y2 = [1, 2, 3, 4, 5] <span class="code-comment"># Same as x</span>
+
+                    <span class="code-comment"># Plot multiple lines</span>
+                    plt.plot(x, y1, label="Double")
+                    plt.plot(x, y2, label="Original")
+
+                    plt.title("Multiple Line Chart")
+                    plt.xlabel("X Values")
+                    plt.ylabel("Y Values")
+                    plt.legend() <span class="code-comment"># Show the legend</span>
+                    plt.show()
+                </pre>
+
+                <h4>Understanding Labels and Legends</h4>
+                <p>The <strong>label</strong> parameter in <code>plt.plot()</code> assigns a name to each line, and
+                    <code>plt.legend()</code> displays these labels in a legend box:</p>
+
+                <ul>
+                    <li><strong>label="Double":</strong> Names the first line as "Double"</li>
+                    <li><strong>label="Original":</strong> Names the second line as "Original"</li>
+                    <li><strong>plt.legend():</strong> Creates a legend box showing which color represents which line
+                    </li>
+                </ul>
+
+                <div class="professor-note">
+                    <p>We got two lines - the orange line shows the linear relationship for y2, and the blue line shows
+                        the linear relationship for line 1 (y1). At the top left corner, you can see the legends. You
+                        can define as many variables as you want, as many lines you can combine in one plot. But if
+                        there are too many lines to be shown, it's not a good idea to show all the lines in the same
+                        plot because it becomes cluttered and hard to read.</p>
+                </div>
+
+                <h4>Best Practices for Multiple Lines</h4>
+                <ul>
+                    <li>Use <strong>meaningful labels</strong> that clearly identify each line</li>
+                    <li>Limit to <strong>3-5 lines</strong> per plot for clarity</li>
+                    <li>Use <strong>contrasting colors</strong> for easy distinction</li>
+                    <li>Always include a <strong>legend</strong> when plotting multiple lines</li>
+                    <li>Consider using <strong>line styles</strong> (dashed, dotted) for additional differentiation</li>
+                </ul>
+            </div>
+
+            <div id="section3-3">
+                <h3>3.3 Line Styles and Markers</h3>
+
+                <p>Matplotlib offers extensive customization options for line appearance. You can modify
+                    <strong>colors</strong>, <strong>line styles</strong>, <strong>markers</strong>, and <strong>line
+                        width</strong> to create visually distinct and professional plots.</p>
+
+                <h4>Customizing Line Appearance</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Data</span>
+                    x = [1, 2, 3, 4, 5]
+                    y = [2, 4, 6, 8, 10]
+
+                    <span class="code-comment"># Styled line plot</span>
+                    plt.plot(x, y,
+                    color='red', <span class="code-comment"># Line color</span>
+                    linestyle='--', <span class="code-comment"># Dashed line</span>
+                    marker='o', <span class="code-comment"># Circle markers at data points</span>
+                    linewidth=2) <span class="code-comment"># Line thickness</span>
+
+                    plt.title("Styled Line Chart")
+                    plt.xlabel("X-axis")
+                    plt.ylabel("Y-axis")
+                    plt.grid(True) <span class="code-comment"># Show grid</span>
+                    plt.show()
+                </pre>
+
+                <h4>Available Customization Options</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Options</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>color</strong></td>
+                            <td>Named colors, hex codes, RGB</td>
+                            <td>'red', '#FF0000', (1, 0, 0)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>linestyle</strong></td>
+                            <td>'-' (solid), '--' (dashed), ':' (dotted), '-.' (dash-dot)</td>
+                            <td>linestyle='--'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>marker</strong></td>
+                            <td>'o' (circle), 's' (square), '^' (triangle), '*' (star), '+' (plus)</td>
+                            <td>marker='o'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>linewidth</strong></td>
+                            <td>Numerical value (1, 2, 3, etc.)</td>
+                            <td>linewidth=3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>markersize</strong></td>
+                            <td>Numerical value</td>
+                            <td>markersize=10</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Understanding Grid Lines</h4>
+                <p>The <code>plt.grid(True)</code> function adds a grid to your plot, making it easier to read exact
+                    values:</p>
+
+                <pre class="code-block">
+                    plt.grid(True) <span class="code-comment"># Show grid</span>
+                    plt.grid(False) <span class="code-comment"># Hide grid</span>
+                </pre>
+
+                <div class="professor-note">
+                    <p>If you focus on this plot, we can change the line style with their color and thickness. For
+                        example, line width is 2 - if I make it 10, you will see the difference; if I make it 1, you'll
+                        see the line becomes thinner. We can use markers to show data points. Using marker='o', we
+                        specified circles, and our markers are shown on the corresponding intersection points. We can
+                        make the grid visible explicitly or not visible. You can see the grid here in the background
+                        helps in reading values more accurately.</p>
+                </div>
+
+                <h4>Combining Multiple Customizations</h4>
+                <p>You can combine different styling options for maximum effect:</p>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Highly customized plot</span>
+                    plt.plot(x, y1,
+                    color='blue',
+                    linestyle='-',
+                    marker='o',
+                    linewidth=2,
+                    markersize=8,
+                    label='Dataset 1')
+
+                    plt.plot(x, y2,
+                    color='green',
+                    linestyle='--',
+                    marker='s',
+                    linewidth=2,
+                    markersize=8,
+                    label='Dataset 2')
+
+                    plt.title("Comparison with Custom Styles")
+                    plt.xlabel("Time")
+                    plt.ylabel("Values")
+                    plt.legend()
+                    plt.grid(True, alpha=0.3) <span class="code-comment"># Semi-transparent grid</span>
+                    plt.show()
+                </pre>
+
+                <h4>Color Specification Methods</h4>
+                <ul>
+                    <li><strong>Named colors:</strong> 'red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta'
+                    </li>
+                    <li><strong>Hex codes:</strong> '#FF0000' (red), '#00FF00' (green), '#0000FF' (blue)</li>
+                    <li><strong>RGB tuples:</strong> (1, 0, 0) for red, values between 0 and 1</li>
+                </ul>
+            </div>
+
+            <!-- Hinglish Summary for Section 3 -->
+            <div class="hinglish-summary">
+                <p><strong>Line charts</strong> continuous data aur trends dikhane ke liye best hain, especially
+                    time-series data ke liye. Simple line plot mein title, xlabel, aur ylabel add karke professional
+                    bana sakte hain. Ek hi plot mein multiple lines dikhane ke liye alag-alag y values define karo aur
+                    har line ko <code>label</code> do, phir <code>plt.legend()</code> se legend dikhao. Line ko
+                    customize karne ke liye <strong>color</strong> (red, blue, hex codes), <strong>linestyle</strong>
+                    ('--' for dashed, ':' for dotted), <strong>marker</strong> ('o' for circle, 's' for square), aur
+                    <strong>linewidth</strong> change kar sakte hain. <code>plt.grid(True)</code> se background mein
+                    grid aa jati hai jo values padhne mein help karti hai. Lekin ek plot mein 3-5 se zyada lines mat
+                    daalo, warna confusing ho jata hai.</p>
+            </div>
+
+            <!-- Key Takeaways for Section 3 -->
+            <div class="key-takeaways">
+                <ul>
+                    <li>Line charts are ideal for showing continuous data, trends, and time-series information</li>
+                    <li>Always add title, xlabel, and ylabel to make plots professional and understandable</li>
+                    <li>Multiple lines can be plotted on the same chart using separate plt.plot() calls</li>
+                    <li>Use label parameter and plt.legend() to identify different lines in multi-line plots</li>
+                    <li>Customize line appearance with color, linestyle, marker, and linewidth parameters</li>
+                    <li>plt.grid(True) adds a helpful background grid for reading values</li>
+                    <li>Limit to 3-5 lines per plot to maintain clarity and readability</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions for Section 3 -->
+            <div class="practice-section">
+                <h4>📝 Practice Questions - Section 3</h4>
+
+                <div class="question">
+                    <div class="question-text">Q1. What types of data are line charts best suited for?</div>
+                    <div class="answer">Line charts are best for continuous data, time-series data (like stock prices,
+                        temperature over time), showing trends, and displaying mathematical relationships between
+                        variables.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q2. How do you display multiple lines on the same plot?</div>
+                    <div class="answer">Call plt.plot() multiple times with different datasets, assign each a label
+                        parameter, and then call plt.legend() to display the legend identifying each line.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q3. What does the linestyle='--' parameter do?</div>
+                    <div class="answer">It creates a dashed line instead of a solid line. Other options include ':' for
+                        dotted lines and '-.' for dash-dot lines.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q4. What is the purpose of plt.grid(True)?</div>
+                    <div class="answer">It adds a background grid to the plot, making it easier to read exact values
+                        from the x and y axes.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q5. What does the marker='o' parameter do?</div>
+                    <div class="answer">It adds circular markers at each data point on the line, making individual data
+                        points visible and easier to identify.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q6. Why should you limit the number of lines in a single plot?</div>
+                    <div class="answer">Too many lines (more than 3-5) make the plot cluttered, confusing, and difficult
+                        to read. It's better to create multiple plots or use different visualization techniques.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECTION 4: BAR CHARTS IN MATPLOTLIB
+             ============================================ -->
+        <section id="section4">
+            <h2>4. Bar Charts in Matplotlib</h2>
+
+            <div id="section4-1">
+                <h3>4.1 Bar Charts vs Histograms</h3>
+
+                <p>While bar charts and histograms may look similar, they serve <strong>fundamentally different
+                        purposes</strong> and are used for different types of data.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Bar Chart</th>
+                            <th>Histogram</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Data Type</strong></td>
+                            <td>Categorical data</td>
+                            <td>Continuous numerical data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Purpose</strong></td>
+                            <td>Compare categories</td>
+                            <td>Show distribution of data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bar Spacing</strong></td>
+                            <td>Bars are separated (gaps between bars)</td>
+                            <td>Bars are touching (no gaps - continuous bins)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>X-axis</strong></td>
+                            <td>Discrete categories (Apples, Oranges, etc.)</td>
+                            <td>Continuous ranges (0-10, 10-20, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Example Use</strong></td>
+                            <td>Sales by region, fruit quantities</td>
+                            <td>Test score distribution, age distribution</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Order Matters</strong></td>
+                            <td>No - categories can be rearranged</td>
+                            <td>Yes - bins must be in numerical order</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>In bar chart, we are comparing categories like sales data by region, and each bar is a separate
+                        one. Whereas histogram shows the distribution of continuous data, so here bars are touching -
+                        like bins will be more continuous. In bar chart, each bar is shown as a separate bar with gaps
+                        between them, but in histograms, bars touch each other because they represent continuous ranges
+                        of values.</p>
+                </div>
+
+                <h4>When to Use Each</h4>
+                <ul>
+                    <li><strong>Use Bar Charts when:</strong>
+                        <ul>
+                            <li>Comparing different categories (products, regions, departments)</li>
+                            <li>Showing counts or values for discrete groups</li>
+                            <li>The order of categories doesn't matter numerically</li>
+                        </ul>
+                    </li>
+                    <li><strong>Use Histograms when:</strong>
+                        <ul>
+                            <li>Analyzing distribution of continuous data</li>
+                            <li>Understanding frequency of values in ranges</li>
+                            <li>Looking for patterns like normal distribution, skewness</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="section4-2">
+                <h3>4.2 Simple Vertical Bar Chart</h3>
+
+                <p>Vertical bar charts are the most common type, perfect for comparing values across different
+                    categories.</p>
+
+                <h4>Creating a Basic Vertical Bar Chart</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Define categories (categorical data)</span>
+                    categories = ['Apples', 'Bananas', 'Cherries', 'Dates']
+
+                    <span class="code-comment"># Define values for each category</span>
+                    values = [25, 40, 15, 20]
+
+                    <span class="code-comment"># Create vertical bar chart</span>
+                    plt.bar(categories, values, color='skyblue')
+
+                    plt.title("Fruit Sales")
+                    plt.xlabel("Fruit Type")
+                    plt.ylabel("Quantity Sold")
+                    plt.show()
+                </pre>
+
+                <div class="professor-note">
+                    <p>We defined a few categories like Apples, Bananas, Cherries, and Dates. Categories are defined,
+                        and we need to define the values. For Apples we have value 25, for Bananas 40, Cherries 15, and
+                        Dates 20 plus. The x-axis shows the fruit category, and the y-axis shows the sales quantity.
+                        This makes it very easy to compare which fruit sold the most.</p>
+                </div>
+
+                <h4>Understanding plt.bar()</h4>
+                <p>The <code>plt.bar()</code> function is specifically designed for creating bar charts:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>categories</td>
+                            <td>List of category names (x-axis)</td>
+                            <td>['A', 'B', 'C']</td>
+                        </tr>
+                        <tr>
+                            <td>values</td>
+                            <td>Numerical values for each category</td>
+                            <td>[10, 20, 15]</td>
+                        </tr>
+                        <tr>
+                            <td>color</td>
+                            <td>Bar color</td>
+                            <td>'skyblue', '#FF0000'</td>
+                        </tr>
+                        <tr>
+                            <td>width</td>
+                            <td>Width of bars (default 0.8)</td>
+                            <td>width=0.5</td>
+                        </tr>
+                        <tr>
+                            <td>edgecolor</td>
+                            <td>Color of bar edges</td>
+                            <td>edgecolor='black'</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Key Characteristics of Vertical Bar Charts</h4>
+                <ul>
+                    <li>Categories are displayed on the <strong>x-axis</strong> (horizontal)</li>
+                    <li>Values are shown on the <strong>y-axis</strong> (vertical)</li>
+                    <li>Bars extend <strong>upward</strong> from the x-axis</li>
+                    <li>Easy to compare heights of different bars</li>
+                    <li>Natural choice when you have many categories with short names</li>
+                </ul>
+            </div>
+
+            <div id="section4-3">
+                <h3>4.3 Horizontal Bar Chart</h3>
+
+                <p>Horizontal bar charts are useful when category names are long or when you want to emphasize the
+                    magnitude rather than the category.</p>
+
+                <h4>Creating a Horizontal Bar Chart</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Same data as before</span>
+                    categories = ['Apples', 'Bananas', 'Cherries', 'Dates']
+                    values = [25, 40, 15, 20]
+
+                    <span class="code-comment"># Create horizontal bar chart using barh()</span>
+                    plt.barh(categories, values, color='orange')
+
+                    plt.title("Fruit Sales (Horizontal)")
+                    plt.xlabel("Quantity Sold")
+                    plt.ylabel("Fruit Type")
+                    plt.show()
+                </pre>
+
+                <div class="professor-note">
+                    <p>Almost the same code as vertical bar chart. The only difference is we use <code>barh</code> - 'h'
+                        stands for horizontal. By default, bar chart is vertical, and barh is horizontal. Notice how
+                        xlabel and ylabel are swapped - now categories are on y-axis and values on x-axis.</p>
+                </div>
+
+                <h4>Vertical vs Horizontal: When to Use Which?</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Vertical Bar Charts When:</th>
+                            <th>Use Horizontal Bar Charts When:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Category names are short</td>
+                            <td>Category names are long</td>
+                        </tr>
+                        <tr>
+                            <td>You have many categories (fits better)</td>
+                            <td>You have fewer categories to compare</td>
+                        </tr>
+                        <tr>
+                            <td>Time series data (months, years)</td>
+                            <td>Ranking or ordering by value is important</td>
+                        </tr>
+                        <tr>
+                            <td>Natural reading flow (left to right)</td>
+                            <td>Better readability for long labels</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Code Comparison</h4>
+                <pre class="code-block">
+                    <span class="code-comment"># Vertical bar chart</span>
+                    plt.bar(categories, values) <span class="code-comment"># Bars go UP</span>
+
+                    <span class="code-comment"># Horizontal bar chart</span>
+                    plt.barh(categories, values) <span class="code-comment"># Bars go RIGHT</span>
+                </pre>
+            </div>
+
+            <div id="section4-4">
+                <h3>4.4 Grouped Bar Chart</h3>
+
+                <p><strong>Grouped bar charts</strong> (also called clustered bar charts) allow you to compare multiple
+                    datasets side by side for each category. This is ideal for comparing subcategories or multiple
+                    attributes.</p>
+
+                <h4>Creating a Grouped Bar Chart</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+                    import numpy as np
+
+                    <span class="code-comment"># Categories (years in this example)</span>
+                    categories = ['2019', '2020', '2021']
+
+                    <span class="code-comment"># Two datasets to compare</span>
+                    men = [20, 35, 30]
+                    women = [25, 32, 34]
+
+                    <span class="code-comment"># Set up x positions for bars</span>
+                    x = np.arange(len(categories)) <span class="code-comment"># Creates array [0, 1, 2]</span>
+                    width = 0.35 <span class="code-comment"># Width of each bar</span>
+
+                    <span class="code-comment"># Create grouped bars</span>
+                    plt.bar(x - width/2, men, width, label='Men') <span class="code-comment"># Shift left</span>
+                    plt.bar(x + width/2, women, width, label='Women') <span class="code-comment"># Shift right</span>
+
+                    <span class="code-comment"># Customize the plot</span>
+                    plt.xticks(x, categories) <span class="code-comment"># Set category labels at x positions</span>
+                    plt.ylabel("Scores")
+                    plt.title("Scores by Gender and Year")
+                    plt.legend()
+                    plt.show()
+                </pre>
+
+                <h4>Understanding the Positioning Logic</h4>
+                <p>The key to grouped bar charts is <strong>positioning bars correctly</strong>:</p>
+
+                <ol>
+                    <li><strong>np.arange(len(categories))</strong> creates positions: [0, 1, 2]</li>
+                    <li><strong>width = 0.35</strong> defines how wide each bar should be</li>
+                    <li><strong>x - width/2</strong> shifts first group to the LEFT of center</li>
+                    <li><strong>x + width/2</strong> shifts second group to the RIGHT of center</li>
+                    <li><strong>plt.xticks(x, categories)</strong> labels the x-axis at center positions</li>
+                </ol>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Grouped Bar Chart Positioning]
+                    <br><br>
+                    <strong>Visual Explanation:</strong>
+                    <br>Position 0: [Men Bar] [Women Bar] - 2019
+                    <br>Position 1: [Men Bar] [Women Bar] - 2020
+                    <br>Position 2: [Men Bar] [Women Bar] - 2021
+                    <br><br>
+                    Each group has two bars side by side
+                </div>
+
+                <div class="professor-note">
+                    <p>We want to arrange the data so that all the groups are arranged together. For 2019, let's see how
+                        many men's or women's scores were there. In 2020 and 2021 respectively, we can see the scores by
+                        gender and year using this kind of plot. We are arranging the data based on their categories,
+                        then drawing the bar plots where bars are shifted from x-axis tick positions - one group shifted
+                        backward from x, another group shifted forward, creating side-by-side bars.</p>
+                </div>
+
+                <h4>Use Cases for Grouped Bar Charts</h4>
+                <ul>
+                    <li>Comparing <strong>gender</strong> across different years or categories</li>
+                    <li>Comparing <strong>product versions</strong> (Version 1 vs Version 2) across regions</li>
+                    <li>Comparing <strong>before and after</strong> results across different groups</li>
+                    <li>Showing <strong>multiple metrics</strong> side by side for each category</li>
+                </ul>
+            </div>
+
+            <div id="section4-5">
+                <h3>4.5 Stacked Bar Chart</h3>
+
+                <p><strong>Stacked bar charts</strong> display multiple datasets by stacking bars on top of each other.
+                    This is useful for showing both individual values and the total sum.</p>
+
+                <h4>Creating a Stacked Bar Chart</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Categories</span>
+                    categories = ['2019', '2020', '2021']
+
+                    <span class="code-comment"># Two datasets</span>
+                    north = [20, 35, 30]
+                    south = [25, 32, 34]
+
+                    <span class="code-comment"># Create stacked bar chart</span>
+                    plt.bar(categories, north, label="North")
+                    plt.bar(categories, south, bottom=north, label="South") <span class="code-comment"># Stack on
+                        top</span>
+
+                    plt.ylabel("Scores")
+                    plt.title("Stacked Bar Chart")
+                    plt.legend()
+                    plt.show()
+                </pre>
+
+                <h4>Understanding the bottom Parameter</h4>
+                <p>The critical parameter for stacked bar charts is <strong>bottom</strong>:</p>
+
+                <ul>
+                    <li><strong>First bar:</strong> <code>plt.bar(categories, north)</code> - starts at 0</li>
+                    <li><strong>Second bar:</strong> <code>plt.bar(categories, south, bottom=north)</code> - starts
+                        where first bar ends</li>
+                    <li>The <strong>bottom parameter</strong> tells Matplotlib where the bar should start vertically
+                    </li>
+                    <li>This creates the "stacking" effect</li>
+                </ul>
+
+                <div class="professor-note">
+                    <p>In stacked bar chart, instead of putting the bars side by side, they are stacked one above
+                        another. We plot the bar chart with categories as North and label it. Then we plot another bar
+                        chart for South, and one thing which we need to mention is - because it's a stacked bar chart,
+                        we need to mention what is at the bottom. We define North here at the bottom, then plot the
+                        stacked bar for South on top of it.</p>
+                </div>
+
+                <h4>Grouped vs Stacked Bar Charts</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Grouped Bar Chart</th>
+                            <th>Stacked Bar Chart</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bar Arrangement</strong></td>
+                            <td>Side by side</td>
+                            <td>On top of each other</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Best For</strong></td>
+                            <td>Comparing individual values clearly</td>
+                            <td>Showing part-to-whole relationships</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Visible</strong></td>
+                            <td>No (need to add mentally)</td>
+                            <td>Yes (top of stack shows total)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Comparison Ease</strong></td>
+                            <td>Easy to compare all groups</td>
+                            <td>Easy to compare first group, harder for others</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Space Usage</strong></td>
+                            <td>Wider (needs more horizontal space)</td>
+                            <td>Narrower (more compact)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>When to Use Stacked Bar Charts</h4>
+                <ul>
+                    <li>When the <strong>total</strong> is meaningful and important</li>
+                    <li>Showing <strong>composition</strong> (what makes up the whole)</li>
+                    <li>Comparing <strong>proportions</strong> across categories</li>
+                    <li>When <strong>space is limited</strong> and you need compact visualization</li>
+                </ul>
+
+                <h4>Adding More Stacks</h4>
+                <p>You can add more than two stacks by continuing the pattern:</p>
+
+                <div class="code-block">
+                    <span class="code-comment"># Three stacks example</span>
+                    east = [15, 20, 25]
+
+                    plt.bar(categories, north, label="North")
+                    plt.bar(categories, south, bottom=north, label="South")
+                    plt.bar(categories, east, bottom=np.array(north)+np.array(south), label="East")
+                </div>
+            </div>
+
+            <div id="section4-6">
+                <h3>4.6 Customizing Bar Charts</h3>
+
+                <p>Matplotlib provides extensive customization options to make your bar charts more visually appealing
+                    and informative.</p>
+
+                <h4>Available Customization Options</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customization</th>
+                            <th>Parameter</th>
+                            <th>Example</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Colors</strong></td>
+                            <td>color</td>
+                            <td>'skyblue', '#FF5733'</td>
+                            <td>Change bar fill color</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bar Width</strong></td>
+                            <td>width</td>
+                            <td>width=0.5</td>
+                            <td>Make bars thinner or wider</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Edge Color</strong></td>
+                            <td>edgecolor</td>
+                            <td>edgecolor='black'</td>
+                            <td>Add border around bars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hatch Patterns</strong></td>
+                            <td>hatch</td>
+                            <td>hatch='//', hatch='*'</td>
+                            <td>Add patterns inside bars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transparency</strong></td>
+                            <td>alpha</td>
+                            <td>alpha=0.7</td>
+                            <td>Make bars semi-transparent</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Example: Fully Customized Bar Chart</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+
+                    categories = ['A', 'B', 'C', 'D']
+                    values = [25, 40, 15, 30]
+
+                    <span class="code-comment"># Highly customized bar chart</span>
+                    plt.bar(categories, values,
+                    color='#FF6B6B', <span class="code-comment"># Custom hex color</span>
+                    width=0.6, <span class="code-comment"># Thinner bars</span>
+                    edgecolor='black', <span class="code-comment"># Black border</span>
+                    linewidth=2, <span class="code-comment"># Thick border</span>
+                    hatch='//', <span class="code-comment"># Diagonal line pattern</span>
+                    alpha=0.8) <span class="code-comment"># Slightly transparent</span>
+
+                    plt.title("Customized Bar Chart", fontsize=16, fontweight='bold')
+                    plt.xlabel("Categories", fontsize=12)
+                    plt.ylabel("Values", fontsize=12)
+                    plt.grid(axis='y', alpha=0.3) <span class="code-comment"># Horizontal gridlines only</span>
+                    plt.show()
+                </pre>
+
+                <h4>Color Options</h4>
+                <ul>
+                    <li><strong>Named colors:</strong> 'red', 'blue', 'skyblue', 'orange', 'purple'</li>
+                    <li><strong>Hex codes:</strong> '#FF6B6B', '#4ECDC4', '#45B7D1'</li>
+                    <li><strong>RGB tuples:</strong> (0.8, 0.2, 0.2) - values between 0 and 1</li>
+                    <li><strong>Different colors per bar:</strong> color=['red', 'blue', 'green', 'orange']</li>
+                </ul>
+
+                <h4>Hatch Pattern Options</h4>
+                <pre class="code-block">
+                    <span class="code-comment"># Available hatch patterns</span>
+                    '/' <span class="code-comment"># Diagonal lines (forward slash)</span>
+                    '\\' <span class="code-comment"># Diagonal lines (backslash)</span>
+                    '|' <span class="code-comment"># Vertical lines</span>
+                    '-' <span class="code-comment"># Horizontal lines</span>
+                    '+' <span class="code-comment"># Plus signs</span>
+                    'x' <span class="code-comment"># X patterns</span>
+                    'o' <span class="code-comment"># Circles</span>
+                    'O' <span class="code-comment"># Large circles</span>
+                    '.' <span class="code-comment"># Dots</span>
+                    '*' <span class="code-comment"># Stars</span>
+                    '//' <span class="code-comment"># Denser diagonal lines</span>
+                </pre>
+
+                <div class="professor-note">
+                    <p>We can change colors using hex code or RGB or named colors. The width can be changed using the
+                        width attribute. Edge color and hatch patterns can also be changed to make bars more
+                        distinctive. These customizations help make your charts more professional and suitable for
+                        different contexts like presentations, reports, or publications.</p>
+                </div>
+            </div>
+
+            <!-- Hinglish Summary for Section 4 -->
+            <div class="hinglish-summary">
+                <p><strong>Bar charts</strong> categorical data compare karne ke liye use hote hain jahan bars separate
+                    hoti hain, jabki <strong>histograms</strong> continuous data ka distribution dikhate hain jahan bars
+                    touch karti hain. <code>plt.bar()</code> se vertical bar chart banta hai aur <code>plt.barh()</code>
+                    se horizontal. <strong>Grouped bar charts</strong> mein multiple datasets ko side-by-side compare
+                    karte hain - iske liye NumPy se positions calculate karke bars ko shift karte hain (x - width/2 aur
+                    x + width/2). <strong>Stacked bar charts</strong> mein bars ek ke upar ek stack hoti hain - isme
+                    <code>bottom</code> parameter use karte hain jo batata hai bar kahaan se start hogi. Bar charts ko
+                    customize karne ke liye color, width, edgecolor, hatch patterns, aur alpha (transparency) use kar
+                    sakte hain. Long category names ho toh horizontal bars better hain.</p>
+            </div>
+
+            <!-- Key Takeaways for Section 4 -->
+            <div class="key-takeaways">
+                <ul>
+                    <li>Bar charts compare categorical data with separated bars; histograms show distribution with
+                        touching bars</li>
+                    <li>Use plt.bar() for vertical charts and plt.barh() for horizontal charts</li>
+                    <li>Grouped bar charts place multiple datasets side by side using position shifting (x ± width/2)
+                    </li>
+                    <li>Stacked bar charts stack bars vertically using the bottom parameter to show totals</li>
+                    <li>Grouped charts are better for comparing individual values; stacked charts show part-to-whole
+                    </li>
+                    <li>Customize bars with color, width, edgecolor, hatch patterns, and alpha transparency</li>
+                    <li>Use horizontal bars when category names are long for better readability</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions for Section 4 -->
+            <div class="practice-section">
+                <h4>📝 Practice Questions - Section 4</h4>
+
+                <div class="question">
+                    <div class="question-text">Q1. What is the main difference between a bar chart and a histogram?
+                    </div>
+                    <div class="answer">Bar charts display categorical data with separated bars to compare categories,
+                        while histograms show continuous data distribution with touching bars representing ranges
+                        (bins).</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q2. How do you create a horizontal bar chart instead of vertical?</div>
+                    <div class="answer">Use plt.barh() instead of plt.bar(). The 'h' stands for horizontal, and
+                        categories appear on the y-axis with values on the x-axis.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q3. What is the purpose of the bottom parameter in stacked bar charts?
+                    </div>
+                    <div class="answer">The bottom parameter specifies where the bar should start vertically, allowing
+                        you to stack bars on top of each other by setting bottom to the previous bar's values.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q4. When should you use grouped bar charts vs stacked bar charts?</div>
+                    <div class="answer">Use grouped bar charts when you need to compare individual values clearly. Use
+                        stacked bar charts when showing part-to-whole relationships and when the total is important.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q5. What does the hatch parameter do in bar charts?</div>
+                    <div class="answer">The hatch parameter adds visual patterns inside bars (like diagonal lines, dots,
+                        crosses) to make them more distinctive, especially useful in black-and-white prints.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q6. Why use np.arange() in grouped bar charts?</div>
+                    <div class="answer">np.arange(len(categories)) creates numerical positions [0, 1, 2...] for each
+                        category group, which we can then shift left and right to position multiple bars side by side.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECTION 5: HISTOGRAMS IN MATPLOTLIB
+             ============================================ -->
+        <section id="section5">
+            <h2>5. Histograms in Matplotlib</h2>
+
+            <p>Histograms are essential tools for understanding the <strong>distribution of continuous numerical
+                    data</strong>. They help reveal patterns, identify outliers, and understand data characteristics.
+            </p>
+
+            <div id="section5-1">
+                <h3>5.1 Basic Histogram</h3>
+
+                <p>A histogram divides continuous data into <strong>bins</strong> (intervals) and shows the frequency or
+                    count of values falling into each bin.</p>
+
+                <h4>Creating Your First Histogram</h4>
+                <pre class="code-block">
+                    import matplotlib.pyplot as plt
+                    import numpy as np
+
+                    <span class="code-comment"># Generate 1000 random numbers from normal distribution</span>
+                    data = np.random.randn(1000)
+
+                    <span class="code-comment"># Create histogram</span>
+                    plt.hist(data, bins=20, color='skyblue', edgecolor='black')
+
+                    plt.title("Histogram of Random Data")
+                    plt.xlabel("Value")
+                    plt.ylabel("Frequency")
+                    plt.show()
+                </pre>
+
+                <h4>Understanding the Components</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>data</strong></td>
+                            <td>The numerical values to analyze</td>
+                            <td>data = [1, 2, 2, 3, 3, 3, 4, 5]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>bins</strong></td>
+                            <td>Number of intervals/ranges to divide data</td>
+                            <td>bins=20 (creates 20 intervals)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>color</strong></td>
+                            <td>Fill color of the bars</td>
+                            <td>color='skyblue'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>edgecolor</strong></td>
+                            <td>Color of bar borders</td>
+                            <td>edgecolor='black'</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>We are using the random function defined under NumPy to generate random data.
+                        <code>np.random.randn(1000)</code> will randomly generate 1000 data points from a normal
+                        distribution. If you look at the plot, it's coming kind of in a normal distribution shape - not
+                        exactly normal, but you can see the bell-curve pattern. The frequency is written on the y-axis
+                        and values on the x-axis.</p>
+                </div>
+
+                <h4>What are Bins?</h4>
+                <p><strong>Bins</strong> are the intervals or ranges into which your data is divided:</p>
+
+                <ul>
+                    <li>If your data ranges from 0 to 100 and you set <code>bins=10</code>, each bin covers 10 units
+                    </li>
+                    <li>Bin 1: 0-10, Bin 2: 10-20, Bin 3: 20-30, etc.</li>
+                    <li>The <strong>height of each bar</strong> shows how many data points fall in that bin</li>
+                    <li>More bins = more detail but potentially noisier visualization</li>
+                    <li>Fewer bins = smoother but may hide important patterns</li>
+                </ul>
+
+                <h4>Understanding np.random.randn()</h4>
+                <p>This function generates random numbers from a <strong>standard normal distribution</strong>:</p>
+
+                <ul>
+                    <li>Mean (μ) = 0</li>
+                    <li>Standard deviation (σ) = 1</li>
+                    <li>Creates bell-shaped curve (normal distribution)</li>
+                    <li>Most values cluster around 0</li>
+                    <li>Values further from 0 become progressively rarer</li>
+                </ul>
+
+                <pre class="code-block">
+                    <span class="code-comment"># Generate different amounts of random data</span>
+                    data_small = np.random.randn(100) <span class="code-comment"># 100 points</span>
+                    data_medium = np.random.randn(1000) <span class="code-comment"># 1000 points</span>
+                    data_large = np.random.randn(10000) <span class="code-comment"># 10000 points - smoother
+                        histogram</span>
+                </pre>
+            </div>
+
+            <div id="section5-2">
+                <h3>5.2 Changing Number of Bins</h3>
+
+                <p>The number of bins is a <strong>critical parameter</strong> that significantly affects how your
+                    histogram looks and what patterns it reveals.</p>
+
+                <h4>Comparing Different Bin Counts</h4>
+                <pre class="code-block">
+                    import numpy as np
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Generate data</span>
+                    data = np.random.randn(1000)
+
+                    <span class="code-comment"># Histogram with 10 bins</span>
+                    plt.hist(data, bins=10, color='green', alpha=0.7)
+                    plt.title("Histogram with 10 Bins")
+                    plt.xlabel("Value")
+                    plt.ylabel("Frequency")
+                    plt.show()
+
+                    <span class="code-comment"># Histogram with 50 bins</span>
+                    plt.hist(data, bins=50, color='blue', alpha=0.7)
+                    plt.title("Histogram with 50 Bins")
+                    plt.show()
+                </pre>
+
+                <h4>Impact of Bin Count</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bin Count</th>
+                            <th>Effect</th>
+                            <th>Best For</th>
+                            <th>Drawback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Too Few (5-10)</strong></td>
+                            <td>Very smooth, general pattern</td>
+                            <td>Getting overall distribution shape</td>
+                            <td>May hide important details</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Moderate (20-30)</strong></td>
+                            <td>Balanced detail and clarity</td>
+                            <td>Most general analysis tasks</td>
+                            <td>Good compromise</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Too Many (100+)</strong></td>
+                            <td>Very detailed, shows noise</td>
+                            <td>Large datasets with fine structure</td>
+                            <td>Can look noisy and unclear</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>If you increase the number of bins, it will give you more detail. If you decrease, it becomes
+                        smoother. The data itself will remain same, only the visualization changes. You need to
+                        experiment with different bin counts to find the right balance for your specific dataset and
+                        analysis goal.</p>
+                </div>
+
+                <h4>Guidelines for Choosing Bin Count</h4>
+                <ul>
+                    <li><strong>Sturges' Rule:</strong> $\text{bins} = \lceil \log_2(n) + 1 \rceil$ where $n$ is number
+                        of data points</li>
+                    <li><strong>Square Root Rule:</strong> $\text{bins} = \lceil \sqrt{n} \rceil$</li>
+                    <li><strong>For 100 points:</strong> 10-15 bins</li>
+                    <li><strong>For 1000 points:</strong> 20-30 bins</li>
+                    <li><strong>For 10000+ points:</strong> 50-100 bins</li>
+                    <li><strong>Best practice:</strong> Try multiple values and see what reveals patterns best</li>
+                </ul>
+
+                <h4>Experimenting with Bins</h4>
+                <pre class="code-block">
+                    <span class="code-comment"># Try different bin counts</span>
+                    for bin_count in [5, 10, 20, 50]:
+                    plt.hist(data, bins=bin_count, alpha=0.7)
+                    plt.title(f"Histogram with {bin_count} Bins")
+                    plt.show()
+                </pre>
+            </div>
+
+            <div id="section5-3">
+                <h3>5.3 Normalized Histogram (Density Plot)</h3>
+
+                <p>A <strong>normalized histogram</strong> (or density plot) shows probability density instead of raw
+                    frequency counts. This is useful for comparing distributions with different sample sizes.</p>
+
+                <h4>Creating a Density Plot</h4>
+                <pre class="code-block">
+                    import numpy as np
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Generate data</span>
+                    data = np.random.randn(1000)
+
+                    <span class="code-comment"># Normalized histogram (density plot)</span>
+                    plt.hist(data, bins=30, density=True, alpha=0.6, color='purple')
+
+                    plt.title("Normalized Histogram (Density)")
+                    plt.xlabel("Value")
+                    plt.ylabel("Density")
+                    plt.show()
+                </pre>
+
+                <h4>Understanding Density vs Frequency</h4>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Frequency Histogram</th>
+                            <th>Density Histogram</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Y-axis</strong></td>
+                            <td>Count of observations</td>
+                            <td>Probability density</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Parameter</strong></td>
+                            <td>density=False (default)</td>
+                            <td>density=True</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Area</strong></td>
+                            <td>Equals number of data points</td>
+                            <td>Always equals 1.0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Use Case</strong></td>
+                            <td>When absolute counts matter</td>
+                            <td>Comparing distributions, probability</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>In normalized histogram, we set <code>density=True</code>. This changes the bins to be kind of
+                        equal in terms of probability. The area under the curve matters a lot in density graphs. In the
+                        normalized histogram, bins are distributed according to probability density rather than raw
+                        counts, and the total area under all bars equals 1.</p>
+                </div>
+
+                <h4>Why Use Normalized Histograms?</h4>
+                <ul>
+                    <li><strong>Compare different sample sizes:</strong> 100 points vs 1000 points can be compared
+                        fairly</li>
+                    <li><strong>Probability interpretation:</strong> Heights represent probability density</li>
+                    <li><strong>Overlay with distributions:</strong> Can overlay with theoretical distributions (normal,
+                        exponential)</li>
+                    <li><strong>Statistical analysis:</strong> Better for statistical comparisons</li>
+                </ul>
+
+                <h4>Mathematical Interpretation</h4>
+                <p>In a density histogram:</p>
+                <ul>
+                    <li>Area of each bar = probability of values falling in that bin</li>
+                    <li>Total area under all bars = 1.0 (100% probability)</li>
+                    <li>Height = $\frac{\text{frequency}}{\text{total count} \times \text{bin width}}$</li>
+                </ul>
+
+                <div class="code-block">
+                    <span class="code-comment"># Example: Comparing normalized histograms</span>
+                    data1 = np.random.randn(100) <span class="code-comment"># 100 points</span>
+                    data2 = np.random.randn(10000) <span class="code-comment"># 10000 points</span>
+
+                    <span class="code-comment"># Both can be compared fairly when normalized</span>
+                    plt.hist(data1, bins=20, density=True, alpha=0.5, label='100 points')
+                    plt.hist(data2, bins=20, density=True, alpha=0.5, label='10000 points')
+                    plt.legend()
+                    plt.title("Comparing Different Sample Sizes (Normalized)")
+                    plt.show()
+                </div>
+            </div>
+
+            <div id="section5-4">
+                <h3>5.4 Overlapping Histograms</h3>
+
+                <p><strong>Overlapping histograms</strong> allow you to compare multiple distributions simultaneously on
+                    the same plot, making differences and similarities immediately visible.</p>
+
+                <h4>Creating Overlapping Histograms</h4>
+                <pre class="code-block">
+                    import numpy as np
+                    import matplotlib.pyplot as plt
+
+                    <span class="code-comment"># Generate two different datasets</span>
+                    data1 = np.random.randn(1000) <span class="code-comment"># Mean = 0</span>
+                    data2 = np.random.randn(1000) + 2 <span class="code-comment"># Mean = 2 (shifted)</span>
+
+                    <span class="code-comment"># Overlapping histograms</span>
+                    plt.hist(data1, bins=20, alpha=0.5, label="Dataset 1")
+                    plt.hist(data2, bins=20, alpha=0.5, label="Dataset 2")
+
+                    plt.legend()
+                    plt.title("Overlapping Histograms")
+                    plt.xlabel("Value")
+                    plt.ylabel("Frequency")
+                    plt.show()
+                </pre>
+
+                <h4>Key Parameter: Alpha (Transparency)</h4>
+                <p>The <strong>alpha</strong> parameter is crucial for overlapping histograms:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alpha Value</th>
+                            <th>Effect</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>alpha=1.0</strong></td>
+                            <td>Fully opaque (solid)</td>
+                            <td>Single histogram, no overlap</td>
+                        </tr>
+                        <tr>
+                            <td><strong>alpha=0.5</strong></td>
+                            <td>50% transparent</td>
+                            <td>Two overlapping histograms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>alpha=0.3</strong></td>
+                            <td>70% transparent</td>
+                            <td>Three or more overlapping</td>
+                        </tr>
+                        <tr>
+                            <td><strong>alpha=0.0</strong></td>
+                            <td>Fully transparent (invisible)</td>
+                            <td>Not useful</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="professor-note">
+                    <p>We have two data points randomly generated - 1000 data points each. In the second one, it's the
+                        same random numbers but shifted by 2 (incremented by 2). Number of bins have to be equal in
+                        both. When we plot both histograms together, we get two data sets which are clearly distinct
+                        from each other. If instead of shifting by 2, we use the same values, the graphs will overlap
+                        completely and you will not see one graph clearly - only the higher values in corresponding bins
+                        will be visible.</p>
+                </div>
+
+                <h4>Best Practices for Overlapping Histograms</h4>
+                <ul>
+                    <li><strong>Use transparency:</strong> Set alpha=0.5 or lower to see overlapping regions</li>
+                    <li><strong>Same bin count:</strong> Use identical bins parameter for fair comparison</li>
+                    <li><strong>Contrasting colors:</strong> Choose colors that remain distinguishable when overlapped
+                    </li>
+                    <li><strong>Always include legend:</strong> Use labels and plt.legend() to identify datasets</li>
+                    <li><strong>Consider density:</strong> Use density=True when sample sizes differ</li>
+                    <li><strong>Limit to 2-3 distributions:</strong> More becomes cluttered and hard to interpret</li>
+                </ul>
+
+                <h4>Common Use Cases</h4>
+                <ul>
+                    <li><strong>Before/After comparisons:</strong> Treatment effects, process improvements</li>
+                    <li><strong>Group comparisons:</strong> Male vs Female, Control vs Experimental</li>
+                    <li><strong>Time periods:</strong> Sales distribution in 2020 vs 2021</li>
+                    <li><strong>Conditions:</strong> Temperature in Summer vs Winter</li>
+                </ul>
+
+                <h4>Advanced Example</h4>
+                <pre class="code-block">
+                    <span class="code-comment"># Three overlapping distributions with different characteristics</span>
+                    normal = np.random.randn(1000) <span class="code-comment"># Mean=0, Std=1</span>
+                    shifted = np.random.randn(1000) + 3 <span class="code-comment"># Mean=3, Std=1</span>
+                    wider = np.random.randn(1000) * 2 <span class="code-comment"># Mean=0, Std=2 (wider spread)</span>
+
+                    plt.hist(normal, bins=30, alpha=0.4, label="Normal", color='blue')
+                    plt.hist(shifted, bins=30, alpha=0.4, label="Shifted", color='red')
+                    plt.hist(wider, bins=30, alpha=0.4, label="Wider Spread", color='green')
+
+                    plt.legend()
+                    plt.title("Comparing Three Distributions")
+                    plt.xlabel("Value")
+                    plt.ylabel("Frequency")
+                    plt.grid(axis='y', alpha=0.3)
+                    plt.show()
+                </pre>
+
+                <h4>When NOT to Use Overlapping Histograms</h4>
+                <ul>
+                    <li>When you have <strong>more than 3 distributions</strong> - consider small multiples instead</li>
+                    <li>When distributions <strong>completely overlap</strong> - hard to distinguish</li>
+                    <li>When <strong>exact values</strong> are needed - overlapping makes reading difficult</li>
+                    <li>Consider alternatives: <strong>box plots</strong>, <strong>violin plots</strong>, or
+                        <strong>separate subplots</strong></li>
+                </ul>
+            </div>
+
+            <!-- Hinglish Summary for Section 5 -->
+            <div class="hinglish-summary">
+                <p><strong>Histograms</strong> continuous numerical data ka distribution dikhate hain aur data ko
+                    <strong>bins</strong> (intervals) mein divide karte hain. <code>np.random.randn(1000)</code> se 1000
+                    random numbers generate hote hain jo normal distribution follow karte hain.
+                    <code>plt.hist(data, bins=20)</code> se histogram banta hai jahan bins ki sankhya data ki detail
+                    control karti hai - zyada bins matlab zyada detail lekin noisy, kam bins matlab smooth lekin kam
+                    detail. <strong>Normalized histogram</strong> (density plot) mein <code>density=True</code> use
+                    karke y-axis pe probability density dikhayi deti hai aur total area 1 hota hai - ye different sample
+                    sizes ko compare karne ke liye best hai. <strong>Overlapping histograms</strong> mein multiple
+                    datasets ek saath dikhane ke liye <code>alpha=0.5</code> (transparency) use karna zaroori hai taaki
+                    dono distributions dikhai de. Overlapping histograms before/after ya group comparisons ke liye
+                    perfect hain lekin 2-3 se zyada distributions mat daalo.</p>
+            </div>
+
+            <!-- Key Takeaways for Section 5 -->
+            <div class="key-takeaways">
+                <ul>
+                    <li>Histograms show distribution of continuous numerical data by dividing it into bins (intervals)
+                    </li>
+                    <li>np.random.randn(n) generates n random numbers from normal distribution (mean=0, std=1)</li>
+                    <li>Bin count is critical: too few hides detail, too many shows noise; typically use 20-30 bins</li>
+                    <li>Normalized histograms (density=True) show probability density with total area = 1</li>
+                    <li>Use density=True to fairly compare distributions with different sample sizes</li>
+                    <li>Overlapping histograms require alpha parameter for transparency (typically alpha=0.5)</li>
+                    <li>Always use same bin count and include legend for overlapping histograms</li>
+                    <li>Limit overlapping histograms to 2-3 distributions for clarity</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions for Section 5 -->
+            <div class="practice-section">
+                <h4>📝 Practice Questions - Section 5</h4>
+
+                <div class="question">
+                    <div class="question-text">Q1. What is the purpose of bins in a histogram?</div>
+                    <div class="answer">Bins divide continuous data into intervals or ranges, and the height of each bar
+                        shows how many data points fall within that interval.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q2. What does np.random.randn(1000) do?</div>
+                    <div class="answer">It generates 1000 random numbers from a standard normal distribution with mean 0
+                        and standard deviation 1, creating a bell-shaped distribution pattern.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q3. What happens when you increase the number of bins in a histogram?
+                    </div>
+                    <div class="answer">Increasing bins provides more detail and granularity but can make the histogram
+                        look noisy. The data remains the same, only the visualization changes.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q4. What is the difference between density=False and density=True?</div>
+                    <div class="answer">density=False shows raw frequency counts, while density=True shows probability
+                        density where the total area under all bars equals 1, useful for comparing different sample
+                        sizes.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q5. Why is the alpha parameter important in overlapping histograms?</div>
+                    <div class="answer">Alpha controls transparency (0 to 1). Setting alpha=0.5 makes bars
+                        semi-transparent so both overlapping distributions remain visible; without it, one would
+                        completely hide the other.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q6. What does "data2 = np.random.randn(1000) + 2" do differently from
+                        data1?</div>
+                    <div class="answer">It shifts the entire distribution by 2 units to the right, creating a dataset
+                        with mean = 2 instead of 0, useful for comparing shifted distributions.</div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">Q7. When should you use normalized (density) histograms?</div>
+                    <div class="answer">Use normalized histograms when comparing distributions with different sample
+                        sizes, for probability interpretation, or when overlaying with theoretical distributions.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             COMPREHENSIVE MIND MAP
+             ============================================ -->
+        <section id="mindmap-section">
+            <div class="mindmap">
+                <h2>🗺️ Comprehensive Mind Map: Python Visualization with Matplotlib</h2>
+
+                <div class="mindmap-container">
+                    <div class="central-topic">
+                        Python Data Visualization with Matplotlib
+                    </div>
+
+                    <div class="branches">
+                        <!-- Branch 1 -->
+                        <div class="branch">
+                            <div class="branch-title">📚 Visualization Ecosystem</div>
+                            <ul>
+                                <li><strong>Matplotlib:</strong> Foundational, static plots</li>
+                                <li><strong>Seaborn:</strong> Statistical, built on Matplotlib</li>
+                                <li><strong>Plotly:</strong> Interactive plots</li>
+                                <li><strong>Pandas:</strong> Quick DataFrame plots</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 2 -->
+                        <div class="branch">
+                            <div class="branch-title">🏗️ Matplotlib Structure</div>
+                            <ul>
+                                <li><strong>Interfaces:</strong> Pyplot (simple) vs OOP (professional)</li>
+                                <li><strong>Figure:</strong> Canvas/window</li>
+                                <li><strong>Axes:</strong> Plot area</li>
+                                <li><strong>Axis:</strong> X and Y lines</li>
+                                <li><strong>Artists:</strong> Lines, text, legends</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 3 -->
+                        <div class="branch">
+                            <div class="branch-title">📈 Line Charts</div>
+                            <ul>
+                                <li><strong>Purpose:</strong> Trends, time-series</li>
+                                <li><strong>plt.plot(x, y)</strong></li>
+                                <li><strong>Multiple lines:</strong> Use labels + legend</li>
+                                <li><strong>Customization:</strong> color, linestyle, marker, linewidth</li>
+                                <li><strong>Grid:</strong> plt.grid(True)</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 4 -->
+                        <div class="branch">
+                            <div class="branch-title">📊 Bar Charts</div>
+                            <ul>
+                                <li><strong>Vertical:</strong> plt.bar()</li>
+                                <li><strong>Horizontal:</strong> plt.barh()</li>
+                                <li><strong>Grouped:</strong> Side-by-side comparison</li>
+                                <li><strong>Stacked:</strong> Part-to-whole (use bottom parameter)</li>
+                                <li><strong>Custom:</strong> color, width, edgecolor, hatch</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 5 -->
+                        <div class="branch">
+                            <div class="branch-title">📉 Histograms</div>
+                            <ul>
+                                <li><strong>Purpose:</strong> Distribution of continuous data</li>
+                                <li><strong>Bins:</strong> Control detail level</li>
+                                <li><strong>Density:</strong> Normalized (area = 1)</li>
+                                <li><strong>Overlapping:</strong> Use alpha for transparency</li>
+                                <li><strong>np.random.randn():</strong> Generate test data</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 6 -->
+                        <div class="branch">
+                            <div class="branch-title">🎨 Customization Options</div>
+                            <ul>
+                                <li><strong>Colors:</strong> Named, hex, RGB</li>
+                                <li><strong>Styles:</strong> Solid, dashed, dotted</li>
+                                <li><strong>Markers:</strong> 'o', 's', '^', '*'</li>
+                                <li><strong>Transparency:</strong> alpha parameter</li>
+                                <li><strong>Labels:</strong> title, xlabel, ylabel</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 7 -->
+                        <div class="branch">
+                            <div class="branch-title">🔑 Key Concepts</div>
+                            <ul>
+                                <li><strong>Bar vs Histogram:</strong> Categorical vs continuous</li>
+                                <li><strong>Grouped vs Stacked:</strong> Individual vs total</li>
+                                <li><strong>Frequency vs Density:</strong> Count vs probability</li>
+                                <li><strong>Bin selection:</strong> Balance detail and clarity</li>
+                            </ul>
+                        </div>
+
+                        <!-- Branch 8 -->
+                        <div class="branch">
+                            <div class="branch-title">💡 Best Practices</div>
+                            <ul>
+                                <li>Always add title and axis labels</li>
+                                <li>Use legend for multiple datasets</li>
+                                <li>Limit lines/bars to 3-5 per plot</li>
+                                <li>Use transparency for overlapping</li>
+                                <li>Experiment with bin counts</li>
+                                <li>Choose appropriate chart type for data</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             FOOTER
+             ============================================ -->
+<div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+
+</html>

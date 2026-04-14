@@ -1,0 +1,914 @@
+!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis - Module 3.4</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .section-bg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .math-bg {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 4px solid #f59e0b;
+        }
+        .extra-content {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 4px solid #10b981;
+        }
+        .key-takeaways {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d3 100%);
+            border-left: 4px solid #8b5cf6;
+        }
+        .practice-section {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        }
+        .mind-map-node {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: 2px solid #ec4899;
+        }
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 scroll-smooth">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl font-bold mb-2">Linear Algebra and Numerical Analysis</h1>
+            <h2 class="text-2xl mb-2">Module 3.4: Vector Spaces, Projections, and Orthogonal Matrices</h2>
+            <p class="text-lg">BS./BSc. in Applied AI and Data Science</p>
+        </div>
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="container mx-auto px-6 py-4">
+            <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-list mr-2"></i>Table of Contents</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <a href="#overview" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Module Overview</a>
+                <a href="#vector-spaces" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Vector Spaces Review</a>
+                <a href="#basis-vectors" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Basis Vectors</a>
+                <a href="#affine-combinations" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Affine Combinations</a>
+                <a href="#projections" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Geometric Projections</a>
+                <a href="#orthogonal-matrices" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Orthogonal Matrices</a>
+                <a href="#orthogonalization" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Orthogonalization</a>
+                <a href="#practice" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Practice Questions</a>
+                <a href="#mind-map" class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50">Mind Map</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Module Overview -->
+        <section id="overview" class="mb-12">
+            <div class="section-bg text-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6"><i class="fas fa-compass mr-3"></i>Module 3.4: Overview</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Learning Objectives</h3>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li><strong>Review</strong> vector space and linear independence concepts</li>
+                            <li><strong>Understand</strong> geometric interpretation of projections in vector spaces</li>
+                            <li><strong>Explore</strong> orthogonal matrices and their properties</li>
+                            <li><strong>Prepare</strong> for Gram-Schmidt orthogonalization procedure</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Key Topics</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Vector spaces, linear independence, and span</li>
+                            <li>Basis vectors and their geometric interpretation</li>
+                            <li>Affine combinations and affine spaces</li>
+                            <li>Projection formulas and geometric visualization</li>
+                            <li>Orthogonal matrix properties and applications</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hinglish-summary p-6 rounded-lg mt-6">
+                <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                <p>Aaj hum linear algebra mein vector spaces, projections, aur orthogonal matrices ke bare mein sikhenge. Ye sab concepts machine learning aur data science mein bahut important hain. Hum dekh rahe hain ki kaise vectors ko project karte hain aur orthogonal matrices kaise kaam karte hain. Ye foundation hai advanced topics jaise Gram-Schmidt procedure ke liye.</p>
+            </div>
+        </section>
+
+        <!-- Vector Spaces Review -->
+        <section id="vector-spaces" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-vector-square mr-3"></i>Vector Spaces and Linear Independence</h2>
+                
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Fundamental Concepts</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="math-bg text-white p-6 rounded-lg">
+                            <h4 class="text-xl font-bold mb-3">Vector Space Properties</h4>
+                            <ul class="space-y-2">
+                                <li><strong>Closure:</strong> $\mathbf{u} + \mathbf{v} \in V$ for all $\mathbf{u}, \mathbf{v} \in V$</li>
+                                <li><strong>Associativity:</strong> $(\mathbf{u} + \mathbf{v}) + \mathbf{w} = \mathbf{u} + (\mathbf{v} + \mathbf{w})$</li>
+                                <li><strong>Zero Vector:</strong> $\mathbf{v} + \mathbf{0} = \mathbf{v}$</li>
+                                <li><strong>Scalar Multiplication:</strong> $c\mathbf{v} \in V$ for scalar $c$</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold mb-3 text-gray-800">Linear Independence</h4>
+                            <p class="mb-3">Vectors $\{\mathbf{v}_1, \mathbf{v}_2, ..., \mathbf{v}_n\}$ are linearly independent if:</p>
+                            <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+
+                                $$c_1\mathbf{v}_1 + c_2\mathbf{v}_2 + ... + c_n\mathbf{v}_n = \mathbf{0}$$
+                                <p class="text-center mt-2">implies $c_1 = c_2 = ... = c_n = 0$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-key mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Vector spaces provide the mathematical framework for working with multidimensional data</li>
+                        <li>Linear independence ensures that vectors provide unique directional information</li>
+                        <li>These concepts are fundamental for understanding projections and transformations</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Basis Vectors -->
+        <section id="basis-vectors" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-ruler mr-3"></i>Basis Vectors</h2>
+                
+                <div class="mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-blue-800">Definition</h3>
+                        <p class="mb-4">A basis is the combination of <strong>span</strong> and <strong>independence</strong>. A set of vectors $\{\mathbf{v}_1, \mathbf{v}_2, ..., \mathbf{v}_n\}$ forms a basis for some subspace of $\mathbb{R}^N$ if it:</p>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li><strong>Spans</strong> that subspace</li>
+                            <li>Is an <strong>independent set</strong> of vectors</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Geometric Interpretation</h3>
+                    <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 p-6 rounded-lg border-l-4 border-yellow-500">
+                        <p class="text-lg mb-4"><strong>Geometrically, a basis is like a ruler for a space.</strong> The basis vectors tell you the fundamental units (length and direction) to measure the space they describe.</p>
+                        
+                        <h4 class="text-lg font-bold mb-3">Cartesian Basis Example</h4>
+                        <p class="mb-4">The most common basis set in vector spaces is the familiar <strong>Cartesian axis basis vectors</strong>, which contain only 0s and 1s:</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-4 rounded shadow">
+                                <h5 class="font-bold mb-2">2D Cartesian Basis:</h5>
+                                <div class="math-bg text-white p-3 rounded">
+
+                                    $$\mathbf{e}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad \mathbf{e}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$$
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded shadow">
+                                <h5 class="font-bold mb-2">3D Cartesian Basis:</h5>
+                                <div class="math-bg text-white p-3 rounded">
+
+                                    $$\mathbf{e}_1 = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{e}_2 = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{e}_3 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="math-bg text-white p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">Why Cartesian Basis is Special</h3>
+                    <p class="mb-4">This basis set is widely used because of its simplicity:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Each basis vector has <strong>unit length</strong> ($|\mathbf{e}_i| = 1$)</li>
+                        <li>All vectors in the set are <strong>mutually orthogonal</strong> ($\mathbf{e}_i \cdot \mathbf{e}_j = 0$ for $i \neq j$)</li>
+                        <li>They are <strong>linearly independent</strong> sets that <strong>span</strong> $\mathbb{R}^2$ or $\mathbb{R}^3$</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                    <p>Basis vectors samjho jaise kisi space ke liye ruler hain. Ye fundamental units hain jo space ko measure karne ke liye use karte hain. Cartesian basis sabse simple aur common hai kyunki isme sirf 0s aur 1s hain. Ye vectors orthogonal hain matlab perpendicular hain ek dusre se.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Affine Combinations -->
+        <section id="affine-combinations" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-project-diagram mr-3"></i>Affine Combinations</h2>
+                
+                <div class="mb-8">
+                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-green-800">Definition</h3>
+                        <p class="mb-4">An <strong>affine combination</strong> is a special type of linear combination where the sum of the scalar coefficients is equal to 1.</p>
+                        
+                        <div class="bg-white p-4 rounded shadow-inner">
+                            <p class="text-center text-lg">For points (or vectors) $\mathbf{p}_1, \mathbf{p}_2, ..., \mathbf{p}_n$ and scalars $a_1, a_2, ..., a_n$:</p>
+                            <div class="text-center my-4">
+
+                                $$a_1\mathbf{p}_1 + a_2\mathbf{p}_2 + ... + a_n\mathbf{p}_n$$
+                            </div>
+                            <p class="text-center font-bold text-green-700">where $a_1 + a_2 + ... + a_n = 1$</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Affine Spaces vs Vector Spaces</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3 text-blue-800">Vector Spaces</h4>
+                            <ul class="space-y-2">
+                                <li>Have a fixed origin (zero vector)</li>
+                                <li>Focus on absolute positions</li>
+                                <li>All linear combinations are valid</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3 text-green-800">Affine Spaces</h4>
+                            <ul class="space-y-2">
+                                <li>Don't have a fixed origin</li>
+                                <li>Focus on relationships between points</li>
+                                <li>Use affine combinations to describe points</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extra-content p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-plus-circle mr-2"></i>Professor mentioned in class:</h4>
+                    <p>Linear dependency elimination process involves a systematic approach using matrix operations. When vectors are linearly dependent, we can eliminate enough vectors to form a basis while maintaining the span of the original set.</p>
+                </div>
+
+                <div class="math-bg text-white p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">Elimination Process for Linear Dependency</h3>
+                    <p class="mb-4">To eliminate linear dependency and form a basis:</p>
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li><strong>Write vectors in a matrix:</strong> Create a 4×5 matrix from the vectors</li>
+                        <li><strong>Transpose the matrix:</strong> Change rows to columns</li>
+                        <li><strong>Row-reduce:</strong> Use row operations until matrix is triangular</li>
+                        <li><strong>Transpose back:</strong> Return to original orientation</li>
+                        <li><strong>Collect nonzero vectors:</strong> These form the basis</li>
+                    </ol>
+                </div>
+
+                <div class="hinglish-summary p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                    <p>Affine combinations mein coefficients ka sum hamesha 1 hota hai. Ye vector spaces se alag hain kyunki inka koi fixed origin nahi hota. Affine spaces points ke beech relationships pe focus karte hain, absolute positions pe nahi. Linear dependency hatane ke liye hum matrix operations use karte hain.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geometric Projections -->
+        <section id="projections" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-arrows-alt mr-3"></i>Geometric Interpretation of Projections</h2>
+                
+                <div class="mb-8">
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-purple-800">What is a Projection?</h3>
+                        <p class="mb-4">A projection is the process of finding the closest point on a line (or subspace) to a given point. The key insight is that the <strong>closest projection involves a line that meets at a right angle</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Deriving the Projection Formula</h3>
+                    
+                    <div class="bg-gradient-to-r from-blue-100 to-purple-100 p-6 rounded-lg mb-6">
+                        <h4 class="text-lg font-bold mb-3">Step-by-Step Derivation</h4>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded shadow">
+                                <p class="mb-2"><strong>Step 1:</strong> Consider point $\mathbf{B}$ and line defined by vector $\mathbf{A}$</p>
+                                <p>We want to find the projection of $\mathbf{B}$ onto the line containing $\mathbf{A}$</p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded shadow">
+                                <p class="mb-2"><strong>Step 2:</strong> The projection can be written as $\beta\mathbf{A}$ for some scalar $\beta$</p>
+                                <p>The vector from the projection to $\mathbf{B}$ is $\mathbf{B} - \beta\mathbf{A}$</p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded shadow">
+                                <p class="mb-2"><strong>Step 3:</strong> For closest projection, this vector must be orthogonal to $\mathbf{A}$</p>
+                                <div class="math-bg text-white p-3 rounded">
+
+                                    $$(\mathbf{B} - \beta\mathbf{A}) \cdot \mathbf{A} = 0$$
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded shadow">
+                                <p class="mb-2"><strong>Step 4:</strong> Expand the dot product</p>
+                                <div class="math-bg text-white p-3 rounded">
+
+                                    $$\mathbf{A}^T\mathbf{B} - \beta\mathbf{A}^T\mathbf{A} = 0$$
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded shadow">
+                                <p class="mb-2"><strong>Step 5:</strong> Solve for $\beta$</p>
+                                <div class="math-bg text-white p-3 rounded">
+
+                                    $$\beta = \frac{\mathbf{A}^T\mathbf{B}}{\mathbf{A}^T\mathbf{A}}$$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded">
+                        <h4 class="text-lg font-bold mb-3 text-yellow-800">Final Projection Formula</h4>
+                        <p class="mb-4">The orthogonal projection of point $\mathbf{B}$ onto the line defined by vector $\mathbf{A}$ is:</p>
+                        <div class="bg-white p-4 rounded shadow text-center">
+
+                            $$\text{proj}_{\mathbf{A}}\mathbf{B} = \frac{\mathbf{A}^T\mathbf{B}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}$$
+                        </div>
+                        <p class="mt-4 text-sm text-yellow-700">This formula is <strong>indispensable for eigen decomposition</strong> and widely used in machine learning and data science.</p>
+                    </div>
+                </div>
+
+                <div class="extra-content p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-plus-circle mr-2"></i>Professor mentioned in class:</h4>
+                    <div class="space-y-4">
+                        <p><strong>Worked Example:</strong> Consider projecting point $\mathbf{B} = \begin{bmatrix} x \\ y \end{bmatrix}$ onto line defined by vector $\mathbf{A} = \begin{bmatrix} -2 \\ -1 \end{bmatrix}$</p>
+                        
+                        <div class="bg-white p-4 rounded shadow">
+                            <p class="mb-2">Using the projection formula:</p>
+                            <div class="math-bg text-white p-3 rounded mb-2">
+
+                                $$\beta = \frac{\mathbf{A}^T\mathbf{B}}{\mathbf{A}^T\mathbf{A}} = \frac{-6 + 1}{4 + 1} = \frac{-5}{5} = -1$$
+                            </div>
+                            <p class="text-sm text-gray-600"><strong>Note:</strong> Negative $\beta$ means projection is "backward" - the point projects behind the line in the opposite direction of vector $\mathbf{A}$.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-key mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Projections find the closest point on a subspace to a given point</li>
+                        <li>The projection vector is always orthogonal to the original vector minus the projection</li>
+                        <li>The projection formula involves dot products and normalization</li>
+                        <li>Negative projection coefficients indicate "backward" projection</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                    <p>Projection matlab kisi point ko line ya subspace pe closest point dhundna hai. Sabse important baat ye hai ki closest projection hamesha right angle pe milta hai. Formula derive karne ke liye hum orthogonality ka use karte hain. Negative beta ka matlab hai ki projection backward direction mein hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orthogonal Matrices -->
+        <section id="orthogonal-matrices" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-th mr-3"></i>Orthogonal Matrices</h2>
+                
+                <div class="mb-8">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-red-800">Definition and Importance</h3>
+                        <p class="mb-4">An <strong>orthogonal matrix</strong> is a very special matrix important for several real-world applications in data science and machine learning, including:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>QR decomposition</strong></li>
+                            <li><strong>Eigen decomposition</strong></li>
+                            <li><strong>Singular Value Decomposition (SVD)</strong></li>
+                        </ul>
+                        <p class="mt-4 text-sm text-red-700">The letter <strong>Q</strong> is often used to indicate orthogonal matrices.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Two Key Properties</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="math-bg text-white p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Property 1: Orthogonal Columns</h4>
+                            <p class="mb-3">All columns are pairwise orthogonal:</p>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+
+                                $$\mathbf{q}_i \cdot \mathbf{q}_j = 0 \text{ for } i \neq j$$
+                            </div>
+                        </div>
+                        
+                        <div class="math-bg text-white p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Property 2: Unit Norm Columns</h4>
+                            <p class="mb-3">Each column has unit length:</p>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+
+                                $$\|\mathbf{q}_i\| = \mathbf{q}_i \cdot \mathbf{q}_i = 1$$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-green-100 to-blue-100 p-6 rounded-lg">
+                        <h4 class="text-lg font-bold mb-3">Mathematical Expression</h4>
+                        <p class="mb-4">These properties can be combined into a compact form:</p>
+                        <div class="bg-white p-4 rounded shadow text-center">
+
+                            $$\mathbf{Q}^T\mathbf{Q} = \mathbf{I}$$
+                        </div>
+                        <p class="mt-4 text-center text-sm text-gray-600">where $\mathbf{I}$ is the identity matrix</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Amazing Property: Easy Inverse</h3>
+                    
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded">
+                        <h4 class="text-lg font-bold mb-3 text-yellow-800">The Transpose is the Inverse!</h4>
+                        <p class="mb-4">For orthogonal matrices:</p>
+                        <div class="bg-white p-4 rounded shadow text-center mb-4">
+
+                            $$\mathbf{Q}^{-1} = \mathbf{Q}^T$$
+                        </div>
+                        <p class="mb-4"><strong>Why is this amazing?</strong></p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Matrix inverse is computationally expensive and prone to numerical errors</li>
+                            <li>Matrix transpose is fast and accurate</li>
+                            <li>This property makes orthogonal matrices highly desirable for numerical computations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Examples of Orthogonal Matrices</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-blue-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Example 1: Scaled Identity</h4>
+                            <div class="bg-white p-4 rounded shadow">
+
+                                $$\mathbf{Q} = \frac{1}{\sqrt{2}}\begin{bmatrix} 1 & -1 \\ 1 & 1 \end{bmatrix}$$
+                            </div>
+                            <p class="mt-3 text-sm">Scaling factor $\frac{1}{\sqrt{2}}$ ensures unit column lengths</p>
+                        </div>
+                        
+                        <div class="bg-green-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Example 2: Trigonometric Functions</h4>
+                            <div class="bg-white p-4 rounded shadow">
+
+                                $$\mathbf{Q} = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
+                            </div>
+                            <p class="mt-3 text-sm">Uses the identity $\cos^2\theta + \sin^2\theta = 1$</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extra-content p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-plus-circle mr-2"></i>Professor mentioned in class:</h4>
+                    <div class="space-y-4">
+                        <p><strong>Python Verification:</strong> We can verify orthogonality using Python/NumPy:</p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm">
+                            <div>Q1 = np.array([[1, -1], [1, 1]]) / np.sqrt(2)</div>
+                            <div>Q2 = np.array([[1, 2, 2], [2, 1, -2], [2, -2, 1]]) / 3</div>
+                            <div class="mt-2"># Check Q^T * Q = I</div>
+                            <div>print(Q1.T @ Q1)  # Should be identity matrix</div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded shadow">
+                            <h5 class="font-bold mb-2">Important Note:</h5>
+                            <p>Sometimes $\mathbf{Q}^T\mathbf{Q} = \mathbf{I}$ but $\mathbf{Q}\mathbf{Q}^T \neq \mathbf{I}$. This happens when the matrix is not square, creating a rectangular orthogonal matrix.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-key mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Orthogonal matrices have orthogonal columns with unit length</li>
+                        <li>Their transpose equals their inverse, making computations efficient</li>
+                        <li>They preserve angles and distances in transformations</li>
+                        <li>Essential for many decomposition methods in linear algebra</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                    <p>Orthogonal matrices bahut special hain kyunki inke columns perpendicular hain aur unit length ke hain. Sabse amazing baat ye hai ki inका transpose hi inका inverse hota hai! Ye computational efficiency ke liye bahut important hai. QR decomposition, SVD jaise methods mein ye widely use hote hain.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orthogonalization -->
+        <section id="orthogonalization" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800"><i class="fas fa-sync-alt mr-3"></i>Orthogonalization Process</h2>
+                
+                <div class="mb-8">
+                    <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-800">What is Orthogonalization?</h3>
+                        <p class="mb-4">Orthogonalization of vectors is a fundamental process in linear algebra that aims to create a set of <strong>orthogonal vectors</strong> from a given set of <strong>linearly independent vectors</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Key Concepts</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3 text-blue-800">Orthogonalization</h4>
+                            <ul class="space-y-2">
+                                <li>Two vectors are orthogonal if their dot product is zero</li>
+                                <li>Means they are perpendicular (at right angles)</li>
+                                <li>Process transforms linearly independent vectors</li>
+                                <li>Result spans the same subspace</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-100 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3 text-green-800">Orthonormalization</h4>
+                            <ul class="space-y-2">
+                                <li>In addition to being orthogonal</li>
+                                <li>Each vector has unit length (norm = 1)</li>
+                                <li>Creates an orthonormal set</li>
+                                <li>Most useful for computational applications</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-800">Mathematical Definitions</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="math-bg text-white p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Orthogonal Set</h4>
+                            <p class="mb-3">A set of vectors $\{\mathbf{v}_1, \mathbf{v}_2, ..., \mathbf{v}_n\}$ is orthogonal if:</p>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+
+                                $$\mathbf{v}_i \cdot \mathbf{v}_j = 0 \text{ for all } i \neq j$$
+                            </div>
+                        </div>
+                        
+                        <div class="math-bg text-white p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-3">Orthonormal Set</h4>
+                            <p class="mb-3">An orthogonal set where each vector has unit length:</p>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+
+                                $$\mathbf{v}_i \cdot \mathbf{v}_j = \begin{cases} 0 & \text{if } i \neq j \\ 1 & \text{if } i = j \end{cases}$$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extra-content p-6 rounded-lg mb-6">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-plus-circle mr-2"></i>Professor mentioned in class:</h4>
+                    <p>The Gram-Schmidt procedure is coming up next as a systematic method to transform any set of linearly independent vectors into an orthogonal (or orthonormal) set. This will facilitate Q decomposition and various numerical linear algebra operations.</p>
+                </div>
+
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-6 rounded mb-6">
+                    <h3 class="text-xl font-bold mb-3 text-purple-800">Coming Up Next: Advanced Topics</h3>
+                    <p class="mb-4">Based on these foundational concepts, future lectures will cover:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Q Decomposition:</strong> Where Q represents orthogonal matrices</li>
+                        <li><strong>Singular Value Decomposition (SVD)</strong></li>
+                        <li><strong>Eigen Decomposition</strong></li>
+                        <li><strong>Gram-Schmidt Procedure:</strong> Systematic orthogonalization method</li>
+                    </ul>
+                </div>
+
+                <div class="key-takeaways p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-key mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Orthogonalization creates perpendicular vectors from any linearly independent set</li>
+                        <li>Orthonormalization adds the requirement of unit length vectors</li>
+                        <li>These processes preserve the span of the original vector set</li>
+                        <li>Essential preparation for matrix decomposition methods</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary p-6 rounded-lg">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Hinglish Summary</h4>
+                    <p>Orthogonalization ka matlab hai linearly independent vectors ko perpendicular banana. Orthonormalization mein vectors perpendicular bhi hote hain aur unka length bhi 1 hota hai. Ye process linear algebra mein bahut important hai kyunki ye matrix decomposition ke liye foundation provide karta hai. Gram-Schmidt procedure next topic hai jo systematically ye kaam karta hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Questions -->
+        <section id="practice" class="mb-12">
+            <div class="practice-section text-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-8"><i class="fas fa-question-circle mr-3"></i>Practice Questions</h2>
+                
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="bg-white bg-opacity-20 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Question 1: Vector Projection</h3>
+                        <p class="mb-4">Find the orthogonal projection of vector $\mathbf{b} = \begin{bmatrix} 3 \\ 4 \end{bmatrix}$ onto the line defined by vector $\mathbf{a} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer font-semibold text-yellow-200 hover:text-yellow-100">Click for Solution</summary>
+                            <div class="mt-4 p-4 bg-white bg-opacity-10 rounded">
+                                <p class="mb-2"><strong>Solution:</strong></p>
+                                <p class="mb-2">Using the projection formula: $\text{proj}_{\mathbf{a}}\mathbf{b} = \frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}\mathbf{a}$</p>
+                                <p class="mb-2">$\mathbf{a}^T\mathbf{b} = 1(3) + 2(4) = 11$</p>
+                                <p class="mb-2">$\mathbf{a}^T\mathbf{a} = 1^2 + 2^2 = 5$</p>
+                                <p class="mb-2">Therefore: $\text{proj}_{\mathbf{a}}\mathbf{b} = \frac{11}{5}\begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} 2.2 \\ 4.4 \end{bmatrix}$</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="bg-white bg-opacity-20 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Question 2: Orthogonal Matrix Verification</h3>
+                        <p class="mb-4">Verify whether the following matrix is orthogonal:</p>
+                        <div class="text-center mb-4">
+
+                            $$\mathbf{Q} = \frac{1}{3}\begin{bmatrix} 1 & 2 & 2 \\ 2 & 1 & -2 \\ 2 & -2 & 1 \end{bmatrix}$$
+                        </div>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer font-semibold text-yellow-200 hover:text-yellow-100">Click for Solution</summary>
+                            <div class="mt-4 p-4 bg-white bg-opacity-10 rounded">
+                                <p class="mb-2"><strong>Solution:</strong></p>
+                                <p class="mb-2">Check if $\mathbf{Q}^T\mathbf{Q} = \mathbf{I}$:</p>
+                                <p class="mb-2">Column 1: $\|\mathbf{q}_1\|^2 = \frac{1}{9}(1^2 + 2^2 + 2^2) = \frac{9}{9} = 1$ ✓</p>
+                                <p class="mb-2">Column 2: $\|\mathbf{q}_2\|^2 = \frac{1}{9}(2^2 + 1^2 + (-2)^2) = \frac{9}{9} = 1$ ✓</p>
+                                <p class="mb-2">Column 3: $\|\mathbf{q}_3\|^2 = \frac{1}{9}(2^2 + (-2)^2 + 1^2) = \frac{9}{9} = 1$ ✓</p>
+                                <p class="mb-2">$\mathbf{q}_1 \cdot \mathbf{q}_2 = \frac{1}{9}(1×2 + 2×1 + 2×(-2)) = \frac{0}{9} = 0$ ✓</p>
+                                <p><strong>Answer:</strong> Yes, this is an orthogonal matrix.</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="bg-white bg-opacity-20 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Question 3: Linear Independence</h3>
+                        <p class="mb-4">Determine if the vectors $\mathbf{v}_1 = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}$, $\mathbf{v}_2 = \begin{bmatrix} 2 \\ 4 \\ 6 \end{bmatrix}$, and $\mathbf{v}_3 = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}$ are linearly independent.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer font-semibold text-yellow-200 hover:text-yellow-100">Click for Solution</summary>
+                            <div class="mt-4 p-4 bg-white bg-opacity-10 rounded">
+                                <p class="mb-2"><strong>Solution:</strong></p>
+                                <p class="mb-2">Notice that $\mathbf{v}_2 = 2\mathbf{v}_1$</p>
+                                <p class="mb-2">This means $2\mathbf{v}_1 - \mathbf{v}_2 + 0\mathbf{v}_3 = \mathbf{0}$</p>
+                                <p class="mb-2">Since we have a non-trivial linear combination that equals zero (coefficients 2, -1, 0), the vectors are <strong>linearly dependent</strong>.</p>
+                                <p><strong>Answer:</strong> No, they are not linearly independent.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mind Map -->
+        <section id="mind-map" class="mb-12">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-8 text-gray-800 text-center"><i class="fas fa-brain mr-3"></i>Comprehensive Mind Map</h2>
+                
+                <div class="relative">
+                    <!-- Central Node -->
+                    <div class="mind-map-node absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-20 flex items-center justify-center text-center font-bold text-white rounded-lg z-10">
+                        Module 3.4: Vector Spaces & Projections
+                    </div>
+                    
+                    <!-- Branch 1: Vector Spaces -->
+                    <div class="absolute top-16 left-8 w-48">
+                        <div class="bg-blue-200 p-4 rounded-lg border-2 border-blue-400 mb-4">
+                            <h4 class="font-bold text-blue-800 mb-2">Vector Spaces</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Linear independence</li>
+                                <li>• Span and subspaces</li>
+                                <li>• Closure properties</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-100 p-3 rounded border-2 border-blue-300">
+                            <h5 class="font-semibold text-blue-700 mb-1">Basis Vectors</h5>
+                            <ul class="text-xs space-y-1">
+                                <li>• Span + Independence</li>
+                                <li>• Cartesian basis</li>
+                                <li>• Unit vectors</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 2: Projections -->
+                    <div class="absolute top-16 right-8 w-48">
+                        <div class="bg-green-200 p-4 rounded-lg border-2 border-green-400 mb-4">
+                            <h4 class="font-bold text-green-800 mb-2">Projections</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Orthogonal projection</li>
+                                <li>• Closest point formula</li>
+                                <li>• Right angle property</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-100 p-3 rounded border-2 border-green-300">
+                            <h5 class="font-semibold text-green-700 mb-1">Formula</h5>
+                            <div class="text-xs">
+                                $\text{proj}_{\mathbf{A}}\mathbf{B} = \frac{\mathbf{A}^T\mathbf{B}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}$
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 3: Orthogonal Matrices -->
+                    <div class="absolute bottom-16 left-8 w-48">
+                        <div class="bg-purple-200 p-4 rounded-lg border-2 border-purple-400 mb-4">
+                            <h4 class="font-bold text-purple-800 mb-2">Orthogonal Matrices</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Orthogonal columns</li>
+                                <li>• Unit norm columns</li>
+                                <li>• $\mathbf{Q}^{-1} = \mathbf{Q}^T$</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-purple-100 p-3 rounded border-2 border-purple-300">
+                            <h5 class="font-semibold text-purple-700 mb-1">Applications</h5>
+                            <ul class="text-xs space-y-1">
+                                <li>• QR decomposition</li>
+                                <li>• SVD</li>
+                                <li>• Eigen decomposition</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 4: Affine Combinations -->
+                    <div class="absolute bottom-16 right-8 w-48">
+                        <div class="bg-yellow-200 p-4 rounded-lg border-2 border-yellow-400 mb-4">
+                            <h4 class="font-bold text-yellow-800 mb-2">Affine Combinations</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Coefficients sum = 1</li>
+                                <li>• No fixed origin</li>
+                                <li>• Point relationships</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-100 p-3 rounded border-2 border-yellow-300">
+                            <h5 class="font-semibold text-yellow-700 mb-1">Elimination</h5>
+                            <ul class="text-xs space-y-1">
+                                <li>• Matrix transpose</li>
+                                <li>• Row reduction</li>
+                                <li>• Basis formation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Central connecting lines would be implemented with CSS or SVG -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" style="height: 500px;">
+                        <!-- Lines connecting central node to branches -->
+                        <line x1="50%" y1="50%" x2="25%" y2="25%" stroke="#6b7280" stroke-width="2" opacity="0.5"/>
+                        <line x1="50%" y1="50%" x2="75%" y2="25%" stroke="#6b7280" stroke-width="2" opacity="0.5"/>
+                        <line x1="50%" y1="50%" x2="25%" y2="75%" stroke="#6b7280" stroke-width="2" opacity="0.5"/>
+                        <line x1="50%" y1="50%" x2="75%" y2="75%" stroke="#6b7280" stroke-width="2" opacity="0.5"/>
+                    </svg>
+                </div>
+                
+                <!-- Bottom concepts -->
+                <div class="mt-16 grid md:grid-cols-3 gap-6">
+                    <div class="bg-red-100 p-4 rounded-lg border-2 border-red-300">
+                        <h4 class="font-bold text-red-800 mb-2">Key Relationships</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• Orthogonality ⟷ Dot product = 0</li>
+                            <li>• Projection ⟷ Closest point</li>
+                            <li>• Basis ⟷ Span + Independence</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-indigo-100 p-4 rounded-lg border-2 border-indigo-300">
+                        <h4 class="font-bold text-indigo-800 mb-2">Applications</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• Machine Learning</li>
+                            <li>• Data Science</li>
+                            <li>• Computer Graphics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-teal-100 p-4 rounded-lg border-2 border-teal-300">
+                        <h4 class="font-bold text-teal-800 mb-2">Next Topics</h4>
+                        <ul class="text-sm space-y-1">
+                            <li>• Gram-Schmidt procedure</li>
+                            <li>• QR decomposition</li>
+                            <li>• Eigenvalue problems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Summary -->
+        <section class="mb-12">
+            <div class="gradient-bg text-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-center"><i class="fas fa-graduation-cap mr-3"></i>Final Summary</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">What We Learned</h3>
+                        <ul class="space-y-3">
+                            <li><strong>Vector Spaces:</strong> Foundation for linear algebra with properties of closure, associativity, and scalar multiplication</li>
+                            <li><strong>Basis Vectors:</strong> Independent sets that span subspaces, providing coordinate systems</li>
+                            <li><strong>Projections:</strong> Finding closest points on subspaces using orthogonality principles</li>
+                            <li><strong>Orthogonal Matrices:</strong> Special matrices with orthogonal, unit-length columns</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Key Formulas</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+                                <strong>Projection:</strong> $\text{proj}_{\mathbf{A}}\mathbf{B} = \frac{\mathbf{A}^T\mathbf{B}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}$
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+                                <strong>Orthogonal Matrix:</strong> $\mathbf{Q}^T\mathbf{Q} = \mathbf{I}$, $\mathbf{Q}^{-1} = \mathbf{Q}^T$
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded">
+                                <strong>Orthogonality:</strong> $\mathbf{u} \cdot \mathbf{v} = 0$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary p-6 rounded-lg mt-8">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-language mr-2"></i>Final Hinglish Summary</h4>
+                    <p>Aaj humne linear algebra ke important concepts dekhe. Vector spaces se shuru karke projections aur orthogonal matrices tak ka journey tha. Ye sab concepts machine learning aur data science mein foundation banate hain. Projection formula, orthogonal matrices ke properties, aur linear independence - ye sab next lectures mein Gram-Schmidt aur matrix decomposition ke liye prepare kar raha hai humein.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p class="mb-2"><strong>Linear Algebra and Numerical Analysis - Module 3.4</strong></p>
+            <p class="text-sm text-gray-400">BS./BSc. in Applied AI and Data Science</p>
+            <p class="text-xs text-gray-500 mt-2">Complete lecture notes covering vector spaces, projections, and orthogonal matrices</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('bg-blue-100', 'text-blue-800');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('bg-blue-100', 'text-blue-800');
+                }
+            });
+        });
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

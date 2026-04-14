@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confidence Interval - Complete Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+        }
+        
+        .toc ul li a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        
+        .toc ul li a:hover {
+            background: #667eea;
+            color: white;
+            padding-left: 20px;
+        }
+        
+        .toc ul ul {
+            padding-left: 25px;
+        }
+        
+        .toc ul ul li a {
+            font-size: 1em;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin: 35px 0 18px 0;
+            padding-left: 15px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h3 {
+            color: #495057;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            font-size: 1.05em;
+        }
+        
+        .key-term {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .professor-note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "🎓 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        table tr:hover {
+            background: #e9ecef;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .formula-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .example-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box h3 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px dashed #ff6b6b;
+        }
+        
+        .hinglish-summary h3 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            font-size: 1.05em;
+            line-height: 1.7;
+            color: #2d3436;
+        }
+        
+        .practice-questions {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+        
+        .practice-questions h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        .question p {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 5px;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .key-takeaways {
+            background: #fff9e6;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #ffd93d;
+        }
+        
+        .key-takeaways h3 {
+            color: #d68910;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways ul li {
+            padding: 10px 0 10px 35px;
+            position: relative;
+            font-size: 1.05em;
+        }
+        
+        .key-takeaways ul li::before {
+            content: "★";
+            position: absolute;
+            left: 10px;
+            color: #ffd93d;
+            font-size: 1.2em;
+        }
+        
+        .diagram-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            margin: 25px 0;
+            text-align: center;
+            border-radius: 10px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .steps-list li {
+            counter-increment: step-counter;
+            margin: 20px 0;
+            padding: 15px 15px 15px 60px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            border-left: 4px solid #667eea;
+        }
+        
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .mind-map {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .footer-text {
+            font-size: 1.1em;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .footer-author {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: bold;
+            font-style: italic;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        
+        .statistical-notation {
+            font-style: italic;
+            color: #6f42c1;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Confidence Interval</h1>
+            <p>Foundations of Statistics & Probability </p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#learning-outcomes">1. Learning Outcomes</a></li>
+                <li><a href="#what-is-ci">2. What is a Confidence Interval?</a>
+                    <ul>
+                        <li><a href="#definition">2.1 Definition</a></li>
+                        <li><a href="#interpretation">2.2 Correct Interpretation</a></li>
+                        <li><a href="#misconceptions">2.3 Common Misconceptions</a></li>
+                    </ul>
+                </li>
+                <li><a href="#computing-ci">3. Steps to Compute Confidence Interval</a>
+                    <ul>
+                        <li><a href="#assumptions">3.1 Assumptions</a></li>
+                        <li><a href="#step-by-step">3.2 Step-by-Step Process</a></li>
+                        <li><a href="#critical-value">3.3 Finding the Critical Value</a></li>
+                    </ul>
+                </li>
+                <li><a href="#sampling-distribution">4. Understanding Through Sampling Distribution</a></li>
+                <li><a href="#worked-example">5. Worked Example: Student Sleep Duration</a>
+                    <ul>
+                        <li><a href="#using-t-statistic">5.1 Using t-Statistic (n = 50)</a></li>
+                        <li><a href="#using-z-statistic">5.2 Using z-Statistic (Large n)</a></li>
+                        <li><a href="#sample-size-effect">5.3 Effect of Sample Size on CI Width</a></li>
+                    </ul>
+                </li>
+                <li><a href="#practical-tools">6. Practical Tools: Google Sheets Functions</a></li>
+                <li><a href="#mind-map">7. Concept Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- Learning Outcomes -->
+        <section id="learning-outcomes">
+            <h1>1. Learning Outcomes</h1>
+            <p>By the end of this lesson, you will be able to:</p>
+            <ul style="padding-left: 40px; margin: 20px 0;">
+                <li style="margin: 10px 0;"><strong>Explain</strong> what a confidence interval represents and interpret it correctly in real-world contexts</li>
+                <li style="margin: 10px 0;"><strong>Construct</strong> confidence intervals for means using sample data</li>
+                <li style="margin: 10px 0;"><strong>Evaluate</strong> how sample size and confidence level affect interval width</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Is lesson mein hum seekhenge ki confidence interval kya hota hai aur isko real-world situations mein kaise interpret karte hain. Hum sample data se confidence intervals banane ka tarika samjhenge aur dekhenge ki sample size aur confidence level interval ki width ko kaise affect karte hain. Basically, hum estimation ki accuracy ko measure karna seekhenge!</p>
+            </div>
+        </section>
+        
+        <!-- What is Confidence Interval -->
+        <section id="what-is-ci">
+            <h1>2. What is a Confidence Interval?</h1>
+            
+            <h2 id="definition">2.1 Definition</h2>
+            <p>A <span class="key-term">confidence interval (CI)</span> is a statistical tool that estimates a <span class="key-term">population parameter</span> (such as a mean or a proportion) using a <span class="key-term">range of plausible values</span> built from sample data.</p>
+            
+            <p>Instead of giving a single point estimate (like "the average is 6.5"), a confidence interval provides a range (like "the average is between 6.2 and 6.8") along with a measure of how confident we are that this range contains the true population parameter.</p>
+            
+            <div class="formula-box">
+                <h3>General Form of Confidence Interval</h3>
+                <p style="font-size: 1.3em; margin: 15px 0;">
+                    \[CI = \bar{x} \pm \text{(critical value)} \times SE\]
+                </p>
+                <p>Where:</p>
+                <ul style="list-style: none; padding: 0; text-align: left; max-width: 600px; margin: 15px auto;">
+                    <li><strong>\(\bar{x}\)</strong> = sample mean (point estimate)</li>
+                    <li><strong>Critical value</strong> = \(z^*\) or \(t^*\) (depends on whether σ is known)</li>
+                    <li><strong>SE</strong> = Standard Error of the estimate</li>
+                </ul>
+            </div>
+            
+            <h2 id="interpretation">2.2 Correct Interpretation</h2>
+            <p>A <strong>95% confidence interval</strong> means:</p>
+            <blockquote style="background: #e7f3ff; border-left: 5px solid #2196F3; padding: 20px; margin: 20px 0; border-radius: 5px; font-size: 1.1em;">
+                "If you repeated the same sampling process infinitely many times and built a confidence interval each time using the same method, about <strong>95% of those intervals</strong> would contain the true population parameter."
+            </blockquote>
+            
+            <div class="professor-note">
+                This is a very important concept to understand. The confidence interval is related to the <strong>method</strong> and the <strong>sampling process</strong>, not to one specific interval. Think of it as the long-run success rate of your interval construction method.
+            </div>
+            
+            <h2 id="misconceptions">2.3 Common Misconceptions</h2>
+            <div class="warning-box">
+                <h3>⚠️ What Confidence Interval Does NOT Mean</h3>
+                <p><strong>Incorrect interpretation:</strong> "There is a 95% probability that the true mean is in this specific interval."</p>
+                <p><strong>Why this is wrong:</strong> The population parameter (true mean) is <strong>fixed</strong> — it's not a random variable. It either is or isn't in your calculated interval. There's no probability about it.</p>
+                <p><strong>What varies:</strong> The <strong>interval itself</strong> is random because it depends on which samples you happened to select. Different samples will produce different intervals.</p>
+            </div>
+            
+            <div class="professor-note">
+                Remember: the true mean of a population is <strong>fixed and constant</strong>. The true standard deviation of the population is also fixed. These parameters are not dependent on any probability — they are what they are. What changes from sample to sample is our <strong>estimate</strong> of these parameters, and hence our confidence interval.
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Correct Understanding</th>
+                        <th>Incorrect Understanding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>95% of intervals constructed this way will capture the true parameter</td>
+                        <td>This specific interval has a 95% chance of containing the true parameter</td>
+                    </tr>
+                    <tr>
+                        <td>The interval is random (varies with samples)</td>
+                        <td>The parameter is random</td>
+                    </tr>
+                    <tr>
+                        <td>Confidence relates to the method's long-run success rate</td>
+                        <td>Confidence relates to probability of one specific interval</td>
+                    </tr>
+                    <tr>
+                        <td>The parameter is fixed; our estimate varies</td>
+                        <td>The parameter varies; our estimate is fixed</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li>Confidence intervals provide a <strong>range of plausible values</strong> for population parameters</li>
+                    <li>The confidence level (e.g., 95%) refers to the <strong>method's reliability</strong>, not a specific interval</li>
+                    <li>The population parameter is <strong>fixed</strong>; the confidence interval is <strong>random</strong></li>
+                    <li>Higher confidence levels produce <strong>wider intervals</strong></li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Confidence interval ek range hota hai jo humein batata hai ki population parameter (jaise mean) kahan ho sakta hai. Agar hum 95% confidence interval lete hain, toh iska matlab hai ki agar hum same method se baar-baar samples leke intervals banaye, toh 95% intervals mein true mean hoga. Ye probability nahi hai ki ek specific interval mein parameter hai — parameter toh fixed hai, interval random hai jo sample ke saath change hota hai.</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p>Q1: What does a 99% confidence interval tell us?</p>
+                    <div class="answer">
+                        If we repeated our sampling process many times and constructed a 99% confidence interval each time, approximately 99% of those intervals would contain the true population parameter. It tells us about the reliability of our method, not about a specific interval.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q2: Is the population mean a random variable or a fixed value?</p>
+                    <div class="answer">
+                        The population mean is a <strong>fixed value</strong>. It does not depend on probability. What varies is our <strong>sample mean</strong> and consequently the <strong>confidence interval</strong>, which changes with different samples.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q3: If you increase confidence level from 95% to 99%, what happens to the interval width?</p>
+                    <div class="answer">
+                        The interval becomes <strong>wider</strong>. To be more confident that we've captured the true parameter, we need to cast a wider net. This is the trade-off between confidence and precision.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Steps to Compute CI -->
+        <section id="computing-ci">
+            <h1>3. Steps to Compute Confidence Interval</h1>
+            
+            <h2 id="assumptions">3.1 Assumptions</h2>
+            <p>Before computing a confidence interval for the mean, we must verify certain assumptions:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assumption</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Random Sample</strong></td>
+                        <td>Data must come from a random sample or representative, independent observations to avoid bias</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Normality</strong></td>
+                        <td>Population should be approximately normal, OR sample size should be moderately large (by Central Limit Theorem)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Severe Outliers</strong></td>
+                        <td>Data should not have severe outliers or heavy skew that could distort the mean</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                When we compute a mean confidence interval with the t-statistic, we're operating under the assumption that either the population is approximately normal, or the sample size is large enough that the Central Limit Theorem applies. This is crucial for the validity of our inference.
+            </div>
+            
+            <h2 id="step-by-step">3.2 Step-by-Step Process</h2>
+            
+            <ol class="steps-list">
+                <li>
+                    <strong>Choose a Confidence Level</strong><br>
+                    Decide what confidence level you need: 90%, 95%, or 99% are most common. This determines how much area under the curve you want to capture.
+                    <div class="professor-note">
+                        For example, 95% confidence means you want 95% of the t (or z) distribution in the middle, leaving 2.5% in each tail.
+                    </div>
+                </li>
+                
+                <li>
+                    <strong>Compute a Point Estimate</strong><br>
+                    Calculate the sample mean \(\bar{x}\) from your data:
+                    \[\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n}\]
+                    This is your best single estimate of the population mean.
+                </li>
+                
+                <li>
+                    <strong>Compute the Standard Error (SE)</strong><br>
+                    The standard error measures the variability of the sample mean:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>If population SD (σ) is known:</strong> \(SE = \frac{\sigma}{\sqrt{n}}\) → Use z-statistic</li>
+                        <li><strong>If population SD is unknown:</strong> \(SE = \frac{s}{\sqrt{n}}\) → Use t-statistic with df = n - 1</li>
+                    </ul>
+                    where <span class="statistical-notation">s</span> is the sample standard deviation and <span class="statistical-notation">n</span> is the sample size.
+                </li>
+                
+                <li>
+                    <strong>Find the Critical Value</strong><br>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>For <strong>known σ</strong>: Find \(z^*\) from the standard normal distribution table</li>
+                        <li>For <strong>unknown σ</strong>: Find \(t^*\) from the t-distribution table with degrees of freedom = n - 1</li>
+                    </ul>
+                </li>
+                
+                <li>
+                    <strong>Build the Confidence Interval</strong><br>
+                    Calculate the confidence interval using the formula:
+                    \[CI = \bar{x} \pm (\text{critical value}) \times SE\]
+                    The product (critical value × SE) is called the <span class="key-term">margin of error</span>.
+                </li>
+            </ol>
+            
+            <div class="formula-box">
+                <h3>Complete Formula</h3>
+                <p style="font-size: 1.2em; margin: 15px 0;">
+                    \[CI = \bar{x} \pm \text{(margin of error)}\]
+                </p>
+                <p style="font-size: 1.1em; margin: 15px 0;">
+                    \[\text{Margin of Error} = \text{(critical value)} \times SE\]
+                </p>
+                <p>The interval extends from:</p>
+                <p style="font-size: 1.1em; margin: 10px 0;">
+                    <strong>Lower bound:</strong> \(\bar{x} - \text{(margin of error)}\)<br>
+                    <strong>Upper bound:</strong> \(\bar{x} + \text{(margin of error)}\)
+                </p>
+            </div>
+            
+            <h2 id="critical-value">3.3 Finding the Critical Value</h2>
+            
+            <h3>Understanding the Critical Value</h3>
+            <p>The <span class="key-term">critical value</span> (denoted as \(z^*\) or \(t^*\)) is the cutoff point that captures the desired confidence level in the distribution.</p>
+            
+            <div class="example-box">
+                <h3>Example: 95% Confidence Interval</h3>
+                <p>For a 95% confidence interval:</p>
+                <ul style="padding-left: 30px; margin: 15px 0;">
+                    <li>We want the <strong>middle 95%</strong> of the distribution</li>
+                    <li>This leaves <strong>5% total</strong> in the tails (100% - 95% = 5%)</li>
+                    <li>Because the distribution is symmetric: <strong>2.5% in each tail</strong></li>
+                    <li>Central area under curve = 0.95</li>
+                    <li>Each tail area = 0.025</li>
+                </ul>
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Bell curve showing 95% central area with 2.5% in each tail, marking critical values at -t* and +t*]
+            </div>
+            
+            <h3>Using the t-Table</h3>
+            <p>When population standard deviation (σ) is <strong>unknown</strong>, we use the <span class="key-term">t-distribution</span> with <strong>degrees of freedom (df) = n - 1</strong>.</p>
+            
+            <div class="professor-note">
+                The 0.025 value is important because it helps us locate the correct threshold of t-value in the t-table. Since we're looking at a two-tailed distribution with 95% in the center, we have 0.025 in each tail. When looking at the t-table, you'll find columns labeled with tail probabilities — for a 95% CI, look for the column labeled "0.025" for one tail, or "0.05" for two tails combined.
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Confidence Level</th>
+                        <th>Total Tail Area</th>
+                        <th>Each Tail Area</th>
+                        <th>Two-Tail Column in t-Table</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90%</td>
+                        <td>0.10</td>
+                        <td>0.05</td>
+                        <td>0.10</td>
+                    </tr>
+                    <tr>
+                        <td>95%</td>
+                        <td>0.05</td>
+                        <td>0.025</td>
+                        <td>0.05</td>
+                    </tr>
+                    <tr>
+                        <td>99%</td>
+                        <td>0.01</td>
+                        <td>0.005</td>
+                        <td>0.01</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Using the z-Table (for large n or known σ)</h3>
+            <p>The <span class="key-term">z-table</span> gives cumulative probabilities from the left side of the distribution up to a certain z-value.</p>
+            
+            <div class="example-box">
+                <h3>Finding z* for 95% Confidence</h3>
+                <p><strong>Step 1:</strong> For 95% in the middle, we have 2.5% in each tail</p>
+                <p><strong>Step 2:</strong> The right critical value corresponds to 97.5% cumulative probability (2.5% + 95% = 97.5%)</p>
+                <p><strong>Step 3:</strong> Look for 0.9750 in the z-table body</p>
+                <p><strong>Step 4:</strong> Find the corresponding z-value: <strong>z* = 1.96</strong></p>
+                <p>By symmetry, the left critical value is -1.96</p>
+            </div>
+            
+            <div class="professor-note">
+                When looking at the z-table, remember it shows the area from negative infinity all the way up to a particular point. So if you want the point that has 97.5% to its left (which leaves 2.5% in the right tail), you search for 0.9750 in the table body. This gives you z = 1.96. This is a commonly used value for 95% confidence intervals!
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Confidence Level</th>
+                        <th>Cumulative Probability (Right Side)</th>
+                        <th>z* (Critical Value)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90%</td>
+                        <td>0.9500</td>
+                        <td>1.645</td>
+                    </tr>
+                    <tr>
+                        <td>95%</td>
+                        <td>0.9750</td>
+                        <td>1.96</td>
+                    </tr>
+                    <tr>
+                        <td>99%</td>
+                        <td>0.9950</td>
+                        <td>2.576</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li>Use <strong>t-statistic</strong> when population SD is unknown (most common in practice)</li>
+                    <li>Use <strong>z-statistic</strong> when population SD is known or sample size is very large</li>
+                    <li>Standard Error measures the <strong>variability of the sample mean</strong></li>
+                    <li>Margin of Error = Critical Value × Standard Error</li>
+                    <li>For 95% CI: leave 2.5% in each tail</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Confidence interval calculate karne ke liye pehle confidence level choose karo (90%, 95%, etc.), phir sample mean nikalo, standard error calculate karo. Agar population SD pata nahi hai toh t-statistic use karo with df = n-1, warna z-statistic. Critical value find karo table se, aur phir margin of error calculate karo (critical value × SE). Finally, CI = sample mean ± margin of error. Simple!</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p>Q1: When should you use the t-distribution instead of the z-distribution?</p>
+                    <div class="answer">
+                        Use the t-distribution when the population standard deviation (σ) is <strong>unknown</strong> and you're estimating it using the sample standard deviation (s). Also use t when sample size is small. The t-distribution accounts for the additional uncertainty from estimating σ.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q2: What is the margin of error, and what does it tell us?</p>
+                    <div class="answer">
+                        Margin of error = Critical value × Standard Error. It tells us how much our sample mean could be "off" from the true population mean just due to <strong>sampling variability</strong>. A smaller margin of error indicates more precision.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q3: If sample size n = 25, what are the degrees of freedom for the t-distribution?</p>
+                    <div class="answer">
+                        Degrees of freedom = n - 1 = 25 - 1 = <strong>24</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sampling Distribution -->
+        <section id="sampling-distribution">
+            <h1>4. Understanding Through Sampling Distribution</h1>
+            
+            <p>To truly grasp what a confidence interval means, let's visualize the concept using a real-world example with repeated sampling.</p>
+            
+            <div class="example-box">
+                <h3>Example: Average Sleep Duration at a University</h3>
+                <p><strong>Population:</strong> A university has approximately 6,000 students</p>
+                <p><strong>Parameter of Interest:</strong> True average sleep duration (population mean μ)</p>
+                <p><strong>Problem:</strong> It's impractical to survey all 6,000 students</p>
+                <p><strong>Solution:</strong> Take random samples and construct confidence intervals</p>
+            </div>
+            
+            <h2>The Sampling Process</h2>
+            
+            <p>Imagine a researcher conducts the following experiment:</p>
+            
+            <ol style="padding-left: 40px; margin: 20px 0;">
+                <li style="margin: 15px 0;">
+                    <strong>Sample 1:</strong> Randomly select 50 students, record their sleep durations, calculate the sample mean and construct a 95% confidence interval.
+                    <div class="professor-note">
+                        In this particular sample set, the confidence interval (shown as a yellow line) <strong>includes</strong> the true population mean. Great! This interval "captured" the truth.
+                    </div>
+                </li>
+                
+                <li style="margin: 15px 0;">
+                    <strong>Sample 2:</strong> Select a different set of 50 students, calculate their sample mean and construct another 95% confidence interval.
+                    <div class="professor-note">
+                        This confidence interval <strong>also includes</strong> the true mean. Our method is working!
+                    </div>
+                </li>
+                
+                <li style="margin: 15px 0;">
+                    <strong>Sample 3:</strong> Yet another set of 50 students, with their own sample mean and confidence interval.
+                    <div class="professor-note">
+                        Coincidentally, the way these samples were chosen, this confidence interval does <strong>not include</strong> the true population mean. This happens sometimes — about 5% of the time with 95% confidence intervals.
+                    </div>
+                </li>
+                
+                <li style="margin: 15px 0;">
+                    <strong>Repeat 100 times:</strong> If we continue this process and construct 100 confidence intervals...
+                </li>
+            </ol>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Multiple horizontal confidence intervals stacked vertically, with a vertical line representing the true population mean. About 95 intervals cross the true mean line, while about 5 don't.]
+            </div>
+            
+            <h2>The Big Picture</h2>
+            
+            <blockquote style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0; border-radius: 5px; font-size: 1.1em;">
+                <strong>The 95% Confidence Interval Interpretation:</strong><br><br>
+                If we repeated this sampling experiment 100 times (taking different samples of 50 students each time) and constructed a 95% confidence interval each time using the same method, approximately <strong>95 out of 100 intervals</strong> would contain the true population mean. About <strong>5 out of 100 intervals</strong> would miss it.
+            </blockquote>
+            
+            <p>This is what we mean by "95% confidence" — it's about the <strong>long-run success rate</strong> of our interval construction method, not about the probability for any one specific interval.</p>
+            
+            <div class="warning-box">
+                <h3>⚠️ Critical Understanding</h3>
+                <p><strong>What varies:</strong> The confidence intervals (because they depend on random samples)</p>
+                <p><strong>What's fixed:</strong> The true population mean (it doesn't change or depend on probability)</p>
+                <p><strong>What 95% refers to:</strong> If we use this method repeatedly, 95% of intervals will capture the true parameter</p>
+                <p><strong>What 95% does NOT mean:</strong> There's a 95% probability that this specific interval contains the true mean</p>
+            </div>
+            
+            <div class="professor-note">
+                Remember: the true mean is fixed — there's no probability about whether it's in a particular interval. It either is or isn't. What we're confident about is our <strong>method</strong>. If we use this method over and over, it will capture the true parameter 95% of the time. That's the frequentist interpretation of confidence.
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li>Different samples produce <strong>different confidence intervals</strong></li>
+                    <li>The true parameter is <strong>fixed</strong>; intervals are <strong>random</strong></li>
+                    <li>95% confidence means <strong>95% of intervals</strong> (from repeated sampling) contain the true parameter</li>
+                    <li>About 5% of 95% confidence intervals will <strong>miss</strong> the true parameter</li>
+                    <li>This is about the <strong>method's reliability</strong>, not individual interval probability</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Samjho ki hum baar-baar alag-alag students ke samples lete hain aur har baar confidence interval banate hain. 95% confidence ka matlab hai ki agar hum ye process 100 baar repeat kare, toh approximately 95 intervals mein true population mean hoga aur 5 intervals miss karenge. Ye frequency-based interpretation hai — matlab kitni baar hamara method sahi result dega. Har sample se alag interval milta hai, lekin true mean fixed rehta hai!</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p>Q1: If you construct a single 95% CI from one sample, what can you say about it?</p>
+                    <div class="answer">
+                        You can say that the method used to construct this interval is reliable — if applied repeatedly, it would capture the true parameter 95% of the time. However, you <strong>cannot</strong> say there's a 95% probability this specific interval contains the true parameter (because the parameter is fixed, not random).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q2: Why do different samples produce different confidence intervals?</p>
+                    <div class="answer">
+                        Different samples have different observations, leading to different sample means and sample standard deviations. Since the CI is built from these sample statistics, each sample produces a different interval. This is <strong>sampling variability</strong>.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q3: In 100 trials with 95% CIs, would you expect exactly 95 intervals to contain the true mean?</p>
+                    <div class="answer">
+                        Not necessarily exactly 95, but <strong>approximately 95</strong>. It might be 94, 96, or 93 due to random chance. The 95% is the <strong>expected long-run proportion</strong>, not a guarantee for any finite number of trials.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Worked Example -->
+        <section id="worked-example">
+            <h1>5. Worked Example: Student Sleep Duration</h1>
+            
+            <p>Let's work through a complete example to see how to compute and interpret confidence intervals in practice.</p>
+            
+            <div class="example-box">
+                <h3>🎯 Problem Setup</h3>
+                <p><strong>Context:</strong> A university has approximately 6,000 students. We want to estimate the true average sleep duration of all students.</p>
+                <p><strong>Approach:</strong> Since surveying all 6,000 students is impractical, a researcher takes a random sample.</p>
+                <p><strong>Sample Data:</strong></p>
+                <ul style="padding-left: 30px; margin: 10px 0;">
+                    <li><strong>Sample size (n):</strong> 50 students</li>
+                    <li><strong>Sample mean (\(\bar{x}\)):</strong> 6.5 hours per night</li>
+                    <li><strong>Sample standard deviation (s):</strong> 1.0 hour</li>
+                </ul>
+                <p><strong>Goal:</strong> Compute a 95% confidence interval for the population mean sleep duration (μ)</p>
+            </div>
+            
+            <h2 id="using-t-statistic">5.1 Using t-Statistic (n = 50)</h2>
+            
+            <p>Since we do not know the <strong>population standard deviation (σ)</strong>, we will use the <span class="key-term">t-distribution</span>.</p>
+            
+            <h3>Step 1: Identify the Information</h3>
+            <ul style="padding-left: 40px; margin: 15px 0;">
+                <li>Sample size: n = 50</li>
+                <li>Sample mean: \(\bar{x}\) = 6.5 hours</li>
+                <li>Sample SD: s = 1.0 hour</li>
+                <li>Confidence level: 95%</li>
+                <li>Degrees of freedom: df = n - 1 = 50 - 1 = 49</li>
+            </ul>
+            
+            <h3>Step 2: Compute Standard Error</h3>
+            <div class="formula-box">
+                <p>\[SE = \frac{s}{\sqrt{n}} = \frac{1.0}{\sqrt{50}} = \frac{1.0}{7.071} = 0.141 \text{ hours}\]</p>
+            </div>
+            
+            <div class="professor-note">
+                The standard error tells us about the variability of our sample mean. It's based on the sample standard deviation divided by the square root of sample size. Larger samples give smaller standard errors (more precision).
+            </div>
+            
+            <h3>Step 3: Find Critical Value (t*)</h3>
+            <p>For a 95% confidence interval with df = 49, we need to find \(t^*\) from the t-table.</p>
+            <ul style="padding-left: 40px; margin: 15px 0;">
+                <li>Confidence level: 95%</li>
+                <li>Tail area (each side): 0.025</li>
+                <li>Two-tail area: 0.05</li>
+                <li>Degrees of freedom: 49</li>
+                <li><strong>From t-table: t* = 2.009</strong></li>
+            </ul>
+            
+            <div class="professor-note">
+                When looking at the t-table, find the row corresponding to df = 49 and the column for two-tail probability of 0.05 (or one-tail of 0.025). The intersection gives you the critical value. In this case, t* ≈ 2.009.
+            </div>
+            
+            <h3>Step 4: Calculate Margin of Error</h3>
+            <div class="formula-box">
+                <p>\[\text{Margin of Error} = t^* \times SE = 2.009 \times 0.141 = 0.28 \text{ hours}\]</p>
+            </div>
+            
+            <p><strong>Interpretation:</strong> Our sample mean could be off by about ±0.28 hours just due to <span class="key-term">sampling variability</span>.</p>
+            
+            <h3>Step 5: Construct the Confidence Interval</h3>
+            <div class="formula-box">
+                <h3>95% Confidence Interval</h3>
+                <p>\[CI = \bar{x} \pm \text{(margin of error)}\]</p>
+                <p>\[CI = 6.5 \pm 0.28\]</p>
+                <p style="font-size: 1.3em; margin: 15px 0; color: #667eea;">
+                    <strong>\[CI = (6.22, 6.78) \text{ hours}\]</strong>
+                </p>
+            </div>
+            
+            <h3>Interpretation</h3>
+            <blockquote style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0; border-radius: 5px; font-size: 1.05em;">
+                <strong>We are 95% confident that the true average sleep duration of all students at the university is between 6.22 and 6.78 hours per night.</strong><br><br>
+                
+                This means: If we repeated this sampling process many times and constructed 95% CIs each time using the same method, about 95% of those intervals would contain the true population mean.
+            </blockquote>
+            
+            <h2 id="using-z-statistic">5.2 Using z-Statistic (Large n)</h2>
+            
+            <p>What if the sample size was <strong>very large</strong> (say, n approaching 6,000 or infinity)? In such cases, we could use the <span class="key-term">z-statistic</span> from the standard normal distribution.</p>
+            
+            <div class="professor-note">
+                When n is very large, the t-distribution approaches the standard normal (z) distribution. This is related to the Central Limit Theorem. For large samples, t* and z* become almost identical.
+            </div>
+            
+            <h3>Finding z* for 95% Confidence</h3>
+            
+            <p>For a 95% confidence interval using the z-distribution:</p>
+            <ul style="padding-left: 40px; margin: 15px 0;">
+                <li>We want 95% in the middle, leaving 5% in the tails</li>
+                <li>This means 2.5% in each tail</li>
+                <li>The right critical value has 97.5% cumulative probability to its left</li>
+                <li>Looking for 0.9750 in the z-table body</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Standard normal curve showing 95% in middle, 2.5% in each tail, with z* = ±1.96 marked]
+            </div>
+            
+            <p><strong>From z-table: z* = 1.96</strong></p>
+            
+            <div class="professor-note">
+                To find this, look through the z-table for a value close to 0.9750. You'll find it at z = 1.96 (specifically, at row 1.9 and column 0.06, giving 1.96). This is one of the most commonly memorized values in statistics!
+            </div>
+            
+            <h3>Computing the CI with z*</h3>
+            <p>Using the same example data (n = 50, \(\bar{x}\) = 6.5, s = 1.0):</p>
+            
+            <div class="formula-box">
+                <p>\[SE = \frac{1.0}{\sqrt{50}} = 0.141 \text{ hours}\]</p>
+                <p>\[\text{Margin of Error} = z^* \times SE = 1.96 \times 0.141 = 0.276 \text{ hours}\]</p>
+                <p>\[CI = 6.5 \pm 0.276 = (6.22, 6.78) \text{ hours}\]</p>
+            </div>
+            
+            <h3>Comparison: t-Statistic vs z-Statistic</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>t-Statistic (df=49)</th>
+                        <th>z-Statistic</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Critical Value</strong></td>
+                        <td>t* = 2.009</td>
+                        <td>z* = 1.96</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Margin of Error</strong></td>
+                        <td>0.28 hours</td>
+                        <td>0.276 hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>95% CI</strong></td>
+                        <td>(6.22, 6.78)</td>
+                        <td>(6.22, 6.78)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Difference</strong></td>
+                        <td colspan="2">Almost identical! (because n=50 is reasonably large)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                Notice that with n = 50, the t-value (2.009) and z-value (1.96) are very close, leading to nearly identical confidence intervals. This demonstrates how the t-distribution approaches the normal distribution as sample size increases (Central Limit Theorem in action!). However, the difference becomes more pronounced with smaller sample sizes.
+            </div>
+            
+            <h2 id="sample-size-effect">5.3 Effect of Sample Size on CI Width</h2>
+            
+            <p>One of the most important factors affecting confidence interval width is <span class="key-term">sample size</span>. Let's see what happens when we change the sample size.</p>
+            
+            <h3>Scenario 1: Original (n = 50)</h3>
+            <ul style="padding-left: 40px; margin: 15px 0;">
+                <li>Sample size: n = 50</li>
+                <li>Degrees of freedom: df = 49</li>
+                <li>Critical value: t* = 2.009</li>
+                <li>Standard Error: SE = 1.0/√50 = 0.141</li>
+                <li>Margin of Error: 2.009 × 0.141 = 0.28</li>
+                <li><strong>95% CI: (6.22, 6.78) — Width = 0.56 hours</strong></li>
+                <li><strong>Precision: Relatively narrow → Precise estimate</strong></li>
+            </ul>
+            
+            <h3>Scenario 2: Smaller Sample (n = 10)</h3>
+            <p>Suppose we only sampled 10 students instead of 50, with the same sample mean and SD:</p>
+            
+            <ul style="padding-left: 40px; margin: 15px 0;">
+                <li>Sample size: n = 10</li>
+                <li>Degrees of freedom: df = 9</li>
+                <li>Critical value: t* = 2.262 (higher than before!)</li>
+                <li>Standard Error: SE = 1.0/√10 = 0.316 (higher than before!)</li>
+                <li>Margin of Error: 2.262 × 0.316 = 0.71</li>
+                <li><strong>95% CI: (5.79, 7.21) — Width = 1.42 hours</strong></li>
+                <li><strong>Precision: Much wider → Less precise estimate</strong></li>
+            </ul>
+            
+            <div class="warning-box">
+                <h3>⚠️ Impact of Small Sample Size</h3>
+                <p>With only 10 students sampled:</p>
+                <ul style="padding-left: 30px;">
+                    <li>The t* value <strong>increases</strong> (2.262 vs 2.009) because t-distributions have heavier tails with fewer degrees of freedom</li>
+                    <li>The standard error <strong>increases</strong> (0.316 vs 0.141) because we're dividing by √10 instead of √50</li>
+                    <li>Both effects compound, making the margin of error <strong>much larger</strong> (0.71 vs 0.28)</li>
+                    <li>The confidence interval is <strong>2.5 times wider</strong>, giving us less precision</li>
+                </ul>
+            </div>
+            
+            <h3>Comparison Table</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sample Size (n)</th>
+                        <th>df</th>
+                        <th>t*</th>
+                        <th>SE</th>
+                        <th>Margin of Error</th>
+                        <th>95% CI</th>
+                        <th>CI Width</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #ffebee;">
+                        <td><strong>10</strong></td>
+                        <td>9</td>
+                        <td>2.262</td>
+                        <td>0.316</td>
+                        <td>0.71</td>
+                        <td>(5.79, 7.21)</td>
+                        <td>1.42 hrs</td>
+                    </tr>
+                    <tr style="background: #fff9e6;">
+                        <td><strong>30</strong></td>
+                        <td>29</td>
+                        <td>2.045</td>
+                        <td>0.183</td>
+                        <td>0.37</td>
+                        <td>(6.13, 6.87)</td>
+                        <td>0.74 hrs</td>
+                    </tr>
+                    <tr style="background: #e8f5e9;">
+                        <td><strong>50</strong></td>
+                        <td>49</td>
+                        <td>2.009</td>
+                        <td>0.141</td>
+                        <td>0.28</td>
+                        <td>(6.22, 6.78)</td>
+                        <td>0.56 hrs</td>
+                    </tr>
+                    <tr style="background: #e3f2fd;">
+                        <td><strong>100</strong></td>
+                        <td>99</td>
+                        <td>1.984</td>
+                        <td>0.100</td>
+                        <td>0.20</td>
+                        <td>(6.30, 6.70)</td>
+                        <td>0.40 hrs</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Key Observations</h3>
+            
+            <div class="professor-note">
+                The fewer students you sample, the less precise your estimate of the "true" average, so the confidence interval becomes much wider. With more students, the CI narrows because you're more confident in your estimate. This is why the Central Limit Theorem emphasizes that sample size should be large enough to appropriately reflect the nature of the overall population.
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li><strong>Smaller sample size → Wider CI → Less precise</strong></li>
+                    <li><strong>Larger sample size → Narrower CI → More precise</strong></li>
+                    <li>Standard Error decreases with sample size: \(SE = \frac{s}{\sqrt{n}}\)</li>
+                    <li>With small samples, t* is larger (heavier tails in t-distribution)</li>
+                    <li>As n increases, t* approaches z* (t-distribution → normal distribution)</li>
+                    <li>To halve the margin of error, you need <strong>four times</strong> the sample size</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Sleep duration example mein humne dekha ki 50 students ka sample lekar 95% CI calculate kiya toh (6.22, 6.78) hours mila. T-statistic use kiya kyunki population SD nahi pata tha. Margin of error 0.28 hours hai jo sampling variability ki wajah se ho sakta hai. Agar sample size kam hota (jaise 10), toh CI bahut wide ho jata (5.79, 7.21) — less precise. Agar sample size zyada hota (jaise 100), toh CI narrow ho jata — more precise. Toh sample size badhane se estimation accuracy badhti hai!</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p>Q1: If you want a narrower confidence interval without changing the confidence level, what can you do?</p>
+                    <div class="answer">
+                        <strong>Increase the sample size (n)</strong>. A larger sample reduces the standard error (SE = s/√n), which reduces the margin of error, making the CI narrower and more precise.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q2: Why was the t-statistic close to the z-statistic when n = 50?</p>
+                    <div class="answer">
+                        Because n = 50 is a reasonably large sample. As sample size increases, the t-distribution approaches the standard normal distribution (z-distribution). With 49 degrees of freedom, t* = 2.009 is very close to z* = 1.96.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q3: A researcher gets a 95% CI of (6.22, 6.78) for mean sleep duration. What does the margin of error tell us?</p>
+                    <div class="answer">
+                        The margin of error is 0.28 hours (half the width of the CI). It tells us that due to <strong>sampling variability</strong>, our sample mean could differ from the true population mean by about ±0.28 hours. This quantifies the uncertainty in our estimate.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q4: Calculate the 90% confidence interval for the same data (n=50, x̄=6.5, s=1.0). [Hint: t* ≈ 1.677 for df=49, 90% CI]</p>
+                    <div class="answer">
+                        SE = 1.0/√50 = 0.141<br>
+                        Margin of Error = 1.677 × 0.141 = 0.236<br>
+                        90% CI = 6.5 ± 0.236 = <strong>(6.26, 6.74) hours</strong><br>
+                        Note: This is narrower than the 95% CI because we're accepting less confidence in exchange for more precision.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Google Sheets Functions -->
+        <section id="practical-tools">
+            <h1>6. Practical Tools: Google Sheets Functions</h1>
+            
+            <p>While statistical tables are helpful for understanding concepts, in practice we often use computational tools to find critical values quickly and accurately. Let's learn how to use <span class="key-term">Google Sheets</span> for confidence interval calculations.</p>
+            
+            <h2>Finding t* (Critical t-value)</h2>
+            
+            <p>Google Sheets has a built-in function called <code>T.INV.2T</code> for finding critical t-values from a two-tailed t-distribution.</p>
+            
+            <div class="formula-box">
+                <h3>T.INV.2T Function</h3>
+                <p style="font-family: 'Courier New', monospace; font-size: 1.2em; margin: 15px 0;">
+                    =T.INV.2T(probability, degrees_of_freedom)
+                </p>
+                <p><strong>Where:</strong></p>
+                <ul style="list-style: none; padding: 0; text-align: left; max-width: 700px; margin: 15px auto;">
+                    <li><strong>probability</strong> = Total area in both tails (e.g., 0.05 for 95% CI)</li>
+                    <li><strong>degrees_of_freedom</strong> = n - 1</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Finding t* for 95% CI with n = 50</h3>
+                <p><strong>Given:</strong></p>
+                <ul style="padding-left: 30px;">
+                    <li>Sample size: n = 50</li>
+                    <li>Degrees of freedom: df = 49</li>
+                    <li>Confidence level: 95%</li>
+                    <li>Total tail area: 1 - 0.95 = 0.05</li>
+                </ul>
+                
+                <p style="margin-top: 20px;"><strong>In Google Sheets, type:</strong></p>
+                <code style="display: block; background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; font-size: 1.1em; margin: 15px 0;">
+                    =T.INV.2T(0.05, 49)
+                </code>
+                
+                <p style="margin-top: 15px;"><strong>Result:</strong> <span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 3px; font-weight: bold;">2.009</span></p>
+                
+                <p style="margin-top: 15px;">This matches the value we found from the t-table!</p>
+            </div>
+            
+            <div class="professor-note">
+                The "2T" in T.INV.2T stands for "two-tailed" distribution. This is exactly what we need for confidence intervals because we have area in both tails. Remember: for a 95% confidence interval, we write 0.05 (the total tail probability), NOT 0.95!
+            </div>
+            
+            <h2>Complete CI Calculation in Google Sheets</h2>
+            
+            <p>Let's set up a complete confidence interval calculation spreadsheet:</p>
+            
+            <div class="example-box">
+                <h3>Step-by-Step Google Sheets Setup</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cell</th>
+                            <th>Label</th>
+                            <th>Formula/Value</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A1</td>
+                            <td>Sample Size (n)</td>
+                            <td>50</td>
+                            <td>50</td>
+                        </tr>
+                        <tr>
+                            <td>A2</td>
+                            <td>Sample Mean</td>
+                            <td>6.5</td>
+                            <td>6.5</td>
+                        </tr>
+                        <tr>
+                            <td>A3</td>
+                            <td>Sample SD (s)</td>
+                            <td>1.0</td>
+                            <td>1.0</td>
+                        </tr>
+                        <tr>
+                            <td>A4</td>
+                            <td>Confidence Level</td>
+                            <td>0.95</td>
+                            <td>0.95</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td>A5</td>
+                            <td>Degrees of Freedom</td>
+                            <td>=A1-1</td>
+                            <td>49</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td>A6</td>
+                            <td>Alpha (tail area)</td>
+                            <td>=1-A4</td>
+                            <td>0.05</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td>A7</td>
+                            <td>Critical t-value</td>
+                            <td>=T.INV.2T(A6, A5)</td>
+                            <td>2.009</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td>A8</td>
+                            <td>Standard Error</td>
+                            <td>=A3/SQRT(A1)</td>
+                            <td>0.141</td>
+                        </tr>
+                        <tr style="background: #f0f4ff;">
+                            <td>A9</td>
+                            <td>Margin of Error</td>
+                            <td>=A7*A8</td>
+                            <td>0.284</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td>A10</td>
+                            <td><strong>Lower Bound</strong></td>
+                            <td><strong>=A2-A9</strong></td>
+                            <td><strong>6.216</strong></td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td>A11</td>
+                            <td><strong>Upper Bound</strong></td>
+                            <td><strong>=A2+A9</strong></td>
+                            <td><strong>6.784</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2>Finding z* (Critical z-value)</h2>
+            
+            <p>For z-statistics (when σ is known or n is very large), use <code>NORM.S.INV</code> function:</p>
+            
+            <div class="formula-box">
+                <h3>NORM.S.INV Function</h3>
+                <p style="font-family: 'Courier New', monospace; font-size: 1.2em; margin: 15px 0;">
+                    =NORM.S.INV(cumulative_probability)
+                </p>
+                <p><strong>For 95% CI (right critical value):</strong></p>
+                <code style="display: block; background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; font-size: 1.1em; margin: 15px 0;">
+                    =NORM.S.INV(0.975)
+                </code>
+                <p><strong>Result:</strong> <span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 3px; font-weight: bold;">1.96</span></p>
+                
+                <p style="margin-top: 15px;"><em>Note: Use 0.975 because we want 97.5% cumulative probability (2.5% + 95%)</em></p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Confidence Level</th>
+                        <th>Cumulative Probability</th>
+                        <th>Google Sheets Formula</th>
+                        <th>z*</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90%</td>
+                        <td>0.95</td>
+                        <td>=NORM.S.INV(0.95)</td>
+                        <td>1.645</td>
+                    </tr>
+                    <tr>
+                        <td>95%</td>
+                        <td>0.975</td>
+                        <td>=NORM.S.INV(0.975)</td>
+                        <td>1.96</td>
+                    </tr>
+                    <tr>
+                        <td>99%</td>
+                        <td>0.995</td>
+                        <td>=NORM.S.INV(0.995)</td>
+                        <td>2.576</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ul>
+                    <li>Use <code>T.INV.2T(alpha, df)</code> for t-critical values (two-tailed)</li>
+                    <li>Use <code>NORM.S.INV(cumulative_prob)</code> for z-critical values</li>
+                    <li>For 95% CI: alpha = 0.05 for t, cumulative probability = 0.975 for z</li>
+                    <li>Google Sheets eliminates table lookup errors and provides more precision</li>
+                    <li>Build reusable templates for quick CI calculations</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                <h3>🗣️ Hinglish Summary</h3>
+                <p>Google Sheets mein confidence interval calculations bahut easy ho jati hain. T-value ke liye T.INV.2T function use karo — pehle argument mein tail area (0.05 for 95% CI) aur second mein degrees of freedom dalo. Z-value ke liye NORM.S.INV use karo with cumulative probability (0.975 for 95% CI). Ek baar formula setup kar lo toh values change karke different scenarios try kar sakte ho. Bohot handy tool hai practical work ke liye!</p>
+            </div>
+            
+            <div class="practice-questions">
+                <h3>📝 Practice Questions</h3>
+                
+                <div class="question">
+                    <p>Q1: What Google Sheets formula would you use to find the t* for a 99% CI with 24 observations?</p>
+                    <div class="answer">
+                        <code>=T.INV.2T(0.01, 23)</code><br>
+                        Explanation: 99% CI means alpha = 0.01; df = n - 1 = 24 - 1 = 23<br>
+                        Result: t* ≈ 2.807
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q2: How would you calculate standard error in Google Sheets if s is in cell B3 and n is in cell B1?</p>
+                    <div class="answer">
+                        <code>=B3/SQRT(B1)</code><br>
+                        This computes SE = s/√n
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>Q3: What's the advantage of using Google Sheets over printed statistical tables?</p>
+                    <div class="answer">
+                        (1) <strong>Precision</strong> — gets exact values instead of rounding to table entries<br>
+                        (2) <strong>Speed</strong> — no manual lookup needed<br>
+                        (3) <strong>Flexibility</strong> — easy to change parameters and recalculate<br>
+                        (4) <strong>Error reduction</strong> — eliminates table reading mistakes
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mind Map -->
+        <section id="mind-map" class="mind-map">
+            <h2>7. 🧠 Concept Mind Map</h2>
+            
+            <svg width="100%" height="800" viewBox="0 0 1100 800" xmlns="http://www.w3.org/2000/svg">
+                <!-- Central Node -->
+                <rect x="425" y="350" width="250" height="100" fill="#667eea" rx="15"/>
+                <text x="550" y="390" font-size="20" font-weight="bold" fill="white" text-anchor="middle">CONFIDENCE</text>
+                <text x="550" y="415" font-size="20" font-weight="bold" fill="white" text-anchor="middle">INTERVAL</text>
+                
+                <!-- Branch 1: Definition -->
+                <line x1="425" y1="380" x2="250" y2="150" stroke="#764ba2" stroke-width="3"/>
+                <rect x="100" y="100" width="300" height="100" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="250" y="130" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Definition</text>
+                <text x="250" y="155" font-size="13" fill="#555" text-anchor="middle">Range of plausible values</text>
+                <text x="250" y="175" font-size="13" fill="#555" text-anchor="middle">for population parameter</text>
+                
+                <!-- Branch 2: Interpretation -->
+                <line x1="550" y1="350" x2="550" y2="150" stroke="#764ba2" stroke-width="3"/>
+                <rect x="430" y="30" width="240" height="120" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="550" y="60" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Correct Interpretation</text>
+                <text x="550" y="85" font-size="12" fill="#555" text-anchor="middle">95% of intervals (from</text>
+                <text x="550" y="105" font-size="12" fill="#555" text-anchor="middle">repeated sampling) contain</text>
+                <text x="550" y="125" font-size="12" fill="#555" text-anchor="middle">true parameter</text>
+                
+                <!-- Branch 3: Formula -->
+                <line x1="675" y1="380" x2="850" y2="150" stroke="#764ba2" stroke-width="3"/>
+                <rect x="720" y="80" width="260" height="120" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="850" y="110" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Formula</text>
+                <text x="850" y="135" font-size="14" fill="#555" text-anchor="middle" font-style="italic">x̄ ± (critical value) × SE</text>
+                <text x="850" y="160" font-size="12" fill="#555" text-anchor="middle">Margin of Error =</text>
+                <text x="850" y="180" font-size="12" fill="#555" text-anchor="middle">critical value × SE</text>
+                
+                <!-- Branch 4: Steps -->
+                <line x1="425" y1="420" x2="200" y2="550" stroke="#764ba2" stroke-width="3"/>
+                <rect x="50" y="500" width="300" height="150" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="200" y="530" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Computation Steps</text>
+                <text x="200" y="555" font-size="12" fill="#555" text-anchor="middle">1. Choose confidence level</text>
+                <text x="200" y="575" font-size="12" fill="#555" text-anchor="middle">2. Compute sample mean</text>
+                <text x="200" y="595" font-size="12" fill="#555" text-anchor="middle">3. Calculate SE</text>
+                <text x="200" y="615" font-size="12" fill="#555" text-anchor="middle">4. Find critical value</text>
+                <text x="200" y="635" font-size="12" fill="#555" text-anchor="middle">5. Build interval</text>
+                
+                <!-- Branch 5: t vs z -->
+                <line x1="550" y1="450" x2="550" y2="600" stroke="#764ba2" stroke-width="3"/>
+                <rect x="420" y="600" width="260" height="120" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="550" y="630" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Which Statistic?</text>
+                <text x="550" y="655" font-size="13" fill="#555" text-anchor="middle">t-statistic: σ unknown</text>
+                <text x="550" y="675" font-size="13" fill="#555" text-anchor="middle">z-statistic: σ known or</text>
+                <text x="550" y="695" font-size="13" fill="#555" text-anchor="middle">very large n</text>
+                
+                <!-- Branch 6: Sample Size Effect -->
+                <line x1="675" y1="420" x2="900" y2="550" stroke="#764ba2" stroke-width="3"/>
+                <rect x="750" y="500" width="300" height="130" fill="#f8f9fa" stroke="#764ba2" stroke-width="2" rx="10"/>
+                <text x="900" y="530" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">Sample Size Effect</text>
+                <text x="900" y="555" font-size="13" fill="#555" text-anchor="middle">↑ n → ↓ SE → Narrower CI</text>
+                <text x="900" y="578" font-size="13" fill="#555" text-anchor="middle">(More precise)</text>
+                <text x="900" y="601" font-size="13" fill="#555" text-anchor="middle">↓ n → ↑ SE → Wider CI</text>
+                <text x="900" y="620" font-size="13" fill="#555" text-anchor="middle">(Less precise)</text>
+                
+                <!-- Branch 7: Common Misconception -->
+                <line x1="425" y1="440" x2="180" y2="700" stroke="#ff6b6b" stroke-width="3" stroke-dasharray="5,5"/>
+                <rect x="30" y="700" width="300" height="90" fill="#ffebee" stroke="#ff6b6b" stroke-width="2" rx="10"/>
+                <text x="180" y="730" font-size="16" font-weight="bold" fill="#c62828" text-anchor="middle">❌ Misconception</text>
+                <text x="180" y="755" font-size="12" fill="#c62828" text-anchor="middle">"95% probability true mean</text>
+                <text x="180" y="775" font-size="12" fill="#c62828" text-anchor="middle">is in THIS interval"</text>
+                
+                <!-- Branch 8: Practical Tools -->
+                <line x1="675" y1="440" x2="900" y2="730" stroke="#4caf50" stroke-width="3"/>
+                <rect x="770" y="700" width="260" height="90" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" rx="10"/>
+                <text x="900" y="730" font-size="16" font-weight="bold" fill="#2e7d32" text-anchor="middle">Practical Tools</text>
+                <text x="900" y="755" font-size="13" fill="#2e7d32" text-anchor="middle">Google Sheets:</text>
+                <text x="900" y="775" font-size="12" fill="#2e7d32" text-anchor="middle">T.INV.2T, NORM.S.INV</text>
+            </svg>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Understanding the Mind Map</h3>
+                <p><strong>Central Concept:</strong> Confidence Interval is at the heart of statistical inference</p>
+                <p><strong>Key Connections:</strong></p>
+                <ul style="padding-left: 30px; margin: 10px 0;">
+                    <li><strong>Purple branches:</strong> Core concepts and methodology</li>
+                    <li><strong>Red dashed branch:</strong> Common misconception to avoid</li>
+                    <li><strong>Green branch:</strong> Practical implementation tools</li>
+                </ul>
+                <p><strong>Flow:</strong> Definition → Interpretation → Formula → Steps → Choice of Statistic → Understanding Effects</p>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+        
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

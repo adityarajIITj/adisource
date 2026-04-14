@@ -1,0 +1,456 @@
+
+Code
+Thinking
+Copy<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/ata/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Evaluation in Python - Class Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 0.5rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.25rem;
+        }
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        p, ul, ol {
+            margin-bottom: 1rem;
+        }
+        pre {
+            background-color: #f1f5f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #2563eb;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f1f5f9;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            color: #1e40af;
+        }
+        .note-box {
+            background-color: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .warning-box {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .highlight {
+            background-color: #fef3c7;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="text-center py-4">
+            <h1>Polynomial Evaluation in Python</h1>
+            <p class="text-gray-600 italic">Understanding Basic Algorithms</p>
+            <p class="text-sm text-gray-500 mt-2">ATA Week 12 Lecture 1</p>
+        </header>
+
+        <div class="content">
+            <section id="introduction">
+                <h2>1. Introduction to Polynomials</h2>
+                
+                <h3>What is a Polynomial?</h3>
+                <p>A polynomial is a mathematical expression with variables and coefficients combined using addition, subtraction, and multiplication with non-negative integer exponents.</p>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <p>Example: <code>3x³ + 2x² - 5x + 7</code></p>
+                </div>
+                
+                <h3>Degree and Coefficients</h3>
+                <ul class="list-disc pl-6">
+                    <li><strong>Degree:</strong> The highest exponent in the polynomial (3 in the example above)</li>
+                    <li><strong>Coefficients:</strong> The numerical factors of terms (3, 2, -5, 7 in the example)</li>
+                </ul>
+                
+                <h3>Different Forms of Polynomials</h3>
+                <p>Polynomials can have various shapes and sizes:</p>
+                <ul class="list-disc pl-6">
+                    <li>Some powers may be missing: <code>7x⁴ + 3x³ + 2x + 1</code></li>
+                    <li>Terms can be in any order (though conventionally ordered by descending powers)</li>
+                    <li>Can have different variables or multiple variables</li>
+                </ul>
+            </section>
+
+            <section id="motivation">
+                <h2>2. Motivation for Polynomial Evaluation</h2>
+                
+                <p>We evaluate a polynomial to determine its value for a given input x. This is a common subroutine in many larger applications.</p>
+                
+                <h3>Applications:</h3>
+                <ul class="list-disc pl-6">
+                    <li><strong>Mathematics:</strong> Solving equations, approximations</li>
+                    <li><strong>Physics:</strong> Motion equations, wave functions</li>
+                    <li><strong>Computer Science:</strong> Graphics, data fitting, AI algorithms</li>
+                    <li><strong>Machine Learning:</strong> Polynomial regression models</li>
+                    <li><strong>Computer Graphics:</strong> Bezier curves in animation</li>
+                </ul>
+                
+                <div class="note-box">
+                    <p><strong>Note:</strong> Polynomial evaluation is often a subroutine in larger applications. Efficiently computing polynomial values is crucial for performance in these scenarios.</p>
+                </div>
+            </section>
+
+            <section id="representation">
+                <h2>3. Polynomial Representation in Python</h2>
+                
+                <h3>Coefficient Lists</h3>
+                <p>Polynomials are typically represented as lists of coefficients in Python:</p>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <p>For polynomial <code>3x³ + 2x² - 5x + 7</code>, the coefficient list could be:</p>
+                    <p><code>[7, -5, 2, 3]</code> (starting from constant term) or <code>[3, 2, -5, 7]</code> (starting from highest degree term)</p>
+                </div>
+                
+                <div class="warning-box">
+                    <p><strong>Important:</strong> The order of coefficients in the list is a critical assumption! Two common conventions:</p>
+                    <ul class="list-disc pl-6">
+                        <li>Constant term first: <code>[a₀, a₁, a₂, ..., aₙ]</code> where polynomial is <code>a₀ + a₁x + a₂x² + ... + aₙxⁿ</code></li>
+                        <li>Highest degree first: <code>[aₙ, aₙ₋₁, ..., a₂, a₁, a₀]</code> where polynomial is <code>aₙxⁿ + aₙ₋₁xⁿ⁻¹ + ... + a₂x² + a₁x + a₀</code></li>
+                    </ul>
+                </div>
+                
+                <h3>Handling Missing Terms</h3>
+                <p>If a term is missing in the polynomial, its coefficient is represented as 0 in the list:</p>
+                <p>For <code>4x⁴ + 2x² + 5</code>, the coefficient list would be <code>[5, 0, 2, 0, 4]</code> (when starting from constant term)</p>
+            </section>
+
+            <section id="challenges">
+                <h2>4. Main Challenges in Polynomial Evaluation</h2>
+                
+                <p>When evaluating polynomials, we face two main challenges:</p>
+                
+                <h3>1. Evaluating Each Term</h3>
+                <ul class="list-disc pl-6">
+                    <li>For each term, we need to calculate <code>coefficient * x^power</code></li>
+                    <li>This requires handling different powers of x</li>
+                    <li>The number of terms can vary based on polynomial degree</li>
+                </ul>
+                
+                <h3>2. Consolidating Partial Results</h3>
+                <ul class="list-disc pl-6">
+                    <li>After computing each term, we need to add them together</li>
+                    <li>This requires maintaining a running sum</li>
+                </ul>
+                
+                <p>The main challenge often lies in efficiently handling polynomials of unknown degree, where we need to repeat the evaluation step for each term in the polynomial.</p>
+            </section>
+
+            <section id="naive-method">
+                <h2>5. Naïve Method Implementation</h2>
+                
+                <p>The simplest approach to evaluate a polynomial is to compute each term separately and sum them up:</p>
+                
+                <pre>
+def naive_eval(coeffs, x):
+    result = 0
+    for i in range(len(coeffs)):
+        result += coeffs[i] * (x ** i)
+    return result
+
+# Example: Evaluate 7 + (-5)x + 2x² + 3x³ at x = 2
+coeffs = [7, -5, 2, 3]  # Order: x⁰, x¹, x², x³
+print(naive_eval(coeffs, 2))  # Output: 29
+</pre>
+                
+                <h3>How It Works</h3>
+                <ol class="list-decimal pl-6">
+                    <li>Initialize <code>result = 0</code></li>
+                    <li>Iterate through each coefficient in the list</li>
+                    <li>Calculate term value: <code>coefficient * (x ** power)</code></li>
+                    <li>Add term value to the running total</li>
+                    <li>Return the final sum</li>
+                </ol>
+                
+                <h3>Time Complexity: O(n²)</h3>
+                <p>The time complexity is O(n²) because:</p>
+                <ul class="list-disc pl-6">
+                    <li>The loop runs n times (where n is the number of terms)</li>
+                    <li>Each exponentiation operation (x ** i) takes O(i) time</li>
+                    <li>The worst-case exponentiation is O(n)</li>
+                </ul>
+                
+                <div class="note-box">
+                    <p>This method is simple to understand and implement but inefficient due to repeated exponentiation operations.</p>
+                </div>
+            </section>
+
+            <section id="horners-method">
+                <h2>6. Horner's Method</h2>
+                
+                <p>Horner's method is a more efficient approach that reduces the number of multiplications required:</p>
+                
+                <h3>The Concept</h3>
+                <p>Horner's method works by factoring out x from the polynomial terms:</p>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <p>Transform <code>3x³ + 2x² - 5x + 7</code> into <code>((3x + 2)x - 5)x + 7</code></p>
+                </div>
+                
+                <h3>Step-by-Step Evaluation</h3>
+                <ol class="list-decimal pl-6">
+                    <li>Start with the coefficient of the highest degree (3)</li>
+                    <li>Multiply by x: 3x</li> 
+                    <li>Add the next coefficient: 3x + 2</li>
+                    <li>Multiply by x: (3x + 2)x = 3x² + 2x</li>
+                    <li>Add the next coefficient: 3x² + 2x - 5</li>
+                    <li>Multiply by x: (3x² + 2x - 5)x = 3x³ + 2x² - 5x</li>
+                    <li>Add the final coefficient: 3x³ + 2x² - 5x + 7</li>
+                </ol>
+                
+                <h3>Code Implementation</h3>
+                <pre>
+def horner_eval(coeffs, x):
+    result = 0
+    for coef in reversed(coeffs):  # Start from highest degree
+        result = result * x + coef
+    return result
+
+# Highest degree first
+coeffs = [3, 2, -5, 7]  # 3x³ + 2x² - 5x + 7
+print(horner_eval(coeffs, 2))  # Output: 29
+
+# OR if coefficients are ordered from constant term first
+def horner_eval_reverse(coeffs, x):
+    result = 0
+    for coef in coeffs[::-1]:  # Reverse to get highest degree first
+        result = result * x + coef
+    return result
+
+# Constant term first
+coeffs = [7, -5, 2, 3]  # 7 + (-5)x + 2x² + 3x³
+print(horner_eval_reverse(coeffs, 2))  # Output: 29
+</pre>
+                
+                <h3>Time Complexity: O(n)</h3>
+                <p>Horner's method reduces the time complexity to O(n) by:</p>
+                <ul class="list-disc pl-6">
+                    <li>Eliminating the need for exponentiation</li>
+                    <li>Performing only n multiplications and n additions</li>
+                    <li>Reusing previously computed values</li>
+                </ul>
+                
+                <div class="note-box">
+                    <p>Horner's method is much more efficient than the naïve method, especially for high-degree polynomials.</p>
+                </div>
+            </section>
+
+            <section id="numpy-implementation">
+                <h2>7. NumPy Implementation</h2>
+                
+                <p>NumPy provides a built-in function <code>polyval()</code> for efficient polynomial evaluation:</p>
+                
+                <pre>
+import numpy as np
+
+# Highest degree first
+coeffs = [3, 2, -5, 7]  # 3x³ + 2x² - 5x + 7
+x = 2
+print(np.polyval(coeffs, x))  # Output: 29
+</pre>
+                
+                <h3>Advantages of Using NumPy</h3>
+                <ul class="list-disc pl-6">
+                    <li>Optimized C implementation for better performance</li>
+                    <li>Vectorized operations allow evaluation at multiple x values simultaneously</li>
+                    <li>Well-tested and reliable implementation</li>
+                </ul>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <p><strong>Note:</strong> NumPy's <code>polyval()</code> expects coefficients in descending order (highest degree first).</p>
+                </div>
+                
+                <h3>Comparing with Custom Implementations</h3>
+                <p>While it's important to understand the algorithms behind polynomial evaluation, in production code, using NumPy's <code>polyval()</code> is often the best choice for performance and reliability.</p>
+            </section>
+
+            <section id="applications">
+                <h2>8. Applications and Summary</h2>
+                
+                <h3>Real-world Applications</h3>
+                <table>
+                    <tr>
+                        <th>Field</th>
+                        <th>Application</th>
+                    </tr>
+                    <tr>
+                        <td>Machine Learning</td>
+                        <td>Polynomial regression models</td>
+                    </tr>
+                    <tr>
+                        <td>Physics & Engineering</td>
+                        <td>Motion equations, wave functions</td>
+                    </tr>
+                    <tr>
+                        <td>Computer Graphics</td>
+                        <td>Bezier curves in animation</td>
+                    </tr>
+                    <tr>
+                        <td>Numerical Analysis</td>
+                        <td>Function approximation</td>
+                    </tr>
+                    <tr>
+                        <td>Data Science</td>
+                        <td>Curve fitting</td>
+                    </tr>
+                </table>
+                
+                <h3>Performance Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Time Complexity</th>
+                        <th>Advantages</th>
+                        <th>Disadvantages</th>
+                    </tr>
+                    <tr>
+                        <td>Naïve Method</td>
+                        <td>O(n²)</td>
+                        <td>Simple to understand and implement</td>
+                        <td>Inefficient for high-degree polynomials</td>
+                    </tr>
+                    <tr>
+                        <td>Horner's Method</td>
+                        <td>O(n)</td>
+                        <td>Efficient, requires minimal operations</td>
+                        <td>Requires understanding the algorithm</td>
+                    </tr>
+                    <tr>
+                        <td>NumPy's polyval()</td>
+                        <td>O(n)</td>
+                        <td>Optimized, reliable, vectorized</td>
+                        <td>External dependency</td>
+                    </tr>
+                </table>
+                
+                <h3>Conclusion</h3>
+                <ul class="list-disc pl-6">
+                    <li>Polynomial evaluation is a fundamental operation in many applications</li>
+                    <li>Understanding coefficient ordering is critical for correct implementation</li>
+                    <li>Horner's method offers significant performance improvements over naive approaches</li>
+                    <li>For production code, libraries like NumPy provide optimized implementations</li>
+                    <li>The choice of method depends on the specific requirements and constraints of your application</li>
+                </ul>
+            </section>
+
+            <section id="practice-exercises">
+                <h2>9. Practice Exercises</h2>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <h3>Exercise 1: Alternative Coefficient Ordering</h3>
+                    <p>Modify the naïve polynomial evaluation function to work with coefficients ordered from highest degree to lowest:</p>
+                    <pre>
+# Original: coefficients ordered from constant term first
+# [7, -5, 2, 3] represents 7 + (-5)x + 2x² + 3x³
+                    
+# Modified: coefficients ordered from highest degree first
+# [3, 2, -5, 7] represents 3x³ + 2x² - 5x + 7
+                    
+def naive_eval_highest_first(coeffs, x):
+    # TODO: Implement this function
+    pass</pre>
+                </div>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <h3>Exercise 2: Compare Performance</h3>
+                    <p>Write code to compare the execution time of the three methods (naïve, Horner's, NumPy) for evaluating polynomials of different degrees.</p>
+                </div>
+                
+                <div class="bg-gray-100 p-4 rounded-lg my-3">
+                    <h3>Exercise 3: Implement Custom polyval</h3>
+                    <p>Implement your own version of NumPy's polyval function that can evaluate a polynomial at multiple x values simultaneously.</p>
+                </div>
+            </section>
+        </div>
+        
+        <footer class="mt-8 pt-4 border-t border-gray-300 text-center text-gray-600 text-sm">
+            <p>Algorithmic Thinking and Applications - Week 12, Lecture 1</p>
+            <p class="mt-1">Understanding Basic Algorithms: Polynomial Evaluation in Python</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

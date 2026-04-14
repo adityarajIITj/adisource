@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 04 – Analysis of Variance (ANOVA) | Lecture Notes</title>
+
+  <!-- MathJax for LaTeX -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent: #3498db;
+      --success: #27ae60;
+      --warning: #e67e22;
+      --danger: #e74c3c;
+      --light-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #2d3748;
+      --muted: #718096;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-bg);
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      background-color: var(--card-bg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      margin-top: 30px;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      border-bottom: 4px solid var(--accent);
+      padding-bottom: 15px;
+    }
+
+    header p {
+      text-align: center;
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin: 10px 0 30px;
+    }
+
+    h2 {
+      color: var(--primary);
+      border-left: 5px solid var(--accent);
+      padding-left: 16px;
+      margin: 40px 0 20px;
+      font-size: 1.6rem;
+    }
+
+    h3 {
+      color: #2980b9;
+      margin: 28px 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .key-term {
+      background-color: #e3f2fd;
+      color: #1565c0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    /* Boxes */
+    .formula {
+      background: #e8f4fd;
+      border-left: 5px solid var(--accent);
+      padding: 18px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+      font-family: 'Consolas', monospace;
+      overflow-x: auto;
+    }
+
+    .prof-note {
+      background: #fff8e1;
+      border-left: 5px solid #f39c12;
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #5d3540;
+    }
+
+    .hinglish-summary {
+      background: #e8f5e8;
+      border-left: 5px solid var(--success);
+      padding: 16px;
+      margin: 25px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .hinglish-summary strong {
+      color: var(--success);
+    }
+
+    .highlight-box {
+      background: #f0f8ff;
+      border-left: 5px solid #3498db;
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .practice-section {
+      background: #f7fff7;
+      border: 1px solid #a8d5a8;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+
+    .practice-q {
+      margin: 16px 0;
+    }
+
+    .practice-answer {
+      margin-left: 20px;
+      padding: 10px;
+      background: #e8f5e8;
+      border-radius: 6px;
+      font-style: italic;
+      color: #2c5282;
+    }
+
+    .key-takeaways {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+      padding: 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 30px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      border: 1px solid #cbd5e0;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #ebf4ff;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* TOC */
+    .toc {
+      background: #f0f8ff;
+      border: 1px solid #b3d9ff;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+
+    .toc h2 {
+      border-left: none;
+      padding-left: 0;
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mind Map */
+    .mindmap-container {
+      background: #f8fbff;
+      border: 1px solid #d0e0ff;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .mindmap-root span {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .mindmap-level {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin: 25px 0;
+    }
+
+    .mindmap-node {
+      background: white;
+      border: 2px solid #a0d0ff;
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 220px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .mindmap-node:hover {
+      transform: translateY(-5px);
+    }
+
+    .mindmap-node-title {
+      background: #3498db;
+      color: white;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    /* Misc */
+    .diagram-placeholder {
+      background: #f8f9fa;
+      border: 2px dashed #adb5bd;
+      padding: 40px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #cbd5e0, transparent);
+      margin: 50px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      margin-top: 60px;
+      font-size: 1.1rem;
+    }
+
+    footer p {
+      margin: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 20px 15px; }
+      .mindmap-level { flex-direction: column; align-items: center; }
+      h1 { font-size: 1.8rem; }
+      table { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+  <body>
+    <div class="container">
+      <!-- Title Block -->
+      <header>
+        <h1 id="top">Module 04 – Analysis of Variance (ANOVA)</h1>
+        <p style="text-align: center; font-size: 0.95rem">
+          Course:
+          <span class="key-term"
+            >AIL1020 Foundations of Statistics &amp; Probability</span
+          ><br />
+          Topic: <span class="key-term">Analysis of Variance (ANOVA)</span> –
+          One-way ANOVA and F-Statistic
+        </p>
+      </header>
+      <!-- Table of Contents -->
+      <nav class="toc">
+        <h2>Table of Contents</h2>
+        <ul>
+          <li><a href="#sec1">1. Introduction &amp; Learning Outcomes</a></li>
+          <li><a href="#sec2">2. Statistical Inference Overview</a></li>
+          <li>
+            <a href="#sec3">3. Concept of Analysis of Variance (ANOVA)</a>
+          </li>
+          <li><a href="#sec4">4. Hypotheses in One-way ANOVA</a></li>
+          <li>
+            <a href="#sec5"
+              >5. Measuring Variability: Sum of Squares &amp; Mean Squares</a
+            >
+          </li>
+          <li><a href="#sec6">6. The F-Statistic</a></li>
+          <li><a href="#sec7">7. Critical F-Value &amp; Decision Rule</a></li>
+          <li>
+            <a href="#sec8"
+              >8. Worked Example: Teaching Methods &amp; Test Scores</a
+            >
+          </li>
+          <li>
+            <a href="#sec9"
+              >9. Beyond the Overall F-Test: Post-hoc Tests &amp;
+              Applications</a
+            >
+          </li>
+          <li><a href="#sec10">10. Overall Module Summary</a></li>
+          <li><a href="#mindmap">Mind Map: ANOVA Overview</a></li>
+        </ul>
+      </nav>
+      <!-- Section 1: Introduction & Learning Outcomes -->
+      <section id="sec1">
+        <h2>1. Introduction &amp; Learning Outcomes</h2>
+        <p>
+          In this lecture, we study
+          <span class="key-term">Analysis of Variance (ANOVA)</span>, a powerful
+          tool in
+          <span class="key-term">statistical hypothesis testing</span> that
+          helps us compare the means of
+          <span class="key-term">three or more groups</span> at the same time.
+          Instead of running many individual t-tests (which can increase the
+          chance of errors), ANOVA offers a single, unified framework to test
+          whether these group means differ significantly.
+        </p>
+
+        <h3>1.1 Learning Outcomes</h3>
+        <p>By the end of this lesson, you should be able to:</p>
+        <ul>
+          <li>
+            <strong>Apply one-way ANOVA</strong> to test whether the means of
+            <span class="key-term">three or more groups</span> differ
+            significantly.
+          </li>
+          <li>
+            <strong
+              >Interpret the <span class="key-term">F-statistic</span></strong
+            >
+            in the context of real-world data (for example, comparing teaching
+            methods, marketing strategies, or treatments).
+          </li>
+        </ul>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> If there were only two
+          groups, a <span class="key-term">t-test</span> would be sufficient.
+          But once we have three or more groups, multiple t-tests can inflate
+          the probability of making a wrong conclusion (false positive), so
+          ANOVA is preferred.
+        </div>
+
+        <!-- Hinglish summary for Section 1 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 1):</strong><br />
+          Is section mein humne dekha ki ANOVA ek statistical tool hai jo 3 ya 3
+          se zyada groups ke means compare karne ke kaam aata hai. Agar sirf do
+          groups hote, to hum normally t-test use karte. Lekin jab groups zyada
+          ho jaate hain, multiple t-tests karne se galat decision (false
+          positive) ka chance badh jaata hai. Isliye ANOVA ek unified test deta
+          hai jo ek baar mein hi bata deta hai ki groups ke beech mein
+          significant difference hai ya nahi.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 1 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 1</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> Why do we prefer ANOVA over multiple t-tests
+            when comparing more than two groups?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Multiple t-tests increase the probability
+              of making a <span class="key-term">Type I error</span> (false
+              positive) because each test adds extra chance of wrongly rejecting
+              the null hypothesis. ANOVA controls this by testing all groups
+              simultaneously with a single overall test.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What are the two key learning outcomes of this
+            lecture?
+            <div class="practice-answer">
+              <strong>Answer:</strong> (1) To apply one-way ANOVA to test if the
+              means of three or more groups differ significantly, and (2) to
+              interpret the F-statistic in real-world contexts.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> In what kind of real-world scenario might ANOVA
+            be used?
+            <div class="practice-answer">
+              <strong>Answer:</strong> For example, to compare average exam
+              scores of students taught using three different teaching methods.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 1</h3>
+          <ul>
+            <li>
+              ANOVA is used when we want to compare means of
+              <strong>three or more groups</strong>.
+            </li>
+            <li>
+              Using multiple t-tests can inflate the risk of
+              <strong>false positives</strong>.
+            </li>
+            <li>
+              One-way ANOVA is the focus here: it considers
+              <strong>one factor</strong> (e.g., teaching method).
+            </li>
+            <li>
+              The main statistic used in ANOVA is the
+              <strong>F-statistic</strong>.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 2: Statistical Inference Overview -->
+      <section id="sec2">
+        <h2>2. Statistical Inference Overview</h2>
+        <p>
+          <span class="key-term">Statistical inference</span> is about drawing
+          conclusions about a population using data from a sample. In this
+          module, two important inference questions are highlighted:
+        </p>
+
+        <ol>
+          <li>
+            <strong
+              >Do different groups differ significantly in their mean
+              values?</strong
+            ><br />
+            &rarr; Addressed by
+            <span class="key-term">Analysis of Variance (ANOVA)</span>.
+          </li>
+          <li>
+            <strong
+              >How strongly can one or more variables explain or predict another
+              variable?</strong
+            ><br />
+            &rarr; Addressed by
+            <span class="key-term">Regression Analysis</span>.
+          </li>
+        </ol>
+
+        <div class="highlight-box">
+          <p>
+            In this lecture, we focus only on the
+            <span class="key-term">first question</span>: whether multiple group
+            means are equal or not. For this, we use
+            <span class="key-term">one-way ANOVA</span>.
+          </p>
+        </div>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> Regression handles the
+          interrelationship between variables (how one variable predicts
+          another), while ANOVA focuses on differences between group means.
+        </div>
+
+        <!-- Hinglish summary for Section 2 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 2):</strong><br />
+          Statistical inference ka matlab hai sample se population ke baare mein
+          conclusion nikalna. Do main questions hote hain: (1) Alag-alag groups
+          ke means same hain ya different? (2) Ek ya zyada variables doosre
+          variable ko kitna achchhe se explain ya predict kar sakte hain? Pehla
+          sawaal ANOVA se solve hota hai, aur doosra regression se. Is lecture
+          mein hum pehle sawaal par focus kar rahe hain.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 2 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 2</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> Which method is used to check if multiple group
+            means are equal?
+            <div class="practice-answer">
+              <strong>Answer:</strong>
+              <span class="key-term">Analysis of Variance (ANOVA)</span>.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What type of question does regression analysis
+            typically answer?
+            <div class="practice-answer">
+              <strong>Answer:</strong> It answers how strongly one or more
+              variables can explain or predict another variable.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> In this lecture, which of the two main
+            statistical inference questions is emphasized?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Whether different groups differ
+              significantly in their mean values.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 2</h3>
+          <ul>
+            <li>
+              Statistical inference uses sample data to make conclusions about
+              populations.
+            </li>
+            <li>ANOVA is used for comparing <strong>group means</strong>.</li>
+            <li>
+              Regression is used to study
+              <strong>relationships between variables</strong>.
+            </li>
+            <li>
+              This lecture focuses on the question of
+              <strong>equality of multiple means</strong>.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 3: Concept of ANOVA -->
+      <section id="sec3">
+        <h2>3. Concept of Analysis of Variance (ANOVA)</h2>
+        <h3>3.1 Motivating Example: Teaching Methods</h3>
+        <p>
+          Imagine a researcher wants to compare the
+          <span class="key-term">average exam performance</span> of students
+          taught using <strong>three different teaching methods</strong>. The
+          question is:
+        </p>
+        <p style="margin-left: 1.3em">
+          <em
+            >“Do these teaching methods lead to significantly different mean
+            scores, or are the differences just due to random chance?”</em
+          >
+        </p>
+
+        <p>
+          If there were only two methods, a
+          <span class="key-term">t-test</span> would be enough. But with three
+          or more groups, running several t-tests increases the chance of error.
+          ANOVA gives a <strong>single test</strong> to compare all group means
+          simultaneously.
+        </p>
+
+        <h3>3.2 Basic Idea: Partitioning Variability</h3>
+        <p>
+          ANOVA works by
+          <span class="key-term">partitioning the total variability</span> in
+          the data into two components:
+        </p>
+
+        <ul>
+          <li>
+            <span class="key-term">Between-group variability</span>: variability
+            that arises from differences between the
+            <strong>group means</strong>. If different teaching methods truly
+            have different effects, this part will be large.
+          </li>
+          <li>
+            <span class="key-term">Within-group variability</span>: variability
+            due to <strong>random fluctuations</strong> within each group, such
+            as individual differences between students who received the same
+            teaching method.
+          </li>
+        </ul>
+
+        <p>
+          If the <strong>between-group variability</strong> is substantially
+          larger than the <strong>within-group variability</strong>, we conclude
+          that not all group means are equal.
+        </p>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> Within a single
+          teaching method, students’ marks may still vary due to randomness,
+          effort, prior knowledge, etc. This is captured by
+          <span class="key-term">within-group variability</span>, while
+          systematic differences between methods show up as
+          <span class="key-term">between-group variability</span>.
+        </div>
+
+        <h3>3.3 One-way ANOVA vs Other Types</h3>
+        <p>
+          The method discussed here is
+          <span class="key-term">one-way ANOVA</span>, meaning that only
+          <strong>one factor</strong> (for example, teaching method) is used to
+          define the groups.
+        </p>
+        <p>
+          In more advanced setups, we may have
+          <span class="key-term">two-way</span> or
+          <span class="key-term">multi-way ANOVA</span>, where multiple factors
+          (e.g., teaching method and gender) are considered together. In this
+          lecture, however, we stay with one-way ANOVA.
+        </p>
+
+        <!-- Hinglish summary for Section 3 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 3):</strong><br />
+          Yahan humne ANOVA ka basic idea samjha. Researcher 3 teaching methods
+          ke beech average marks compare karna chahta hai. ANOVA total variation
+          ko do parts mein baant deta hai: between-group (groups ke means ke
+          beech ka difference) aur within-group (ek hi group ke andar random
+          differences). Agar between-group variation zyada hai aur within-group
+          kam, to hum bol sakte hain ki sabhi means equal nahi hain. Yeh one-way
+          ANOVA hai, kyunki sirf ek factor (teaching method) ko consider kar
+          rahe hain.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 3 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 3</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> What is the main purpose of one-way ANOVA in
+            the teaching methods example?
+            <div class="practice-answer">
+              <strong>Answer:</strong> To determine whether the mean exam scores
+              of students differ significantly across the three teaching
+              methods.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What are the two components into which ANOVA
+            partitions total variability?
+            <div class="practice-answer">
+              <strong>Answer:</strong>
+              <span class="key-term">Between-group variability</span> and
+              <span class="key-term">within-group variability</span>.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> When do we say that ANOVA suggests group means
+            are not all equal?
+            <div class="practice-answer">
+              <strong>Answer:</strong> When the between-group variability is
+              substantially larger than the within-group variability.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 3</h3>
+          <ul>
+            <li>
+              ANOVA compares multiple group means
+              <strong>simultaneously</strong>.
+            </li>
+            <li>
+              Total variability is split into <strong>between</strong> and
+              <strong>within</strong> group components.
+            </li>
+            <li>
+              Large between-group vs within-group variability suggests means are
+              not all equal.
+            </li>
+            <li>
+              One-way ANOVA uses <strong>one factor</strong> (e.g., teaching
+              method) to define groups.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 4: Hypotheses in One-way ANOVA -->
+      <section id="sec4">
+        <h2>4. Hypotheses in One-way ANOVA</h2>
+        <h3>4.1 Null and Alternative Hypotheses</h3>
+        <p>
+          We consider \(k\) groups with population means \(\mu_1, \mu_2, \dots,
+          \mu_k\). The hypotheses for one-way ANOVA are:
+        </p>
+
+        <p style="margin-left: 1.3em">
+          <span class="key-term">Null hypothesis</span> (no difference):<br />
+          \[ H_0: \mu_1 = \mu_2 = \mu_3 = \dots = \mu_k \]
+        </p>
+
+        <p style="margin-left: 1.3em">
+          <span class="key-term">Alternative hypothesis</span> (some
+          difference):<br />
+          \[ H_a: \text{At least one group mean is different} \]
+        </p>
+
+        <p>
+          Notice that the alternative hypothesis
+          <strong>does not specify which mean is different</strong> or how many
+          are different—it simply states that they are
+          <strong>not all equal</strong>.
+        </p>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> Even if the means
+          visually “look” different, we still need a formal test (ANOVA) to
+          decide if those differences are statistically meaningful or could have
+          occurred just by chance.
+        </div>
+
+        <!-- Hinglish summary for Section 4 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 4):</strong><br />
+          One-way ANOVA ka <em>H<sub>0</sub></em> yeh kehta hai ki saare groups
+          ke means equal hain. Alternative <em>H<sub>a</sub></em> kehta hai ki
+          “at least ek” mean different hai, lekin kaunsa ya kitne different
+          hain, yeh specify nahi karta. Matlab ANOVA sirf yeh batata hai ki sab
+          equal nahi ho sakte, lekin exact difference baad mein post-hoc tests
+          se check karte hain.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 4 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 4</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> Write the null hypothesis for one-way ANOVA
+            with \(k\) groups.
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(H_0: \mu_1 = \mu_2 = \cdots = \mu_k\).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What does the alternative hypothesis in ANOVA
+            say?
+            <div class="practice-answer">
+              <strong>Answer:</strong> At least one group mean is different from
+              the others.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> Does ANOVA alone tell us which specific mean is
+            different?
+            <div class="practice-answer">
+              <strong>Answer:</strong> No, ANOVA only tells us that not all
+              means are equal; it does not identify exactly which groups differ.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 4</h3>
+          <ul>
+            <li>\(H_0\): all group means are equal.</li>
+            <li>\(H_a\): at least one group mean differs.</li>
+            <li>
+              The ANOVA F-test is an <strong>omnibus test</strong>: it checks
+              for “any difference” among means.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 5: Variability, SS and MS -->
+      <section id="sec5">
+        <h2>5. Measuring Variability: Sum of Squares &amp; Mean Squares</h2>
+        <h3>5.1 Total Sum of Squares (SST)</h3>
+        <p>
+          Let \(X_{ij}\) be the observation from the
+          <strong>j-th subject</strong> in the <strong>i-th group</strong>. Let
+          \(\bar{X}_{\cdot\cdot}\) be the
+          <span class="key-term">grand mean</span> – the mean of all
+          observations across all groups.
+        </p>
+        <p>The <span class="key-term">Total Sum of Squares</span> is:</p>
+        <p style="margin-left: 1.3em">
+          \[ SST = \sum (X_{ij} - \bar{X}_{\cdot\cdot})^2 \]
+        </p>
+        <p>
+          This measures the <strong>overall variability</strong> of all data
+          points around the grand mean.
+        </p>
+
+        <h3>5.2 Between-Groups Sum of Squares (SSB)</h3>
+        <p>
+          Let \(\bar{X}_i\) be the mean of group \(i\) and \(n_i\) be the sample
+          size in group \(i\). Then the
+          <span class="key-term">Between-Groups Sum of Squares</span> is:
+        </p>
+        <p style="margin-left: 1.3em">
+          \[ SSB = \sum n_i (\bar{X}_i - \bar{X}_{\cdot\cdot})^2 \]
+        </p>
+        <p>
+          This captures how far each group mean is from the grand mean, weighted
+          by the group size. It reflects the variability that can be explained
+          by the fact that observations belong to
+          <strong>different groups</strong>.
+        </p>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> ANOVA works even if
+          each group has a different number of observations (unbalanced groups).
+          That is why we use \(n_i\) for the group size instead of a common
+          \(n\).
+        </div>
+
+        <h3>5.3 Within-Groups Sum of Squares (SSW)</h3>
+        <p>
+          The
+          <span class="key-term">Within-Groups Sum of Squares</span> measures
+          how much each data point differs from its
+          <strong>own group mean</strong>:
+        </p>
+        <p style="margin-left: 1.3em">
+          \[ SSW = \sum_{i=1}^{k} \sum_{j=1}^{n_i} (X_{ij} - \bar{X}_i)^2 \]
+        </p>
+        <p>
+          If individuals in a group are tightly clustered around their group
+          mean, this value will be
+          <strong>small</strong>; if they are widely spread out, it will be
+          <strong>large</strong>.
+        </p>
+
+        <h3>5.4 Relationship Between SST, SSB, and SSW</h3>
+        <p>ANOVA neatly decomposes the total variation as:</p>
+        <p style="margin-left: 1.3em">\[ SST = SSB + SSW \]</p>
+        <p>This equation is often used as a check in calculations.</p>
+
+        <h3>5.5 Mean Squares (MSB and MSW)</h3>
+        <p>
+          To get <span class="key-term">average</span> variability, we divide
+          sums of squares by their degrees of freedom, obtaining
+          <span class="key-term">mean squares</span>:
+        </p>
+        <p style="margin-left: 1.3em">
+          \[ MSB = \frac{SSB}{k-1}, \qquad MSW = \frac{SSW}{N - k} \]
+        </p>
+        <p>where:</p>
+        <ul>
+          <li>\(k\): number of groups (or treatments),</li>
+          <li>\(N\): total number of observations across all groups.</li>
+        </ul>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Sum of Squares</th>
+              <th>Degrees of Freedom</th>
+              <th>Mean Square</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Between groups</td>
+              <td>\(SSB\)</td>
+              <td>\(k - 1\)</td>
+              <td>\(MSB = \dfrac{SSB}{k-1}\)</td>
+            </tr>
+            <tr>
+              <td>Within groups</td>
+              <td>\(SSW\)</td>
+              <td>\(N - k\)</td>
+              <td>\(MSW = \dfrac{SSW}{N-k}\)</td>
+            </tr>
+            <tr>
+              <td>Total</td>
+              <td>\(SST\)</td>
+              <td>\(N - 1\)</td>
+              <td>–</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Hinglish summary for Section 5 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 5):</strong><br />
+          Yahan humne teen important quantities dekhi: <em>SST</em>,
+          <em>SSB</em>, aur <em>SSW</em>. SST total variation ko measure karta
+          hai, SSB groups ke means ke beech ka variation dikhata hai, aur SSW
+          har group ke andar ka random variation batata hai. Inka relation hai:
+          \(SST = SSB + SSW\). Jab hum inhe unke degrees of freedom se divide
+          karte hain, humein mean squares milte hain: MSB aur MSW, jo
+          F-statistic banane mein use hote hain.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 5 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 5</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> What does \(SST\) represent in ANOVA?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Total Sum of Squares; the overall
+              variability of all data points around the grand mean.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> Write the formula for \(SSB\) in terms of group
+            means.
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(SSB = \sum n_i (\bar{X}_i -
+              \bar{X}_{\cdot\cdot})^2\).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> How are \(MSB\) and \(MSW\) computed?
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(MSB = \dfrac{SSB}{k-1}\) and \(MSW =
+              \dfrac{SSW}{N-k}\).
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 5</h3>
+          <ul>
+            <li>
+              Sums of squares quantify different kinds of variability in the
+              data.
+            </li>
+            <li>\(SST = SSB + SSW\) is a key decomposition in ANOVA.</li>
+            <li>
+              Mean squares (MSB, MSW) are obtained by dividing sums of squares
+              by appropriate degrees of freedom.
+            </li>
+            <li>
+              MSB and MSW are essential inputs for computing the
+              <strong>F-statistic</strong>.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 6: F-Statistic -->
+      <section id="sec6">
+        <h2>6. The F-Statistic</h2>
+        <h3>6.1 Definition of the F-Statistic</h3>
+        <p>
+          The <span class="key-term">F-statistic</span> in ANOVA compares the
+          variability explained by the model (between groups) to the unexplained
+          variability (within groups).
+        </p>
+
+        <p style="margin-left: 1.3em">
+          \[ F = \frac{\text{Variance explained by the model}}{\text{Variance
+          unexplained (error)}} = \frac{MSB}{MSW} \]
+        </p>
+
+        <p>Interpreting this:</p>
+        <ul>
+          <li>
+            The numerator \(MSB\) is the
+            <strong>average variation between group means</strong>.
+          </li>
+          <li>
+            The denominator \(MSW\) is the
+            <strong>average variation within groups</strong>.
+          </li>
+        </ul>
+
+        <h3>6.2 Intuition</h3>
+        <ul>
+          <li>
+            If the groups <strong>really differ</strong>, then \(MSB \gg MSW\),
+            so \(F\) will be <span class="key-term">large</span>.
+          </li>
+          <li>
+            If the groups <strong>do not differ much</strong>, then \(MSB
+            \approx MSW\), so \(F\) will be around
+            <span class="key-term">1</span>.
+          </li>
+        </ul>
+
+        <!-- Hinglish summary for Section 6 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 6):</strong><br />
+          F-statistic basically “between-group variation” ko “within-group
+          variation” se compare karta hai. Formula hai \(F = MSB / MSW\). Agar
+          groups ke means sach mein different hain, to MSB bahut bada aur MSW
+          relatively chhota hoga, isliye F ka value bada aayega. Agar means
+          zyada different nahi hain, to MSB aur MSW lagbhag equal honge, aur F
+          kareeb 1 ke aas-paas hoga.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 6 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 6</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> What is the formula for the F-statistic in
+            one-way ANOVA?
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(F = \dfrac{MSB}{MSW}\).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What does a very large F value suggest about
+            the group means?
+            <div class="practice-answer">
+              <strong>Answer:</strong> It suggests that the variability between
+              groups is much larger than within groups, indicating that group
+              means are likely not all equal.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> What would you expect F to be approximately if
+            all group means are similar?
+            <div class="practice-answer">
+              <strong>Answer:</strong> F would be approximately 1, because MSB
+              and MSW would be similar.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 6</h3>
+          <ul>
+            <li>
+              The F-statistic is a <strong>ratio of variances</strong>:
+              between-group vs within-group.
+            </li>
+            <li>
+              Large F values provide evidence <strong>against</strong> the null
+              hypothesis.
+            </li>
+            <li>
+              F values close to 1 suggest no strong evidence of differences
+              between means.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 7: Critical F-value & Decision -->
+      <section id="sec7">
+        <h2>7. Critical F-Value &amp; Decision Rule</h2>
+        <h3>7.1 What is Critical F?</h3>
+        <p>
+          The <span class="key-term">critical F</span> value is the
+          <strong>cutoff value</strong> that we compare our calculated
+          F-statistic with, to decide whether to <strong>reject</strong> or
+          <strong>fail to reject</strong> the null hypothesis.
+        </p>
+
+        <p>
+          If \(F_{\text{calculated}} > F_{\text{critical}}\), we
+          <strong>reject \(H_0\)</strong>. Otherwise, we do not have enough
+          evidence to reject \(H_0\).
+        </p>
+
+        <h3>7.2 Inputs Needed to Find Critical F</h3>
+        <p>To look up the critical F-value, we need:</p>
+        <ol>
+          <li>
+            <span class="key-term">Significance level \(\alpha\)</span>
+            (commonly \(0.05\) or \(0.01\)).
+          </li>
+          <li>
+            <span class="key-term"
+              >Degrees of freedom for numerator (df\(_1\))</span
+            >: between groups, equal to \(k - 1\).
+          </li>
+          <li>
+            <span class="key-term"
+              >Degrees of freedom for denominator (df\(_2\))</span
+            >: within groups, equal to \(N - k\).
+          </li>
+        </ol>
+
+        <div class="diagram-placeholder">
+          [Insert diagram: F-distribution curve with critical region and
+          critical F marked]
+        </div>
+
+        <h3>7.3 Example of Critical F from F-Table</h3>
+        <p>Suppose:</p>
+        <ul>
+          <li>\(\alpha = 0.05\)</li>
+          <li>\(df_1 = 2\) (between groups)</li>
+          <li>\(df_2 = 6\) (within groups)</li>
+        </ul>
+
+        <p>
+          From the F-table (for \(\alpha = 0.05\)), the critical value is
+          approximately:
+        </p>
+        <p style="margin-left: 1.3em">\[ F_{0.05, 2, 6} \approx 5.14 \]</p>
+
+        <div class="diagram-placeholder">
+          [Insert diagram: F-table snippet showing row for df₂ = 6 and column
+          for df₁ = 2 with 5.14 highlighted]
+        </div>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> It is important not to
+          confuse df\(_1\) and df\(_2\). If these are interchanged, you will
+          read the wrong value from the F-table.
+        </div>
+
+        <p>
+          In software like Google Sheets, you can obtain the critical value
+          using a function such as:
+          <code>=F.INV.RT(alpha, df1, df2)</code>.
+        </p>
+
+        <!-- Hinglish summary for Section 7 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 7):</strong><br />
+          Critical F ek threshold value hai jisse hum apne calculated F ko
+          compare karte hain. Agar \(F_{\text{calculated}} &gt;
+          F_{\text{critical}}\) ho, to hum null hypothesis reject kar dete hain.
+          Critical F nikalne ke liye hume chahiye: significance level
+          \(\alpha\), df<sub>1</sub> (between = \(k-1\)) aur df<sub>2</sub>
+          (within = \(N-k\)). Example mein \(\alpha = 0.05\), df<sub>1</sub> = 2
+          aur df<sub>2</sub> = 6 ke liye F-critical lagbhag 5.14 aata hai.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 7 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 7</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> What are the three inputs required to look up a
+            critical F value in a table?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Significance level \(\alpha\), df\(_1 =
+              k-1\) (between groups), and df\(_2 = N-k\) (within groups).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> If \(F_{\text{calculated}} &lt;
+            F_{\text{critical}}\), what is the decision?
+            <div class="practice-answer">
+              <strong>Answer:</strong> We fail to reject the null hypothesis;
+              there is not enough evidence to say the means differ.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> For \(\alpha = 0.05\), \(df_1 = 2\), and \(df_2
+            = 6\), what is approximately the critical F value?
+            <div class="practice-answer">
+              <strong>Answer:</strong> About \(5.14\).
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 7</h3>
+          <ul>
+            <li>
+              Critical F acts as a <strong>threshold</strong> for deciding
+              whether to reject \(H_0\).
+            </li>
+            <li>
+              It depends on \(\alpha\), df\(_1\) (between), and df\(_2\)
+              (within).
+            </li>
+            <li>
+              If \(F_{\text{calculated}} &gt; F_{\text{critical}}\), we reject
+              the null hypothesis of equal means.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 8: Worked Example -->
+      <section id="sec8">
+        <h2>8. Worked Example: Teaching Methods &amp; Test Scores</h2>
+        <h3>8.1 Problem Setup</h3>
+        <p>
+          An education researcher wants to evaluate whether different teaching
+          methods lead to significantly different student performance on a
+          standardized test. Students are randomly assigned to one of three
+          instructional methods:
+        </p>
+
+        <ul>
+          <li>
+            <span class="key-term">Method A</span>: Traditional lecture-based
+            approach
+          </li>
+          <li>
+            <span class="key-term">Method B</span>: Problem-solving and
+            discussion-oriented approach
+          </li>
+          <li>
+            <span class="key-term">Method C</span>: Technology-assisted,
+            self-learning approach
+          </li>
+        </ul>
+
+        <p>
+          After a teaching period, each student takes the same exam. The scores
+          of three students from each method are:
+        </p>
+        <ul>
+          <li>Method A: 70, 65, 72</li>
+          <li>Method B: 80, 78, 85</li>
+          <li>Method C: 60, 55, 58</li>
+        </ul>
+
+        <p>The question is:</p>
+        <p style="margin-left: 1.3em">
+          <em
+            >“Do the mean exam scores of students taught with these three
+            methods differ significantly, or are the observed differences simply
+            due to chance?”</em
+          >
+        </p>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> The sample size here (3
+          per group) is intentionally small for illustration. In real research,
+          a larger number of students per group would be desirable.
+        </div>
+
+        <h3>8.2 Step 1 – Compute Group Means and Grand Mean</h3>
+        <p>Let \(k = 3\) (groups) and total \(N = 9\) observations.</p>
+        <ul>
+          <li>
+            Group A mean: \[ \bar{X}_A = \frac{70 + 65 + 72}{3} = 69.00 \]
+          </li>
+          <li>
+            Group B mean: \[ \bar{X}_B = \frac{80 + 78 + 85}{3} = 81.00 \]
+          </li>
+          <li>
+            Group C mean: \[ \bar{X}_C = \frac{60 + 55 + 58}{3} \approx 57.67 \]
+          </li>
+        </ul>
+
+        <p>The <span class="key-term">grand mean</span> is:</p>
+        <p style="margin-left: 1.3em">
+          \[ \bar{X}_{\cdot\cdot} = \frac{\sum X_{ij}}{N} =
+          \frac{70+65+72+80+78+85+60+55+58}{9} = \frac{623}{9} \approx 69.22 \]
+        </p>
+
+        <h3>8.3 Step 2 – Within-Groups Variation (SSW)</h3>
+        <p>
+          For each group, compute the
+          <strong>sum of squared deviations from its group mean</strong>:
+        </p>
+
+        <p style="margin-left: 1.3em">
+          Group A (\(\bar{X}_A = 69\)): \[ (70-69)^2 + (65-69)^2 + (72-69)^2 =
+          1^2 + (-4)^2 + 3^2 = 1 + 16 + 9 = 26.00 \]
+        </p>
+
+        <p style="margin-left: 1.3em">
+          Group B (\(\bar{X}_B = 81\)): \[ (80-81)^2 + (78-81)^2 + (85-81)^2 =
+          (-1)^2 + (-3)^2 + 4^2 = 1 + 9 + 16 = 26.00 \]
+        </p>
+
+        <p style="margin-left: 1.3em">
+          Group C (\(\bar{X}_C \approx 57.67\)): \[ (60 - 57.67)^2 + (55 -
+          57.67)^2 + (58 - 57.67)^2 \approx 5.44 + 7.11 + 0.11 = 12.67 \]
+        </p>
+
+        <p>Summing across all groups:</p>
+        <p style="margin-left: 1.3em">
+          \[ SSW = 26.00 + 26.00 + 12.67 \approx 64.67 \]
+        </p>
+
+        <h3>8.4 Step 3 – Between-Groups Variation (SSB)</h3>
+        <p>
+          Each group has \(n_i = 3\). Using: \[ SSB = \sum n_i (\bar{X}_i -
+          \bar{X}_{\cdot\cdot})^2 \]
+        </p>
+        <p style="margin-left: 1.3em">
+          \[ SSB \approx 3(69.00 - 69.22)^2 + 3(81.00 - 69.22)^2 + 3(57.67 -
+          69.22)^2 \approx 0.15 + 416.15 + 400.59 \approx 816.89 \]
+        </p>
+
+        <h3>8.5 Step 4 – Total Variation (SST) &amp; Check</h3>
+        <p>Using: \[ SST = SSB + SSW \] we have</p>
+        <p style="margin-left: 1.3em">
+          \[ SST \approx 816.89 + 64.67 = 881.56 \]
+        </p>
+        <p>
+          This is consistent with computing \(SST\) directly as \(\sum (X_{ij} -
+          \bar{X}_{\cdot\cdot})^2\).
+        </p>
+
+        <h3>8.6 Step 5 – Degrees of Freedom and Mean Squares</h3>
+        <p>Degrees of freedom:</p>
+        <ul>
+          <li>\(df_{\text{between}} = k - 1 = 3 - 1 = 2\)</li>
+          <li>\(df_{\text{within}} = N - k = 9 - 3 = 6\)</li>
+        </ul>
+
+        <p>Mean squares:</p>
+        <p style="margin-left: 1.3em">
+          \[ MSB = \frac{SSB}{df_{\text{between}}} \approx \frac{816.89}{2}
+          \approx 408.44 \] \[ MSW = \frac{SSW}{df_{\text{within}}} \approx
+          \frac{64.67}{6} \approx 10.78 \]
+        </p>
+
+        <h3>8.7 Step 6 – Compute F and Make Decision</h3>
+        <p>The F-statistic is:</p>
+        <p style="margin-left: 1.3em">
+          \[ F = \frac{MSB}{MSW} \approx \frac{408.44}{10.78} \approx 37.90 \]
+        </p>
+
+        <p>
+          Recall from Section 7 that with \(\alpha = 0.05\), \(df_1 = 2\) and
+          \(df_2 = 6\), the critical value is: \[ F_{0.05,2,6} \approx 5.14 \]
+        </p>
+
+        <p>Since:</p>
+        <p style="margin-left: 1.3em">
+          \[ F_{\text{calculated}} \approx 37.90 &gt; 5.14 =
+          F_{\text{critical}}, \]
+        </p>
+        <p>
+          we <strong>reject the null hypothesis</strong>. There is strong
+          evidence that at least one teaching method leads to a different mean
+          exam score.
+        </p>
+
+        <h3>8.8 ANOVA Summary Table</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>SS</th>
+              <th>df</th>
+              <th>MS</th>
+              <th>F</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Between</td>
+              <td>816.89 (approx.)</td>
+              <td>2</td>
+              <td>408.44</td>
+              <td>37.90</td>
+            </tr>
+            <tr>
+              <td>Within</td>
+              <td>64.67</td>
+              <td>6</td>
+              <td>10.78</td>
+              <td>–</td>
+            </tr>
+            <tr>
+              <td>Total</td>
+              <td>881.56</td>
+              <td>8</td>
+              <td>–</td>
+              <td>–</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="diagram-placeholder">
+          [Insert diagram: ANOVA summary table formatted as in slides]
+        </div>
+
+        <!-- Hinglish summary for Section 8 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 8):</strong><br />
+          Example mein 3 methods (A, B, C) aur 9 students ka data liya gaya.
+          Sabse pehle har group ka mean aur phir grand mean nikala. Phir
+          within-group SSW aur between-group SSB calculate kiya. Unse MSB aur
+          MSW nikal kar F-statistic ≈ 37.90 aayi. Critical F 5.14 tha, aur
+          kyunki 37.90 &gt; 5.14, humne null hypothesis reject kar diya. Matlab
+          kam se kam ek teaching method ka mean score baaki se significantly
+          different hai.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 8 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 8</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> What are the group means for Methods A, B, and
+            C in the example?
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(\bar{X}_A = 69.00\), \(\bar{X}_B =
+              81.00\), \(\bar{X}_C \approx 57.67\).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What are the degrees of freedom for
+            between-groups and within-groups?
+            <div class="practice-answer">
+              <strong>Answer:</strong> \(df_{\text{between}} = 2\),
+              \(df_{\text{within}} = 6\).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> Why do we reject the null hypothesis in this
+            example?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Because the calculated F (≈ 37.90) is
+              greater than the critical F (≈ 5.14), indicating that at least one
+              group mean is significantly different.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 8</h3>
+          <ul>
+            <li>
+              The example walks through all the computational steps of one-way
+              ANOVA.
+            </li>
+            <li>
+              We use sums of squares, mean squares, and F-statistic to test
+              \(H_0\).
+            </li>
+            <li>
+              In this case, the evidence strongly suggests that teaching methods
+              affect mean exam scores.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 9: Post-hoc Tests & Applications -->
+      <section id="sec9">
+        <h2>9. Beyond the Overall F-Test: Post-hoc Tests &amp; Applications</h2>
+        <h3>9.1 Why ANOVA Stops at “At Least One Difference”</h3>
+        <p>
+          The ANOVA F-test is an <span class="key-term">omnibus test</span>. It
+          tests the null hypothesis:
+        </p>
+        <p style="margin-left: 1.3em">
+          \[ H_0: \mu_1 = \mu_2 = \dots = \mu_k \]
+        </p>
+        <p>
+          If F is significant, we know that
+          <strong>at least one mean is different</strong>, but ANOVA itself does
+          <strong>not identify which groups</strong> differ from which.
+        </p>
+
+        <h3>9.2 Options for Follow-Up (Post-hoc) Testing</h3>
+        <p>
+          To pinpoint where the differences lie, we perform
+          <span class="key-term">post-hoc comparisons</span>. Two common options
+          are:
+        </p>
+        <ul>
+          <li>
+            <span class="key-term">Pairwise t-tests with correction</span>:
+            Compare means two at a time (e.g., A vs B, A vs C, B vs C), but
+            adjust p-values to control the overall error rate.
+          </li>
+          <li>
+            <span class="key-term"
+              >Tukey’s Honestly Significant Difference (HSD)</span
+            >: A standard procedure that compares all possible pairs of group
+            means while controlling the family-wise error rate.
+          </li>
+        </ul>
+
+        <div class="prof-note">
+          <strong>Professor mentioned in class:</strong> After ANOVA, post-hoc
+          tests help you identify which specific teaching method (or treatment)
+          is most effective or significantly different. These methods are beyond
+          the scope of this particular video but are essential in full analysis.
+        </div>
+
+        <h3>9.3 Applications of ANOVA</h3>
+        <p>ANOVA is widely used across domains:</p>
+        <ul>
+          <li>
+            <strong>Education:</strong> Comparing different teaching methods or
+            curricula on student performance.
+          </li>
+          <li>
+            <strong>Medicine:</strong> Testing effectiveness of different drugs
+            or treatments on patient outcomes.
+          </li>
+          <li>
+            <strong>Business:</strong> Evaluating the performance of different
+            marketing campaigns or pricing strategies.
+          </li>
+          <li>
+            <strong>Agriculture:</strong> Studying crop yields under different
+            fertilizers or farming practices.
+          </li>
+        </ul>
+
+        <!-- Hinglish summary for Section 9 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 9):</strong><br />
+          ANOVA sirf yeh batata hai ki “at least ek” mean different hai, lekin
+          yeh nahi batata ki kaunsa group kis se different hai. Isliye hum
+          post-hoc tests use karte hain, jaise pairwise t-tests (with
+          correction) ya Tukey’s HSD. ANOVA ka use education, medicine,
+          business, aur agriculture jaise areas mein bahut hota hai, jab humein
+          multiple treatments ya methods compare karne hote hain.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 9 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 9</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> Why is ANOVA called an “omnibus” test?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Because it tests for any overall
+              difference among group means but does not specify which means
+              differ.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> Name two common post-hoc tests used after
+            ANOVA.
+            <div class="practice-answer">
+              <strong>Answer:</strong> Pairwise t-tests with correction and
+              Tukey’s Honestly Significant Difference (HSD).
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> Give one example of ANOVA application in
+            business or agriculture.
+            <div class="practice-answer">
+              <strong>Answer:</strong> In business, comparing the effectiveness
+              of different marketing campaigns. In agriculture, comparing crop
+              yields under different fertilizers.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 9</h3>
+          <ul>
+            <li>
+              ANOVA tells us if there is any significant difference among means
+              but not where it is.
+            </li>
+            <li>
+              Post-hoc tests like pairwise t-tests (with corrections) and
+              Tukey’s HSD are used to locate specific differences.
+            </li>
+            <li>
+              ANOVA is widely applicable in education, medicine, business,
+              agriculture, and more.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Section 10: Overall Module Summary -->
+      <section id="sec10">
+        <h2>10. Overall Module Summary</h2>
+        <p>
+          This module on
+          <span class="key-term"
+            >Foundations of Statistics &amp; Probability</span
+          >
+          covered several key topics, culminating in the study of ANOVA:
+        </p>
+        <ul>
+          <li><span class="key-term">Hypothesis testing</span></li>
+          <li>
+            <span class="key-term">p-value</span> and
+            <span class="key-term">t-statistic</span>
+          </li>
+          <li><span class="key-term">Statistical significance</span></li>
+          <li>
+            <span class="key-term">Confidence intervals</span> (for proportions
+            and means)
+          </li>
+          <li>
+            <span class="key-term">Analysis of Variance (ANOVA)</span> and the
+            <span class="key-term">F-statistic</span>
+          </li>
+        </ul>
+
+        <p>
+          ANOVA extends the ideas of hypothesis testing and variance analysis to
+          settings with
+          <strong>three or more groups</strong>, letting us test the equality of
+          several means in a principled way.
+        </p>
+
+        <!-- Hinglish summary for Section 10 -->
+        <div class="hinglish-summary">
+          <strong>Hinglish Summary (Section 10):</strong><br />
+          Pure module mein humne hypothesis testing, p-values, t-statistics,
+          statistical significance aur confidence intervals jaise basics cover
+          kiye. In sab concepts par base bana kar hum ANOVA tak pahunche, jo
+          multiple groups ke means compare karne ka tool hai. F-statistic aur
+          critical F ke through hum decide kar sakte hain ki groups ke beech
+          difference statistically significant hai ya sirf chance ki wajah se.
+        </div>
+
+        <!-- Practice & Key Takeaways for Section 10 -->
+        <div class="practice-section">
+          <h3>Practice Questions – Section 10</h3>
+
+          <div class="practice-q">
+            <strong>Q1.</strong> Which topics form the foundation leading up to
+            ANOVA in this module?
+            <div class="practice-answer">
+              <strong>Answer:</strong> Hypothesis testing, p-values,
+              t-statistics, statistical significance, and confidence intervals.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q2.</strong> What is the role of ANOVA in the broader
+            context of this module?
+            <div class="practice-answer">
+              <strong>Answer:</strong> ANOVA is used to compare means of three
+              or more groups, extending the ideas of hypothesis testing and
+              variance analysis.
+            </div>
+          </div>
+
+          <div class="practice-q">
+            <strong>Q3.</strong> How does the F-statistic fit into the
+            hypothesis testing framework?
+            <div class="practice-answer">
+              <strong>Answer:</strong> The F-statistic is the test statistic
+              used in ANOVA to decide whether to reject the null hypothesis that
+              all group means are equal.
+            </div>
+          </div>
+        </div>
+
+        <div class="key-takeaways">
+          <h3>Key Takeaways – Section 10</h3>
+          <ul>
+            <li>
+              This module connects basic hypothesis testing concepts to the more
+              advanced ANOVA framework.
+            </li>
+            <li>
+              ANOVA is a natural extension of t-tests when dealing with more
+              than two groups.
+            </li>
+            <li>
+              Understanding sums of squares, mean squares, and the F-statistic
+              is central to interpreting ANOVA results.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <hr />
+      <!-- Mind Map Section -->
+      <section id="mindmap">
+      <h2>Mind Map: One-Way ANOVA Overview</h2>
+      <div class="mindmap-container">
+        <div class="mindmap-root">
+          <span>ANALYSIS OF VARIANCE (ANOVA)</span>
+        </div>
+
+        <div class="mindmap-level">
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">Purpose</div>
+            <ul>
+              <li>Compare ≥3 group means</li>
+              <li>Avoid multiple t-tests</li>
+              <li>Control Type I error</li>
+            </ul>
+          </div>
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">Hypotheses</div>
+            <ul>
+              <li>H₀: μ₁ = μ₂ = … = μₖ</li>
+              <li>Hₐ: At least one differs</li>
+            </ul>
+          </div>
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">Variation Split</div>
+            <ul>
+              <li>SST = SSB + SSW</li>
+              <li>Between & Within</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mindmap-level">
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">F-Statistic</div>
+            <ul>
+              <li>F = MSB / MSW</li>
+              <li>Large F → Reject H₀</li>
+            </ul>
+          </div>
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">Decision</div>
+            <ul>
+              <li>Compare with F-critical(α, k-1, N-k)</li>
+            </ul>
+          </div>
+          <div class="mindmap-node">
+            <div class="mindmap-node-title">Post-hoc</div>
+            <ul>
+              <li>Tukey HSD</li>
+              <li>Pairwise t-tests</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+<footer>
+      <div class="footer-inner">
+        <p>I created these lecture notes during my first semester of</p>
+        <p><strong>BSc Applied AI & Data Science</strong></p>
+        <p class="footer-author">~ Armaan Kachhawa</p>
+      </div>
+    </footer>
+    </div>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

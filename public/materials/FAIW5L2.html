@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symbolic Approaches in AI - Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+            margin-top: 30px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+            font-size: 1.4em;
+        }
+        .toc {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .toc h2 {
+            margin-top: 0;
+            border-left: none;
+            color: #2c3e50;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        .key-term {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #856404;
+        }
+        .professor-note {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .professor-note strong {
+            color: #2980b9;
+        }
+        .hinglish-summary {
+            background-color: #f0f8e7;
+            border: 2px solid #8bc34a;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        .hinglish-summary h4 {
+            color: #689f38;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .workflow-step {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            position: relative;
+            padding-left: 40px;
+        }
+        .workflow-step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            background-color: #2196f3;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .workflow-container {
+            counter-reset: step-counter;
+        }
+        .practice-questions {
+            background-color: #fff5f5;
+            border: 2px solid #f56565;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .practice-questions h4 {
+            color: #e53e3e;
+            margin-top: 0;
+        }
+        .question {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0fff4;
+            border-left: 3px solid #48bb78;
+            border-radius: 0 5px 5px 0;
+        }
+        .key-takeaways {
+            background-color: #fdf2e9;
+            border: 2px solid #ed8936;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .key-takeaways h4 {
+            color: #c05621;
+            margin-top: 0;
+        }
+        .key-takeaways ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .key-takeaways li {
+            margin: 8px 0;
+        }
+        .diagram-placeholder {
+            background-color: #f7f7f7;
+            border: 2px dashed #bbb;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #666;
+            font-style: italic;
+        }
+        .mind-map {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+        .mind-map h2 {
+            text-align: center;
+            color: #2c3e50;
+            border-left: none;
+            margin-bottom: 30px;
+        }
+        .mind-map-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        .mind-map-node {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            min-width: 150px;
+            position: relative;
+        }
+        .mind-map-node.main {
+            background-color: #e74c3c;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .mind-map-node.secondary {
+            background-color: #f39c12;
+        }
+        .mind-map-node.tertiary {
+            background-color: #27ae60;
+        }
+        .code-example {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .math-example {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        /* Footer */
+      .site-footer {
+        background: #2b3b47;
+        color: #fff;
+        padding: 1.05rem;
+        border-radius: 12px;
+        margin: 1.5rem 0 0;
+        max-width: 100%;
+        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .footer-inner {
+        max-width: 980px;
+        text-align: center;
+        padding: 0 1rem;
+      }
+      .footer-text {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .footer-author {
+        margin: 0;
+        margin-top: 0.4rem;
+        font-weight: 600;
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Symbolic Approaches in AI</h1>
+        <p style="text-align: center; color: #7f8c8d; font-style: italic;">
+            Created by Armaan Kachhawa
+        </p>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#what-is-symbolic-ai">1. What is Symbolic AI?</a></li>
+                <li><a href="#key-components">2. Key Components</a></li>
+                <li><a href="#symbolic-representation-techniques">3. Symbolic Representation Techniques</a></li>
+                <li><a href="#applications-and-limitations">4. Applications and Limitations</a></li>
+                <li><a href="#conclusion">5. Conclusion</a></li>
+                <li><a href="#mind-map">6. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <h2 id="what-is-symbolic-ai">1. What is Symbolic AI?</h2>
+
+        <h3>Definition</h3>
+        <p><span class="key-term">Symbolic AI</span> uses <span class="key-term">symbols</span> to represent objects, concepts, and relationships. It employs <span class="key-term">formal logic</span> and <span class="key-term">rule-based reasoning</span> to process information and make decisions. This approach is also known as <span class="key-term">Good Old-Fashioned AI (GOFAI)</span>.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Previously, in our search problems, we were representing knowledge graphically using nodes and edges. In symbolic AI, we represent objects as nodes and relationships as edges, but now we use symbols instead of just graphical representations. The key difference is that we're using symbols to represent concepts rather than purely visual elements.
+        </div>
+
+        <h3>Understanding Symbols with Examples</h3>
+        <p>Let's understand what we mean by symbols through a mathematical example that the professor explained:</p>
+
+        <div class="math-example">
+            <p>Consider the equation: $x + y = 4$</p>
+            <p>Here:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>$x$ and $y$ are <span class="key-term">symbols</span> representing numbers (specifically natural numbers)</li>
+                <li>$+$ is the <span class="key-term">symbol</span> for addition operation</li>
+                <li>$=$ is the <span class="key-term">symbol</span> for equality</li>
+                <li>$4$ is a <span class="key-term">symbol</span> representing a specific number</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Even if we haven't solved this exact problem before, we can use our knowledge base (KB) - like knowing that $2 + 2 = 4$ or $3 + 1 = 4$ - to reason through and find that $x = 3, y = 1$ or $x = 1, y = 3$ are valid solutions. This is how symbolic reasoning works!
+        </div>
+
+        <h3>Symbolic AI Workflow</h3>
+        <div class="workflow-container">
+            <div class="workflow-step">
+                <strong>Represent knowledge using symbols</strong> - Convert real-world concepts into symbolic form
+            </div>
+            <div class="workflow-step">
+                <strong>Define rules using logic</strong> - Establish logical relationships and constraints
+            </div>
+            <div class="workflow-step">
+                <strong>Store facts and rules in a knowledge base</strong> - Create a repository of knowledge (KB)
+            </div>
+            <div class="workflow-step">
+                <strong>Use inference to derive new knowledge</strong> - Apply reasoning to discover new information
+            </div>
+            <div class="workflow-step">
+                <strong>Query or reason about the system</strong> - Ask questions and get intelligent answers
+            </div>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The knowledge base (KB) is crucial here. When we face a new problem, we don't solve it from scratch. Instead, we use existing knowledge and reason through it. For example, if we know the rules of addition and have some basic facts, we can solve new addition problems by inference.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>Symbolic AI matlab hai ki hum symbols ka use karke knowledge represent karte hain. Jaise math mein $x + y = 4$ likhte hain, wahan $x$, $y$, $+$ sab symbols hain. Iska main fayda ye hai ki machine bhi human jaisa logical reasoning kar sakti hai. Basically, hum rules define karte hain, facts store karte hain knowledge base mein, aur phir inference se naye conclusions nikaalte hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What are the main differences between symbolic AI and graphical representation used in search problems?
+                <div class="answer">
+                    <strong>Answer:</strong> In search problems, we used nodes and edges for graphical representation. In symbolic AI, we still have objects (nodes) and relationships (edges), but we represent them using symbols rather than just visual elements. Symbolic AI adds formal logic and rule-based reasoning to the representation.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Give an example of how symbolic reasoning works with a simple mathematical problem.
+                <div class="answer">
+                    <strong>Answer:</strong> For $x \times y = 6$ where $x, y \in \mathbb{N}$, using our knowledge base that contains facts like $2 \times 3 = 6$ and $1 \times 6 = 6$, we can infer that possible solutions are $(x=2, y=3)$, $(x=3, y=2)$, $(x=1, y=6)$, and $(x=6, y=1)$.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Symbolic AI uses symbols to represent objects, concepts, and relationships</li>
+                <li>It's also known as Good Old-Fashioned AI (GOFAI)</li>
+                <li>The workflow involves: representation → rules → knowledge base → inference → reasoning</li>
+                <li>Unlike graphical methods, symbolic AI emphasizes formal logic and rule-based reasoning</li>
+                <li>Knowledge base (KB) stores facts and rules that enable reasoning about new problems</li>
+            </ul>
+        </div>
+
+        <h2 id="key-components">2. Key Components</h2>
+
+        <h3>Core Components of Symbolic AI</h3>
+        <table>
+            <tr>
+                <th>Component</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Symbols</span></td>
+                <td>Represent entities and concepts</td>
+                <td>"bird", "human", "x", "+"</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Facts</span></td>
+                <td>Basic assertions about the world</td>
+                <td>human(socrates), "Socrates is a human"</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Rules</span></td>
+                <td>Logical statements that define relationships</td>
+                <td>mortal(X) :- human(X), "All humans are mortal"</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Inference Engine</span></td>
+                <td>Derives conclusions from facts and rules</td>
+                <td>Concludes mortal(socrates) from the above</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Let's understand this with a practical example. We know that "Socrates is a human" - this is our assertion or fact because we can observe that Socrates looks like a human and behaves like one. Then we have a rule: "All humans are mortal." Using logical inference, we can conclude that "Socrates is mortal." This is how we derive new knowledge from existing facts and rules.
+        </div>
+
+        <h3>Prolog Example</h3>
+        <p>Here's a classic example in Prolog programming language:</p>
+
+        <div class="code-example">
+Facts:
+human(socrates).
+
+Rule:
+mortal(X) :- human(X).
+
+Query:
+?- mortal(socrates).
+
+Output: Yes
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> This Prolog example perfectly demonstrates symbolic reasoning. We have a fact that Socrates is human, a rule that all humans are mortal, and when we query whether Socrates is mortal, the system uses inference to answer "Yes" based on logical deduction.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>Symbolic AI ke main components hain: Symbols (concepts represent karne ke liye), Facts (basic assertions jaise "Socrates human hai"), Rules (logical statements jaise "saare humans mortal hote hain"), aur Inference Engine (jo facts aur rules se new conclusions nikaalti hai). Ye sab milkar ek intelligent system banate hain jo human jaisa reasoning kar sakta hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> Create a simple symbolic AI example using the concept of animals and their properties.
+                <div class="answer">
+                    <strong>Answer:</strong><br>
+                    Facts: bird(sparrow), bird(eagle)<br>
+                    Rules: can_fly(X) :- bird(X)<br>
+                    Query: ?- can_fly(sparrow)<br>
+                    Output: Yes
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> What role does the inference engine play in symbolic AI?
+                <div class="answer">
+                    <strong>Answer:</strong> The inference engine is the reasoning component that applies logical rules to known facts to derive new conclusions. It automates the process of logical deduction, making the system capable of intelligent reasoning without explicitly programming every possible conclusion.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Four main components: Symbols, Facts, Rules, and Inference Engine</li>
+                <li>Facts are basic assertions about the world that we observe or know</li>
+                <li>Rules define logical relationships and constraints</li>
+                <li>Inference engine automatically derives new knowledge through logical deduction</li>
+                <li>Prolog is a classic programming language for symbolic AI</li>
+            </ul>
+        </div>
+
+        <h2 id="symbolic-representation-techniques">3. Symbolic Representation Techniques</h2>
+
+        <h3>Overview of Techniques</h3>
+        <p>Symbolic AI employs several representation techniques to encode knowledge:</p>
+        <ul>
+            <li><span class="key-term">Predicate Logic</span></li>
+            <li><span class="key-term">Production Rules</span></li>
+            <li><span class="key-term">Semantic Networks</span></li>
+            <li><span class="key-term">Frames and Scripts</span></li>
+            <li><span class="key-term">Ontologies</span></li>
+        </ul>
+
+        <h3>Production Rules</h3>
+        <p><span class="key-term">Production rules</span> follow an IF-THEN structure and are widely used in expert systems.</p>
+
+        <div class="math-example">
+            <p><strong>Example:</strong></p>
+            <p><strong>IF:</strong> fever AND rash AND joint pain</p>
+            <p><strong>THEN:</strong> disease is dengue</p>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> We've discussed this example in previous lectures, but initially we only considered fever and rash. Now we're adding joint pain as a third symptom. These production rules are extensively used in expert systems with forward and backward chaining techniques.
+        </div>
+
+        <p>These rules are used in expert systems with <span class="key-term">forward chaining</span> and <span class="key-term">backward chaining</span> approaches.</p>
+
+        <h3>Semantic Networks</h3>
+        <p><span class="key-term">Semantic networks</span> represent knowledge as a graph of concepts and their relationships.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Before diving into semantic networks, it's important to understand syntax and semantics. Syntax is about the way we represent symbols and their ordering (like $x + y = 4$), while semantics is about meaning - the representation should make sense and be meaningful.
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Semantic Network for "Canary"]<br>
+            Shows connections: Canary → isA → Bird<br>
+            Canary → hasColor → Yellow<br>
+            Canary → canFly → Yes
+        </div>
+
+        <p><strong>Concept:</strong> "Canary"</p>
+        <p><strong>Links:</strong></p>
+        <ul>
+            <li><strong>isA:</strong> Bird</li>
+            <li><strong>hasColor:</strong> Yellow</li>
+            <li><strong>canFly:</strong> Yes</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Semantic networks help us understand relationships graphically. When someone asks about a canary, based on our knowledge network, we can understand that it's a bird, it's yellow in color, and it can fly. These are all attributes linked to the concept of canary, and we can represent this graphically showing what a canary is associated with.
+        </div>
+
+        <h3>Syntax vs Semantics</h3>
+        <p>Understanding the difference between <span class="key-term">syntax</span> and <span class="key-term">semantics</span> is crucial:</p>
+
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>Syntax</th>
+                <th>Semantics</th>
+            </tr>
+            <tr>
+                <td>Definition</td>
+                <td>The way symbols are arranged and ordered</td>
+                <td>The meaning behind the symbols and their arrangement</td>
+            </tr>
+            <tr>
+                <td>Example (Correct)</td>
+                <td>$x + y = 4$</td>
+                <td>This equation has meaning - it represents a mathematical relationship</td>
+            </tr>
+            <tr>
+                <td>Example (Incorrect)</td>
+                <td>$4 \; x \; 4 \; y \; = \; +$</td>
+                <td>Though it uses the same symbols, it has no meaningful interpretation</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The incorrect example "$4 \; x \; 4 \; y \; = \; +$" uses all the same symbols as our correct equation, but it doesn't make sense because it's not semantically correct. The rule-based system defines how we should write equations, and this ordering violates those rules. This is why both syntax (proper symbol arrangement) and semantics (meaningful representation) are essential.
+        </div>
+
+        <h3>Ontologies</h3>
+        <p><span class="key-term">Ontologies</span> provide formal descriptions of domains using:</p>
+        <ul>
+            <li><strong>Concepts:</strong> Person, Disease</li>
+            <li><strong>Relationships:</strong> hasSymptom, isA</li>
+            <li><strong>Axioms:</strong> All humans are mortal</li>
+        </ul>
+
+        <p><strong>Languages:</strong> OWL, RDF</p>
+        <p><strong>Tools:</strong> Protégé</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Axioms are fundamental truths that don't need to be proven - like "All humans are mortal." Nobody has to prove this; it's an accepted axiom. When you ask questions like "Is canary a bird?" or "What color is a canary?", the system follows logical reasoning to provide answers based on these axioms and relationships.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>Symbolic representation ke different techniques hain. Production rules matlab IF-THEN format (jaise agar fever, rash aur joint pain hai to dengue ho sakta hai). Semantic networks graphical representation hai concepts aur relationships ka. Syntax matlab symbols ka proper arrangement, semantics matlab meaningful representation. Ontologies formal domain descriptions hain jo concepts, relationships aur axioms use karte hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> Create a production rule for diagnosing a common cold.
+                <div class="answer">
+                    <strong>Answer:</strong><br>
+                    <strong>IF:</strong> runny_nose AND cough AND sneezing AND mild_fever<br>
+                    <strong>THEN:</strong> likely_diagnosis is common_cold
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Explain why "$+ = 4 y x$" is syntactically incorrect but "$x + y = 4$" is correct.
+                <div class="answer">
+                    <strong>Answer:</strong> The first expression violates the syntactic rules of mathematical notation. In proper mathematical syntax, operators like "+" must be placed between operands, and the equation structure must follow the pattern "operand operator operand = result". The second expression follows these rules correctly.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Five main representation techniques: Predicate Logic, Production Rules, Semantic Networks, Frames/Scripts, and Ontologies</li>
+                <li>Production rules use IF-THEN structure and are common in expert systems</li>
+                <li>Semantic networks represent knowledge as graphs with concepts and relationships</li>
+                <li>Syntax deals with symbol arrangement; semantics deals with meaning</li>
+                <li>Ontologies provide formal domain descriptions with concepts, relationships, and axioms</li>
+            </ul>
+        </div>
+
+        <h2 id="applications-and-limitations">4. Applications and Limitations</h2>
+
+        <h3>Applications of Symbolic AI</h3>
+        <table>
+            <tr>
+                <th>Application Domain</th>
+                <th>Description</th>
+                <th>Examples</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Expert Systems</span></td>
+                <td>Knowledge-based systems that emulate expert decision-making</td>
+                <td>Medical diagnosis systems, financial advisory systems</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Legal Reasoning</span></td>
+                <td>Automated legal analysis and case reasoning</td>
+                <td>Contract analysis, legal precedent matching</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Semantic Web</span></td>
+                <td>Machine-readable web content with structured data</td>
+                <td>Schema.org, linked data applications</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Natural Language Understanding</span></td>
+                <td>Processing and understanding human language</td>
+                <td>Language parsing, semantic analysis</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Robotics</span></td>
+                <td>Planning and logical reasoning for robotic systems</td>
+                <td>Path planning, task scheduling</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Let's think about robotics applications, like a vacuum cleaner robot. It needs to understand its environment and work through it logically. It must reason about obstacles, plan paths, and make decisions based on its knowledge of the environment - all of which involve symbolic reasoning.
+        </div>
+
+        <h3>Limitations of Symbolic AI</h3>
+        <p>Despite its strengths, Symbolic AI has several important limitations:</p>
+
+        <table>
+            <tr>
+                <th>Limitation</th>
+                <th>Description</th>
+                <th>Impact</th>
+            </tr>
+            <tr>
+                <td><span class="key-term">Manual Knowledge Engineering</span></td>
+                <td>Requires human experts to manually encode knowledge</td>
+                <td>Time-consuming and expensive development process</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Poor Handling of Noisy Data</span></td>
+                <td>Cannot effectively process unstructured or noisy information</td>
+                <td>Limited applicability in real-world messy data scenarios</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Weak Pattern Recognition</span></td>
+                <td>Poor performance on tasks requiring pattern recognition</td>
+                <td>Struggles with image processing, speech recognition</td>
+            </tr>
+            <tr>
+                <td><span class="key-term">Rigid Rule Systems</span></td>
+                <td>Rules are inflexible and don't adapt to complex scenarios</td>
+                <td>Brittle systems that fail in unexpected situations</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The rigidity of rules is a major problem. In complex real-world scenarios, there may not always be a rule that applies perfectly. Rules that work in one situation might not work in another, making it very difficult to represent complex environments through fixed rules. This is why purely symbolic approaches have limitations.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>Symbolic AI ke applications bahut saare hain - expert systems (medical diagnosis), legal reasoning, semantic web, natural language understanding, aur robotics mein. Lekin iske limitations bhi hain: manual knowledge engineering time-consuming hai, noisy data handle nahi kar sakta, pattern recognition mein weak hai (jaise images), aur rigid rules complex scenarios mein fail ho jaate hain. Isliye modern AI mein hybrid approaches use karte hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> Why would symbolic AI struggle with image recognition tasks?
+                <div class="answer">
+                    <strong>Answer:</strong> Symbolic AI relies on explicit rules and structured representations, but images contain unstructured, noisy data with complex patterns. It's difficult to create rules that can handle the variability in lighting, angles, colors, and shapes that exist in real-world images. Pattern recognition requires learning from examples rather than following predefined rules.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Give an example of how rigid rules can make a system brittle in robotics.
+                <div class="answer">
+                    <strong>Answer:</strong> A cleaning robot programmed with the rule "avoid all round objects" might work fine avoiding balls and vases, but would unnecessarily avoid harmless round decorations or even get confused by oval-shaped objects. The rigid rule doesn't account for context, object size, or the distinction between obstacles and harmless objects.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Applications span expert systems, legal reasoning, semantic web, NLP, and robotics</li>
+                <li>Particularly effective in domains requiring transparency and logical reasoning</li>
+                <li>Major limitations include manual knowledge engineering and poor handling of noisy data</li>
+                <li>Struggles with pattern recognition tasks like image and speech processing</li>
+                <li>Rigid rule systems make it brittle in complex, dynamic environments</li>
+            </ul>
+        </div>
+
+        <h2 id="conclusion">5. Conclusion</h2>
+
+        <h3>Summary</h3>
+        <p><span class="key-term">Symbolic AI</span> represents a foundational approach in artificial intelligence that uses structured, logical methods to represent and reason about knowledge. Here are the key points:</p>
+
+        <ul>
+            <li><strong>Structured Approach:</strong> Uses symbols, facts, rules, and inference engines for logical reasoning</li>
+            <li><strong>Transparency:</strong> Provides clear, interpretable reasoning processes</li>
+            <li><strong>Expert Systems:</strong> Enables the creation of knowledge-based systems that emulate human expertise</li>
+            <li><strong>Planning and Logic:</strong> Excellent for applications requiring systematic planning and logical deduction</li>
+            <li><strong>Continued Relevance:</strong> Still valuable today, especially in hybrid AI systems that combine symbolic and connectionist approaches</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> It's important to note that symbolic AI is still relevant today. While we have newer approaches like machine learning and neural networks, symbolic AI continues to play a crucial role in hybrid AI systems where we need both pattern recognition capabilities and logical reasoning.
+        </div>
+
+        <h3>Next Topics</h3>
+        <p>In upcoming lectures, we will explore:</p>
+        <ul>
+            <li><span class="key-term">Propositional and Predicate Logic</span> - The mathematical foundations of symbolic reasoning</li>
+            <li><span class="key-term">Rule-Based Systems</span> - Detailed study of how rule-based inference works</li>
+            <li><span class="key-term">Simple Expert System Implementation</span> - Hands-on development of a basic expert system</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>📚 Hinglish Summary</h4>
+            <p>Symbolic AI ek structured approach hai jo symbols, rules aur logic use karta hai. Ye transparent hai aur expert systems banane mein helpful hai. Planning aur logical reasoning ke liye bahut accha hai. Aaj bhi relevant hai, especially hybrid AI systems mein jahan symbolic reasoning aur machine learning dono chahiye hote hain. Aage hum propositional logic, rule-based systems aur expert system implementation padhenge.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> How can symbolic AI be combined with modern machine learning approaches?
+                <div class="answer">
+                    <strong>Answer:</strong> Hybrid systems can use machine learning for pattern recognition and data processing, while employing symbolic AI for logical reasoning and explanation. For example, a medical diagnosis system might use neural networks to analyze medical images and symbolic reasoning to explain the diagnosis and recommend treatments based on medical knowledge.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Why is transparency important in AI systems, and how does symbolic AI provide it?
+                <div class="answer">
+                    <strong>Answer:</strong> Transparency allows users to understand how AI systems reach their conclusions, which is crucial for trust, debugging, and regulatory compliance. Symbolic AI provides transparency because its reasoning process follows explicit logical steps that can be traced and explained, unlike "black box" approaches where the decision process is opaque.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Symbolic AI uses structured, logical approaches for knowledge representation and reasoning</li>
+                <li>Ideal for domains requiring transparency, interpretability, and logical deduction</li>
+                <li>Continues to be relevant in modern hybrid AI systems</li>
+                <li>Foundation for expert systems, planning algorithms, and knowledge-based applications</li>
+                <li>Next topics will cover the mathematical and implementation aspects in detail</li>
+            </ul>
+        </div>
+
+        <div class="mind-map">
+            <h2 id="mind-map">6. Comprehensive Mind Map</h2>
+            <div class="mind-map-container">
+                <div class="mind-map-node main">
+                    Symbolic AI<br>
+                    (GOFAI)
+                </div>
+                
+                <div class="mind-map-node secondary">
+                    Key Components<br>
+                    • Symbols<br>
+                    • Facts<br>
+                    • Rules<br>
+                    • Inference Engine
+                </div>
+                
+                <div class="mind-map-node secondary">
+                    Workflow<br>
+                    • Represent Knowledge<br>
+                    • Define Rules<br>
+                    • Store in KB<br>
+                    • Apply Inference<br>
+                    • Query System
+                </div>
+                
+                <div class="mind-map-node tertiary">
+                    Representation<br>
+                    Techniques<br>
+                    • Predicate Logic<br>
+                    • Production Rules<br>
+                    • Semantic Networks<br>
+                    • Frames & Scripts<br>
+                    • Ontologies
+                </div>
+                
+                <div class="mind-map-node tertiary">
+                    Applications<br>
+                    • Expert Systems<br>
+                    • Legal Reasoning<br>
+                    • Semantic Web<br>
+                    • NLP<br>
+                    • Robotics
+                </div>
+                
+                <div class="mind-map-node tertiary">
+                    Limitations<br>
+                    • Manual Engineering<br>
+                    • Noisy Data Issues<br>
+                    • Poor Pattern Recognition<br>
+                    • Rigid Rules<br>
+                    • Brittle Systems
+                </div>
+                
+                <div class="mind-map-node secondary">
+                    Syntax vs Semantics<br>
+                    • Syntax: Symbol Arrangement<br>
+                    • Semantics: Meaning<br>
+                    • Both Essential for AI
+                </div>
+                
+                <div class="mind-map-node secondary">
+                    Future Integration<br>
+                    • Hybrid AI Systems<br>
+                    • Combined with ML<br>
+                    • Still Highly Relevant<br>
+                    • Transparent Reasoning
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #3498db;">
+        
+                <footer class="site-footer" role="contentinfo" aria-label="Page footer">
+        <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+      </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

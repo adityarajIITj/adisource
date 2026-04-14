@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics of Data Analytics - Missing Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .section {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .hinglish-summary {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        .note-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .example-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        h1 {
+            color: #1e40af;
+            font-size: 2.25rem;
+            font-weight: 700;
+        }
+        h2 {
+            color: #1e40af;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        h3 {
+            color: #2563eb;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        ul li {
+            list-style-type: disc;
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>BS./BSc. in Applied AI and Data Science</h1>
+            <h2>Basics of Data Analytics</h2>
+            <h3>Week 9 - Lecture 1: Missing Data</h3>
+            <p class="text-gray-600">Data Cleaning Techniques</p>
+        </div>
+
+        <div class="section">
+            <h2>Introduction to Missing Data</h2>
+            <ul>
+                <li>After checking for duplicates and formatting errors, the next step is to check for missing data or missing values in your dataset</li>
+                <li>Missing values are extremely common and you're likely to encounter them in almost every data science project</li>
+                <li>Missing values can occur for various reasons (human errors, machine errors, etc.)</li>
+                <li>Each case of missing data requires careful analysis and handling</li>
+            </ul>
+            <div class="note-box">
+                <p><strong>Important:</strong> Don't immediately assume the quality of your data is poor just because there are missing values. It's a normal part of data analysis and requires thoughtful handling.</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                <p><strong>Summary:</strong> Missing data ke baare mein samajhna bahut zaroori hai. Data cleaning ke process mein duplicate data aur formatting errors ko check karne ke baad, missing values ko identify karna aur handle karna next step hota hai. Missing data har data science project mein common hai, aur iska matlab ye nahi hai ki aapka data kharab quality ka hai. Missing data ko handle karne ke liye sabse pehle ye samajhna zaroori hai ki data kyun missing hai, uske baad hi aap proper strategy apply kar sakte hain.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Reasons for Missing Data</h2>
+            <ul>
+                <li><strong>No information for some records:</strong> Some individuals may not be willing to share certain information (e.g., location) due to privacy concerns</li>
+                <li><strong>Users didn't answer questions:</strong> Respondents may skip questions in surveys for various reasons</li>
+                <li><strong>Question not applicable:</strong> Some questions may not apply to certain respondents (e.g., years of schooling for infants in a family survey)</li>
+                <li><strong>Information didn't get recorded:</strong> Data might not have been saved properly or someone clicked "next" too quickly</li>
+                <li><strong>Machine malfunction:</strong> Technical glitches or system errors during data collection</li>
+                <li><strong>Many other potential reasons</strong> for missing values in datasets</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <p><strong>Summary:</strong> Data missing hone ke kai reasons ho sakte hain. Kuch log privacy ki wajah se information share nahi karna chahte, kuch cases mein user ne question ka jawab hi nahi diya, ya fir kuch questions kuch users ke liye relevant nahi the (jaise ki school ki education ke baare mein question ek infant ke liye). Technical problems ki wajah se bhi information record nahi ho paati - jaise ki machine malfunction ya data save nahi hona. Data analyst ke roop mein, aapko in sabhi reasons ko samajhna chahiye taki aap decide kar sakein ki missing data ko kaise handle karna hai.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Handling Missing Data</h2>
+            <p>There are two primary options for dealing with missing data:</p>
+            
+            <h3>1. Filling in the Missing Values</h3>
+            <ul>
+                <li>This can be a preferred method in many cases</li>
+                <li><strong>Important:</strong> Filling in doesn't mean inventing values or making conjectures</li>
+                <li>Common approach: Fill in with an indicator of missingness (e.g., NA, N/A)</li>
+                <li>Be consistent - use the same indicator for all missing values of the same type</li>
+                <li>After marking missing values appropriately, you can continue with analysis using the remaining data</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> In a dataset with transaction records containing customer ID, product ID, and location information, if some location data is missing, you could replace those empty fields with "N/A" and continue analyzing the other variables like purchase patterns.</p>
+                <table>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Customer ID</th>
+                        <th>Product ID</th>
+                        <th>Location</th>
+                    </tr>
+                    <tr>
+                        <td>T001</td>
+                        <td>C123</td>
+                        <td>P789</td>
+                        <td>New York</td>
+                    </tr>
+                    <tr>
+                        <td>T002</td>
+                        <td>C456</td>
+                        <td>P012</td>
+                        <td><strong>N/A</strong></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3>2. Deleting Records</h3>
+            <ul>
+                <li>Used when crucial information is missing</li>
+                <li>Necessary when the missing data is:
+                    <ul>
+                        <li>The specific information you want to analyze</li>
+                        <li>A unique identifier needed to properly categorize or link data</li>
+                    </ul>
+                </li>
+                <li><strong>Warning:</strong> Deleting records can potentially bias your data and lead to incorrect conclusions</li>
+                <li>For example, if all data from a particular store has missing values and you delete those records, your analysis won't represent that store at all</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> If your dataset is missing the Product ID for certain transactions, and your analysis focuses on product popularity or purchase trends, you would need to delete these records since you can't determine which product was purchased.</p>
+                <table>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Customer ID</th>
+                        <th>Product ID</th>
+                        <th>Date</th>
+                    </tr>
+                    <tr>
+                        <td>T001</td>
+                        <td>C123</td>
+                        <td>P789</td>
+                        <td>2023-01-15</td>
+                    </tr>
+                    <tr class="bg-red-100">
+                        <td>T002</td>
+                        <td>C456</td>
+                        <td><strong>Missing</strong></td>
+                        <td>2023-01-16</td>
+                    </tr>
+                </table>
+                <p class="text-sm mt-2">The highlighted row would need to be removed since the Product ID is critical for analysis of product trends.</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                <p><strong>Summary:</strong> Missing data ko handle karne ke do main tarike hain. Pehla tarika hai missing values ko fill karna - lekin iska matlab ye nahi hai ki aap koi bhi value invent kar dein. Aap usually "NA" ya "N/A" jaise indicators ka use kar sakte hain missing data ko mark karne ke liye. Dhyan rahe ki aap consistent rahein apne approach mein. Dusra tarika hai puri entry ko delete karna jab critical information missing ho. Lekin is approach se data biased ho sakta hai, kyunki aap kuch observations ko completely ignore kar rahe hain. Har situation mein soch-samajh kar decision lena zaroori hai ki konsa approach better rahega.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Identifying Missing Data</h2>
+            <p>Missing data doesn't always appear as blank fields in your dataset. When working with secondary data (data collected by others), missing values might be represented in various ways:</p>
+            
+            <ul>
+                <li>"N.A." or variations like "N/A", "NA", "not applicable"</li>
+                <li>A period or dot "."</li>
+                <li>A dash "-"</li>
+                <li>Suspicious numeric values that seem out of place, such as:
+                    <ul>
+                        <li>Very large values (e.g., 99, 999, 9999)</li>
+                        <li>Negative values when negative doesn't make sense (-1, -100)</li>
+                        <li>Other placeholder codes commonly used in various fields</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <div class="note-box">
+                <p><strong>Data Analyst Tip:</strong> Use your common sense and domain knowledge to identify values that seem unrealistic or suspicious for your variables. These might actually be codes for missing data rather than actual measurements.</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                <p><strong>Summary:</strong> Missing data ko identify karna bhi ek important skill hai. Missing data hamesha khali cells ke roop mein nahi dikhta. Kai baar, especially secondary data mein, missing values ko represent karne ke liye different codes use kiye jate hain. Ye codes "N.A.", ".", "-" ya fir suspicious numeric values (jaise 99, -100, etc.) ke roop mein ho sakte hain. Ek data analyst ke roop mein, aapko ye samajhna zaroori hai ki kab ek value actual measurement hai aur kab woh missing data ko represent kar raha hai. Iske liye domain knowledge aur common sense dono zaroori hain.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Recap: Handling Missing Data</h2>
+            <ol>
+                <li><strong>Check for missing data</strong> after addressing duplicates and formatting errors</li>
+                <li><strong>Understand why data is missing</strong> to determine the appropriate handling method</li>
+                <li><strong>Choose between filling in values or deleting records</strong> based on:
+                    <ul>
+                        <li>The importance of the missing information</li>
+                        <li>The potential impact on your analysis</li>
+                        <li>The pattern and extent of missingness</li>
+                    </ul>
+                </li>
+                <li><strong>Be consistent</strong> in your approach to handling missing data</li>
+                <li><strong>Document your decisions</strong> about how you handled missing data</li>
+                <li><strong>Be aware of potential biases</strong> introduced by your handling method</li>
+            </ol>
+            
+            <div class="hinglish-summary">
+                <p><strong>Summary:</strong> Is lecture mein humne missing data ke baare mein detail mein jaana. Data cleaning process mein duplicates aur formatting errors ke baad, missing data ko handle karna zaroori hai. Missing data ke kai reasons ho sakte hain, aur usko handle karne ke do main tarike hain - ya toh missing values ko fill karna ya fir puri entry ko delete karna. Har decision mein tradeoffs hote hain, isliye carefully sochna zaroori hai. Missing data ko identify karne ke liye aapko ye bhi samajhna hoga ki kaise missing data ko represent kiya jata hai datasets mein. Ek accha data analyst wahi hai jo missing data ko systematically aur thoughtfully handle kare, taki analysis accurate aur reliable rahe.</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center text-gray-600">
+            <p>BS./BSc. in Applied AI and Data Science</p>
+            <p>Basics of Data Analytics - Week 9, Lecture 1</p>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

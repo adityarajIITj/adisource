@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/prp/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pattern Recognition Principles - Lecture Notes</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 300;
+      }
+
+      .header p {
+        margin: 0.5rem 0 0 0;
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .toc {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .toc h2 {
+        color: #667eea;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 0.5rem;
+      }
+
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .toc li {
+        margin: 0.8rem 0;
+      }
+
+      .toc a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .toc a:hover {
+        color: #667eea;
+      }
+
+      .content {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        color: #34495e;
+      }
+
+      h3 {
+        font-size: 1.4rem;
+        color: #7f8c8d;
+      }
+
+      .key-term {
+        background: #e8f4fd;
+        color: #2980b9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      .professor-note {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .professor-note strong {
+        color: #856404;
+      }
+
+      .hinglish-summary {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 10px;
+        border-left: 5px solid #e91e63;
+      }
+
+      .hinglish-summary h4 {
+        margin: 0 0 1rem 0;
+        color: #880e4f;
+        font-size: 1.2rem;
+      }
+
+      .practice-questions {
+        background: #e8f5e8;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 10px;
+        border-left: 5px solid #4caf50;
+      }
+
+      .practice-questions h4 {
+        margin: 0 0 1rem 0;
+        color: #2e7d32;
+        font-size: 1.2rem;
+      }
+
+      .key-takeaways {
+        background: #f3e5f5;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 10px;
+        border-left: 5px solid #9c27b0;
+      }
+
+      .key-takeaways h4 {
+        margin: 0 0 1rem 0;
+        color: #6a1b9a;
+        font-size: 1.2rem;
+      }
+
+      .embed-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        margin: 1rem auto;
+        padding-top: 56.25%; /* 16:9 aspect ratio */
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .embed-wrap iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      /* Add inside the <style> block */
+      .responsive-img {
+        display: block;
+        max-width: 100%; /* never exceed container width */
+        height: auto; /* preserve intrinsic aspect ratio */
+        margin: 1rem auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        object-fit: contain;
+      }
+      .responsive-img1 {
+        display: block;
+        max-width: 50%; /* never exceed container width */
+        height: auto; /* preserve intrinsic aspect ratio */
+        margin: 1rem auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        object-fit: contain;
+      }
+
+      /* Optional centered container with max width */
+      .img-container {
+        width: 100%;
+        max-width: 900px;
+        margin: 1rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+
+      .diagram-placeholder {
+        background: #f8f9fa;
+        border: 2px dashed #6c757d;
+        padding: 2rem;
+        text-align: center;
+        margin: 1.5rem 0;
+        border-radius: 8px;
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      .radial-mindmap {
+        position: relative;
+        min-height: 600px;
+        width: 100%;
+        background: #dde0ea;
+        border-radius: 16px;
+        padding: 2.5rem 0;
+        overflow: visible;
+      }
+
+      .center-node {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        color: #181e31;
+        padding: 1.4rem 3.5rem;
+        border-radius: 18px;
+        font-size: 1.37rem;
+        font-weight: bold;
+        box-shadow: 0 4px 22px rgba(27, 38, 63, 0.19);
+        z-index: 2;
+        text-align: center;
+      }
+
+      .node {
+        position: absolute;
+        width: 200px;
+        background: #3bbaff;
+        color: #fff;
+        border-radius: 13px;
+        padding: 0.85rem 1.1rem;
+        font-size: 1.13rem;
+        border: 2px solid #deeafb;
+        text-align: left;
+        box-shadow: 0 4px 16px rgba(43, 78, 154, 0.16);
+        transition: background 0.2s;
+        z-index: 2;
+      }
+
+      .node span {
+        display: block;
+        margin-left: 0.2rem;
+        margin-top: 0.7rem;
+        font-weight: normal;
+        color: #f3f8ff;
+        font-size: 1rem;
+      }
+
+      .node1 {
+        background: #3cba54;
+        left: 10%;
+        top: 23%;
+      }
+      .node2 {
+        background: #f4c20d;
+        left: 15%;
+        top: 45%;
+      }
+      .node3 {
+        background: #db3236;
+        left: 20%;
+        top: 67%;
+      }
+      .node4 {
+        background: #4885ed;
+        right: 10%;
+        top: 23%;
+      }
+      .node5 {
+        background: #ff9900;
+        right: 15%;
+        top: 45%;
+      }
+      .node6 {
+        background: #de62fa;
+        right: 20%;
+        top: 67%;
+      }
+
+      .mindmap-lines {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      ul {
+        padding-left: 2rem;
+      }
+
+      li {
+        margin: 0.5rem 0;
+      }
+
+      .answer {
+        background: #f0f8ff;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 5px;
+        border-left: 3px solid #007bff;
+      }
+
+      .answer strong {
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Pattern Recognition Principles</h1>
+      <p>Comprehensive Lecture Notes - Introduction & Example Tasks</p>
+    </div>
+
+    <div class="toc">
+      <h2>📚 Table of Contents</h2>
+      <ul>
+        <li><a href="#introduction">1. What is Pattern Recognition?</a></li>
+        <li>
+          <a href="#evolution"
+            >2. Evolution: Pattern Recognition → Machine Learning → Deep
+            Learning</a
+          >
+        </li>
+        <li><a href="#why-study">3. Why Study Pattern Recognition?</a></li>
+        <li>
+          <a href="#applications">4. Applications of Pattern Recognition</a>
+        </li>
+        <li>
+          <a href="#example-tasks">5. Example Tasks in Pattern Recognition</a>
+        </li>
+        <li><a href="#core-tasks">6. Core Tasks of Pattern Recognition</a></li>
+        <li><a href="#learning-concepts">7. Learning Concepts</a></li>
+        <li><a href="#types-ml">8. Types of Machine Learning</a></li>
+        <li><a href="#course-info">9. Course Information</a></li>
+        <li><a href="#mind-map">10. Concept Mind Map</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <h1 id="introduction">1. What is Pattern Recognition?</h1>
+
+      <p>
+        <strong class="key-term">Pattern Recognition (PR)</strong> is the
+        scientific discipline that deals with designing systems and algorithms
+        to automatically detect, classify, and interpret patterns (regularities,
+        structures, or features) in data such as images, speech, text, or
+        signals.
+      </p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Pattern recognition is
+        one of the foundational courses for things like machine learning, deep
+        learning and so on. We often have to deal with a lot of data like
+        images, audio, texts, and different kinds of signals in the internet
+        world. The question is: How do we interpret that kind of data? And after
+        interpreting, how do you take some decisions? That is all about pattern
+        recognition.
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Pattern Recognition matlab data mein se patterns dhundna aur unhe
+          samajhna hai. Jaise hum images, audio, text dekh kar decisions lete
+          hain, waise hi machines ko bhi sikhana hai. Ye ek scientific
+          discipline hai jo algorithms banati hai automatically patterns detect
+          karne ke liye. Basically, data ko samajh kar usse kuch meaningful
+          information nikalna hai.
+        </p>
+      </div>
+
+      <h1 id="evolution">
+        2. Evolution: Pattern Recognition → Machine Learning → Deep Learning
+      </h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Era</th>
+            <th>Time Period</th>
+            <th>Focus</th>
+            <th>Methods</th>
+            <th>Key Characteristics</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong class="key-term">Pattern Recognition</strong></td>
+            <td>1960s–1990s</td>
+            <td>Identifying and classifying patterns</td>
+            <td>Bayes Classifier, k-NN, Naive Bayes, K-Means, PCA</td>
+            <td>Heavy reliance on feature engineering</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Machine Learning</strong></td>
+            <td>1990s–2012</td>
+            <td>Prediction, regression, ranking, clustering</td>
+            <td>SVMs, Random Forests, Advanced Regression</td>
+            <td>Stronger emphasis on optimization & statistical learning</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Deep Learning</strong></td>
+            <td>2012–Present</td>
+            <td>End-to-end representation learning</td>
+            <td>Neural Networks, CNNs, RNNs, Transformers</td>
+            <td>Minimal manual feature design, large-scale data & GPUs</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Prior to 1990, there were
+        no very sophisticated methods for feature generation. People relied on
+        <strong class="key-term">feature engineering</strong> or
+        <strong class="key-term">handcrafted features</strong>. Around 2012,
+        there was a big change with AlexNet paper, which focused more on
+        end-to-end representation using neural networks. This happened because
+        we started having smartphones, capturing lots of images and videos, plus
+        compute improvements made deep learning possible.
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Pattern Recognition se shuru hokar Machine Learning aur phir Deep
+          Learning tak ka safar hai. Pehle manual features banane padte the
+          (feature engineering), phir optimization par focus aaya, aur ab neural
+          networks se end-to-end learning hoti hai. Smartphones aur data
+          increase ke wajah se ye evolution hua hai. Pattern Recognition
+          foundation hai baaki sab ke liye.
+        </p>
+      </div>
+
+      <h1 id="why-study">3. Why Study Pattern Recognition?</h1>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> I'll take you to a demo
+        from 1989 by Yann LeCun when he was a PhD student. He was doing
+        handwritten digit recognition. This system shows how far we've come -
+        back then, putting handwritten digits and recognizing them was
+        revolutionary. Today, with all advancement, this seems very easy, but
+        back then it was showing the promise of pattern recognition techniques.
+      </div>
+
+      <div class="embed-wrap">
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/H0oEr40YhrQ?si=r3Ehxd4yHT3dXhdq"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <h1 id="applications">4. Applications of Pattern Recognition</h1>
+
+      <h2>4.1 Medical Applications</h2>
+      <ul>
+        <li>
+          <strong class="key-term">COVID-19 Detection:</strong> Radiologists use
+          deep learning to find signs of COVID-19 in chest X-rays by recognizing
+          certain patterns
+        </li>
+        <li>Medical image analysis for disease diagnosis</li>
+      </ul>
+      <div class="img-container">
+        <img
+          src="src/PRPW1I1.jpeg"
+          alt="Apple vs Orange redness vs weight"
+          class="responsive-img"
+        />
+      </div>
+
+      <h2>4.2 Financial Applications</h2>
+      <ul>
+        <li>
+          <strong class="key-term">Fraud Detection:</strong> Identifying
+          fraudulent transactions through pattern analysis
+        </li>
+        <li>
+          <strong class="key-term">Risk Assessment:</strong> Predictive models
+          for credit risks and investment decisions
+        </li>
+        <li>
+          <strong class="key-term">Algorithmic Trading:</strong> Analyzing
+          market trends for trading decisions
+        </li>
+      </ul>
+
+      <h2>4.3 E-commerce & Recommendation Systems</h2>
+      <div class="img-container">
+        <img
+          src="src\PRPW1I2.jpeg"
+          alt="Apple vs Orange redness vs weight"
+          class="responsive-img"
+        />
+      </div>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> When you purchase
+        something online, based on your purchase history and profile, it starts
+        recommending something to you. How does it work? It applies pattern
+        recognition and machine learning at the backend. Based on your past
+        history of purchase or interest, it shows recommendations - this is an
+        example of unsupervised learning.
+      </div>
+
+      <h2>4.4 Autonomous Vehicles</h2>
+      <ul>
+        <li>
+          Self-driving cars need to recognize various patterns: vehicles,
+          obstacles, animals crossing roads
+        </li>
+        <li>Traffic pattern recognition and violations detection</li>
+        <li>License plate recognition and vehicle type identification</li>
+      </ul>
+      <div class="img-container">
+        <img
+          src="src/PRPW1I3.jpeg"
+          alt="Apple vs Orange redness vs weight"
+          class="responsive-img1"
+        />
+        <img
+          src="src/PRPW1I4.jpeg"
+          alt="Apple vs Orange redness vs weight"
+          class="responsive-img1"
+        />
+      </div>
+      <h2>4.5 Other Applications</h2>
+      <ul>
+        <li>
+          <strong class="key-term">Face Recognition:</strong> Used as smartphone
+          passwords and security systems
+        </li>
+        <div class="img-container">
+          <img
+            src="src\PRPW1I5.jpeg"
+            alt="Apple vs Orange redness vs weight"
+            class="responsive-img"
+          />
+        </div>
+        <li>
+          <strong class="key-term">Image Captioning:</strong> Writing human-like
+          descriptions of images
+        </li>
+        <div class="img-container">
+          <img
+            src="src/PRPW1I6.jpeg"
+            alt="Apple vs Orange redness vs weight"
+            class="responsive-img"
+          />
+        </div>
+        <li>
+          <strong class="key-term">Language Translation:</strong> Translating
+          from one language to another
+        </li>
+        <div class="img-container">
+          <img
+            src="src/PRPW1I7.jpeg"
+            alt="Apple vs Orange redness vs weight"
+            class="responsive-img"
+          />
+        </div>
+        <li>
+          <strong class="key-term">Speech Recognition:</strong> Tools like
+          Google Assistant and Alexa
+        </li>
+        <div class="img-container">
+          <img
+            src="src/PRPW1I8.jpeg"
+            alt="Apple vs Orange redness vs weight"
+            class="responsive-img"
+          />
+        </div>
+        <li>
+          <strong class="key-term">Google Lens:</strong> Visual search without
+          perfect descriptions
+        </li>
+      </ul>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Pattern Recognition ke bohot saare applications hain - medical mein
+          disease detection, finance mein fraud detection, e-commerce mein
+          recommendations, self-driving cars, face recognition, language
+          translation. Basically har jagah jahan data se patterns nikalne hain
+          aur decisions lene hain, wahan PR use hota hai. Google Lens, Alexa,
+          smartphone security - sab PR ke examples hain.
+        </p>
+      </div>
+
+      <div class="practice-questions">
+        <h4>🤔 Practice Questions</h4>
+        <ol>
+          <li>
+            Explain how pattern recognition is used in fraud detection systems.
+          </li>
+          <li>
+            What are the key differences between the three eras: Pattern
+            Recognition, Machine Learning, and Deep Learning?
+          </li>
+          <li>
+            Give three real-world applications where you have personally used
+            pattern recognition systems.
+          </li>
+        </ol>
+
+        <div class="answer">
+          <strong>Answer 1:</strong> In fraud detection, pattern recognition
+          analyzes transaction patterns, spending behaviors, location data, and
+          timing to identify anomalies. The system learns normal user behavior
+          and flags transactions that deviate significantly from established
+          patterns, such as unusual spending amounts, locations, or frequency.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 2:</strong> Pattern Recognition (1960s-1990s) focused
+          on manual feature engineering and basic classification. Machine
+          Learning (1990s-2012) emphasized optimization and statistical learning
+          with broader tasks. Deep Learning (2012-present) uses neural networks
+          for end-to-end learning with minimal manual feature design.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 3:</strong> Examples include: smartphone face unlock
+          (face recognition), Google Photos automatically tagging people (image
+          classification), and music streaming recommendations based on
+          listening history (recommendation systems).
+        </div>
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🎯 Key Takeaways</h4>
+        <ul>
+          <li>
+            Pattern Recognition is the foundation for modern AI applications
+          </li>
+          <li>
+            Evolution from manual feature engineering to automated learning
+          </li>
+          <li>
+            Applications span across medical, financial, e-commerce, and
+            entertainment domains
+          </li>
+          <li>
+            Understanding foundations is crucial before jumping to advanced
+            applications
+          </li>
+        </ul>
+      </div>
+
+      <h1 id="example-tasks">5. Example Tasks in Pattern Recognition</h1>
+
+      <h2>5.1 Apple vs Orange Classification</h2>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> This is a very simple
+        task for humans - by looking at an image, we can easily say which one is
+        apple, which one is orange. But for machines, we need to tell them which
+        properties to look for. We represent fruits using features like
+        <strong class="key-term">color (redness)</strong> and
+        <strong class="key-term">weight</strong> in a 2D coordinate system.
+      </div>
+
+      <h3>Process:</h3>
+      <ol>
+        <li>
+          <strong class="key-term">Training Phase:</strong> Give examples to
+          robot, extract features (redness, weight), represent as 2D points
+        </li>
+        <li>
+          <strong class="key-term">Test Phase:</strong> For new fruit, measure
+          features and classify based on distance to known examples
+        </li>
+      </ol>
+
+      <div class="img-container">
+        <img
+          src="src/PRPW1I9.jpeg"
+          alt="Apple vs Orange redness vs weight"
+          class="responsive-img"
+        />
+      </div>
+
+      <h3>Training, Testing, and Validation Concepts</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Set</th>
+            <th>Typical %</th>
+            <th>Purpose</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong class="key-term">Training Set</strong></td>
+            <td>70%</td>
+            <td>Learn</td>
+            <td>Model learns parameters from this data</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Validation Set</strong></td>
+            <td>15%</td>
+            <td>Tune</td>
+            <td>Used to tune parameters and select models</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Test Set</strong></td>
+            <td>15%</td>
+            <td>Evaluate</td>
+            <td>Final evaluation - never touch during training!</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> It's very important - you
+        should never touch the test set during training because that will be
+        like cheating. Taking a classroom analogy: training is what the teacher
+        teaches, while testing is the exam. You cannot use notebooks in the
+        exam!
+      </div>
+
+      <h2>5.2 Classroom Attendance System</h2>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In a large class, instead
+        of calling each student's name, I can click a photograph and from that
+        photograph, take attendance automatically. I keep a database of all
+        students' photographs with names and roll numbers. At test time, I click
+        multiple photographs, detect faces, and match them with stored database
+        using sophisticated face representations.
+      </div>
+
+      <h3>Process:</h3>
+      <ol>
+        <li>Store database of student photos with names and roll numbers</li>
+        <li>Click classroom photos</li>
+        <li>
+          <strong class="key-term">Face Detection:</strong> Identify faces in
+          the image
+        </li>
+        <li>
+          <strong class="key-term">Face Matching:</strong> Match detected faces
+          with database
+        </li>
+        <li>Mark attendance based on successful matches</li>
+      </ol>
+
+      <h2>5.3 Ham vs Spam Classification</h2>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Gmail automatically moves
+        spam emails to spam folder. How does this work? This works with pattern
+        recognition principles. For example, "Congratulations you have won free
+        iPhone, click here" - this type of email is spam, while legitimate
+        emails from official sources are ham.
+      </div>
+
+      <h3>Email Representation Features:</h3>
+      <ul>
+        <li>
+          <strong class="key-term">Sender's address:</strong> Whether from
+          legitimate official email ID
+        </li>
+        <li>
+          <strong class="key-term">Subject line keywords:</strong> Suspicious
+          words like "free", "win", "click here"
+        </li>
+        <li><strong class="key-term">Presence of suspicious links</strong></li>
+        <li><strong class="key-term">Frequency of certain words</strong></li>
+      </ul>
+
+      <h2>5.4 Document Clustering</h2>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> When you read online
+        news, you see related news in the side panel. When you read political
+        news, you get political news recommendations. When you read cricket
+        news, you get sports-related news. This works through document
+        clustering - an unsupervised algorithm.
+      </div>
+
+      <h3>How it works:</h3>
+      <ul>
+        <li>Cricket news uses words like: run, wicket, Tendulkar</li>
+        <li>
+          Political news uses words like: Prime Minister, Parliament, Chief
+          Minister
+        </li>
+        <li>Similar vocabulary creates similar features, enabling grouping</li>
+      </ul>
+
+      <h2>5.5 Automatic Speech Recognition (ASR)</h2>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> "Jodhpur is a beautiful
+        city" - if you speak this, the goal is to recognize what you said and
+        convert it to text. Applications like Alexa and Google Assistant use
+        this technology.
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Example tasks mein dekha ki har problem ko features ke through
+          represent karte hain. Apple-orange mein color aur weight use kiya,
+          attendance system mein face features, spam detection mein email ke
+          words aur patterns, document clustering mein vocabulary similarity,
+          aur speech recognition mein audio signals. Training-testing-validation
+          ka concept bohot important hai - test set ko kabhi training mein use
+          nahi karna chahiye.
+        </p>
+      </div>
+
+      <div class="practice-questions">
+        <h4>🤔 Practice Questions</h4>
+        <ol>
+          <li>
+            What features would you choose to distinguish between cats and dogs
+            in images?
+          </li>
+          <li>
+            Explain the training-testing-validation split with a real-world
+            analogy.
+          </li>
+          <li>
+            How would you design a system to classify movie reviews as positive
+            or negative?
+          </li>
+        </ol>
+
+        <div class="answer">
+          <strong>Answer 1:</strong> Features for cats vs dogs: ear shape
+          (pointed vs floppy), eye shape, facial structure, body size, tail
+          characteristics, fur patterns, nose shape. These could be extracted as
+          numerical measurements from images.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 2:</strong> Like preparing for an exam: Training =
+          studying from textbooks and notes, Validation = solving practice tests
+          to check preparation, Testing = actual exam (completely unseen
+          questions). You cannot use textbooks during the actual exam.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 3:</strong> Extract features like: positive/negative
+          word counts, sentiment keywords, punctuation usage, sentence length,
+          exclamation marks. Train a classifier on labeled review data and test
+          on new reviews.
+        </div>
+      </div>
+
+      <h1 id="core-tasks">6. Core Tasks of Pattern Recognition</h1>
+
+      <h2>6.1 Representation & Feature Extraction</h2>
+      <p>
+        Convert raw sensory data into a compact, informative representation.
+      </p>
+
+      <h3>Examples:</h3>
+      <ul>
+        <li><strong class="key-term">MFCC features</strong> from speech</li>
+        <li>
+          <strong class="key-term">SIFT, HOG, or Deep features</strong> from
+          images
+        </li>
+        <li><strong class="key-term">Word embeddings</strong> from text</li>
+      </ul>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Any data, whether speech,
+        image, video, or text, needs to be represented properly. This is one of
+        the most fundamental tasks in pattern recognition. Different modalities
+        have evolved different representation techniques.
+      </div>
+
+      <h2>6.2 Classification</h2>
+      <p>Assign an input to one of several predefined categories.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong class="key-term">Binary Classification</strong></td>
+            <td>Two classes</td>
+            <td>Spam/Ham, Apple/Orange</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Multiclass Classification</strong></td>
+            <td>More than two classes</td>
+            <td>Digit recognition (0-9), Animal species</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Typical Approaches:</h3>
+      <ul>
+        <li>k-Nearest Neighbors (k-NN)</li>
+        <li>Bayes Classifier</li>
+        <li>Decision Trees</li>
+        <li>Support Vector Machines (SVM)</li>
+        <li>Neural Networks</li>
+      </ul>
+
+      <h2>6.3 Regression</h2>
+      <p>
+        Predict a <strong class="key-term">continuous output</strong> from input
+        features.
+      </p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Regression is similar to
+        classification, but in classification, class labels are discrete (apple
+        or orange, 0 or 1). In regression, output could be continuous - like
+        predicting age which could be 10 years 2 months, 10 years 3 months, etc.
+      </div>
+
+      <h3>Example:</h3>
+      <p>Predicting the age of a person from facial features.</p>
+
+      <h2>6.4 Clustering</h2>
+      <p>Group similar data points without prior labels.</p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In clustering, there are
+        no labels given. You just give data points and ask the model to group
+        them based on similarity. This is unsupervised learning - grouping
+        without having prior labels.
+      </div>
+
+      <h3>Example:</h3>
+      <p>Document clustering for news recommendation</p>
+
+      <h2>6.5 Density Estimation</h2>
+      <p>Model the probability distribution of the data.</p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> You are given a bunch of
+        data - can you model how the probability distribution looks like? This
+        helps in understanding the distribution of data.
+      </div>
+
+      <h3>Types:</h3>
+      <ul>
+        <li>
+          <strong class="key-term">Parametric:</strong> Gaussian, Gaussian
+          Mixture Models
+        </li>
+        <li>
+          <strong class="key-term">Non-parametric:</strong> Kernel Density
+          Estimation
+        </li>
+      </ul>
+
+      <h2>6.6 Dimensionality Reduction</h2>
+      <p>Reduce the number of features while preserving important structure.</p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Sometimes data can be
+        represented using very high dimensions, but not all dimensions are
+        useful. Some are redundant. How do you find which features are good,
+        which are not? This is where dimensionality reduction helps.
+      </div>
+
+      <h3>Examples:</h3>
+      <ul>
+        <li>
+          <strong class="key-term">PCA</strong> (Principal Component Analysis)
+        </li>
+        <li>
+          <strong class="key-term">LDA</strong> (Linear Discriminant Analysis)
+        </li>
+        <li>Autoencoders</li>
+      </ul>
+
+      <h2>6.7 Sequence/Temporal Pattern Recognition</h2>
+      <p>Recognize patterns in time-dependent or sequential data.</p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Sometimes data is
+        sequential - like video (sequence of frames), speech (sequence of
+        sounds), or natural language sentences (sequence of words). Sequential
+        pattern recognition deals with this type of data.
+      </div>
+
+      <h3>Examples:</h3>
+      <ul>
+        <li><strong class="key-term">HMMs</strong> for speech recognition</li>
+        <li><strong class="key-term">CRFs</strong> for sequence labeling</li>
+      </ul>
+
+      <h2>6.8 Anomaly Detection</h2>
+      <p>Identify data points that deviate significantly from the norm.</p>
+
+      <h3>Examples:</h3>
+      <ul>
+        <li><strong class="key-term">Fraud detection</strong> in banking</li>
+        <li>
+          <strong class="key-term">Machine fault detection</strong> in
+          manufacturing
+        </li>
+      </ul>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Core tasks mein 8 main categories hain: Feature extraction (data ko
+          represent karna), Classification (categories mein baantna), Regression
+          (continuous values predict karna), Clustering (grouping without
+          labels), Density estimation (probability distribution samajhna),
+          Dimensionality reduction (important features rakhe aur bakki hatana),
+          Sequential pattern recognition (time-based data), aur Anomaly
+          detection (abnormal patterns dhundna). Ye sab fundamental building
+          blocks hain PR ke.
+        </p>
+      </div>
+
+      <div class="practice-questions">
+        <h4>🤔 Practice Questions</h4>
+        <ol>
+          <li>
+            Classify the following as regression or classification problems: (a)
+            Email spam detection, (b) Stock price prediction, (c) Medical
+            diagnosis, (d) Sales forecasting
+          </li>
+          <li>
+            What's the difference between supervised and unsupervised learning?
+            Give examples.
+          </li>
+          <li>
+            Why is dimensionality reduction important in machine learning?
+          </li>
+        </ol>
+
+        <div class="answer">
+          <strong>Answer 1:</strong> (a) Classification - discrete categories
+          (spam/ham), (b) Regression - continuous values, (c) Classification -
+          discrete diagnosis categories, (d) Regression - continuous sales
+          values.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 2:</strong> Supervised learning uses labeled data
+          (classification, regression), while unsupervised learning finds
+          patterns without labels (clustering, density estimation). Examples:
+          Supervised - email classification; Unsupervised - customer
+          segmentation.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 3:</strong> Reduces computational complexity, removes
+          redundant features, enables visualization, prevents curse of
+          dimensionality, and helps in better model performance by focusing on
+          important features.
+        </div>
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🎯 Key Takeaways</h4>
+        <ul>
+          <li>Eight core tasks form the foundation of pattern recognition</li>
+          <li>
+            Feature extraction and representation are fundamental to all other
+            tasks
+          </li>
+          <li>
+            Classification and regression differ in output type (discrete vs
+            continuous)
+          </li>
+          <li>Unsupervised learning works without labeled data</li>
+          <li>
+            Dimensionality reduction helps manage high-dimensional data
+            efficiently
+          </li>
+        </ul>
+      </div>
+
+      <h1 id="learning-concepts">7. Learning Concepts</h1>
+
+      <h2>7.1 What is Learning?</h2>
+
+      <blockquote
+        style="
+          background: #f8f9fa;
+          padding: 1rem;
+          border-left: 4px solid #667eea;
+          margin: 1rem 0;
+        "
+      >
+        <p>
+          <em
+            >"Learning is any process by which a system improves performance
+            from experience."</em
+          >
+        </p>
+        <cite>- Herbert Simon</cite>
+      </blockquote>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Experience comes from
+        data. We humans also see a lot of data - we are every time seeing the
+        visual world, hearing things, reading books. A lot of data we are
+        processing every time, and therefore we are learning and evolving. That
+        is what we call experience.
+      </div>
+
+      <h2>7.2 What is Machine Learning?</h2>
+
+      <blockquote
+        style="
+          background: #f8f9fa;
+          padding: 1rem;
+          border-left: 4px solid #667eea;
+          margin: 1rem 0;
+        "
+      >
+        <p>
+          <em
+            >"Machine Learning is the study of algorithms that improve their
+            <strong>performance P</strong> at some <strong>task T</strong> with
+            <strong>experience E</strong>."</em
+          >
+        </p>
+        <cite>- Tom Mitchell (1998)</cite>
+      </blockquote>
+
+      <h3>A well-defined learning task requires &lt;P, T, E&gt;:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Description</th>
+            <th>Example (Apple vs Orange)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong class="key-term">Task (T)</strong></td>
+            <td>What we want to accomplish</td>
+            <td>Classify fruits as apple or orange</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Performance (P)</strong></td>
+            <td>How we measure success</td>
+            <td>Classification accuracy</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Experience (E)</strong></td>
+            <td>Data used for learning</td>
+            <td>Training dataset of labeled fruit images</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>7.3 Traditional Programming vs Machine Learning</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Traditional Programming</th>
+            <th>Machine Learning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Input</strong></td>
+            <td>Data + Program</td>
+            <td>Data + Expected Output</td>
+          </tr>
+          <tr>
+            <td><strong>Output</strong></td>
+            <td>Result</td>
+            <td>Program/Algorithm</td>
+          </tr>
+          <tr>
+            <td><strong>Example</strong></td>
+            <td>Sum two numbers program</td>
+            <td>Generate algorithm to classify fruits</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In traditional
+        programming, you write a Python program - you give input and get output.
+        In machine learning, during training time, we give data AND the expected
+        output. The goal is to generate an algorithm which can tomorrow take new
+        data and produce the correct output.
+      </div>
+
+      <h2>7.4 When to Use Pattern Recognition/ML?</h2>
+
+      <ul>
+        <li>
+          <strong class="key-term">Human expertise does not exist:</strong>
+          Navigating on Mars
+        </li>
+        <li>
+          <strong class="key-term"
+            >Humans cannot explain their expertise:</strong
+          >
+          Speech recognition, facial recognition
+        </li>
+        <li>
+          <strong class="key-term">Model must be customized:</strong>
+          Personalized medicine
+        </li>
+        <li>
+          <strong class="key-term"
+            >Models based on huge amounts of data:</strong
+          >
+          Too much for humans to process
+        </li>
+      </ul>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Pattern recognition and
+        machine learning is not used everywhere. You don't need to use it for
+        summing two numbers - you can do that without learning. It makes sense
+        when human expertise is limited or data is too complex to handle
+        manually.
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Learning matlab experience se performance improve karna hai. Machine
+          Learning mein Teen cheezein zaroori hain: Task (kya karna hai),
+          Performance (kaise measure karna hai), aur Experience (data se
+          seekhna). Traditional programming mein hum program likhte hain, lekin
+          ML mein hum data aur expected output dete hain, aur system khud
+          algorithm banata hai. ML tab use karte hain jab human expertise
+          limited ho ya data bohot complex ho.
+        </p>
+      </div>
+
+      <h1 id="types-ml">8. Types of Machine Learning</h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Examples</th>
+            <th>Key Characteristic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong class="key-term">Supervised Learning</strong></td>
+            <td>Algorithms that require labeled examples (teacher)</td>
+            <td>Email spam detection, Image classification</td>
+            <td>Has ground truth labels</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Unsupervised Learning</strong></td>
+            <td>
+              No explicit teacher, system forms clusters or natural groupings
+            </td>
+            <td>Document clustering, Customer segmentation</td>
+            <td>No labels provided</td>
+          </tr>
+          <tr>
+            <td><strong class="key-term">Reinforcement Learning</strong></td>
+            <td>Algorithm takes suitable actions to maximize reward</td>
+            <td>Game playing, Robotics</td>
+            <td>Reward-based learning</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In supervised learning,
+        we tell the machine the labels - "these are examples of spam, these are
+        examples of ham." In unsupervised learning, we don't give any labels,
+        just data points and ask to group them. Most of this course will focus
+        on supervised and unsupervised learning.
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>📝 Hinglish Summary</h4>
+        <p>
+          Teen main types hain ML ke: Supervised (labels ke saath seekhna -
+          teacher hai), Unsupervised (bina labels ke patterns dhundna - no
+          teacher), aur Reinforcement (rewards ke basis par actions seekhna -
+          trial and error). Is course mein mostly supervised aur unsupervised
+          par focus karenge. Supervised mein hum bataते हैं ki kya sahi hai,
+          unsupervised mein system khud patterns dhundta hai.
+        </p>
+      </div>
+
+      <div class="practice-questions">
+        <h4>🤔 Practice Questions</h4>
+        <ol>
+          <li>
+            Give an example of a machine learning task and identify its T, P,
+            and E components.
+          </li>
+          <li>
+            Classify these as supervised, unsupervised, or reinforcement
+            learning: (a) Netflix movie recommendations, (b) Chess-playing AI,
+            (c) Medical diagnosis system
+          </li>
+          <li>
+            Why can't traditional programming easily solve speech recognition?
+          </li>
+        </ol>
+
+        <div class="answer">
+          <strong>Answer 1:</strong> Task: Email classification (T),
+          Performance: Accuracy of spam detection (P), Experience: Dataset of
+          labeled emails as spam/ham (E).
+        </div>
+
+        <div class="answer">
+          <strong>Answer 2:</strong> (a) Unsupervised - clustering users with
+          similar preferences, (b) Reinforcement - learning through game
+          rewards/penalties, (c) Supervised - learning from labeled medical
+          cases.
+        </div>
+
+        <div class="answer">
+          <strong>Answer 3:</strong> Speech recognition involves complex pattern
+          recognition where humans can't explicitly program rules for all
+          possible voice variations, accents, speeds, and environmental
+          conditions. ML automatically learns these patterns from data.
+        </div>
+      </div>
+
+      <h1 id="course-info">9. Course Information</h1>
+
+      <h2>9.1 Course Syllabus</h2>
+      <ul>
+        <li>
+          <strong class="key-term">Introduction to Pattern Recognition:</strong>
+          Definitions, motivation, examples
+        </li>
+        <li>
+          <strong class="key-term">Probability & Statistics for PR:</strong>
+          Basic theory, distributions, parameter estimation
+        </li>
+        <li>
+          <strong class="key-term">Bayes Classifier & Decision Theory:</strong>
+          Bayesian decision theory, risk minimization, Naive Bayes
+        </li>
+        <li>
+          <strong class="key-term">Evaluation & Metrics:</strong> Confusion
+          Matrix, ROC, AUC, F1, Precision, Recall, Accuracy
+        </li>
+        <li>
+          <strong class="key-term">Distance-Based Classification:</strong> k-NN,
+          distance metrics, curse of dimensionality
+        </li>
+        <li>
+          <strong class="key-term">Regression:</strong> Examples, OLS, gradient
+          descent
+        </li>
+        <li>
+          <strong class="key-term">Unsupervised Learning:</strong> K-Means
+          clustering, PCA/LDA
+        </li>
+      </ul>
+
+      <h2>9.2 Recommended Books</h2>
+      <ul>
+        <li>
+          <strong>[DHS]</strong> Duda, Hart and Stork: Pattern Recognition, 2nd
+          Edition
+        </li>
+        <li>
+          <strong>[BIS]</strong> Bishop: Pattern Recognition and Machine
+          Learning, 1st Edition
+        </li>
+        <li><strong>[MIT]</strong> Mitchell: Machine Learning, 1st Edition</li>
+      </ul>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> You should definitely
+        read Duda Hart book, Chapter 1.1 to 1.4, which talks about pattern
+        classification with examples of classifying fish into Salmon and Seabass
+        categories.
+      </div>
+
+      <h2>9.3 Evaluation Components</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Weightage</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quiz Participation</td>
+            <td>30%</td>
+            <td>Questions during videos - very important for learning</td>
+          </tr>
+          <tr>
+            <td>Major Exam</td>
+            <td>40%</td>
+            <td>Comprehensive examination</td>
+          </tr>
+          <tr>
+            <td>Programming Assignments</td>
+            <td>30%</td>
+            <td>Three auto-graded assignments</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>9.4 Important Policies</h2>
+
+      <h3>Late Submission Policy</h3>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> No emails will be
+        entertained for extensions. Every late submission (even one minute late)
+        leads to 20% penalty per day. Plan well in advance, don't wait till the
+        last minute. Most deadlines will be at 10:30 PM.
+      </div>
+
+      <h3>Attendance Policy</h3>
+      <ul>
+        <li>75% minimum attendance required</li>
+        <li>
+          Counted based on watching videos AND completing questionnaires AND
+          attending live sessions
+        </li>
+        <li>Below 75% may result in deregistration</li>
+      </ul>
+
+      <h3>Academic Integrity</h3>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Highest level of academic
+        integrity expected. No tolerance for copying/cheating. F-grade for
+        academic misconduct. Collaboration allowed but state your sources
+        clearly. Please read this twice!
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🎯 Key Takeaways</h4>
+        <ul>
+          <li>Pattern Recognition is about decision-making from data</li>
+          <li>Core tasks are universal, applications differ</li>
+          <li>
+            Two main types based on supervision: Supervised and Unsupervised
+          </li>
+          <li>
+            Understanding foundations is crucial before advanced applications
+          </li>
+          <li>This course focuses on building blocks, not end applications</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="radial-mindmap">
+      <div class="center-node">Pattern Recognition</div>
+
+      <!-- Left Side Branches -->
+      <div class="node node1">
+        Applications<br /><span>Medical<br />Finance<br />E-commerce</span>
+      </div>
+      <div class="node node2">
+        Evolution<br /><span
+          >PR (1960s-1990s)<br />ML (1990s-2012)<br />DL (2012+)</span
+        >
+      </div>
+      <div class="node node3">
+        Core Tasks<br /><span
+          >Classification<br />Regression<br />Clustering</span
+        >
+      </div>
+
+      <!-- Right Side Branches -->
+      <div class="node node4">
+        Learning Types<br /><span
+          >Supervised<br />Unsupervised<br />Reinforcement</span
+        >
+      </div>
+      <div class="node node5">
+        Data Flow<br /><span
+          >Training (70%)<br />Validation (15%)<br />Testing (15%)</span
+        >
+      </div>
+      <div class="node node6">
+        Key Concepts<br /><span>Features<br />Algorithms<br />Performance</span>
+      </div>
+
+      <svg class="mindmap-lines"></svg>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        margin-top: 3rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+      "
+    >
+      
+      
+      <p style="margin-top: 2rem; font-style: italic; color: #667eea">
+        <strong
+          >"Let us have fun in making machines learn! As we teach them, let's
+          not forget to keep learning ourselves."</strong
+        >
+      </p>
+    </footer>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const center = document.querySelector(".center-node");
+        const nodes = Array.from(document.querySelectorAll(".node"));
+        const svg = document.querySelector(".mindmap-lines");
+        svg.innerHTML = "";
+        const containerRect = svg.parentElement.getBoundingClientRect();
+        svg.setAttribute("width", containerRect.width);
+        svg.setAttribute("height", containerRect.height);
+        const cRect = center.getBoundingClientRect();
+        const cX = cRect.left + cRect.width / 2 - containerRect.left;
+        const cY = cRect.top + cRect.height / 2 - containerRect.top;
+        nodes.forEach((node) => {
+          const nRect = node.getBoundingClientRect();
+          const nX = nRect.left + nRect.width / 2 - containerRect.left;
+          const nY = nRect.top + nRect.height / 2 - containerRect.top;
+          // Draw a curved quadratic path
+          const curve = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+          );
+          const midX = (cX + nX) / 2;
+          const midY = (cY + nY) / 2 + (nX < cX ? -70 : 70);
+          curve.setAttribute("d", `M${cX},${cY} Q${midX},${midY} ${nX},${nY}`);
+          curve.setAttribute("stroke", "#b9c2cf");
+          curve.setAttribute("stroke-width", "3");
+          curve.setAttribute("fill", "none");
+          svg.appendChild(curve);
+        });
+      });
+    </script>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

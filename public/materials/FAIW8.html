@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Order Logic - Lecture Notes | IIT Jodhpur</title>
+    
+    <!-- MathJax Configuration for LaTeX Math Rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ============================================
+           CSS STYLING FOR PROFESSIONAL LECTURE NOTES
+           ============================================ */
+        
+        /* Root Variables for Consistent Theming */
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #0288d1;
+            --accent-color: #d32f2f;
+            --success-color: #388e3c;
+            --warning-color: #f57c00;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #212121;
+            --border-color: #e0e0e0;
+            --code-bg: #f4f4f4;
+            --highlight-bg: #fff9c4;
+        }
+        
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styling */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        /* Table of Contents Styling */
+        .toc {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .toc h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+        }
+        
+        .toc ul li a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        
+        .toc ul li a:hover {
+            background: var(--bg-color);
+            padding-left: 20px;
+            color: var(--accent-color);
+        }
+        
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .toc ul ul li a {
+            font-size: 1em;
+            color: #666;
+        }
+        
+        /* Section Styling */
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Heading Styles */
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            color: var(--secondary-color);
+        }
+        
+        h4 {
+            font-size: 1.2em;
+            color: #555;
+        }
+        
+        /* Paragraph and Text Styling */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        /* Strong/Bold Text */
+        strong, .key-term {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        /* Code and Formula Styling */
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        table tbody tr:nth-child(even) {
+            background: var(--bg-color);
+        }
+        
+        table tbody tr:hover {
+            background: #e3f2fd;
+        }
+        
+        /* Special Box Styles */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .professor-note {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #9c27b0;
+            font-style: normal;
+        }
+        
+        /* Hinglish Summary Box */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffe082, #ffca28);
+            border: 2px solid #ffa000;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .hinglish-summary h4 {
+            color: #e65100;
+            margin-top: 0;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+        }
+        
+        .hinglish-summary p {
+            color: #3e2723;
+            line-height: 1.7;
+        }
+        
+        /* Practice Questions Section */
+        .practice-questions {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .practice-questions h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        
+        /* Key Takeaways */
+        .key-takeaways {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 2px solid var(--success-color);
+        }
+        
+        .key-takeaways h4 {
+            color: var(--success-color);
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 25px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Example Box */
+        .example-box {
+            background: #fffde7;
+            border: 2px solid #fbc02d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .example-box h4 {
+            color: #f57f17;
+            margin-top: 0;
+        }
+        
+        /* Mind Map Styles */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .branches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: var(--bg-color);
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 280px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .branch h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .branch ul li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .branch ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 2px solid var(--border-color);
+            color: #666;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .branches {
+                flex-direction: column;
+            }
+            
+            .branch {
+                min-width: 100%;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER SECTION
+         Contains course information and title
+         ============================================ -->
+    <header>
+        <h1>📚 First Order Logic (FOL)</h1>
+        <h1>~ Armaan Kachhawa</h1>
+        <p><strong>Topic:</strong> Syntax, Semantics, Quantifiers, and Inference in First Order Logic</p>
+    </header>
+
+    <!-- ============================================
+         TABLE OF CONTENTS
+         Clickable navigation to all sections
+         ============================================ -->
+    <nav class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#introduction">1. Introduction to First Order Logic</a>
+                <ul>
+                    <li><a href="#motivation">1.1 Why First Order Logic?</a></li>
+                    <li><a href="#what-is-fol">1.2 What is FOL?</a></li>
+                </ul>
+            </li>
+            <li><a href="#syntax">2. Syntax of First Order Logic</a>
+                <ul>
+                    <li><a href="#constants">2.1 Constants</a></li>
+                    <li><a href="#variables">2.2 Variables</a></li>
+                    <li><a href="#predicates">2.3 Predicates</a></li>
+                    <li><a href="#functions">2.4 Functions</a></li>
+                    <li><a href="#domain">2.5 Domain Specification</a></li>
+                    <li><a href="#connectives">2.6 Logical Connectives</a></li>
+                    <li><a href="#quantifiers">2.7 Quantifiers</a></li>
+                </ul>
+            </li>
+            <li><a href="#atomic-complex">3. Atomic and Complex Sentences</a>
+                <ul>
+                    <li><a href="#atomic-sentences">3.1 Atomic Sentences</a></li>
+                    <li><a href="#complex-sentences">3.2 Complex Sentences</a></li>
+                    <li><a href="#quantifier-examples">3.3 Quantifier Examples</a></li>
+                </ul>
+            </li>
+            <li><a href="#semantics">4. Semantics of First Order Logic</a>
+                <ul>
+                    <li><a href="#interpretation">4.1 Interpretation over Domain</a></li>
+                    <li><a href="#truth-values">4.2 Truth Values</a></li>
+                    <li><a href="#knowledge-base">4.3 Knowledge Base Examples</a></li>
+                </ul>
+            </li>
+            <li><a href="#inference">5. Inference in First Order Logic</a>
+                <ul>
+                    <li><a href="#modus-ponens-fol">5.1 Modus Ponens in FOL</a></li>
+                    <li><a href="#variable-substitution">5.2 Variable Substitution</a></li>
+                </ul>
+            </li>
+            <li><a href="#homework">6. Practice Exercises</a></li>
+            <li><a href="#mind-map">7. Comprehensive Mind Map</a></li>
+        </ul>
+    </nav>
+
+    <!-- ============================================
+         SECTION 1: INTRODUCTION TO FIRST ORDER LOGIC
+         ============================================ -->
+    <section id="introduction">
+        <h1>1. Introduction to First Order Logic</h1>
+        
+        <h2 id="motivation">1.1 Why First Order Logic?</h2>
+        
+        <p>In the previous lectures, we studied <strong class="key-term">propositional logic</strong>, including truth tables and inference rules. While propositional logic provides a foundation for logical reasoning, it has significant limitations that restrict its usefulness in artificial intelligence applications.</p>
+        
+        <div class="warning-box">
+            <strong>⚠️ Limitations of Propositional Logic:</strong>
+            <ul>
+                <li><strong>Limited Expressiveness:</strong> Cannot express statements about collections of objects or general properties</li>
+                <li><strong>Cannot Express Relationships:</strong> Cannot represent relationships between objects</li>
+                <li><strong>No Generalization:</strong> Must list every individual case separately</li>
+                <li><strong>Cannot Reason About Objects:</strong> Treats entire statements as indivisible units</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            The reason we are going to first order logic is that the propositional logic's expressiveness is very limited. That is why we need a more sophisticated formal logic system. We have second order logic also, but so far in our syllabus we will stick to first order logic, and we will try to give an overview of first order logic.
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Example: Why Propositional Logic is Insufficient</h4>
+            <p><strong>Statement:</strong> "All humans are mortal"</p>
+            
+            <p><strong>In Propositional Logic:</strong> You would need to write:</p>
+            <ul>
+                <li>$P_1$: "John is mortal"</li>
+                <li>$P_2$: "Mary is mortal"</li>
+                <li>$P_3$: "Pradeep is mortal"</li>
+                <li>$P_4$: "Sarah is mortal"</li>
+                <li>... and so on for every single human being!</li>
+            </ul>
+            
+            <p><strong>Problem:</strong> This is impractical and doesn't capture the general rule. We need to list every single human individually!</p>
+            
+            <p><strong>In First Order Logic:</strong> We can write simply:</p>
+            <p style="text-align: center; font-size: 1.2em; margin: 10px 0;">
+                $\forall x \, (Human(x) \rightarrow Mortal(x))$
+            </p>
+            <p><strong>Translation:</strong> "For all x, if x is a human, then x is mortal" - This captures the general rule elegantly!</p>
+        </div>
+        
+        <h2 id="what-is-fol">1.2 What is First Order Logic?</h2>
+        
+        <p><strong class="key-term">First Order Logic (FOL)</strong>, also known as <strong>predicate logic</strong> or <strong>first-order predicate calculus</strong>, is a formal system used in artificial intelligence to represent facts, objects, relations, and functions in the world and to reason about them.</p>
+        
+        <div class="info-box">
+            <strong>Key Features of FOL:</strong>
+            <ul>
+                <li><strong>Extends Propositional Logic:</strong> Includes all features of propositional logic plus more</li>
+                <li><strong>Variables:</strong> Can use variables ($x$, $y$, $z$) to represent arbitrary objects</li>
+                <li><strong>Quantifiers:</strong> Introduces universal ($\forall$) and existential ($\exists$) quantifiers</li>
+                <li><strong>Predicates:</strong> Describe properties and relations between objects</li>
+                <li><strong>Functions:</strong> Map objects to other objects</li>
+                <li><strong>Greater Expressiveness:</strong> Can represent complex relationships and general statements</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>🎯 What FOL Allows Us to Do:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Represent Objects</strong></td>
+                        <td>John, Mary, Car5, Building23</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Express Properties</strong></td>
+                        <td>Human(John), Red(Car5)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Represent Relations</strong></td>
+                        <td>Loves(John, Mary), GreaterThan(5, 3)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Functions</strong></td>
+                        <td>MotherOf(John), Age(Pradeep)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Make General Statements</strong></td>
+                        <td>$\forall x \, Human(x) \rightarrow Mortal(x)$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Express Existence</strong></td>
+                        <td>$\exists x \, Dog(x) \land Barks(x)$</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                <strong>Propositional logic</strong> ki bahut limited expressiveness thi - hum general statements nahi bana sakte the. For example, "sabhi humans mortal hain" ko express karne ke liye humein har ek insaan ka naam likh kar batana padta tha. <strong>First Order Logic (FOL)</strong> ek zyada powerful system hai jo AI mein facts, objects, relations aur functions ko represent karne ke liye use hota hai. Isme hum <strong>variables</strong> ($x$, $y$) use kar sakte hain, <strong>quantifiers</strong> ($\forall$ for all, $\exists$ there exists) ka use kar sakte hain, aur <strong>predicates</strong> aur <strong>functions</strong> se relationships ko describe kar sakte hain. Yeh system bahut zyada expressive hai aur complex statements ko easily represent kar sakta hai!
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 2: SYNTAX OF FIRST ORDER LOGIC
+         ============================================ -->
+    <section id="syntax">
+        <h1>2. Syntax of First Order Logic</h1>
+        
+        <p>The <strong class="key-term">syntax</strong> of First Order Logic defines the valid structure and components that can be used to build logical expressions. Understanding the syntax is crucial before we can interpret what these expressions mean.</p>
+        
+        <h2 id="constants">2.1 Constants</h2>
+        
+        <p><strong class="key-term">Constants</strong> are symbols that refer to specific, fixed objects in the domain. They represent particular entities that do not change.</p>
+        
+        <div class="info-box">
+            <strong>Definition:</strong> Constants stand for specific objects in the domain.
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Constants:</h4>
+            <ul>
+                <li><strong>Names:</strong> John, Mary, Pradeep, Sarah</li>
+                <li><strong>Numbers:</strong> 1, 2, 3, 42, 100</li>
+                <li><strong>Specific Objects:</strong> Car5, Building23, Earth, Sun</li>
+                <li><strong>Locations:</strong> Delhi, IIT_Jodhpur, Room_301</li>
+            </ul>
+            <p><strong>Key Point:</strong> Each constant refers to one specific object that we can identify.</p>
+        </div>
+        
+        <h2 id="variables">2.2 Variables</h2>
+        
+        <p><strong class="key-term">Variables</strong> are symbols that stand for arbitrary objects. They can take different values from the domain, similar to variables in mathematics.</p>
+        
+        <div class="info-box">
+            <strong>Definition:</strong> Variables stand for arbitrary objects - they can vary and take different values.
+        </div>
+        
+        <div class="professor-note">
+            Variables are not giving you any specific object. The $x$ can take the values of John, $y$ can take the values of Mary, and so on. When you are not specifying a particular object, you're keeping it arbitrary - that is what variables are. It can vary, that is why the name 'variables'!
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Variables:</h4>
+            <ul>
+                <li>$x$, $y$, $z$ - commonly used variable names</li>
+                <li>$person$, $object$, $number$ - descriptive variable names</li>
+            </ul>
+            
+            <h4>Understanding Variables:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Can Represent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>$x$</td>
+                        <td>John, Mary, Pradeep, or any person</td>
+                    </tr>
+                    <tr>
+                        <td>$y$</td>
+                        <td>5, 10, 100, or any number</td>
+                    </tr>
+                    <tr>
+                        <td>$z$</td>
+                        <td>Car, House, Book, or any object</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2 id="predicates">2.3 Predicates</h2>
+        
+        <p><strong class="key-term">Predicates</strong> are symbols that describe properties of objects or relations between objects. They are like functions that return true or false.</p>
+        
+        <div class="info-box">
+            <strong>Definition:</strong> Predicates describe properties or relations. They take one or more arguments (objects) and evaluate to true or false.
+        </div>
+        
+        <h3>Types of Predicates</h3>
+        
+        <div class="success-box">
+            <h4>1. Unary Predicates (1 argument) - Properties:</h4>
+            <p>Describe a property of a single object.</p>
+            <ul>
+                <li>$Human(x)$ - "x is a human"</li>
+                <li>$Red(x)$ - "x is red"</li>
+                <li>$Tall(x)$ - "x is tall"</li>
+                <li>$Student(x)$ - "x is a student"</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>2. Binary Predicates (2 arguments) - Relations:</h4>
+            <p>Describe a relationship between two objects.</p>
+            <ul>
+                <li>$Loves(x, y)$ - "x loves y"</li>
+                <li>$Friendship(x, y)$ - "x has friendship with y"</li>
+                <li>$ParentOf(x, y)$ - "x is parent of y"</li>
+                <li>$GreaterThan(x, y)$ - "x is greater than y"</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>3. n-ary Predicates (n arguments):</h4>
+            <p>Describe relations involving multiple objects.</p>
+            <ul>
+                <li>$Between(x, y, z)$ - "x is between y and z"</li>
+                <li>$Sum(x, y, z)$ - "x + y = z"</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Think about a predicate like $Human(Pradeep)$. What does it mean? This is saying that Pradeep is related to the property 'human'. In our natural language, this sentence is "Pradeep is a human." Or take $Friendship(John, Mary)$ - this means John and Mary are related via friendship. In natural language: "John has friendship with Mary."
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Detailed Examples:</h4>
+            
+            <p><strong>Example 1:</strong> $Human(Pradeep)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $Human$</li>
+                <li><strong>Argument:</strong> $Pradeep$ (a constant)</li>
+                <li><strong>Meaning:</strong> "Pradeep is a human"</li>
+            </ul>
+            
+            <p><strong>Example 2:</strong> $Friendship(John, Mary)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $Friendship$</li>
+                <li><strong>Arguments:</strong> $John$, $Mary$ (two constants)</li>
+                <li><strong>Meaning:</strong> "John has friendship with Mary" or "John and Mary are friends"</li>
+            </ul>
+            
+            <p><strong>Example 3:</strong> $ShorterThan(x, y)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $ShorterThan$</li>
+                <li><strong>Arguments:</strong> $x$, $y$ (two variables)</li>
+                <li><strong>Meaning:</strong> "x is shorter than y"</li>
+            </ul>
+        </div>
+        
+        <h2 id="functions">2.4 Functions</h2>
+        
+        <p><strong class="key-term">Functions</strong> are symbols that map objects to other objects. Unlike predicates which return true/false, functions return objects from the domain.</p>
+        
+        <div class="info-box">
+            <strong>Definition:</strong> Functions map objects to another objects. They take one or more input objects and produce an output object.
+        </div>
+        
+        <div class="professor-note">
+            Functions basically take from one object to another object. In simple words, we are describing it as: functions map objects to another objects. Think about it like a function $f(x)$ - we have seen that generally we denote functions by $f$ of something. $x$ is a variable, right, and that can vary. So what value can it take? Right now you can think about this: $f$ is 'MotherOf' and $x$ is 'John'. So MotherOf(John) - this is my function, John is my object, and whoever the mother of John is, that will be the output object.
+        </div>
+        
+        <h3>Function Notation</h3>
+        
+        <div class="success-box">
+            <p style="text-align: center; font-size: 1.2em;">
+                $FunctionName(arguments) = result$
+            </p>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Functions:</h4>
+            
+            <p><strong>Example 1:</strong> $MotherOf(John) = Mary$</p>
+            <ul>
+                <li><strong>Function:</strong> $MotherOf$</li>
+                <li><strong>Input Object:</strong> $John$</li>
+                <li><strong>Output Object:</strong> $Mary$</li>
+                <li><strong>Meaning:</strong> "The mother of John is Mary" - the function maps John to Mary</li>
+            </ul>
+            
+            <p><strong>Example 2:</strong> $Age(Pradeep) = 25$</p>
+            <ul>
+                <li><strong>Function:</strong> $Age$</li>
+                <li><strong>Input Object:</strong> $Pradeep$</li>
+                <li><strong>Output Object:</strong> $25$ (a number)</li>
+                <li><strong>Meaning:</strong> "The age of Pradeep is 25 years"</li>
+            </ul>
+            
+            <p><strong>Example 3:</strong> $FatherOf(x)$</p>
+            <ul>
+                <li><strong>Function:</strong> $FatherOf$</li>
+                <li><strong>Input Object:</strong> $x$ (variable - any person)</li>
+                <li><strong>Output Object:</strong> The father of that person</li>
+                <li><strong>Meaning:</strong> "The father of x"</li>
+            </ul>
+            
+            <p><strong>Example 4:</strong> $Plus(2, 3) = 5$</p>
+            <ul>
+                <li><strong>Function:</strong> $Plus$ (binary function)</li>
+                <li><strong>Input Objects:</strong> $2$, $3$</li>
+                <li><strong>Output Object:</strong> $5$</li>
+                <li><strong>Meaning:</strong> "2 plus 3 equals 5"</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Predicates vs Functions:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Predicates</th>
+                        <th>Functions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Returns</strong></td>
+                        <td>True or False (Boolean)</td>
+                        <td>An Object from the domain</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Describe properties/relations</td>
+                        <td>Map objects to other objects</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Example</strong></td>
+                        <td>$Human(John)$ returns True/False</td>
+                        <td>$MotherOf(John)$ returns Mary</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Usage</strong></td>
+                        <td>Make statements (sentences)</td>
+                        <td>Refer to derived objects</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2 id="domain">2.5 Domain Specification</h2>
+        
+        <p>The <strong class="key-term">domain</strong> (also called <strong>universe of discourse</strong>) is the set of all objects that we are talking about. It is crucial to specify the domain for functions and predicates to be well-defined.</p>
+        
+        <div class="warning-box">
+            <strong>⚠️ Critical Concept:</strong> Until and unless you are defining a domain, the functions and predicates that you are defining will not be well-defined. A domain MUST be specified!
+        </div>
+        
+        <div class="professor-note">
+            When we are talking about functions, the functions are defined from objects to objects. But then we have to talk about where these objects are coming from, right? For example, think about addition - will it make sense to add "Pradeep plus Mary"? Or will "2 plus 3" make sense? Clearly, "2 plus 3" makes sense, but "Pradeep plus Mary" doesn't make sense for usual addition. Even if it makes sense in some context, you have to define in what sense it is making sense! The objects have to be specified, and that is called the domain.
+        </div>
+        
+        <div class="info-box">
+            <strong>What is Domain?</strong> Domain is the set of objects from where you are taking the values.
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Domain Examples:</h4>
+            
+            <p><strong>Example 1: Arithmetic Domain</strong></p>
+            <ul>
+                <li><strong>Domain:</strong> $D = \{1, 2, 3, 4, 5, ...\}$ (Natural numbers)</li>
+                <li><strong>Function:</strong> $Plus(x, y)$ where $x, y \in \mathbb{N}$</li>
+                <li><strong>Example:</strong> $Plus(2, 3) = 5$ ✓ (Well-defined)</li>
+                <li><strong>Why well-defined?</strong> Both 2 and 3 are in the domain, and 5 is also in the domain</li>
+            </ul>
+            
+            <p><strong>Example 2: People Domain</strong></p>
+            <ul>
+                <li><strong>Domain:</strong> $D = \{John, Mary, Pradeep, Sarah, ...\}$ (Set of people)</li>
+                <li><strong>Function:</strong> $MotherOf(x)$ where $x \in$ People</li>
+                <li><strong>Example:</strong> $MotherOf(John) = Mary$ ✓ (Well-defined)</li>
+                <li><strong>Why well-defined?</strong> John is a person, and Mary is also a person</li>
+            </ul>
+            
+            <p><strong>Example 3: Mixed - NOT Well-Defined!</strong></p>
+            <ul>
+                <li><strong>Function:</strong> $Plus(Pradeep, Mary) = ?$ ✗ (NOT well-defined)</li>
+                <li><strong>Why?</strong> Pradeep and Mary are not numbers - they are not in the natural number domain</li>
+                <li><strong>Conclusion:</strong> The usual addition function is not defined for people!</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>🎯 Formal Domain Notation:</h4>
+            <p>For a function $f: D_1 \times D_2 \rightarrow D_3$</p>
+            <ul>
+                <li>$D_1$ is the domain of the first argument</li>
+                <li>$D_2$ is the domain of the second argument</li>
+                <li>$D_3$ is the co-domain (range) - where the output comes from</li>
+            </ul>
+            
+            <p><strong>Example:</strong> $Plus: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$</p>
+            <p>Meaning: Plus takes two natural numbers and produces a natural number</p>
+        </div>
+        
+        <h3>Equality in FOL</h3>
+        
+        <div class="info-box">
+            <strong>Equality ($=$):</strong> In FOL, equality means we are not distinguishing between two objects. They refer to the same object.
+        </div>
+        
+        <div class="professor-note">
+            What do we mean by equality? We are not distinguishing between the object 5 and the object $2 + 3$. That is the meaning of equality here. Both refer to the same object in the domain.
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Equality Examples:</h4>
+            <ul>
+                <li>$2 + 3 = 5$ means the object represented by "$2 + 3$" is the same as the object $5$</li>
+                <li>$MotherOf(John) = Mary$ means the object returned by $MotherOf(John)$ is the same object as $Mary$</li>
+            </ul>
+        </div>
+        
+        <h2 id="connectives">2.6 Logical Connectives</h2>
+        
+        <p>FOL includes all the <strong class="key-term">logical connectives</strong> from propositional logic. These allow us to combine simpler statements into more complex ones.</p>
+        
+        <div class="info-box">
+            <strong>Logical Operations in FOL:</strong> The same connectives from propositional logic are available:
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Connective</th>
+                    <th>Symbol</th>
+                    <th>Meaning</th>
+                    <th>Example in FOL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Negation</strong></td>
+                    <td>$\neg$</td>
+                    <td>NOT</td>
+                    <td>$\neg Human(x)$ - "x is not a human"</td>
+                </tr>
+                <tr>
+                    <td><strong>Conjunction</strong></td>
+                    <td>$\land$</td>
+                    <td>AND</td>
+                    <td>$Human(x) \land Male(x)$ - "x is human and male"</td>
+                </tr>
+                <tr>
+                    <td><strong>Disjunction</strong></td>
+                    <td>$\lor$</td>
+                    <td>OR</td>
+                    <td>$Student(x) \lor Teacher(x)$ - "x is student or teacher"</td>
+                </tr>
+                <tr>
+                    <td><strong>Implication</strong></td>
+                    <td>$\rightarrow$</td>
+                    <td>IF...THEN</td>
+                    <td>$Human(x) \rightarrow Mortal(x)$ - "if x is human then x is mortal"</td>
+                </tr>
+                <tr>
+                    <td><strong>Biconditional</strong></td>
+                    <td>$\leftrightarrow$</td>
+                    <td>IF AND ONLY IF</td>
+                    <td>$Even(x) \leftrightarrow Divisible(x, 2)$ - "x is even iff x is divisible by 2"</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2 id="quantifiers">2.7 Quantifiers</h2>
+        
+        <p><strong class="key-term">Quantifiers</strong> are one of the main features that distinguish FOL from propositional logic. They allow us to express generality and make statements about collections of objects.</p>
+        
+        <div class="warning-box">
+            <strong>🌟 Key Innovation of FOL:</strong> Quantifiers express generality and overcome the limited expressivity of propositional logic. This is where the power of FOL comes from!
+        </div>
+        
+        <div class="professor-note">
+            Quantifiers are one of the main features - this is important! Because that is where the expressivity, the limited expressivity we had in propositional logic, that limitation is overcome by all these quantifiers. Quantifiers express generality and generalize the expressions.
+        </div>
+        
+        <h3>Types of Quantifiers</h3>
+        
+        <div class="success-box">
+            <h4>1. Universal Quantifier ($\forall$) - "For All"</h4>
+            <p><strong>Meaning:</strong> The statement is true for every object in the domain.</p>
+            <p><strong>Symbol:</strong> $\forall$ (inverted A, stands for "All")</p>
+            <p><strong>Usage:</strong> $\forall x \, P(x)$ reads as "For all x, P(x) is true"</p>
+            
+            <h4>Examples:</h4>
+            <ul>
+                <li>$\forall x \, Human(x) \rightarrow Mortal(x)$ - "All humans are mortal"</li>
+                <li>$\forall x \, Student(x) \rightarrow Person(x)$ - "All students are persons"</li>
+                <li>$\forall x \, (x > 0) \rightarrow (x^2 > 0)$ - "All positive numbers have positive squares"</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>2. Existential Quantifier ($\exists$) - "There Exists"</h4>
+            <p><strong>Meaning:</strong> The statement is true for at least one object in the domain.</p>
+            <p><strong>Symbol:</strong> $\exists$ (reversed E, stands for "Exists")</p>
+            <p><strong>Usage:</strong> $\exists x \, P(x)$ reads as "There exists an x such that P(x) is true"</p>
+            
+            <h4>Examples:</h4>
+            <ul>
+                <li>$\exists x \, Dog(x) \land Barks(x)$ - "There exists a dog that barks"</li>
+                <li>$\exists x \, Prime(x) \land Even(x)$ - "There exists a prime number that is even" (2)</li>
+                <li>$\exists x \, Student(x) \land Smart(x)$ - "There exists a student who is smart"</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Important Warning About Quantifier Order!</h4>
+            <p><strong>BE CAREFUL:</strong> The order of quantifiers matters! You CANNOT always interchange $\forall$ and $\exists$ without changing the meaning!</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statement</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>$\forall x \, \exists y \, Loves(x, y)$</td>
+                        <td>"Everyone loves someone" (each person loves at least one person, could be different people)</td>
+                    </tr>
+                    <tr>
+                        <td>$\exists y \, \forall x \, Loves(x, y)$</td>
+                        <td>"There is someone who is loved by everyone" (one specific person loved by all)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><strong>These are NOT the same!</strong> The order of quantifiers changes the meaning completely!</p>
+        </div>
+        
+        <div class="professor-note">
+            Be careful! Whenever $\forall$ (for all) and $\exists$ (there exists) are there together, don't try to interchange them without thinking about it. $\forall x \exists y$ and $\exists y \forall x$ are not always interchangeable, and the meaning of that sentence will be altered altogether. We don't have time to go through examples now, but keep that in mind - it is not always possible to interchange them!
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                FOL ki <strong>syntax</strong> mein kai components hain: <strong>Constants</strong> specific objects hote hain (jaise John, Mary), <strong>Variables</strong> arbitrary objects represent karte hain ($x$, $y$). <strong>Predicates</strong> properties aur relations describe karte hain (jaise $Human(x)$, $Loves(x,y)$), jabki <strong>Functions</strong> ek object ko doosre object mein map karte hain (jaise $MotherOf(John)$). <strong>Domain</strong> specify karna bahut zaroori hai - bina domain ke functions well-defined nahi hote. FOL mein propositional logic ke saare <strong>connectives</strong> hain (AND, OR, NOT, etc.), aur sabse important <strong>quantifiers</strong> hain: $\forall$ (for all) aur $\exists$ (there exists). Quantifiers ka order matter karta hai - unhe interchange karne se meaning badal jaati hai!
+            </p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Syntax of FOL</h4>
+            <ul>
+                <li><strong>Constants</strong> represent specific objects; <strong>Variables</strong> represent arbitrary objects</li>
+                <li><strong>Predicates</strong> describe properties/relations and return true/false</li>
+                <li><strong>Functions</strong> map objects to objects and return objects from the domain</li>
+                <li><strong>Domain specification is critical</strong> for functions and predicates to be well-defined</li>
+                <li>FOL includes all logical <strong>connectives</strong> from propositional logic</li>
+                <li><strong>Quantifiers</strong> ($\forall$ and $\exists$) provide the expressive power that propositional logic lacks</li>
+                <li><strong>Quantifier order matters</strong> - cannot be interchanged without changing meaning</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 3: ATOMIC AND COMPLEX SENTENCES
+         ============================================ -->
+    <section id="atomic-complex">
+        <h1>3. Atomic and Complex Sentences in FOL</h1>
+        
+        <h2 id="atomic-sentences">3.1 Atomic Sentences</h2>
+        
+        <p><strong class="key-term">Atomic sentences</strong> in FOL are the simplest well-formed formulas. They consist of predicates applied to terms (constants, variables, or functions).</p>
+        
+        <div class="info-box">
+            <strong>Structure of Atomic Sentences:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+                $Predicate(term_1, term_2, ..., term_n)$
+            </p>
+            <p>Where terms can be constants, variables, or function applications.</p>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Atomic Sentences:</h4>
+            
+            <p><strong>Example 1:</strong> $Human(Pradeep)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $Human$</li>
+                <li><strong>Term:</strong> $Pradeep$ (constant)</li>
+                <li><strong>Meaning:</strong> "Pradeep is a human"</li>
+            </ul>
+            
+            <p><strong>Example 2:</strong> $Friendship(John, Mary)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $Friendship$</li>
+                <li><strong>Terms:</strong> $John$, $Mary$ (both constants)</li>
+                <li><strong>Meaning:</strong> "John has friendship with Mary" or "John and Mary are friends"</li>
+            </ul>
+            
+            <p><strong>Example 3:</strong> $ShorterThan(x, y)$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $ShorterThan$</li>
+                <li><strong>Terms:</strong> $x$, $y$ (both variables)</li>
+                <li><strong>Meaning:</strong> "x is shorter than y"</li>
+            </ul>
+            
+            <p><strong>Example 4:</strong> $TallerThan(John, MotherOf(Mary))$</p>
+            <ul>
+                <li><strong>Predicate:</strong> $TallerThan$</li>
+                <li><strong>Terms:</strong> $John$ (constant), $MotherOf(Mary)$ (function application)</li>
+                <li><strong>Meaning:</strong> "John is taller than Mary's mother"</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Atomic sentences look like this: $Human(Pradeep)$. Its meaning is that "Pradeep is a human." When you are talking about relations, again the same thing - relations mean that, let's say, $Friendship(John, Mary)$. So what does it mean? John and Mary are related via friendship - that means John has friendship with Mary.
+        </div>
+        
+        <h2 id="complex-sentences">3.2 Complex Sentences</h2>
+        
+        <p><strong class="key-term">Complex sentences</strong> (also called compound sentences) are formed by combining atomic sentences using logical connectives.</p>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Complex Sentences:</h4>
+            
+            <p><strong>Example 1: Using AND ($\land$)</strong></p>
+            <p style="font-size: 1.1em;">$Human(Pradeep) \land Male(Pradeep)$</p>
+            <ul>
+                <li><strong>Meaning:</strong> "Pradeep is a human AND Pradeep is male"</li>
+                <li><strong>Natural Language:</strong> "Pradeep is a human male"</li>
+            </ul>
+            
+            <p><strong>Example 2: Using OR ($\lor$)</strong></p>
+            <p style="font-size: 1.1em;">$Student(x) \lor Teacher(x)$</p>
+            <ul>
+                <li><strong>Meaning:</strong> "x is a student OR x is a teacher"</li>
+                <li><strong>Natural Language:</strong> "x is either a student or a teacher"</li>
+            </ul>
+            
+            <p><strong>Example 3: Using IMPLIES ($\rightarrow$)</strong></p>
+            <p style="font-size: 1.1em;">$Human(x) \rightarrow Mortal(x)$</p>
+            <ul>
+                <li><strong>Meaning:</strong> "IF x is human THEN x is mortal"</li>
+                <li><strong>Natural Language:</strong> "If something is human, then it is mortal"</li>
+            </ul>
+            
+            <p><strong>Example 4: Using NOT ($\neg$)</strong></p>
+            <p style="font-size: 1.1em;">$\neg Happy(John) \land Tired(John)$</p>
+            <ul>
+                <li><strong>Meaning:</strong> "John is NOT happy AND John is tired"</li>
+                <li><strong>Natural Language:</strong> "John is unhappy and tired"</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Let me give an example of complex sentences. Let's say $Human(Pradeep)$ and $Male(Pradeep)$. The meaning is: "Pradeep is a human and Pradeep is a male." You're just adding features - you could have added any other features, but just for the sake of example, we took these two: who is a human and male. My logical connectives are going to be the same as we had in propositional logic.
+        </div>
+        
+        <h3>Function Applications in Sentences</h3>
+        
+        <div class="example-box">
+            <h4>💡 Sentences with Functions:</h4>
+            
+            <p><strong>Example 1:</strong> $Age(MotherOf(Pradeep)) > 40$</p>
+            <ul>
+                <li><strong>Inner Function:</strong> $MotherOf(Pradeep)$ returns Pradeep's mother</li>
+                <li><strong>Outer Function:</strong> $Age(...)$ returns the age of that person</li>
+                <li><strong>Predicate:</strong> $> 40$ compares the age</li>
+                <li><strong>Meaning:</strong> "The age of Pradeep's mother is greater than 40"</li>
+            </ul>
+            
+            <p><strong>Example 2:</strong> $Happy(MotherOf(John))$</p>
+            <ul>
+                <li><strong>Function:</strong> $MotherOf(John)$ returns John's mother</li>
+                <li><strong>Predicate:</strong> $Happy(...)$ checks if that person is happy</li>
+                <li><strong>Meaning:</strong> "John's mother is happy"</li>
+            </ul>
+        </div>
+        
+        <h2 id="quantifier-examples">3.3 Quantifier Examples</h2>
+        
+        <p>Quantifiers allow us to make powerful general statements that were impossible in propositional logic.</p>
+        
+        <h3>Universal Quantifier Examples</h3>
+        
+        <div class="success-box">
+            <h4>Example 1: "All humans are mortal"</h4>
+            
+            <p style="text-align: center; font-size: 1.3em; margin: 15px 0;">
+
+                $$\forall x \, (Human(x) \rightarrow Mortal(x))$$
+            </p>
+            
+            <p><strong>Breaking it down:</strong></p>
+            <ul>
+                <li>$\forall x$ - "For all x" (for every object x in the domain)</li>
+                <li>$Human(x)$ - "x is a human"</li>
+                <li>$\rightarrow$ - "implies"</li>
+                <li>$Mortal(x)$ - "x is mortal"</li>
+            </ul>
+            
+            <p><strong>Reading:</strong> "For all x, if x is a human, then x is mortal"</p>
+        </div>
+        
+        <div class="professor-note">
+            This expressivity was not there in propositional logic! "All humans are mortal" could not have been expressed in propositional logic. Because there, if you are saying all humans are mortal, that means I have to list all the humans. If I am to express in propositional logic, I have to list out all the humans' names and then say that they are mortal: "Pradeep is mortal, John is mortal, Mary is mortal..." - whatever humans in this world, I have to mention all of them! That expressibility was not there, which IS there in our first order logic!
+        </div>
+        
+        <div class="success-box">
+            <h4>Example 2: "All students study logic"</h4>
+            
+            <p style="text-align: center; font-size: 1.3em; margin: 15px 0;">
+
+                $$\forall x \, (Student(x) \rightarrow Studies(x, Logic))$$
+            </p>
+            
+            <p><strong>Meaning:</strong> "For all x, if x is a student, then x studies logic"</p>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Common Pattern with Universal Quantifier:</h4>
+            <p>Universal quantifier is usually combined with IMPLICATION ($\rightarrow$):</p>
+            <p style="text-align: center; font-size: 1.2em;">
+                $\forall x \, (P(x) \rightarrow Q(x))$
+            </p>
+            <p><strong>Why?</strong> We want to say "All things that satisfy P also satisfy Q"</p>
+            <p><strong>Wrong:</strong> $\forall x \, (P(x) \land Q(x))$ would mean "Everything in the universe is P AND Q" - too strong!</p>
+        </div>
+        
+        <h3>Existential Quantifier Examples</h3>
+        
+        <div class="success-box">
+            <h4>Example 1: "There exists a dog that barks"</h4>
+            
+            <p style="text-align: center; font-size: 1.3em; margin: 15px 0;">
+
+                $$\exists x \, (Dog(x) \land Barks(x))$$
+            </p>
+            
+            <p><strong>Breaking it down:</strong></p>
+            <ul>
+                <li>$\exists x$ - "There exists an x" (at least one object x)</li>
+                <li>$Dog(x)$ - "x is a dog"</li>
+                <li>$\land$ - "and"</li>
+                <li>$Barks(x)$ - "x barks"</li>
+            </ul>
+            
+            <p><strong>Reading:</strong> "There exists an x such that x is a dog and x barks"</p>
+        </div>
+        
+        <div class="professor-note">
+            Let me give an example for 'there exists': "There exists a dog that barks." Though every dog might bark, but just for simplicity, this is the expression we are taking. So: $\exists x$ - we have to introduce a variable. What is this variable? That dog that we are mentioning! So $Dog(x)$ - x is a dog - and what does it do? It also barks, so $Barks(x)$. This one itself is saying "x barks", this one says "x is a dog", and we are conjuncting them. That means x is a dog AND it barks. When you are saying "there exists x", that means there exists a dog which barks (or that barks). That is the expressibility of quantifiers!
+        </div>
+        
+        <div class="success-box">
+            <h4>Example 2: "There is a student who studies logic"</h4>
+            
+            <p style="text-align: center; font-size: 1.3em; margin: 15px 0;">
+
+                $$\exists x \, (Student(x) \land Studies(x, Logic))$$
+            </p>
+            
+            <p><strong>Meaning:</strong> "There exists an x such that x is a student and x studies logic"</p>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Common Pattern with Existential Quantifier:</h4>
+            <p>Existential quantifier is usually combined with AND ($\land$):</p>
+            <p style="text-align: center; font-size: 1.2em;">
+                $\exists x \, (P(x) \land Q(x))$
+            </p>
+            <p><strong>Why?</strong> We want to say "There is something that is both P AND Q"</p>
+            <p><strong>Wrong:</strong> $\exists x \, (P(x) \rightarrow Q(x))$ is usually true trivially and doesn't say much!</p>
+        </div>
+        
+        <h3>Nested Quantifiers</h3>
+        
+        <div class="example-box">
+            <h4>💡 Example: "Everyone who loves someone is happy"</h4>
+            
+            <p style="text-align: center; font-size: 1.3em; margin: 15px 0;">
+
+                $$\forall x \, (\exists y \, Loves(x, y) \rightarrow Happy(x))$$
+            </p>
+            
+            <p><strong>Breaking it down:</strong></p>
+            <ul>
+                <li>$\forall x$ - "For everyone x"</li>
+                <li>$\exists y$ - "There exists someone y"</li>
+                <li>$Loves(x, y)$ - "x loves y"</li>
+                <li>$\rightarrow$ - "implies"</li>
+                <li>$Happy(x)$ - "x is happy"</li>
+            </ul>
+            
+            <p><strong>Reading:</strong> "For all x, if there exists a y such that x loves y, then x is happy"</p>
+            <p><strong>Natural Language:</strong> "Everyone who loves someone is happy"</p>
+        </div>
+        
+        <div class="professor-note">
+            Let's express "Everyone who loves someone is happy." How should I express this? $\forall x$ - for everyone, right. Everyone - when you are saying - for all x. There exists y - there exists y because for everyone there is someone, right? "Who loves someone" - so Loves(x, y) will imply who is happy? The first one, x is happy. So that is how we should represent it!
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Translate to FOL: "Every student passes the exam"
+                <div class="answer">
+
+                    $$\forall x \, (Student(x) \rightarrow Passes(x, Exam))$$
+                    Or more simply: $\forall x \, (Student(x) \rightarrow Pass(x))$<br>
+                    Meaning: "For all x, if x is a student, then x passes"
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Translate to FOL: "Some dogs are friendly"
+                <div class="answer">
+
+                    $$\exists x \, (Dog(x) \land Friendly(x))$$
+                    Meaning: "There exists an x such that x is a dog and x is friendly"
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> What is wrong with this: $\forall x \, (Human(x) \land Mortal(x))$ for "All humans are mortal"?
+                <div class="answer">
+                    This statement says "Everything in the universe is both human AND mortal" - which is too strong! It claims everything (dogs, cars, numbers) is human.<br>
+                    <strong>Correct:</strong> $\forall x \, (Human(x) \rightarrow Mortal(x))$ - "IF something is human, THEN it is mortal"
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> Translate: "John's father is older than Mary's mother"
+                <div class="answer">
+
+                    $$OlderThan(FatherOf(John), MotherOf(Mary))$$
+                    This uses two function applications within a binary predicate.
+                </div>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                FOL mein <strong>atomic sentences</strong> predicates aur terms se bante hain, jaise $Human(Pradeep)$ ya $Loves(John, Mary)$. <strong>Complex sentences</strong> logical connectives (AND, OR, NOT) se bante hain. <strong>Quantifiers</strong> se hum general statements bana sakte hain: <strong>Universal quantifier</strong> ($\forall$) "sabke liye" kehta hai aur usually implication ($\rightarrow$) ke saath use hota hai, jaise $\forall x (Human(x) \rightarrow Mortal(x))$ - "sabhi humans mortal hain". <strong>Existential quantifier</strong> ($\exists$) "koi ek hai" kehta hai aur usually AND ($\land$) ke saath use hota hai, jaise $\exists x (Dog(x) \land Barks(x))$ - "ek dog hai jo bhaunkata hai". Nested quantifiers se complex relationships express kar sakte hain. Yeh expressiveness propositional logic mein bilkul nahi thi!
+            </p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Sentences in FOL</h4>
+            <ul>
+                <li><strong>Atomic sentences</strong> are predicates applied to terms (constants, variables, or functions)</li>
+                <li><strong>Complex sentences</strong> use logical connectives to combine simpler statements</li>
+                <li><strong>Universal quantifier</strong> ($\forall$) typically uses implication: $\forall x (P(x) \rightarrow Q(x))$</li>
+                <li><strong>Existential quantifier</strong> ($\exists$) typically uses conjunction: $\exists x (P(x) \land Q(x))$</li>
+                <li>FOL can express statements impossible in propositional logic (e.g., "All humans are mortal")</li>
+                <li>Functions can be nested within predicates for complex expressions</li>
+                <li>Quantifiers can be nested to express complex relationships</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 4: SEMANTICS OF FIRST ORDER LOGIC
+         ============================================ -->
+    <section id="semantics">
+        <h1>4. Semantics of First Order Logic</h1>
+        
+        <p><strong class="key-term">Semantics</strong> deals with the meaning of FOL expressions. While syntax tells us what expressions are valid, semantics tells us what they actually mean and whether they are true or false.</p>
+        
+        <div class="professor-note">
+            In propositional logic, we talked about semantics also. Now we will come to the semantics of FOL. Whatever sentences we are writing - that syntax or whatever expressions we are providing for FOL - they need to make sense. But make sense where? To make sense of that, we need to define the meaning of it. It has to be meaningful. So that is what we mean by well-defined.
+        </div>
+        
+        <h2 id="interpretation">4.1 Interpretation over Domain</h2>
+        
+        <p>To give meaning to FOL statements, we need an <strong class="key-term">interpretation</strong> (also called a <strong>model</strong>) that specifies:</p>
+        
+        <div class="info-box">
+            <strong>Components of an Interpretation:</strong>
+            <ol>
+                <li><strong>Domain:</strong> A non-empty set of objects</li>
+                <li><strong>Constant Mapping:</strong> Each constant is assigned to an object in the domain</li>
+                <li><strong>Function Mapping:</strong> Each function is assigned a mapping from domain objects to domain objects</li>
+                <li><strong>Predicate Mapping:</strong> Each predicate is assigned a relation (set of tuples) over the domain</li>
+            </ol>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Example Interpretation 1: Number Domain</h4>
+            
+            <p><strong>Domain:</strong> $D = \{1, 2, 3, 4\}$</p>
+            
+            <p><strong>Function:</strong> $Plus(x, y) = x + y$</p>
+            <ul>
+                <li>$Plus(1, 2) = 3$ ✓ (3 is in domain)</li>
+                <li>$Plus(2, 2) = 4$ ✓ (4 is in domain)</li>
+                <li>This is well-defined because all operations stay within the domain</li>
+            </ul>
+            
+            <p><strong>Predicate:</strong> $GreaterThan(x, y)$ is true when $x > y$</p>
+            <ul>
+                <li>$GreaterThan(3, 1)$ = TRUE</li>
+                <li>$GreaterThan(2, 4)$ = FALSE</li>
+            </ul>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Example Interpretation 2: People Domain</h4>
+            
+            <p><strong>Domain:</strong> $D = \{John, Mary, Pradeep\}$ (set of people)</p>
+            
+            <p><strong>Constants:</strong></p>
+            <ul>
+                <li>$John$ refers to the person John</li>
+                <li>$Mary$ refers to the person Mary</li>
+                <li>$Pradeep$ refers to the person Pradeep</li>
+            </ul>
+            
+            <p><strong>Functions:</strong></p>
+            <ul>
+                <li>$MotherOf(John) = Mary$</li>
+                <li>$MotherOf(Pradeep) = Mary$</li>
+            </ul>
+            
+            <p><strong>Predicates:</strong></p>
+            <ul>
+                <li>$Human = \{John, Mary, Pradeep\}$ (all are humans)</li>
+                <li>$Male = \{John, Pradeep\}$</li>
+                <li>$Friendship = \{(John, Mary), (Mary, John), (John, Pradeep)\}$</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            FOL is interpreted over a domain. What was my domain? Domain was the set of objects. Domain was my set of objects. And we can give examples like this: let's say $\{1, 2, 3, 4\}$ - this is a domain, and in there I am doing the operations. Let's say I am doing the operation of plus or the function of plus - then it is $1 + 2$, these are called binary operations. Why binary operation? Because you are taking 2 entries altogether, and it gives you 3. This is where it is well-defined - in the natural numbers it is well-defined.
+        </div>
+        
+        <h2 id="truth-values">4.2 Truth Values</h2>
+        
+        <p>Once we have an interpretation, we can determine the <strong class="key-term">truth value</strong> of any sentence in FOL.</p>
+        
+        <h3>Truth Values for Atomic Sentences</h3>
+        
+        <div class="info-box">
+            <strong>How to Determine Truth:</strong>
+            <ul>
+                <li>Evaluate all function applications to get objects</li>
+                <li>Check if the resulting tuple is in the predicate's relation</li>
+                <li>The sentence is TRUE if the relation holds, FALSE otherwise</li>
+            </ul>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Example: Determining Truth Values</h4>
+            
+            <p><strong>Given:</strong></p>
+            <ul>
+                <li>Domain: $\{John, Mary, Pradeep\}$</li>
+                <li>$Friendship = \{(John, Mary), (Mary, John)\}$</li>
+            </ul>
+            
+            <p><strong>Evaluation:</strong></p>
+            <ul>
+                <li>$Friendship(John, Mary)$ = <strong>TRUE</strong> (tuple $(John, Mary)$ is in the relation)</li>
+                <li>$Friendship(Mary, John)$ = <strong>TRUE</strong> (tuple $(Mary, John)$ is in the relation)</li>
+                <li>$Friendship(John, Pradeep)$ = <strong>FALSE</strong> (tuple $(John, Pradeep)$ is NOT in the relation)</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Let's say we are saying $Friendship(John, Mary)$. We said that John has friendship with Mary - that is what it represents. Now in reality, is it the case? What value should I give to it? Is it a true statement or a false statement? If actually in real life, or whatever knowledge we have, the knowledge base that we have - in there I know that John has friendship with Mary - I will call it "yes, this sentence is true." But if this is not the case, if John doesn't have friendship with Mary in reality, then we will say this is false. So that is the meaning we are providing to that - we are giving values to that!
+        </div>
+        
+        <h3>Truth Values with Variables</h3>
+        
+        <div class="example-box">
+            <h4>💡 Variables and Substitution:</h4>
+            
+            <p><strong>Sentence:</strong> $Loves(x, y)$</p>
+            <p>This sentence with free variables doesn't have a definite truth value until we assign values to $x$ and $y$.</p>
+            
+            <p><strong>With Substitution:</strong></p>
+            <ul>
+                <li>Let $x = John$, $y = Mary$</li>
+                <li>Then $Loves(x, y)$ becomes $Loves(John, Mary)$</li>
+                <li>This is TRUE only when John loves Mary (according to our knowledge base)</li>
+                <li>Otherwise it is FALSE</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            There are variables now. Let's say $Loves(x, y)$ - this is true only when x loves y, otherwise it is false. So that means I could have replaced with any kind of objects, let's say John or Mary for example. So if I am putting x equal to John, if I am putting y equal to Mary, then this becomes $Loves(John, Mary)$. And this will be true only when John loves Mary, otherwise it is false.
+        </div>
+        
+        <h3>Truth Values with Quantifiers</h3>
+        
+        <div class="success-box">
+            <h4>Universal Quantifier ($\forall$):</h4>
+            <p>$\forall x \, P(x)$ is TRUE if and only if $P(a)$ is TRUE for <strong>every</strong> object $a$ in the domain.</p>
+            
+            <p><strong>Example:</strong> $\forall x \, Human(x) \rightarrow Mortal(x)$</p>
+            <ul>
+                <li>Check for every object in domain: is it true that "if it's human, then it's mortal"?</li>
+                <li>If true for ALL objects → sentence is TRUE</li>
+                <li>If false for ANY object → sentence is FALSE</li>
+            </ul>
+        </div>
+        
+        <div class="success-box">
+            <h4>Existential Quantifier ($\exists$):</h4>
+            <p>$\exists x \, P(x)$ is TRUE if and only if $P(a)$ is TRUE for <strong>at least one</strong> object $a$ in the domain.</p>
+            
+            <p><strong>Example:</strong> $\exists x \, Dog(x) \land Barks(x)$</p>
+            <ul>
+                <li>Check objects in domain: is there at least one that is both a dog and barks?</li>
+                <li>If YES (found at least one) → sentence is TRUE</li>
+                <li>If NO (none found) → sentence is FALSE</li>
+            </ul>
+        </div>
+        
+        <h2 id="knowledge-base">4.3 Knowledge Base Examples</h2>
+        
+        <p>A <strong class="key-term">knowledge base (KB)</strong> is a collection of sentences that represent what we know about the world. We can use semantics to determine if statements are true given the KB.</p>
+        
+        <div class="example-box">
+            <h4>💡 Example Knowledge Base:</h4>
+            
+            <p><strong>KB contains:</strong></p>
+            <ol>
+                <li>$\forall x \, (Human(x) \rightarrow Mortal(x))$ - "All humans are mortal"</li>
+                <li>$Human(Pradeep)$ - "Pradeep is a human"</li>
+                <li>$Loves(John, Mary)$ - "John loves Mary"</li>
+                <li>$\forall x \, (\exists y \, Loves(x, y) \rightarrow Happy(x))$ - "Everyone who loves someone is happy"</li>
+            </ol>
+            
+            <p><strong>What can we determine?</strong></p>
+            <ul>
+                <li>From (1) and (2): We can infer $Mortal(Pradeep)$ ✓</li>
+                <li>From (3) and (4): We can infer $Happy(John)$ ✓ (John loves Mary, so he must be happy)</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            Let's say the knowledge base contains: "All humans are mortal" - that's $\forall x (Human(x) \rightarrow Mortal(x))$. And let's say the second sentence is $Human(Pradeep)$. And the third sentence may be $Loves(John, Mary)$. The fourth sentence may be "Everyone who loves someone is happy" - which is $\forall x (\exists y \, Loves(x,y) \rightarrow Happy(x))$. That is how we should represent it. Now I am just keeping this as my knowledge base, and we are coming to inference.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                <strong>Semantics</strong> FOL expressions ko meaning deta hai. Ek <strong>interpretation</strong> (ya model) specify karta hai: (1) <strong>Domain</strong> - objects ka set, (2) Constants, functions, aur predicates ko domain objects se map karna. Truth value determine karne ke liye: functions ko evaluate karo objects milne tak, phir check karo ki predicate ka relation hold karta hai ya nahi. <strong>Quantifiers</strong> ke liye: $\forall x P(x)$ tab TRUE hai jab P domain ke SABHI objects ke liye true ho; $\exists x P(x)$ tab TRUE hai jab P KAM SE KAM EK object ke liye true ho. <strong>Knowledge base</strong> sentences ka collection hai jo humara knowledge represent karta hai, aur hum semantics use karke determine kar sakte hain ki koi statement KB se follow karta hai ya nahi.
+            </p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Semantics of FOL</h4>
+            <ul>
+                <li><strong>Interpretation/Model</strong> specifies domain and mappings for all symbols</li>
+                <li>Truth values are determined relative to an interpretation</li>
+                <li>Atomic sentences are true if the predicate relation holds for the given objects</li>
+                <li>$\forall x \, P(x)$ is true iff $P$ is true for <strong>all</strong> domain objects</li>
+                <li>$\exists x \, P(x)$ is true iff $P$ is true for <strong>at least one</strong> domain object</li>
+                <li>Knowledge bases store our known facts; semantics determines what else must be true</li>
+                <li>Domain specification is essential for well-defined semantics</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 5: INFERENCE IN FIRST ORDER LOGIC
+         ============================================ -->
+    <section id="inference">
+        <h1>5. Inference in First Order Logic</h1>
+        
+        <p><strong class="key-term">Inference</strong> in FOL is the process of deriving new facts from existing knowledge. The inference rules from propositional logic can be extended to work with FOL, with additional considerations for variables and quantifiers.</p>
+        
+        <h2 id="modus-ponens-fol">5.1 Modus Ponens in FOL</h2>
+        
+        <p>Modus Ponens, which we learned in propositional logic, can also be applied in First Order Logic with variable substitution.</p>
+        
+        <div class="info-box">
+            <strong>Modus Ponens in FOL:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{P \rightarrow Q, \quad P}{Q}$$
+            </p>
+            <p>If we know "$P$ implies $Q$" and we know "$P$", then we can conclude "$Q$".</p>
+            <p><strong>But in FOL:</strong> $P$ and $Q$ can contain variables, and we need to substitute appropriate values!</p>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Detailed Example: Inferring "Pradeep is Mortal"</h4>
+            
+            <p><strong>Given Knowledge Base:</strong></p>
+            <ol>
+                <li>$\forall x \, (Human(x) \rightarrow Mortal(x))$ - "All humans are mortal"</li>
+                <li>$Human(Pradeep)$ - "Pradeep is a human"</li>
+            </ol>
+            
+            <p><strong>Question:</strong> Can we conclude $Mortal(Pradeep)$?</p>
+            
+            <p><strong>Solution - Step by Step:</strong></p>
+            
+            <p><strong>Step 1:</strong> From sentence (1), we know that for ALL x, if x is human, then x is mortal.</p>
+            <p>This means we can instantiate this rule for ANY specific object, including Pradeep!</p>
+            
+            <p><strong>Step 2:</strong> Substitute $x = Pradeep$ in sentence (1):</p>
+            <p style="margin-left: 40px;">$Human(Pradeep) \rightarrow Mortal(Pradeep)$</p>
+            <p style="margin-left: 40px;">This gives us: "If Pradeep is human, then Pradeep is mortal"</p>
+            
+            <p><strong>Step 3:</strong> We now have:</p>
+            <ul>
+                <li><strong>Premise 1:</strong> $Human(Pradeep) \rightarrow Mortal(Pradeep)$</li>
+                <li><strong>Premise 2:</strong> $Human(Pradeep)$ (from sentence 2)</li>
+            </ul>
+            
+            <p><strong>Step 4:</strong> Apply Modus Ponens:</p>
+            <p style="margin-left: 40px;">From $P \rightarrow Q$ and $P$, we get $Q$</p>
+            <p style="margin-left: 40px;">From $Human(Pradeep) \rightarrow Mortal(Pradeep)$ and $Human(Pradeep)$</p>
+            <p style="margin-left: 40px;"><strong>Conclusion:</strong> $Mortal(Pradeep)$ ✓</p>
+        </div>
+        
+        <div class="professor-note">
+            Let's take the first two sentences: "All humans are mortal" and "Pradeep is a human." From these two, can you conclude anything? Can you conclude that Pradeep is mortal? Remember from propositional logic: $P \rightarrow Q$ and $P$ gives us $Q$ - this was Modus Ponens, correct? Why is Modus Ponens coming? See, from here I know that Pradeep is a human, right? Pradeep is a human, which will imply Pradeep is mortal. So that is what we are doing - that is exactly what we are doing!
+        </div>
+        
+        <div class="success-box">
+            <h4>🎯 The Key Insight:</h4>
+            <p>The universal quantifier $\forall x$ allows us to instantiate the rule for ANY specific object!</p>
+            <ul>
+                <li>$\forall x \, P(x)$ means $P$ is true for all objects</li>
+                <li>Therefore, $P(John)$, $P(Mary)$, $P(Pradeep)$, etc. are all true</li>
+                <li>We can "plug in" any constant for $x$</li>
+            </ul>
+        </div>
+        
+        <h2 id="variable-substitution">5.2 Variable Substitution (Universal Instantiation)</h2>
+        
+        <p><strong class="key-term">Universal Instantiation</strong> is the inference rule that allows us to substitute a specific object for a universally quantified variable.</p>
+        
+        <div class="warning-box">
+            <strong>Universal Instantiation Rule:</strong>
+            <p style="text-align: center; font-size: 1.2em;">
+
+                $$\frac{\forall x \, P(x)}{P(c)}$$
+            </p>
+            <p>From "for all x, P(x)" we can infer "P(c)" for any constant c in the domain.</p>
+        </div>
+        
+        <div class="example-box">
+            <h4>💡 Examples of Universal Instantiation:</h4>
+            
+            <p><strong>Example 1:</strong></p>
+            <p><strong>Given:</strong> $\forall x \, Student(x) \rightarrow Studies(x)$</p>
+            <p><strong>Can infer:</strong></p>
+            <ul>
+                <li>$Student(John) \rightarrow Studies(John)$</li>
+                <li>$Student(Mary) \rightarrow Studies(Mary)$</li>
+                <li>$Student(Pradeep) \rightarrow Studies(Pradeep)$</li>
+                <li>... for any person in our domain!</li>
+            </ul>
+            
+            <p><strong>Example 2:</strong></p>
+            <p><strong>Given:</strong> $\forall x \, (x > 0) \rightarrow (x^2 > 0)$</p>
+            <p><strong>Can infer:</strong></p>
+            <ul>
+                <li>$(5 > 0) \rightarrow (5^2 > 0)$</li>
+                <li>$(10 > 0) \rightarrow (10^2 > 0)$</li>
+                <li>... for any number in our domain!</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            We are applying Modus Ponens in the same way as we applied in propositional logic where we did not have this "for all x" and all this. Now what we are implying is that we can give the values to these variables over here. That x is taking the value of Pradeep, and then I know that we are checking whether this is valid or not, this is true or not. So, Pradeep is a human - it is true, right? That is what we are saying. Then human Pradeep is true, right? That is what we are saying. Then that will imply that mortal Pradeep is true. That's why we are writing: Modus Ponens tells us that!
+        </div>
+        
+        <h3>Complete Inference Example</h3>
+        
+        <div class="success-box">
+            <h4>🔍 Detailed Proof Using FOL Inference:</h4>
+            
+            <p><strong>Knowledge Base (KB):</strong></p>
+            <ol>
+                <li>$\forall x \, (Human(x) \rightarrow Mortal(x))$</li>
+                <li>$Human(Pradeep)$</li>
+            </ol>
+            
+            <p><strong>Goal:</strong> Prove $Mortal(Pradeep)$</p>
+            
+            <p><strong>Proof:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Statement</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>$\forall x \, (Human(x) \rightarrow Mortal(x))$</td>
+                        <td>Given (KB sentence 1)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>$Human(Pradeep)$</td>
+                        <td>Given (KB sentence 2)</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>$Human(Pradeep) \rightarrow Mortal(Pradeep)$</td>
+                        <td>Universal Instantiation on step 1 (substitute $x = Pradeep$)</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>$Mortal(Pradeep)$</td>
+                        <td>Modus Ponens on steps 3 and 2</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Conclusion:</strong> $Mortal(Pradeep)$ is proved! ✓</p>
+        </div>
+        
+        <h3>Other Inference Rules in FOL</h3>
+        
+        <div class="info-box">
+            <strong>Available Inference Rules:</strong>
+            <ul>
+                <li><strong>Modus Ponens:</strong> As demonstrated above</li>
+                <li><strong>Modus Tollens:</strong> Also works with variable substitution</li>
+                <li><strong>Resolution:</strong> Very important for automated theorem proving in FOL</li>
+                <li><strong>And more:</strong> All propositional inference rules extend to FOL</li>
+            </ul>
+        </div>
+        
+        <div class="professor-note">
+            This is all about your FOL for now. I would like you to try a few examples of how to express statements. Mainly in our inference rules, the two rules that are most important that we generally use are Modus Ponens and Resolution. Obviously, resolution will work over here. We have taken an example from Modus Ponens; let's just try to see how this resolution will work in the context of first order logic!
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>🌟 Hinglish Summary</h4>
+            <p>
+                FOL mein <strong>inference</strong> ka matlab hai existing knowledge se naye facts derive karna. Propositional logic ke <strong>Modus Ponens</strong> rule ko FOL mein bhi use kar sakte hain, lekin isme <strong>variable substitution</strong> ki zaroorat hoti hai. <strong>Universal Instantiation</strong> ek bahut important rule hai: $\forall x P(x)$ se hum kisi bhi specific constant $c$ ke liye $P(c)$ infer kar sakte hain. Example: agar "sabhi humans mortal hain" ($\forall x Human(x) \rightarrow Mortal(x)$) aur "Pradeep human hai" ($Human(Pradeep)$), toh hum conclude kar sakte hain ki "Pradeep mortal hai" ($Mortal(Pradeep)$). Pehle universal statement se specific instance nikalo (Universal Instantiation), phir Modus Ponens apply karo. <strong>Resolution</strong> bhi FOL mein bahut powerful hai automated reasoning ke liye!
+            </p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Inference in FOL</h4>
+            <ul>
+                <li>Propositional logic inference rules extend to FOL with variable handling</li>
+                <li><strong>Universal Instantiation:</strong> From $\forall x P(x)$, infer $P(c)$ for any constant $c$</li>
+                <li><strong>Modus Ponens in FOL:</strong> Requires variable substitution before application</li>
+                <li>Process: Instantiate universal statements → Apply propositional inference rules</li>
+                <li>Resolution is particularly important for automated theorem proving in FOL</li>
+                <li>Variables can be replaced by constants from the domain during inference</li>
+                <li>Each inference step must be justified by a valid rule</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 6: PRACTICE EXERCISES (HOMEWORK)
+         ============================================ -->
+    <section id="homework">
+        <h1>6. Practice Exercises (Homework)</h1>
+        
+        <p>The professor provided several homework problems to practice expressing statements in First Order Logic. Work through these exercises to strengthen your understanding!</p>
+        
+        <div class="practice-questions">
+            <h4>📝 Homework Problems</h4>
+            
+            <div class="question">
+                <strong>Q1:</strong> Express in FOL: "There is a student who studies logic"
+                <div class="answer">
+
+                    $$\exists x \, (Student(x) \land Studies(x, Logic))$$
+                    <p><strong>Explanation:</strong></p>
+                    <ul>
+                        <li>$\exists x$ - "There exists an x"</li>
+                        <li>$Student(x)$ - "x is a student"</li>
+                        <li>$\land$ - "and"</li>
+                        <li>$Studies(x, Logic)$ - "x studies logic"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "There exists an x such that x is a student and x studies logic"</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2:</strong> Express in FOL: "John is the father of someone who fails exams"
+                <div class="answer">
+
+                    $$\exists x \, (FatherOf(x) = John \land Fails(x, Exams))$$
+                    Or alternatively:
+
+                    $$\exists x \, (Father(John, x) \land Fails(x, Exams))$$
+                    <p><strong>Explanation:</strong></p>
+                    <ul>
+                        <li>$\exists x$ - "There exists someone x"</li>
+                        <li>$Father(John, x)$ - "John is the father of x"</li>
+                        <li>$\land$ - "and"</li>
+                        <li>$Fails(x, Exams)$ - "x fails exams"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "There exists an x such that John is the father of x and x fails exams"</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3:</strong> Express in FOL: "If it rains, the ground is wet"
+                <div class="answer">
+
+                    $$Rains \rightarrow Wet(Ground)$$
+                    Or more generally with quantification over time:
+
+                    $$\forall t \, (Rains(t) \rightarrow Wet(Ground, t))$$
+                    <p><strong>Explanation (simple version):</strong></p>
+                    <ul>
+                        <li>$Rains$ - "It rains" (treated as a constant/proposition)</li>
+                        <li>$\rightarrow$ - "implies"</li>
+                        <li>$Wet(Ground)$ - "The ground is wet"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "If it rains, then the ground is wet"</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q4:</strong> How can resolution work in FOL? Provide an example.
+                <div class="answer">
+                    <p><strong>Resolution in FOL</strong> works similarly to propositional logic but requires <strong>unification</strong> of variables.</p>
+                    
+                    <p><strong>Example:</strong></p>
+                    <p><strong>Given:</strong></p>
+                    <ul>
+                        <li>Clause 1: $\neg Human(x) \lor Mortal(x)$ (from $Human(x) \rightarrow Mortal(x)$)</li>
+                        <li>Clause 2: $Human(Socrates)$</li>
+                    </ul>
+                    
+                    <p><strong>Resolution Steps:</strong></p>
+                    <ol>
+                        <li>Unify: Match $Human(x)$ with $Human(Socrates)$ by substituting $x = Socrates$</li>
+                        <li>Clause 1 becomes: $\neg Human(Socrates) \lor Mortal(Socrates)$</li>
+                        <li>Resolve: $\neg Human(Socrates)$ cancels with $Human(Socrates)$</li>
+                        <li><strong>Result:</strong> $Mortal(Socrates)$ ✓</li>
+                    </ol>
+                    
+                    <p><strong>Key Concept:</strong> Resolution in FOL requires finding the right substitution (unification) to make literals match before resolving them. This is more complex than propositional resolution but follows the same basic principle of canceling complementary literals.</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q5:</strong> Express: "Every student who studies hard passes the exam"
+                <div class="answer">
+
+                    $$\forall x \, ((Student(x) \land StudiesHard(x)) \rightarrow Passes(x, Exam))$$
+                    <p><strong>Explanation:</strong></p>
+                    <ul>
+                        <li>$\forall x$ - "For all x"</li>
+                        <li>$Student(x) \land StudiesHard(x)$ - "x is a student AND x studies hard"</li>
+                        <li>$\rightarrow$ - "implies"</li>
+                        <li>$Passes(x, Exam)$ - "x passes the exam"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "For all x, if x is a student and x studies hard, then x passes the exam"</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q6:</strong> Express: "No student likes exams"
+                <div class="answer">
+
+                    $$\forall x \, (Student(x) \rightarrow \neg Likes(x, Exams))$$
+                    Or equivalently using negated existential:
+
+                    $$\neg \exists x \, (Student(x) \land Likes(x, Exams))$$
+                    <p><strong>Explanation (first version):</strong></p>
+                    <ul>
+                        <li>$\forall x$ - "For all x"</li>
+                        <li>$Student(x)$ - "x is a student"</li>
+                        <li>$\rightarrow$ - "implies"</li>
+                        <li>$\neg Likes(x, Exams)$ - "x does NOT like exams"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "For all x, if x is a student, then x does not like exams"</p>
+                    <p><strong>Note:</strong> Both formulations are logically equivalent!</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q7:</strong> Express: "Some people like all animals"
+                <div class="answer">
+
+                    $$\exists x \, (Person(x) \land \forall y \, (Animal(y) \rightarrow Likes(x, y)))$$
+                    <p><strong>Explanation:</strong></p>
+                    <ul>
+                        <li>$\exists x$ - "There exists a person x"</li>
+                        <li>$Person(x)$ - "x is a person"</li>
+                        <li>$\land$ - "and"</li>
+                        <li>$\forall y$ - "for all y"</li>
+                        <li>$Animal(y) \rightarrow Likes(x, y)$ - "if y is an animal, then x likes y"</li>
+                    </ul>
+                    <p><strong>Reading:</strong> "There exists a person x such that for all y, if y is an animal, then x likes y"</p>
+                    <p><strong>Note:</strong> This has nested quantifiers - $\exists$ then $\forall$</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q8:</strong> Given KB: (1) $\forall x (Dog(x) \rightarrow Animal(x))$, (2) $Dog(Fido)$. Prove: $Animal(Fido)$
+                <div class="answer">
+                    <p><strong>Proof:</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Statement</th>
+                                <th>Justification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>$\forall x (Dog(x) \rightarrow Animal(x))$</td>
+                                <td>Given (KB)</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>$Dog(Fido)$</td>
+                                <td>Given (KB)</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>$Dog(Fido) \rightarrow Animal(Fido)$</td>
+                                <td>Universal Instantiation on step 1 (substitute $x = Fido$)</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>$Animal(Fido)$</td>
+                                <td>Modus Ponens on steps 3 and 2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>Conclusion:</strong> $Animal(Fido)$ is proved! ✓</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h4>💡 Tips for Homework:</h4>
+            <ul>
+                <li><strong>Identify the domain:</strong> What are we talking about? (people, numbers, objects?)</li>
+                <li><strong>Universal vs Existential:</strong> Does the statement apply to "all" or "some"?</li>
+                <li><strong>Choose connectives carefully:</strong> $\forall$ usually goes with $\rightarrow$; $\exists$ usually goes with $\land$</li>
+                <li><strong>Practice inference:</strong> Try proving conclusions from given knowledge bases</li>
+                <li><strong>Check your translations:</strong> Read them back in English to verify correctness</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECTION 7: COMPREHENSIVE MIND MAP
+         ============================================ -->
+    <section id="mind-map" class="mind-map">
+        <h2>7. 🧠 Comprehensive Mind Map</h2>
+        
+        <div class="mind-map-container">
+            <div class="central-node">
+                FIRST ORDER LOGIC
+            </div>
+            
+            <div class="branches">
+                <!-- Branch 1: Motivation -->
+                <div class="branch">
+                    <h3>1. Motivation</h3>
+                    <ul>
+                        <li>Propositional logic limitations</li>
+                        <li>Limited expressiveness</li>
+                        <li>Cannot express general rules</li>
+                        <li>Must list every individual</li>
+                        <li>Need for richer logic system</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 2: Components -->
+                <div class="branch">
+                    <h3>2. Syntax Components</h3>
+                    <ul>
+                        <li><strong>Constants:</strong> Specific objects</li>
+                        <li><strong>Variables:</strong> Arbitrary objects</li>
+                        <li><strong>Predicates:</strong> Properties/Relations</li>
+                        <li><strong>Functions:</strong> Object mappings</li>
+                        <li><strong>Domain:</strong> Set of objects</li>
+                        <li><strong>Connectives:</strong> AND, OR, NOT, →, ↔</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 3: Quantifiers -->
+                <div class="branch">
+                    <h3>3. Quantifiers ⭐</h3>
+                    <ul>
+                        <li><strong>Universal ($\forall$):</strong> For all</li>
+                        <li>Pattern: $\forall x (P(x) \rightarrow Q(x))$</li>
+                        <li><strong>Existential ($\exists$):</strong> There exists</li>
+                        <li>Pattern: $\exists x (P(x) \land Q(x))$</li>
+                        <li><strong>Warning:</strong> Order matters!</li>
+                        <li>Nested quantifiers possible</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 4: Sentences -->
+                <div class="branch">
+                    <h3>4. Sentences</h3>
+                    <ul>
+                        <li><strong>Atomic:</strong> Predicate(terms)</li>
+                        <li>Example: $Human(John)$</li>
+                        <li><strong>Complex:</strong> Use connectives</li>
+                        <li>Example: $P(x) \land Q(x)$</li>
+                        <li>Functions in predicates allowed</li>
+                        <li>General statements possible</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 5: Semantics -->
+                <div class="branch">
+                    <h3>5. Semantics</h3>
+                    <ul>
+                        <li><strong>Interpretation:</strong> Domain + mappings</li>
+                        <li>Truth values relative to model</li>
+                        <li>$\forall$: True for ALL objects</li>
+                        <li>$\exists$: True for AT LEAST ONE</li>
+                        <li>Knowledge base stores facts</li>
+                        <li>Well-defined = has clear meaning</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 6: Inference -->
+                <div class="branch">
+                    <h3>6. Inference</h3>
+                    <ul>
+                        <li><strong>Universal Instantiation</strong></li>
+                        <li>$\forall x P(x) \Rightarrow P(c)$</li>
+                        <li><strong>Modus Ponens</strong> with substitution</li>
+                        <li><strong>Resolution</strong> + unification</li>
+                        <li>All prop. rules extend to FOL</li>
+                        <li>Variable substitution key</li>
+                    </ul>
+                </div>
+                
+                <!-- Branch 7: Key Features -->
+                <div class="branch">
+                    <h3>7. Key Features</h3>
+                    <ul>
+                        <li>Extends propositional logic</li>
+                        <li>Greater expressiveness</li>
+                        <li>Used in AI for knowledge representation</li>
+                        <li>Can represent complex relationships</li>
+                        <li>Foundation for logic programming</li>
+                        <li>Basis for automated reasoning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #e1f5fe; border-radius: 8px; border-left: 4px solid #0288d1;">
+            <h4 style="color: #01579b; margin-top: 0;">🔗 Important Connections</h4>
+            <ul style="color: #01579b;">
+                <li><strong>Quantifiers ↔ Expressiveness:</strong> Quantifiers are what make FOL more expressive than propositional logic</li>
+                <li><strong>Domain ↔ Semantics:</strong> Domain specification is essential for well-defined semantics</li>
+                <li><strong>Syntax ↔ Inference:</strong> Understanding syntax components is necessary for proper inference</li>
+                <li><strong>Universal Quantifier ↔ Implication:</strong> $\forall$ typically paired with $\rightarrow$</li>
+                <li><strong>Existential Quantifier ↔ Conjunction:</strong> $\exists$ typically paired with $\land$</li>
+                <li><strong>FOL ↔ AI:</strong> FOL is fundamental for knowledge representation in artificial intelligence</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER SECTION
+         ============================================ -->
+    <footer>
+        <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+    </footer>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

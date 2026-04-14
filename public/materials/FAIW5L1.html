@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Search to Knowledge Representation and Reasoning (KRR) in AI</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .course-info {
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .toc h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc ul li {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+        .toc a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+        h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .key-term {
+            background-color: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .example-box {
+            background-color: #f0f8f0;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .professor-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        .hinglish-summary {
+            background-color: #e8f5e8;
+            border: 2px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+        .hinglish-summary::before {
+            content: "📝 Hinglish Summary: ";
+            font-weight: bold;
+            color: #28a745;
+            display: block;
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .diagram-placeholder {
+            background-color: #f8f9fa;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .practice-questions {
+            background-color: #f8f9fa;
+            border: 2px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .practice-questions h4 {
+            color: #17a2b8;
+            margin-top: 0;
+        }
+        .key-takeaways {
+            background-color: #e7f3ff;
+            border: 2px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .key-takeaways h4 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .mind-map {
+            background-color: #f8f9fa;
+            border: 2px solid #6f42c1;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+        .mind-map h3 {
+            color: #6f42c1;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .mind-map-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .topic-node {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 150px;
+            position: relative;
+        }
+        .subtopic-node {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        .connection-line {
+            border-top: 2px solid #6c757d;
+            margin: 10px 0;
+        }
+        ul.formula-list {
+            background-color: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        /* Footer */
+      .site-footer {
+        background: #2b3b47;
+        color: #fff;
+        padding: 1.05rem;
+        border-radius: 12px;
+        margin: 1.5rem 0 0;
+        max-width: 100%;
+        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .footer-inner {
+        max-width: 980px;
+        text-align: center;
+        padding: 0 1rem;
+      }
+      .footer-text {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .footer-author {
+        margin: 0;
+        margin-top: 0.4rem;
+        font-weight: 600;
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>From Search to Knowledge Representation and Reasoning (KRR) in AI</h1>
+            <div class="course-info">Created by Armaan Kachhawa</div>
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#recap-search">1. Recap: Search in AI</a></li>
+                <li><a href="#why-krr">2. Why KRR is Needed</a></li>
+                <li><a href="#what-is-search">2.1 What is Search in AI?</a></li>
+                <li><a href="#limitations-search">2.2 Limitations of Search</a></li>
+                <li><a href="#motivation-beyond">2.3 Motivation: Beyond Search</a></li>
+                <li><a href="#why-study-kr">2.4 Why Study Knowledge Representation?</a></li>
+                <li><a href="#why-study-reasoning">2.5 Why Study Reasoning?</a></li>
+                <li><a href="#comparison">2.6 Comparison: Search vs KRR</a></li>
+                <li><a href="#expert-system">2.7 Example: Expert System (Medical Diagnosis)</a></li>
+                <li><a href="#knowledge-action">2.8 Example: Knowledge in Action</a></li>
+                <li><a href="#hybrid-ai">2.9 KRR + Search = Smart AI</a></li>
+                <li><a href="#conclusion">3. Conclusion</a></li>
+            </ul>
+        </div>
+
+        <section id="recap-search">
+            <h2>1. Recap: Search in AI</h2>
+            
+            <div class="professor-note">
+                The professor emphasized that in the previous module, we covered search algorithms and search problems in AI. Now we're transitioning to knowledge representation and reasoning, focusing on logical agents. The key question is: why aren't search algorithms alone sufficient to make a machine truly intelligent? Why do we need the power of reasoning and logical thinking?
+            </div>
+
+            <p>Before diving into knowledge representation and reasoning, let's understand the foundational concept of how <span class="key-term">intelligent agents</span> work. An agent always interacts with its environment through:</p>
+            
+            <ul>
+                <li><span class="key-term">Sensors</span> - to perceive inputs from the environment</li>
+                <li><span class="key-term">Mental map</span> - internal representation of the complex real world</li>
+                <li><span class="key-term">Represented environment</span> - simplified version of the real world for computational processing</li>
+            </ul>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Agent-Environment Interaction Model showing Real World → Sensors → Mental Map → Represented Environment → Decision Making → Actions → Real World]
+            </div>
+
+            <div class="professor-note">
+                The professor explained that as intelligent agents, we create a mental map in our heads - a representation of the real world. This complex real world is simplified into a representation that we can work with. All our calculations and decision-making happen in this represented environment (in our head), and only after we decide on our course of action do we execute it in the real world.
+            </div>
+
+            <div class="hinglish-summary">
+                Yaha samjhiye ki hum sab intelligent agents hain. Hum real world ko apne dimag mein ek simple map ki tarah represent karte hain. Phir is mental map mein saare calculations karte hain, decisions lete hain, aur finally real world mein execute karte hain. Yahi process AI agents bhi follow karte hain.
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li><strong>Q:</strong> What is the role of sensors in an intelligent agent?<br>
+                        <strong>A:</strong> Sensors allow the agent to perceive inputs from the environment, similar to how humans use sensory organs to gather information from the real world.</li>
+                    <li><strong>Q:</strong> Why do we need a represented environment instead of working directly with the real world?<br>
+                        <strong>A:</strong> The real world is complex, so we create a simplified representation (mental map) that allows us to perform calculations and make decisions efficiently before executing actions in the real world.</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Intelligent agents interact with environments through sensors and actions</li>
+                    <li>Mental maps are simplified representations of complex real-world environments</li>
+                    <li>Decision-making occurs in the represented environment before real-world execution</li>
+                    <li>This foundation is crucial for understanding why we need more than just search algorithms</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="why-krr">
+            <h2>2. Why KRR is Needed</h2>
+
+            <section id="what-is-search">
+                <h3>2.1 What is Search in AI?</h3>
+                
+                <p><span class="key-term">Search</span> is a fundamental technique in problem-solving that involves navigating a <span class="key-term">problem space</span> to reach a <span class="key-term">goal state</span>.</p>
+
+                <div class="example-box">
+                    <h4>Examples of Search Problems:</h4>
+                    <ul>
+                        <li>Solving a maze</li>
+                        <li>Pathfinding in maps (e.g., GPS navigation)</li>
+                        <li>Solving puzzles like 8-puzzle or Sudoku</li>
+                    </ul>
+                </div>
+
+                <p>Search works well when the following conditions are met:</p>
+                <ul>
+                    <li>The world is <span class="key-term">fully observable</span></li>
+                    <li>Goals and actions are <span class="key-term">well-defined</span></li>
+                    <li>The <span class="key-term">state space</span> is manageable</li>
+                </ul>
+
+                <div class="professor-note">
+                    The professor explained that in search problems, we represent the environment graphically with states and actions. We have an initial state and a goal state, and we try to find a path from the initial state to the goal state - this path is our solution. However, most real-world environments are only partially observable, not fully observable like in search problems.
+                </div>
+
+                <div class="hinglish-summary">
+                    Search algorithms sirf path finding ke liye acche hain - jaise maze solve karna ya GPS mein route find karna. Lekin real world mein hum sirf partially observable environment mein rehte hain, fully observable nahi. Humein sirf kuch part hi dikhta hai environment ka, poora nahi.
+                </div>
+            </section>
+
+            <section id="limitations-search">
+                <h3>2.2 Limitations of Search</h3>
+                
+                <p>Search algorithms face significant limitations when dealing with complex real-world scenarios:</p>
+
+                <div class="example-box">
+                    <h4>Knowledge That Search Cannot Handle:</h4>
+                    <ul>
+                        <li>"All humans are mortal"</li>
+                        <li>"If fever and rash → suspect dengue"</li>
+                        <li>Rules and logical relationships</li>
+                    </ul>
+                </div>
+
+                <p>Key limitations of search-based approaches:</p>
+                <ul>
+                    <li><span class="key-term">Path-finding focus</span>: Not all problems are about finding paths</li>
+                    <li><span class="key-term">No logical reasoning</span>: Cannot handle "what do we know?" and "what should we infer?"</li>
+                    <li><span class="key-term">Shallow understanding</span>: No abstraction or deeper comprehension</li>
+                    <li><span class="key-term">Limited knowledge representation</span>: Cannot encode complex relationships</li>
+                </ul>
+
+                <div class="professor-note">
+                    The professor used a medical example: if symptoms are fever and rash, why do we suspect dengue? There must be a logical reason based on prior knowledge. We've seen many cases where fever and rash together indicate dengue. This kind of reasoning and inference cannot be handled by simple search algorithms.
+                </div>
+
+                <div class="hinglish-summary">
+                    Search ki limitations yeh hain ki woh sirf path finding kar sakta hai. Lekin agar humein logical reasoning karni ho - jaise fever aur rash se dengue suspect karna - toh search algorithms kaam nahi aate. Humein logic aur reasoning ki zaroorat hoti hai, jo search provide nahi kar sakta.
+                </div>
+
+                <div class="practice-questions">
+                    <h4>Practice Questions:</h4>
+                    <ol>
+                        <li><strong>Q:</strong> Why can't search algorithms handle statements like "All humans are mortal"?<br>
+                            <strong>A:</strong> Search algorithms are designed for path-finding problems with states and actions. They cannot represent or reason about logical statements, rules, or abstract knowledge.</li>
+                        <li><strong>Q:</strong> What happens when the environment is not fully observable?<br>
+                            <strong>A:</strong> Search algorithms work best with fully observable environments. In partially observable environments (which is most of the real world), search algorithms struggle because they don't have complete information about all possible states and actions.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="motivation-beyond">
+                <h3>2.3 Motivation: Beyond Search</h3>
+                
+                <p><span class="key-term">AI should not just search</span> — it should understand, infer, and explain. Real intelligence requires more than finding optimal paths.</p>
+
+                <div class="example-box">
+                    <h4>Examples of Advanced AI Requirements:</h4>
+                    
+                    <table>
+                        <tr>
+                            <th>Domain</th>
+                            <th>Required Capabilities</th>
+                            <th>Knowledge Needed</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Doctor AI</strong></td>
+                            <td>Diagnoses based on symptoms and background knowledge</td>
+                            <td>Medical rules, patient history, symptom-disease relationships</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Robot</strong></td>
+                            <td>Plans actions by understanding the environment</td>
+                            <td>Object properties, action consequences, environmental rules</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Legal AI</strong></td>
+                            <td>Makes decisions based on laws and logic</td>
+                            <td>Constitutional laws, legal precedents, logical reasoning</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="professor-note">
+                    The professor emphasized that for medical AI, we need not just knowledge about diseases, but also about patient backgrounds, body types, geography, family medical history, and the complex relationships between symptoms and diseases. All this knowledge is essential for proper diagnosis.
+                </div>
+
+                <p><span class="key-term">Analogy</span>: Search is like a map, but KRR is the guide who understands the terrain.</p>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Search vs KRR comparison showing Map (Search) vs Guide with Terrain Knowledge (KRR)]
+                </div>
+
+                <div class="hinglish-summary">
+                    AI ko sirf search nahi karna chahiye, usse samajhna, infer karna, aur explain bhi karna chahiye. Doctor AI ko medical knowledge chahiye, robot ko environment samajhni chahiye, legal AI ko laws samajhne chahiye. Search sirf map ki tarah hai, lekin KRR ek guide ki tarah hai jo terrain ko samajhta hai.
+                </div>
+            </section>
+
+            <section id="why-study-kr">
+                <h3>2.4 Why Study Knowledge Representation?</h3>
+                
+                <p><span class="key-term">Knowledge Representation (KR)</span> is a way to encode knowledge about the world in a form a computer can use to solve complex tasks.</p>
+
+                <div class="example-box">
+                    <h4>Examples of KR Techniques:</h4>
+                    <ul>
+                        <li><span class="key-term">Logic</span> (propositional, predicate, First Order Logic)</li>
+                        <li><span class="key-term">Semantic networks</span></li>
+                        <li><span class="key-term">Ontologies</span></li>
+                        <li><span class="key-term">Rule-based systems</span></li>
+                    </ul>
+                </div>
+
+                <p>AI systems need internal representations to understand:</p>
+                <ul>
+                    <li><span class="key-term">Concepts</span> - What things are</li>
+                    <li><span class="key-term">Relationships</span> - How things connect</li>
+                    <li><span class="key-term">Rules</span> - How things behave</li>
+                </ul>
+
+                <div class="professor-note">
+                    The professor mentioned that we'll be focusing on rule-based and deterministic approaches initially, not considering uncertainties in the environment. This is because we're building understanding from simple to complex tasks, similar to how a baby learns - starting with simple intelligence and gradually handling more complex scenarios.
+                </div>
+
+                <div class="hinglish-summary">
+                    Knowledge Representation ka matlab hai ki hum duniya ke baare mein knowledge ko aise encode karte hain ki computer use samajh sake. Logic, semantic networks, rules - yeh sab techniques hain. AI systems ko concepts, relationships, aur rules samajhne ke liye internal representation chahiye.
+                </div>
+
+                <div class="key-takeaways">
+                    <h4>Key Takeaways:</h4>
+                    <ul>
+                        <li>KR encodes world knowledge for computer understanding</li>
+                        <li>Multiple techniques exist: logic, semantic networks, ontologies</li>
+                        <li>AI systems need to understand concepts, relationships, and rules</li>
+                        <li>We start with deterministic approaches before handling uncertainties</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="why-study-reasoning">
+                <h3>2.5 Why Study Reasoning?</h3>
+                
+                <p><span class="key-term">Reasoning</span> is the process of drawing conclusions from knowledge. It's essential for logical decision-making.</p>
+
+                <h4>Types of Reasoning:</h4>
+                
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Direction</th>
+                        <th>Example</th>
+                        <th>Application</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Deductive</strong></td>
+                        <td>General to specific</td>
+                        <td>All birds can fly<br>Tweety is a bird<br>∴ Tweety can fly</td>
+                        <td>Logic systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inductive</strong></td>
+                        <td>Specific to general</td>
+                        <td>Training data → General model</td>
+                        <td>Machine learning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abductive</strong></td>
+                        <td>Best explanation</td>
+                        <td>Fever + rash → likely dengue</td>
+                        <td>Diagnostics</td>
+                    </tr>
+                </table>
+
+                <div class="example-box">
+                    <h4>Deductive Reasoning Example:</h4>
+                    <ul class="formula-list">
+                        <li><strong>Premise 1:</strong> All birds can fly</li>
+                        <li><strong>Premise 2:</strong> Tweety is a bird</li>
+                        <li><strong>Conclusion:</strong> Therefore, Tweety can fly</li>
+                    </ul>
+                </div>
+
+                <div class="professor-note">
+                    The professor explained that reasoning is crucial for intelligent agents. When we speak or teach, we think logically about what our next words should be. If we were to randomly talk about unrelated topics during an AI lecture, it wouldn't follow logic. Reasoning capability is essential for any intelligent agent to make sense and follow logical patterns.
+                </div>
+
+                <div class="hinglish-summary">
+                    Reasoning matlab hai knowledge se conclusions nikalna. Teen types hain - deductive (general se specific), inductive (specific se general jaise machine learning mein), aur abductive (best explanation jaise medical diagnosis mein). Intelligent agent ko reasoning capability honi chahiye, warna woh pagal aadmi ki tarah behave karega.
+                </div>
+
+                <div class="practice-questions">
+                    <h4>Practice Questions:</h4>
+                    <ol>
+                        <li><strong>Q:</strong> Give an example of inductive reasoning in machine learning.<br>
+                            <strong>A:</strong> Using specific training data examples to create a general model that can make predictions on new, unseen data.</li>
+                        <li><strong>Q:</strong> Why is abductive reasoning important in medical diagnosis?<br>
+                            <strong>A:</strong> It helps find the best explanation for a set of symptoms, allowing doctors to identify the most likely disease causing those symptoms.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h3>2.6 Comparison: Search vs KRR</h3>
+                
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Search-Based AI</th>
+                        <th>KRR-Based AI</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Focus</strong></td>
+                        <td>Finding paths/solutions</td>
+                        <td>Understanding and reasoning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Strengths</strong></td>
+                        <td>Optimal path finding, planning</td>
+                        <td>Handling rules, logic, structured knowledge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Weaknesses</strong></td>
+                        <td>Shallow understanding, no abstraction</td>
+                        <td>May be slow, needs structured knowledge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Examples</strong></td>
+                        <td>A* algorithm, DFS/BFS</td>
+                        <td>Prolog, Expert Systems, Ontologies</td>
+                    </tr>
+                </table>
+
+                <div class="professor-note">
+                    The professor emphasized that search is about finding optimal paths, while KRR is about handling knowledge, rules, and logic. Search algorithms like A*, DFS, and BFS are good for pathfinding, but KRR systems like Prolog and expert systems can handle complex reasoning tasks.
+                </div>
+
+                <div class="hinglish-summary">
+                    Search aur KRR mein main difference yeh hai ki search sirf path finding karta hai optimally, lekin KRR understanding aur reasoning karta hai. Search shallow hai, KRR deep hai. Search fast hai lekin limited, KRR slow ho sakta hai but powerful hai complex problems ke liye.
+                </div>
+            </section>
+
+            <section id="expert-system">
+                <h3>2.7 Example: Expert System (Medical Diagnosis)</h3>
+                
+                <div class="example-box">
+                    <h4>Medical Expert System Rule:</h4>
+                    <div style="text-align: center; font-size: 1.2em; background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                        <strong>IF</strong> fever <strong>AND</strong> rash <strong>AND</strong> joint pain<br>
+                        <strong>THEN</strong> possible Dengue infection
+                    </div>
+                </div>
+
+                <h4>What's happening in this system?</h4>
+                <ul>
+                    <li>System uses <span class="key-term">stored knowledge</span> (symptom-disease rules)</li>
+                    <li>It <span class="key-term">reasons logically</span> — not just guesses</li>
+                    <li>Makes <span class="key-term">inferences</span> based on available evidence</li>
+                    <li><span class="key-term">Search cannot do this alone!</span></li>
+                </ul>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Expert System Architecture showing Knowledge Base → Inference Engine → Diagnosis]
+                </div>
+
+                <div class="professor-note">
+                    The professor stressed that this kind of logical reasoning based on stored knowledge and rules cannot be achieved through search algorithms alone. The system needs to have prior knowledge about symptom-disease relationships and the ability to apply logical rules to make inferences.
+                </div>
+
+                <div class="hinglish-summary">
+                    Expert system mein rules stored hote hain jaise "agar fever, rash, aur joint pain hai toh dengue ho sakta hai". System logically reason karta hai, guess nahi karta. Search algorithms yeh nahi kar sakte kyunki unke paas knowledge base aur inference capability nahi hai.
+                </div>
+            </section>
+
+            <section id="knowledge-action">
+                <h3>2.8 Example: Knowledge in Action</h3>
+                
+                <div class="example-box">
+                    <h4>Robot Task: Make Tea</h4>
+                    
+                    <h5>Needed Knowledge:</h5>
+                    <ul>
+                        <li>What is a kettle?</li>
+                        <li>How to boil water?</li>
+                        <li>What is the sequence of actions?</li>
+                    </ul>
+
+                    <h5>Needed Reasoning:</h5>
+                    <ul>
+                        <li><strong>If</strong> water is not in kettle ⇒ fetch water</li>
+                        <li><strong>If</strong> kettle is not plugged in ⇒ plug it in</li>
+                        <li><strong>If</strong> water is not boiling ⇒ wait or increase heat</li>
+                    </ul>
+                </div>
+
+                <p>This example demonstrates how <span class="key-term">declarative knowledge</span> (what things are) combines with <span class="key-term">procedural knowledge</span> (how to do things) and <span class="key-term">conditional reasoning</span> (if-then logic).</p>
+
+                <div class="hinglish-summary">
+                    Chai banane ke liye robot ko sirf path finding nahi chahiye, knowledge chahiye ki kettle kya hai, paani kaise boil karna hai. Phir reasoning chahiye ki agar kettle mein paani nahi hai toh paani lana hai, agar plug nahi kiya toh plug karna hai. Yeh sab KRR ki madad se possible hai.
+                </div>
+
+                <div class="key-takeaways">
+                    <h4>Key Takeaways:</h4>
+                    <ul>
+                        <li>Real-world tasks require both knowledge and reasoning</li>
+                        <li>Declarative knowledge defines what things are</li>
+                        <li>Procedural knowledge defines how to do things</li>
+                        <li>Conditional reasoning enables dynamic decision-making</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="hybrid-ai">
+                <h3>2.9 KRR + Search = Smart AI</h3>
+                
+                <p>The most powerful AI systems combine both approaches:</p>
+                <ul>
+                    <li><span class="key-term">Search</span> handles the "how" (finding optimal paths)</li>
+                    <li><span class="key-term">KRR</span> provides the "what" and "why" (understanding and reasoning)</li>
+                </ul>
+
+                <h4>Hybrid AI Approaches:</h4>
+                <p>Combining <span class="key-term">neural (sub-symbolic)</span> and <span class="key-term">symbolic</span> approaches:</p>
+                
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Function</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Neural Networks</strong></td>
+                        <td>Pattern recognition</td>
+                        <td>Image recognition, speech processing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Symbolic KRR</strong></td>
+                        <td>Logic, reasoning</td>
+                        <td>Rule-based decisions, planning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Search Algorithms</strong></td>
+                        <td>Optimization, pathfinding</td>
+                        <td>Route planning, resource allocation</td>
+                    </tr>
+                </table>
+
+                <div class="example-box">
+                    <h4>Real-World Examples:</h4>
+                    <ul>
+                        <li><strong>IBM Watson:</strong> Combines natural language processing with knowledge reasoning</li>
+                        <li><strong>AlphaGo:</strong> Uses pattern recognition + strategic planning</li>
+                        <li><strong>Autonomous vehicles:</strong> Computer vision + route planning + rule-based safety</li>
+                    </ul>
+                </div>
+
+                <div class="professor-note">
+                    The professor mentioned that the next lecture will focus on symbolic representation - how to actually represent knowledge that we've been discussing. We'll explore the symbolic aspects of knowledge representation in detail.
+                </div>
+
+                <div class="hinglish-summary">
+                    Sabse powerful AI woh hota hai jo search aur KRR dono use karta hai. Neural networks pattern recognition karte hain, symbolic KRR logic aur reasoning karta hai, search algorithms optimization karte hain. IBM Watson, AlphaGo jaise examples mein yeh combination dekh sakte hain.
+                </div>
+
+                <div class="practice-questions">
+                    <h4>Practice Questions:</h4>
+                    <ol>
+                        <li><strong>Q:</strong> How does AlphaGo combine neural networks and symbolic reasoning?<br>
+                            <strong>A:</strong> AlphaGo uses neural networks for pattern recognition (evaluating board positions) and combines it with strategic planning and rule-based game logic for optimal move selection.</li>
+                        <li><strong>Q:</strong> Why is hybrid AI more powerful than using just search or just KRR?<br>
+                            <strong>A:</strong> Hybrid AI leverages the strengths of both approaches - search provides optimal pathfinding and planning, while KRR provides understanding, reasoning, and knowledge-based decision making.</li>
+                    </ol>
+                </div>
+            </section>
+        </section>
+
+        <section id="conclusion">
+            <h2>3. Conclusion</h2>
+            
+            <h3>Why Learn KRR?</h3>
+            <ul>
+                <li><span class="key-term">AI without knowledge is blind</span> - Systems need understanding, not just computation</li>
+                <li><span class="key-term">Reasoning is key to intelligent decisions</span> - Logic and inference are essential</li>
+                <li><span class="key-term">Most real-world problems need both knowledge and inference</span> - Complex scenarios require comprehensive approaches</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor concluded by emphasizing that the next lecture will cover symbolic representation - the actual methods for representing the knowledge we've been discussing. We'll dive into the technical aspects of how to encode knowledge symbolically.
+            </div>
+
+            <h3>Next Steps:</h3>
+            <p><strong>Next lecture topic:</strong> How to represent knowledge using logic and symbolic methods!</p>
+
+            <div class="hinglish-summary">
+                KRR isliye zaroori hai kyunki AI without knowledge andhi hoti hai. Real-world problems mein knowledge aur inference dono chahiye. Search sirf path finding kar sakta hai, lekin intelligent decisions ke liye reasoning chahiye. Next lecture mein hum symbolic representation dekhnge - actually knowledge kaise represent karte hain.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Final Key Takeaways:</h4>
+                <ul>
+                    <li>Search algorithms alone are insufficient for true AI intelligence</li>
+                    <li>Knowledge representation enables encoding of complex world knowledge</li>
+                    <li>Reasoning allows logical inference and decision-making</li>
+                    <li>Hybrid approaches combining search, KRR, and neural methods are most powerful</li>
+                    <li>Real-world AI applications require understanding, inference, and explanation capabilities</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="mind-map">
+            <h3>Comprehensive Mind Map: Search to KRR in AI</h3>
+            <div class="mind-map-content">
+                <div class="topic-node">
+                    <strong>INTELLIGENT AGENTS</strong>
+                    <div class="subtopic-node">Environment Interaction</div>
+                    <div class="subtopic-node">Sensors & Perception</div>
+                    <div class="subtopic-node">Mental Map Creation</div>
+                    <div class="subtopic-node">Decision Making</div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="topic-node">
+                    <strong>SEARCH IN AI</strong>
+                    <div class="subtopic-node">Path Finding</div>
+                    <div class="subtopic-node">State Space</div>
+                    <div class="subtopic-node">Goal-Oriented</div>
+                    <div class="subtopic-node">Fully Observable</div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="topic-node">
+                    <strong>LIMITATIONS OF SEARCH</strong>
+                    <div class="subtopic-node">No Logical Reasoning</div>
+                    <div class="subtopic-node">Shallow Understanding</div>
+                    <div class="subtopic-node">Cannot Handle Rules</div>
+                    <div class="subtopic-node">Path-Finding Only</div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="topic-node">
+                    <strong>KNOWLEDGE REPRESENTATION</strong>
+                    <div class="subtopic-node">Logic Systems</div>
+                    <div class="subtopic-node">Semantic Networks</div>
+                    <div class="subtopic-node">Concepts & Relations</div>
+                    <div class="subtopic-node">Rule Encoding</div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="topic-node">
+                    <strong>REASONING TYPES</strong>
+                    <div class="subtopic-node">Deductive (General→Specific)</div>
+                    <div class="subtopic-node">Inductive (Specific→General)</div>
+                    <div class="subtopic-node">Abductive (Best Explanation)</div>
+                    <div class="subtopic-node">Logical Inference</div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="topic-node">
+                    <strong>HYBRID AI SYSTEMS</strong>
+                    <div class="subtopic-node">Neural + Symbolic</div>
+                    <div class="subtopic-node">Search + KRR</div>
+                    <div class="subtopic-node">Pattern Recognition</div>
+                    <div class="subtopic-node">Logical Reasoning</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer" role="contentinfo" aria-label="Page footer">
+        <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my first semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+      </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

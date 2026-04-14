@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis: QR and LU Decomposition (Weeks 12-13)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+            color: #2c3e50;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 700;
+        }
+        h1 { font-size: 2.5rem; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { font-size: 2rem; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+        
+        .toc {
+            background-color: #f1f8ff;
+            border-left: 4px solid #3498db;
+            padding: 15px 25px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+        }
+        .toc a:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+        
+        .hinglish-summary {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffb74d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .key-takeaways {
+            background-color: #e8f5e9;
+            border-left: 4px solid #66bb6a;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .practice-question {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .solution {
+            background-color: #f5f5f5;
+            border-left: 4px solid #9e9e9e;
+            padding: 15px;
+            margin: 10px 0 20px;
+            border-radius: 5px;
+        }
+        
+        .extra-content {
+            background-color: #e8eaf6;
+            border-left: 4px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .code-block {
+            background-color: #272822;
+            color: #f8f8f2;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 20px 0;
+        }
+        
+        .mind-map-container {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .formula {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #fafafa;
+            border-radius: 5px;
+        }
+        
+        strong {
+            color: #1a237e;
+        }
+        
+        .header-container {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .header-title {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 0;
+        }
+        
+        .header-course {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-container">
+        <h1 class="header-title">Linear Algebra and Numerical Analysis</h1>
+        <h2 class="header-subtitle">QR Decomposition and LU Decomposition</h2>
+        <div class="header-course">BSc. in Applied AI and Data Science</div>
+    </div>
+    
+    <!-- Table of Contents -->
+    <div class="toc">
+        <h2 id="table-of-contents">Table of Contents</h2>
+        <ol>
+            <li><a href="#introduction">Introduction to Numerical Linear Algebra</a></li>
+            <li><a href="#orthogonal-matrices">Recap of Orthogonal Matrices</a></li>
+            <li><a href="#qr-decomposition">QR Decomposition</a>
+                <ul>
+                    <li><a href="#gram-schmidt">Gram-Schmidt Procedure</a></li>
+                    <li><a href="#q-and-r-matrices">Q and R Matrices</a></li>
+                    <li><a href="#python-implementation">Python Implementation of QR</a></li>
+                    <li><a href="#types-of-qr">Types of QR Decomposition</a></li>
+                </ul>
+            </li>
+            <li><a href="#lu-decomposition">LU Decomposition</a>
+                <ul>
+                    <li><a href="#row-reduction">Row Reduction</a></li>
+                    <li><a href="#gaussian-elimination">Gaussian Elimination</a></li>
+                    <li><a href="#lu-process">LU Decomposition Process</a></li>
+                </ul>
+            </li>
+            <li><a href="#applications">Applications in Data Science</a></li>
+            <li><a href="#practice-questions">Practice Questions</a></li>
+            <li><a href="#mind-map">Mind Map</a></li>
+            <li><a href="#next-topics">Coming Up Next</a></li>
+        </ol>
+    </div>
+
+    <!-- Introduction Section -->
+    <h2 id="introduction">1. Introduction to Numerical Linear Algebra</h2>
+    
+    <p><strong>Numerical linear algebra</strong> deals with the numerical computation of concepts from linear algebra, such as solving linear systems, computing determinants, and finding eigenvalues. It focuses on algorithms that can be executed efficiently on computers and are numerically stable.</p>
+    
+    <p>In this module, we explore numerical methods for:</p>
+    
+    <ul>
+        <li>Solving linear systems of equations</li>
+        <li>Matrix factorization methods</li>
+        <li>Computing eigenvalues and eigenvectors</li>
+    </ul>
+    
+    <p>The core focus will be on two important matrix decomposition methods:</p>
+    
+    <ol>
+        <li><strong>QR Decomposition</strong>: Factorizing a matrix into an orthogonal matrix (Q) and an upper triangular matrix (R)</li>
+        <li><strong>LU Decomposition</strong>: Factorizing a matrix into a lower triangular matrix (L) and an upper triangular matrix (U)</li>
+    </ol>
+    
+    <p>These decomposition methods are fundamental to solving many problems in data science, machine learning, and scientific computing efficiently and with numerical stability.</p>
+    
+    <div class="hinglish-summary">
+        Is module mein, hum numerical linear algebra ke baare mein padhenge. Hum do important matrix decomposition techniques par focus karenge: QR decomposition aur LU decomposition. Ye techniques data science aur machine learning mein linear systems solve karne ke liye bahut useful hain. QR decomposition mein ek matrix ko orthogonal matrix (Q) aur upper triangular matrix (R) mein break kiya jata hai, jabki LU decomposition mein lower triangular (L) aur upper triangular (U) matrices mein.
+    </div>
+
+    <!-- Orthogonal Matrices Section -->
+    <h2 id="orthogonal-matrices">2. Recap of Orthogonal Matrices</h2>
+    
+    <p>Before diving into QR decomposition, let's review the concept of orthogonal matrices:</p>
+    
+    <h3>Definition: Orthogonal Matrix</h3>
+    
+    <p>A square matrix \(Q\) is orthogonal if:</p>
+    
+    <ul>
+        <li>Its columns are pair-wise orthogonal (perpendicular to each other)</li>
+        <li>Each column has a norm (length) equal to 1 (unit vectors)</li>
+        <li>Mathematically: \(Q^T Q = Q Q^T = I\) where \(I\) is the identity matrix</li>
+    </ul>
+    
+    <h3>Key properties of orthogonal matrices:</h3>
+    
+    <ul>
+        <li>The inverse of an orthogonal matrix equals its transpose: \(Q^{-1} = Q^T\)</li>
+        <li>Orthogonal matrices preserve dot products and vector lengths</li>
+        <li>They represent rotations and reflections in geometric transformations</li>
+        <li>Dot product between any two different columns is zero</li>
+    </ul>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "Orthogonal matrices are key to several matrix decompositions, including QR, eigen decompositions, singular value decompositions. They are also important in geometry and computer graphics, particularly while dealing with pure rotation matrices."
+    </div>
+    
+    <div class="key-takeaways">
+        <h4><i class="fas fa-lightbulb"></i> Key Takeaways - Orthogonal Matrices:</h4>
+        <ul>
+            <li>Orthogonal matrices have columns that are perpendicular to each other and have unit length</li>
+            <li>The transpose of an orthogonal matrix equals its inverse (\(Q^T = Q^{-1}\))</li>
+            <li>They're computationally efficient for many operations since inversion is easy</li>
+            <li>Orthogonal transformations preserve angles and distances</li>
+        </ul>
+    </div>
+    
+    <div class="hinglish-summary">
+        Orthogonal matrices wo matrices hote hain jinke columns aapas mein perpendicular (orthogonal) hote hain aur har column ki length 1 hoti hai. Inki important property ye hai ki inke inverse ko calculate karne ke liye sirf transpose karna padta hai, jo computation ko bahut fast banata hai. Ye matrices rotation aur reflection jaise geometric transformations ke liye use hoti hain aur QR decomposition ka ek important hissa hain.
+    </div>
+
+    <!-- QR Decomposition Section -->
+    <h2 id="qr-decomposition">3. QR Decomposition</h2>
+    
+    <p><strong>QR decomposition</strong> is a matrix factorization technique that decomposes a matrix \(A\) into the product of an orthogonal matrix \(Q\) and an upper triangular matrix \(R\):</p>
+    
+    <div class="formula">
+
+        \[A = QR\]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(A\) is the original matrix (can be square or rectangular)</li>
+        <li>\(Q\) is an orthogonal matrix (its columns form an orthonormal basis)</li>
+        <li>\(R\) is an upper triangular matrix</li>
+    </ul>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "QR decomposition is great. It's definitely on my list of the top 5 methods of matrix decomposition. If you type in ChatGPT 'QR decomposition', you will find it is listed as one of the top methods."
+    </div>
+    
+    <h4>Key Benefits of QR Decomposition:</h4>
+    
+    <ol>
+        <li>Solving linear systems of equations without computing matrix inverses</li>
+        <li>Finding least squares solutions efficiently</li>
+        <li>Computing eigenvalues via the QR algorithm</li>
+        <li>Providing numerical stability in many applications</li>
+    </ol>
+
+    <h3 id="gram-schmidt">3.1 Gram-Schmidt Procedure</h3>
+    
+    <p>The <strong>Gram-Schmidt procedure</strong> is a method for orthogonalizing a set of vectors. It transforms a non-orthogonal set of linearly independent vectors into an orthogonal or orthonormal set.</p>
+    
+    <div class="extra-content">
+        <strong>Note on Numerical Stability:</strong> While Gram-Schmidt is conceptually important for understanding QR decomposition, it has numerical stability issues in practice. As the professor mentioned, "Gram-Schmidt has high educational value but, unfortunately, very little application value" due to numerical instabilities. More stable algorithms like Householder reflections are typically used in practice.
+    </div>
+    
+    <h4>Gram-Schmidt Procedure Steps:</h4>
+    
+    <ol>
+        <li>Start with a set of linearly independent vectors \(v_1, v_2, \ldots, v_n\)</li>
+        <li>For each vector \(v_k\), compute its component that's orthogonal to all previous orthonormal vectors</li>
+        <li>Normalize the resulting vector to have unit length</li>
+    </ol>
+    
+    <h4>Gram-Schmidt Algorithm:</h4>
+    
+    <p>For vectors \(v_1, v_2, \ldots, v_n\), compute orthonormal vectors \(e_1, e_2, \ldots, e_n\):</p>
+    
+    <div class="formula">
+        1. \(e_1 = \frac{v_1}{||v_1||}\)
+    </div>
+    
+    <div class="formula">
+        2. For \(k = 2, 3, \ldots, n\):
+        <ul>
+            <li>Compute \(u_k = v_k - \sum_{j=1}^{k-1} \langle v_k, e_j \rangle e_j\)</li>
+            <li>Normalize: \(e_k = \frac{u_k}{||u_k||}\)</li>
+        </ul>
+    </div>
+    
+    <h4>Worked Example:</h4>
+    
+    <p>Orthonormalize the following vectors using Gram-Schmidt:</p>
+    
+    <div class="formula">
+        \(v_1 = (1, 1, 0)\)<br>
+        \(v_2 = (1, 2, 0)\)<br>
+        \(v_3 = (0, 1, 2)\)
+    </div>
+    
+    <div class="solution">
+        <p><strong>Step 1:</strong> Compute \(e_1\)</p>
+        
+        <p>\(||v_1|| = \sqrt{1^2 + 1^2 + 0^2} = \sqrt{2}\)</p>
+        
+        <p>\(e_1 = \frac{v_1}{||v_1||} = \frac{(1, 1, 0)}{\sqrt{2}} = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)</p>
+        
+        <p><strong>Step 2:</strong> Compute \(e_2\)</p>
+        
+        <p>\(\langle v_2, e_1 \rangle = 1 \cdot \frac{1}{\sqrt{2}} + 2 \cdot \frac{1}{\sqrt{2}} + 0 \cdot 0 = \frac{3}{\sqrt{2}}\)</p>
+        
+        <p>\(u_2 = v_2 - \langle v_2, e_1 \rangle e_1 = (1, 2, 0) - \frac{3}{\sqrt{2}} \cdot (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0) = (1, 2, 0) - (\frac{3}{2}, \frac{3}{2}, 0) = (-\frac{1}{2}, \frac{1}{2}, 0)\)</p>
+        
+        <p>\(||u_2|| = \sqrt{(-\frac{1}{2})^2 + (\frac{1}{2})^2 + 0^2} = \frac{1}{\sqrt{2}}\)</p>
+        
+        <p>\(e_2 = \frac{u_2}{||u_2||} = \frac{(-\frac{1}{2}, \frac{1}{2}, 0)}{\frac{1}{\sqrt{2}}} = (-\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)</p>
+        
+        <p><strong>Step 3:</strong> Compute \(e_3\)</p>
+        
+        <p>\(\langle v_3, e_1 \rangle = 0 \cdot \frac{1}{\sqrt{2}} + 1 \cdot \frac{1}{\sqrt{2}} + 2 \cdot 0 = \frac{1}{\sqrt{2}}\)</p>
+        
+        <p>\(\langle v_3, e_2 \rangle = 0 \cdot (-\frac{1}{\sqrt{2}}) + 1 \cdot \frac{1}{\sqrt{2}} + 2 \cdot 0 = \frac{1}{\sqrt{2}}\)</p>
+        
+        <p>\(u_3 = v_3 - \langle v_3, e_1 \rangle e_1 - \langle v_3, e_2 \rangle e_2\)</p>
+        
+        <p>\(u_3 = (0, 1, 2) - \frac{1}{\sqrt{2}} \cdot (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0) - \frac{1}{\sqrt{2}} \cdot (-\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)</p>
+        
+        <p>\(u_3 = (0, 1, 2) - (\frac{1}{2}, \frac{1}{2}, 0) - (-\frac{1}{2}, \frac{1}{2}, 0) = (0, 0, 2)\)</p>
+        
+        <p>\(||u_3|| = \sqrt{0^2 + 0^2 + 2^2} = 2\)</p>
+        
+        <p>\(e_3 = \frac{u_3}{||u_3||} = \frac{(0, 0, 2)}{2} = (0, 0, 1)\)</p>
+        
+        <p>Therefore, the orthonormal basis is:</p>
+        
+        <p>\(e_1 = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)<br>
+        \(e_2 = (-\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)<br>
+        \(e_3 = (0, 0, 1)\)</p>
+    </div>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "The Gram-Schmidt procedure is a way to transform any non-orthogonal matrices, which is not orthogonal, given to us, to transform it in an algorithmic manner and stepwise approach into an orthogonal matrix."
+    </div>
+
+    <h3 id="q-and-r-matrices">3.2 Q and R Matrices</h3>
+    
+    <p>After performing the Gram-Schmidt procedure on the columns of matrix \(A\), we can form:</p>
+    
+    <ul>
+        <li>\(Q\): Matrix with orthonormal vectors \(e_1, e_2, \ldots, e_n\) as columns</li>
+        <li>\(R\): Upper triangular matrix that stores the projection information</li>
+    </ul>
+    
+    <p>The R matrix stores the projection coefficients from the Gram-Schmidt process:</p>
+    
+    <div class="formula">
+
+        \[R = \begin{pmatrix} 
+        \langle v_1, e_1 \rangle & \langle v_2, e_1 \rangle & \langle v_3, e_1 \rangle & \cdots & \langle v_n, e_1 \rangle \\ 
+        0 & \langle v_2, e_2 \rangle & \langle v_3, e_2 \rangle & \cdots & \langle v_n, e_2 \rangle \\ 
+        0 & 0 & \langle v_3, e_3 \rangle & \cdots & \langle v_n, e_3 \rangle \\ 
+        \vdots & \vdots & \vdots & \ddots & \vdots \\ 
+        0 & 0 & 0 & \cdots & \langle v_n, e_n \rangle 
+        \end{pmatrix}\]
+    </div>
+    
+    <p><strong>Why is R upper triangular?</strong> In the Gram-Schmidt process, each vector \(v_k\) is projected onto the orthonormal vectors \(e_1, e_2, \ldots, e_{k-1}\), producing projection coefficients. By construction, we only project onto previous vectors, resulting in zeros below the main diagonal.</p>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "We have lost some information during the factorization process. Fortunately, that lost information can be easily retrieved and accounted for and stored in another matrix R that multiplies Q. That's why it's called QR decomposition."
+    </div>
+
+    <h3 id="python-implementation">3.3 Python Implementation of QR</h3>
+    
+    <p>In practice, QR decomposition is implemented using more numerically stable algorithms than Gram-Schmidt, but the conceptual basis remains the same.</p>
+    
+    <div class="code-block">
+        import numpy as np<br><br>
+        # Create a random matrix<br>
+        A = np.random.randn(6, 6)<br><br>
+        # Compute QR decomposition<br>
+        Q, R = np.linalg.qr(A)<br><br>
+        # Verify that A = QR<br>
+        print("Original matrix A shape:", A.shape)<br>
+        print("Q matrix shape:", Q.shape)<br>
+        print("R matrix shape:", R.shape)<br>
+        print("Is A = QR?", np.allclose(A, Q @ R))<br><br>
+        # Verify that Q is orthogonal (Q^T Q = I)<br>
+        print("Is Q orthogonal?", np.allclose(Q.T @ Q, np.eye(Q.shape[1])))
+    </div>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "If A is the original matrix... we can apply the QR decomposition technique from the linear algebra library of NumPy. Which is just a one line code in order to compute the queue, the orthogonal matrix, and also the R matrix."
+    </div>
+
+    <h3 id="types-of-qr">3.4 Types of QR Decomposition</h3>
+    
+    <p>There are two main types of QR decomposition, depending on the dimensions of the original matrix:</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Matrix Dimensions</th>
+                <th>When to Use</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Economy/Reduced QR</td>
+                <td>Q has only as many columns as A has rank</td>
+                <td>For A(m×n) with m>n: Q is m×n, R is n×n</td>
+                <td>More efficient for tall matrices</td>
+            </tr>
+            <tr>
+                <td>Full/Complete QR</td>
+                <td>Q is a square orthogonal matrix</td>
+                <td>For A(m×n): Q is m×m, R is m×n</td>
+                <td>When full orthogonal basis is needed</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "One is called reduced representation or reduced decomposition, which is also sometimes called economy decompositions. The other one which is also called full decomposition and also called complete decompositions."
+    </div>
+    
+    <div class="key-takeaways">
+        <h4><i class="fas fa-lightbulb"></i> Key Takeaways - QR Decomposition:</h4>
+        <ul>
+            <li>QR decomposition factors A into orthogonal Q and upper triangular R</li>
+            <li>The columns of Q form an orthonormal basis for the column space of A</li>
+            <li>R captures the "coordinates" of A's columns with respect to Q's orthonormal basis</li>
+            <li>Numerically, Householder reflections or Givens rotations are preferred over Gram-Schmidt</li>
+            <li>QR is essential for solving least-squares problems and eigenvalue algorithms</li>
+        </ul>
+    </div>
+    
+    <div class="hinglish-summary">
+        QR decomposition ek matrix A ko do matrices - orthogonal matrix Q aur upper triangular matrix R - mein todti hai. Gram-Schmidt procedure iska conceptual basis hai, jisme vectors ko ek-ek karke orthogonalize kiya jata hai. Har vector ko pehle orthogonal vectors ke against project karke, ek naya orthogonal vector banaya jata hai. Q matrix mein ye orthonormal vectors store hote hain, aur R matrix mein projection coefficients. Python mein, NumPy library ke through ise ek line mein implement kar sakte hain. QR decomposition do types ke hote hain - economy (reduced) aur full (complete) - jo original matrix ke dimensions par depend karta hai.
+    </div>
+    
+    <div class="practice-question">
+        <h4><i class="fas fa-pencil-alt"></i> Practice Question:</h4>
+        <p>Use the Gram-Schmidt procedure to orthonormalize the following vectors:</p>
+        
+        <p>\(v_1 = (2, 0, 0)\)<br>
+        \(v_2 = (1, 1, 0)\)<br>
+        \(v_3 = (1, 1, 1)\)</p>
+        
+        <p>Then, determine the QR decomposition of the matrix with these vectors as columns.</p>
+        
+        <div class="solution">
+            <p><strong>Step 1:</strong> Compute \(e_1\)</p>
+            
+            <p>\(||v_1|| = \sqrt{2^2 + 0^2 + 0^2} = 2\)</p>
+            
+            <p>\(e_1 = \frac{v_1}{||v_1||} = \frac{(2,0,0)}{2} = (1,0,0)\)</p>
+            
+            <p><strong>Step 2:</strong> Compute \(e_2\)</p>
+            
+            <p>\(\langle v_2, e_1 \rangle = 1 \cdot 1 + 1 \cdot 0 + 0 \cdot 0 = 1\)</p>
+            
+            <p>\(u_2 = v_2 - \langle v_2, e_1 \rangle e_1 = (1,1,0) - 1 \cdot (1,0,0) = (0,1,0)\)</p>
+            
+            <p>\(||u_2|| = \sqrt{0^2 + 1^2 + 0^2} = 1\)</p>
+            
+            <p>\(e_2 = \frac{u_2}{||u_2||} = \frac{(0,1,0)}{1} = (0,1,0)\)</p>
+            
+            <p><strong>Step 3:</strong> Compute \(e_3\)</p>
+            
+            <p>\(\langle v_3, e_1 \rangle = 1 \cdot 1 + 1 \cdot 0 + 1 \cdot 0 = 1\)</p>
+            
+            <p>\(\langle v_3, e_2 \rangle = 1 \cdot 0 + 1 \cdot 1 + 1 \cdot 0 = 1\)</p>
+            
+            <p>\(u_3 = v_3 - \langle v_3, e_1 \rangle e_1 - \langle v_3, e_2 \rangle e_2 = (1,1,1) - 1 \cdot (1,0,0) - 1 \cdot (0,1,0) = (0,0,1)\)</p>
+            
+            <p>\(||u_3|| = \sqrt{0^2 + 0^2 + 1^2} = 1\)</p>
+            
+            <p>\(e_3 = \frac{u_3}{||u_3||} = \frac{(0,0,1)}{1} = (0,0,1)\)</p>
+            
+            <p><strong>Therefore, Q =</strong> \(\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}\)</p>
+            
+            <p><strong>For R:</strong></p>
+            
+            <p>\(r_{11} = \langle v_1, e_1 \rangle = 2 \cdot 1 + 0 \cdot 0 + 0 \cdot 0 = 2\)</p>
+            
+            <p>\(r_{12} = \langle v_2, e_1 \rangle = 1 \cdot 1 + 1 \cdot 0 + 0 \cdot 0 = 1\)</p>
+            
+            <p>\(r_{13} = \langle v_3, e_1 \rangle = 1 \cdot 1 + 1 \cdot 0 + 1 \cdot 0 = 1\)</p>
+            
+            <p>\(r_{22} = \langle v_2, e_2 \rangle = 1 \cdot 0 + 1 \cdot 1 + 0 \cdot 0 = 1\)</p>
+            
+            <p>\(r_{23} = \langle v_3, e_2 \rangle = 1 \cdot 0 + 1 \cdot 1 + 1 \cdot 0 = 1\)</p>
+            
+            <p>\(r_{33} = \langle v_3, e_3 \rangle = 1 \cdot 0 + 1 \cdot 0 + 1 \cdot 1 = 1\)</p>
+            
+            <p><strong>So, R =</strong> \(\begin{pmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{pmatrix}\)</p>
+            
+            <p>The QR decomposition of \(A = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{pmatrix}\) is:</p>
+            
+            <p>\(A = QR = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} \begin{pmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{pmatrix}\)</p>
+            
+            <p>In this case, Q is the identity matrix and R = A, which makes sense since the columns of A are already orthogonal after the process.</p>
+        </div>
+    </div>
+
+    <!-- LU Decomposition Section -->
+    <h2 id="lu-decomposition">4. LU Decomposition</h2>
+    
+    <p><strong>LU decomposition</strong> is another important factorization method that decomposes a square matrix \(A\) into the product of a lower triangular matrix \(L\) and an upper triangular matrix \(U\):</p>
+    
+    <div class="formula">
+
+        \[A = LU\]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(L\) is a lower triangular matrix (entries above the main diagonal are zero)</li>
+        <li>\(U\) is an upper triangular matrix (entries below the main diagonal are zero)</li>
+    </ul>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "LU decomposition stands for lower upper, as I said already, in lower triangular or upper triangular. So the idea is to decompose a matrix into the product of two triangular matrices."
+    </div>
+
+    <h3 id="row-reduction">4.1 Row Reduction</h3>
+    
+    <p>To understand LU decomposition, we first need to understand row reduction, which forms the basis of Gaussian elimination:</p>
+    
+    <h4>Row Reduction Operations:</h4>
+    
+    <ol>
+        <li><strong>Scalar multiplication</strong>: Multiply a row by a non-zero scalar</li>
+        <li><strong>Row addition</strong>: Add a multiple of one row to another</li>
+    </ol>
+    
+    <p>The goal of row reduction is to transform a matrix into an upper triangular or row echelon form.</p>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "Row reduction is also useful as it leads directly to LU decomposition, which is used in applied linear algebra. Row reduction relies on the same principle as adding equation to other equations within a system."
+    </div>
+
+    <h3 id="gaussian-elimination">4.2 Gaussian Elimination</h3>
+    
+    <p><strong>Gaussian elimination</strong> is a systematic method for solving systems of linear equations by applying row reduction operations to transform the system into an equivalent but simpler form.</p>
+    
+    <div class="extra-content">
+        <strong>Historical Note:</strong> Despite the name, Gaussian elimination was developed by Chinese mathematicians nearly 2000 years before Carl Friedrich Gauss. Newton also rediscovered it before Gauss. However, Gauss made important contributions to the method that are implemented in modern computers.
+    </div>
+    
+    <h4>Gaussian Elimination Process:</h4>
+    
+    <ol>
+        <li>Arrange equations in a system as an augmented matrix [A|b]</li>
+        <li>For each column (pivot), use row operations to create zeros below the pivot element</li>
+        <li>Continue until the matrix is in row echelon form (upper triangular)</li>
+        <li>Use back-substitution to find the solution</li>
+    </ol>
+    
+    <h4>Gaussian Elimination Example:</h4>
+    
+    <p>Solve the system of equations:</p>
+    
+    <p>2x + y + z = 5<br>
+    4x + 2y + 2z = 10<br>
+    2x + y + 3z = 9</p>
+    
+    <div class="solution">
+        <p><strong>Step 1:</strong> Set up the augmented matrix</p>
+        
+        <p>\(\begin{bmatrix} 2 & 1 & 1 & 5 \\ 4 & 2 & 2 & 10 \\ 2 & 1 & 3 & 9 \end{bmatrix}\)</p>
+        
+        <p><strong>Step 2:</strong> Create zeros below the first pivot</p>
+        
+        <p>R2 = R2 - 2R1 (subtract 2 times first row from second row)</p>
+        
+        <p>R3 = R3 - R1 (subtract first row from third row)</p>
+        
+        <p>\(\begin{bmatrix} 2 & 1 & 1 & 5 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 2 & 4 \end{bmatrix}\)</p>
+        
+        <p><strong>Step 3:</strong> Note that the second row is all zeros, indicating that one equation is redundant</p>
+        
+        <p>Move to the third column as the next pivot</p>
+        
+        <p><strong>Step 4:</strong> Back-substitution</p>
+        
+        <p>From the third row: 2z = 4, so z = 2</p>
+        
+        <p>Substituting into the first row: 2x + y + 1(2) = 5</p>
+        
+        <p>2x + y = 3</p>
+        
+        <p>This gives us a line of solutions. If we choose y = 0, then x = 3/2.</p>
+        
+        <p>Our solution set is {(3/2, 0, 2) + t(0, 1, 0) | t ∈ ℝ}.</p>
+    </div>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "Gaussian elimination gives us that power in modern computers to carry out numerical algebra in order to solve this set of equations. Did I have to take an inverse in order to get to these solutions? Answer is no. We didn't need to take an inverse of these matrices in order to carry out operations."
+    </div>
+
+    <h3 id="lu-process">4.3 LU Decomposition Process</h3>
+    
+    <p>LU decomposition is closely related to Gaussian elimination. The process of transforming matrix A into upper triangular form U using elementary row operations can be captured as a series of multiplications by elementary matrices. The product of these elementary matrices (in reverse order) forms the lower triangular matrix L.</p>
+    
+    <h4>Process:</h4>
+    
+    <ol>
+        <li>Apply Gaussian elimination to A to obtain U, but keep track of all multipliers used</li>
+        <li>The multipliers form the entries of L below its main diagonal (L has 1's on its diagonal)</li>
+        <li>Verify that A = LU</li>
+    </ol>
+    
+    <h4>LU Decomposition Example:</h4>
+    
+    <p>Find the LU decomposition of:</p>
+    
+    <p>\(A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 2 & 2 \\ 2 & 1 & 3 \end{pmatrix}\)</p>
+    
+    <div class="solution">
+        <p><strong>Step 1:</strong> Apply Gaussian elimination</p>
+        
+        <p>To eliminate the (2,1) element, we subtract 2 times row 1 from row 2:</p>
+        
+        <p>Multiplier = 4/2 = 2</p>
+        
+        <p>To eliminate the (3,1) element, we subtract row 1 from row 3:</p>
+        
+        <p>Multiplier = 2/2 = 1</p>
+        
+        <p>Resulting matrix after first column elimination:</p>
+        
+        <p>\(\begin{pmatrix} 2 & 1 & 1 \\ 0 & 0 & 0 \\ 0 & 0 & 2 \end{pmatrix}\)</p>
+        
+        <p>The second row is all zeros, so we don't need to eliminate the third row's second element.</p>
+        
+        <p><strong>Step 2:</strong> Form matrices L and U</p>
+        
+        <p>L contains the multipliers (with 1's on the diagonal):</p>
+        
+        <p>\(L = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 1 & 0 & 1 \end{pmatrix}\)</p>
+        
+        <p>U is the result of the Gaussian elimination:</p>
+        
+        <p>\(U = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 0 & 0 \\ 0 & 0 & 2 \end{pmatrix}\)</p>
+        
+        <p><strong>Step 3:</strong> Verify A = LU</p>
+        
+        <p>\(LU = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 1 & 0 & 1 \end{pmatrix} \begin{pmatrix} 2 & 1 & 1 \\ 0 & 0 & 0 \\ 0 & 0 & 2 \end{pmatrix} = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 2 & 2 \\ 2 & 1 & 3 \end{pmatrix} = A\)</p>
+    </div>
+    
+    <h4>Advantages of LU Decomposition:</h4>
+    
+    <ul>
+        <li><strong>Efficiency in solving multiple systems:</strong> Once a matrix is factorized, we can solve Ax = b for multiple b vectors efficiently</li>
+        <li><strong>Two simple triangular systems:</strong> Solving Ly = b (forward substitution) and then Ux = y (backward substitution)</li>
+        <li><strong>No need for matrix inversion:</strong> Avoids computationally expensive and potentially unstable matrix inversion</li>
+        <li><strong>Computing determinants:</strong> det(A) is simply the product of the diagonal entries of U</li>
+    </ul>
+    
+    <div class="key-takeaways">
+        <h4><i class="fas fa-lightbulb"></i> Key Takeaways - LU Decomposition:</h4>
+        <ul>
+            <li>LU decomposition breaks a matrix into lower and upper triangular matrices</li>
+            <li>It's based on Gaussian elimination, capturing the elimination steps in L</li>
+            <li>Solving Ax = b becomes Ly = b (forward substitution) then Ux = y (backward substitution)</li>
+            <li>It's computationally efficient for solving systems with multiple right-hand sides</li>
+            <li>The decomposition can also be used to efficiently compute determinants and inverses</li>
+        </ul>
+    </div>
+    
+    <div class="hinglish-summary">
+        LU decomposition ek square matrix A ko lower triangular matrix L aur upper triangular matrix U ke product mein decompose karta hai. Ye Gaussian elimination par based hai, jisme row operations se matrix ko upper triangular form mein convert kiya jata hai. Ye process Chinese mathematicians ne 2000 saal pehle develop kiya tha, lekin Gauss ne isme important improvements kiye. LU decomposition ka main fayda ye hai ki iske through hum linear equations ko bina matrix ki inverse nikale solve kar sakte hain. Jab A=LU mein decompose ho jata hai, tab Ax=b ko solve karne ke liye, hum pehle Ly=b ko forward substitution se solve karte hain, aur phir Ux=y ko backward substitution se. Ye multiple b vectors ke liye efficient hai kyunki decomposition sirf ek baar karna padta hai.
+    </div>
+    
+    <div class="practice-question">
+        <h4><i class="fas fa-pencil-alt"></i> Practice Question:</h4>
+        <p>Find the LU decomposition of the following matrix:</p>
+        
+        <p>\(A = \begin{pmatrix} 3 & 2 \\ 6 & 3 \end{pmatrix}\)</p>
+        
+        <p>Then, use the LU decomposition to solve the system Ax = b, where \(b = \begin{pmatrix} 5 \\ 9 \end{pmatrix}\)</p>
+        
+        <div class="solution">
+            <p><strong>LU Decomposition:</strong></p>
+            
+            <p><strong>Step 1:</strong> To eliminate the (2,1) element, we subtract 2 times row 1 from row 2:</p>
+            
+            <p>Multiplier = 6/3 = 2</p>
+            
+            <p>After elimination: \(\begin{pmatrix} 3 & 2 \\ 0 & -1 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 2:</strong> Form matrices L and U</p>
+            
+            <p>L contains the multipliers (with 1's on diagonal): \(L = \begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}\)</p>
+            
+            <p>U is the result after elimination: \(U = \begin{pmatrix} 3 & 2 \\ 0 & -1 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 3:</strong> Verify A = LU</p>
+            
+            <p>\(LU = \begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix} \begin{pmatrix} 3 & 2 \\ 0 & -1 \end{pmatrix} = \begin{pmatrix} 3 & 2 \\ 6 & 3 \end{pmatrix} = A\)</p>
+            
+            <p><strong>Solving the system using LU decomposition:</strong></p>
+            
+            <p><strong>Step 1:</strong> Solve Ly = b using forward substitution</p>
+            
+            <p>\(y_1 = b_1 = 5\)</p>
+            
+            <p>\(y_2 = b_2 - L_{21}y_1 = 9 - 2(5) = -1\)</p>
+            
+            <p>So \(y = \begin{pmatrix} 5 \\ -1 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 2:</strong> Solve Ux = y using backward substitution</p>
+            
+            <p>\(x_2 = y_2/U_{22} = -1/(-1) = 1\)</p>
+            
+            <p>\(x_1 = (y_1 - U_{12}x_2)/U_{11} = (5 - 2(1))/3 = 1\)</p>
+            
+            <p>So \(x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}\)</p>
+            
+            <p>We can verify this is correct:</p>
+            
+            <p>\(Ax = \begin{pmatrix} 3 & 2 \\ 6 & 3 \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} = \begin{pmatrix} 3(1) + 2(1) \\ 6(1) + 3(1) \end{pmatrix} = \begin{pmatrix} 5 \\ 9 \end{pmatrix} = b\)</p>
+        </div>
+    </div>
+
+    <!-- Applications Section -->
+    <h2 id="applications">5. Applications in Data Science</h2>
+    
+    <p>Both QR and LU decompositions have numerous applications in data science, machine learning, and scientific computing:</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Decomposition</th>
+                <th>Applications</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>QR Decomposition</strong></td>
+                <td>
+                    <ul>
+                        <li>Linear least squares problems</li>
+                        <li>Computing eigenvalues via the QR algorithm</li>
+                        <li>Linear regression</li>
+                        <li>Data compression and dimensionality reduction</li>
+                        <li>Signal processing and image processing</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>LU Decomposition</strong></td>
+                <td>
+                    <ul>
+                        <li>Solving systems of linear equations efficiently</li>
+                        <li>Computing determinants and inverses</li>
+                        <li>Circuit analysis</li>
+                        <li>Computational fluid dynamics</li>
+                        <li>Network analysis and optimization</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="extra-content">
+        Professor mentioned in class: "QR decomposition is great. It's definitely on my list of the top 5 methods of matrix decomposition."
+    </div>
+    
+    <h4>Why Matrix Decompositions Matter for Data Scientists:</h4>
+    
+    <ul>
+        <li>They transform complex problems into simpler ones</li>
+        <li>They provide numerically stable methods for various computations</li>
+        <li>They reveal the underlying structure of data matrices</li>
+        <li>They optimize computational efficiency, especially important for large datasets</li>
+        <li>They're foundational to many machine learning algorithms</li>
+    </ul>
+    
+    <div class="hinglish-summary">
+        QR aur LU decomposition dono data science aur machine learning mein bahut important role play karte hain. QR decomposition ka use linear least squares problems, eigenvalue computation, aur data compression mein hota hai. Vahi LU decomposition linear equations ko solve karne, determinants calculate karne, aur circuit analysis mein use hota hai. Matrix decomposition data scientists ke liye bahut zaroori hai kyunki ye complex problems ko simpler parts mein tod dete hain, numerical stability provide karte hain, aur bade datasets ke liye computational efficiency improve karte hain. Ye machine learning algorithms ke foundation mein bhi hain.
+    </div>
+
+    <!-- Practice Questions Section -->
+    <h2 id="practice-questions">6. Practice Questions</h2>
+    
+    <div class="practice-question">
+        <h4><i class="fas fa-pencil-alt"></i> Question 1:</h4>
+        <p>Implement the Gram-Schmidt procedure to orthonormalize the following set of vectors:</p>
+        
+        <p>\(v_1 = (1, 1, 0)\)<br>
+        \(v_2 = (1, 2, 0)\)<br>
+        \(v_3 = (0, 1, 2)\)</p>
+        
+        <div class="solution">
+            <p>This is the same example we worked through in detail in the lecture notes. The orthonormal basis is:</p>
+            
+            <p>\(e_1 = (\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)<br>
+            \(e_2 = (-\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0)\)<br>
+            \(e_3 = (0, 0, 1)\)</p>
+        </div>
+    </div>
+    
+    <div class="practice-question">
+        <h4><i class="fas fa-pencil-alt"></i> Question 2:</h4>
+        <p>Given the following matrix, find both its QR and LU decompositions:</p>
+        
+        <p>\(A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}\)</p>
+        
+        <div class="solution">
+            <p><strong>QR Decomposition:</strong></p>
+            
+            <p><strong>Step 1:</strong> Normalize the first column of A to get the first column of Q</p>
+            
+            <p>\(||a_1|| = \sqrt{4^2 + 2^2} = \sqrt{20} = 2\sqrt{5}\)</p>
+            
+            <p>\(q_1 = \frac{a_1}{||a_1||} = \frac{1}{2\sqrt{5}} \begin{pmatrix} 4 \\ 2 \end{pmatrix} = \begin{pmatrix} \frac{2}{\sqrt{20}} \\ \frac{1}{\sqrt{20}} \end{pmatrix}\)</p>
+            
+            <p><strong>Step 2:</strong> Calculate the projection of a_2 onto q_1, then find the orthogonal component</p>
+            
+            <p>\(\langle a_2, q_1 \rangle = \frac{4}{\sqrt{20}} \cdot 1 + \frac{2}{\sqrt{20}} \cdot 3 = \frac{4 + 6}{\sqrt{20}} = \frac{10}{\sqrt{20}}\)</p>
+            
+            <p>\(u_2 = a_2 - \langle a_2, q_1 \rangle q_1 = \begin{pmatrix} 1 \\ 3 \end{pmatrix} - \frac{10}{\sqrt{20}} \begin{pmatrix} \frac{4}{\sqrt{20}} \\ \frac{2}{\sqrt{20}} \end{pmatrix} = \begin{pmatrix} 1 \\ 3 \end{pmatrix} - \begin{pmatrix} \frac{40}{20} \\ \frac{20}{20} \end{pmatrix} = \begin{pmatrix} 1 - 2 \\ 3 - 1 \end{pmatrix} = \begin{pmatrix} -1 \\ 2 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 3:</strong> Normalize u_2 to get the second column of Q</p>
+            
+            <p>\(||u_2|| = \sqrt{(-1)^2 + 2^2} = \sqrt{5}\)</p>
+            
+            <p>\(q_2 = \frac{u_2}{||u_2||} = \frac{1}{\sqrt{5}} \begin{pmatrix} -1 \\ 2 \end{pmatrix} = \begin{pmatrix} \frac{-1}{\sqrt{5}} \\ \frac{2}{\sqrt{5}} \end{pmatrix}\)</p>
+            
+            <p>So, \(Q = \begin{pmatrix} \frac{4}{\sqrt{20}} & \frac{-1}{\sqrt{5}} \\ \frac{2}{\sqrt{20}} & \frac{2}{\sqrt{5}} \end{pmatrix} = \begin{pmatrix} \frac{2\sqrt{5}}{10} & \frac{-1}{\sqrt{5}} \\ \frac{\sqrt{5}}{10} & \frac{2}{\sqrt{5}} \end{pmatrix}\)</p>
+            
+            <p>For R, we have: \(R = Q^T A\)</p>
+            
+            <p>\(r_{11} = \langle a_1, q_1 \rangle = ||a_1|| = 2\sqrt{5}\)</p>
+            
+            <p>\(r_{12} = \langle a_2, q_1 \rangle = \frac{10}{\sqrt{20}} = \frac{10\sqrt{5}}{10} = \sqrt{5}\)</p>
+            
+            <p>\(r_{21} = 0\) (due to orthogonality)</p>
+            
+            <p>\(r_{22} = \langle a_2, q_2 \rangle = ||u_2|| = \sqrt{5}\)</p>
+            
+            <p>So, \(R = \begin{pmatrix} 2\sqrt{5} & \sqrt{5} \\ 0 & \sqrt{5} \end{pmatrix}\)</p>
+            
+            <p><strong>LU Decomposition:</strong></p>
+            
+            <p><strong>Step 1:</strong> To eliminate the (2,1) element, we subtract (2/4) = 1/2 times row 1 from row 2</p>
+            
+            <p>Multiplier = 2/4 = 1/2</p>
+            
+            <p>After elimination: \(\begin{pmatrix} 4 & 1 \\ 0 & 3 - 1/2 \end{pmatrix} = \begin{pmatrix} 4 & 1 \\ 0 & 2.5 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 2:</strong> Form matrices L and U</p>
+            
+            <p>L contains the multipliers (with 1's on diagonal): \(L = \begin{pmatrix} 1 & 0 \\ 1/2 & 1 \end{pmatrix}\)</p>
+            
+            <p>U is the result after elimination: \(U = \begin{pmatrix} 4 & 1 \\ 0 & 2.5 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 3:</strong> Verify A = LU</p>
+            
+            <p>\(LU = \begin{pmatrix} 1 & 0 \\ 1/2 & 1 \end{pmatrix} \begin{pmatrix} 4 & 1 \\ 0 & 2.5 \end{pmatrix} = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix} = A\)</p>
+        </div>
+    </div>
+    
+    <div class="practice-question">
+        <h4><i class="fas fa-pencil-alt"></i> Question 3:</h4>
+        <p>Use the LU decomposition approach to solve the following system of equations:</p>
+        
+        <p>2x + y = 5<br>
+        4x - y = 3</p>
+        
+        <div class="solution">
+            <p><strong>Step 1:</strong> Write the system as a matrix equation Ax = b</p>
+            
+            <p>\(A = \begin{pmatrix} 2 & 1 \\ 4 & -1 \end{pmatrix}, x = \begin{pmatrix} x \\ y \end{pmatrix}, b = \begin{pmatrix} 5 \\ 3 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 2:</strong> Find the LU decomposition of A</p>
+            
+            <p>To eliminate the (2,1) element, we subtract (4/2) = 2 times row 1 from row 2</p>
+            
+            <p>Multiplier = 4/2 = 2</p>
+            
+            <p>After elimination: \(\begin{pmatrix} 2 & 1 \\ 0 & -1 - 2(1) \end{pmatrix} = \begin{pmatrix} 2 & 1 \\ 0 & -3 \end{pmatrix}\)</p>
+            
+            <p>So, \(L = \begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}, U = \begin{pmatrix} 2 & 1 \\ 0 & -3 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 3:</strong> Solve Ly = b using forward substitution</p>
+            
+            <p>\(y_1 = b_1 = 5\)</p>
+            
+            <p>\(y_2 = b_2 - L_{21}y_1 = 3 - 2(5) = 3 - 10 = -7\)</p>
+            
+            <p>So, \(y = \begin{pmatrix} 5 \\ -7 \end{pmatrix}\)</p>
+            
+            <p><strong>Step 4:</strong> Solve Ux = y using backward substitution</p>
+            
+            <p>\(y = -3y_2 = -7, thus y = \frac{7}{3}\)</p>
+            
+            <p>\(2x + y = 5, thus 2x = 5 - \frac{7}{3}, thus x = \frac{15 - 7}{6} = \frac{8}{6} = \frac{4}{3}\)</p>
+            
+            <p>So, \(x = \begin{pmatrix} \frac{4}{3} \\ \frac{7}{3} \end{pmatrix}\)</p>
+            
+            <p><strong>Verification:</strong></p>
+            
+            <p>\(2(\frac{4}{3}) + \frac{7}{3} = \frac{8}{3} + \frac{7}{3} = \frac{15}{3} = 5\)</p>
+            
+            <p>\(4(\frac{4}{3}) - \frac{7}{3} = \frac{16}{3} - \frac{7}{3} = \frac{9}{3} = 3\)</p>
+        </div>
+    </div>
+
+    <!-- Mind Map Section -->
+    <h2 id="mind-map">7. Mind Map: Numerical Linear Algebra</h2>
+    
+    <div class="mind-map-container">
+        <canvas id="mindMapCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('mindMapCanvas').getContext('2d');
+            
+            // Create custom chart type by extending the Bubble chart
+            Chart.defaults.global.defaultFontFamily = 'Roboto, sans-serif';
+            Chart.defaults.global.defaultFontSize = 14;
+            
+            // Define the mind map chart configuration
+            const bubbleChart = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        // Main node: Numerical Linear Algebra
+                        {
+                            label: 'Main',
+                            data: [{x: 400, y: 300, r: 60}],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: '#2980b9',
+                            borderWidth: 2
+                        },
+                        // QR Decomposition
+                        {
+                            label: 'QR Decomposition',
+                            data: [{x: 200, y: 150, r: 40}],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: '#27ae60',
+                            borderWidth: 2
+                        },
+                        // LU Decomposition
+                        {
+                            label: 'LU Decomposition',
+                            data: [{x: 600, y: 150, r: 40}],
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 2
+                        },
+                        // Other Decompositions
+                        {
+                            label: 'Other Decompositions',
+                            data: [{x: 400, y: 500, r: 30}],
+                            backgroundColor: 'rgba(230, 126, 34, 0.7)',
+                            borderColor: '#d35400',
+                            borderWidth: 2
+                        },
+                        // QR Sub-topics
+                        {
+                            label: 'Gram-Schmidt',
+                            data: [{x: 120, y: 80, r: 25}],
+                            backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                            borderColor: '#27ae60',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Orthogonality',
+                            data: [{x: 200, y: 50, r: 25}],
+                            backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                            borderColor: '#27ae60',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Applications',
+                            data: [{x: 280, y: 80, r: 25}],
+                            backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                            borderColor: '#27ae60',
+                            borderWidth: 2
+                        },
+                        // LU Sub-topics
+                        {
+                            label: 'Gaussian Elimination',
+                            data: [{x: 520, y: 80, r: 25}],
+                            backgroundColor: 'rgba(155, 89, 182, 0.5)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Row Reduction',
+                            data: [{x: 600, y: 50, r: 25}],
+                            backgroundColor: 'rgba(155, 89, 182, 0.5)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Applications',
+                            data: [{x: 680, y: 80, r: 25}],
+                            backgroundColor: 'rgba(155, 89, 182, 0.5)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 2
+                        },
+                        // Other Decompositions
+                        {
+                            label: 'SVD',
+                            data: [{x: 340, y: 550, r: 20}],
+                            backgroundColor: 'rgba(230, 126, 34, 0.5)',
+                            borderColor: '#d35400',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Eigen',
+                            data: [{x: 400, y: 570, r: 20}],
+                            backgroundColor: 'rgba(230, 126, 34, 0.5)',
+                            borderColor: '#d35400',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Cholesky',
+                            data: [{x: 460, y: 550, r: 20}],
+                            backgroundColor: 'rgba(230, 126, 34, 0.5)',
+                            borderColor: '#d35400',
+                            borderWidth: 2
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    title: {
+                        display: true,
+                        text: 'Numerical Linear Algebra Mind Map',
+                        fontSize: 22,
+                        fontColor: '#2c3e50'
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: false,
+                            min: 0,
+                            max: 800
+                        }],
+                        yAxes: [{
+                            display: false,
+                            min: 0,
+                            max: 600
+                        }]
+                    },
+                    tooltips: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return data.datasets[tooltipItem.datasetIndex].label;
+                            }
+                        }
+                    },
+                    // Plugin to draw connection lines
+                    plugins: {
+                        beforeDraw: function(chart) {
+                            const ctx = chart.ctx;
+                            ctx.save();
+                            
+                            // Draw lines connecting nodes
+                            // Main to QR
+                            drawLine(ctx, 400, 300, 200, 150, '#2980b9', 2);
+                            // Main to LU
+                            drawLine(ctx, 400, 300, 600, 150, '#2980b9', 2);
+                            // Main to Other
+                            drawLine(ctx, 400, 300, 400, 500, '#2980b9', 2);
+                            
+                            // QR to subtopics
+                            drawLine(ctx, 200, 150, 120, 80, '#27ae60', 1);
+                            drawLine(ctx, 200, 150, 200, 50, '#27ae60', 1);
+                            drawLine(ctx, 200, 150, 280, 80, '#27ae60', 1);
+                            
+                            // LU to subtopics
+                            drawLine(ctx, 600, 150, 520, 80, '#8e44ad', 1);
+                            drawLine(ctx, 600, 150, 600, 50, '#8e44ad', 1);
+                            drawLine(ctx, 600, 150, 680, 80, '#8e44ad', 1);
+                            
+                            // Other to subtopics
+                            drawLine(ctx, 400, 500, 340, 550, '#d35400', 1);
+                            drawLine(ctx, 400, 500, 400, 570, '#d35400', 1);
+                            drawLine(ctx, 400, 500, 460, 550, '#d35400', 1);
+                            
+                            // Add labels
+                            addLabel(ctx, 400, 300, 'Numerical Linear Algebra', 18);
+                            addLabel(ctx, 200, 150, 'QR Decomposition', 16);
+                            addLabel(ctx, 600, 150, 'LU Decomposition', 16);
+                            addLabel(ctx, 400, 500, 'Other Decompositions', 16);
+                            
+                            addLabel(ctx, 120, 80, 'Gram-Schmidt', 12);
+                            addLabel(ctx, 200, 50, 'Orthogonality', 12);
+                            addLabel(ctx, 280, 80, 'Applications', 12);
+                            
+                            addLabel(ctx, 520, 80, 'Gaussian Elimination', 12);
+                            addLabel(ctx, 600, 50, 'Row Reduction', 12);
+                            addLabel(ctx, 680, 80, 'Applications', 12);
+                            
+                            addLabel(ctx, 340, 550, 'SVD', 12);
+                            addLabel(ctx, 400, 570, 'Eigen', 12);
+                            addLabel(ctx, 460, 550, 'Cholesky', 12);
+                            
+                            ctx.restore();
+                        }
+                    }
+                }
+            });
+            
+            // Helper function to draw connecting lines
+            function drawLine(ctx, x1, y1, x2, y2, color, width) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.stroke();
+            }
+            
+            // Helper function to add text labels
+            function addLabel(ctx, x, y, text, size) {
+                ctx.font = size + 'px Roboto';
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, x, y);
+            }
+        });
+    </script>
+
+    <!-- Coming Up Next Section -->
+    <h2 id="next-topics">8. Coming Up Next</h2>
+    
+    <p>In the next modules, we will explore:</p>
+    
+    <ul>
+        <li>Sparse matrices and numerical methods for handling them</li>
+        <li>Numerical linear algebra software and libraries</li>
+        <li>More advanced linear solvers</li>
+        <li>Additional factorization methods</li>
+        <li>Applications to real-world data science problems</li>
+    </ul>
+    
+    <div class="key-takeaways">
+        <h4><i class="fas fa-lightbulb"></i> Final Thoughts:</h4>
+        <p>QR and LU decompositions are foundational techniques in numerical linear algebra that provide efficient ways to solve linear systems and perform matrix operations. Understanding these methods not only provides insight into how computational algorithms work but also equips data scientists with powerful tools for tackling a wide range of problems from linear regression to simulation of physical systems. As we move forward, we'll build on these concepts to explore more advanced techniques and applications.</p>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

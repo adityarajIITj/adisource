@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition Principles - Lecture 5</title>
+    
+    <!-- MathJax Configuration -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+        }
+        
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .toc a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+        }
+        
+        h4 {
+            color: #495057;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong, .key-term {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #17a2b8;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .hinglish-summary h4 {
+            color: #c92a2a;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+        
+        .hinglish-summary p {
+            color: #495057;
+            line-height: 1.8;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+            transition: background 0.3s ease;
+        }
+        
+        .equation {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .practice-questions {
+            background: #e7f5ff;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #1971c2;
+        }
+        
+        .practice-questions h4 {
+            color: #1971c2;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 15px;
+            background: #d0ebff;
+            border-radius: 8px;
+            border-left: 3px solid #1971c2;
+        }
+        
+        .answer strong {
+            color: #1971c2;
+        }
+        
+        .key-takeaways {
+            background: #d3f9d8;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #37b24d;
+        }
+        
+        .key-takeaways h4 {
+            color: #2b8a3e;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 20px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 2px dashed #667eea;
+            font-style: italic;
+            color: #495057;
+        }
+        
+        .formula-box {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .main-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .subtopics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .subtopic-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .subtopic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .subtopic-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtopic-card ul {
+            padding-left: 20px;
+            color: #495057;
+        }
+        
+        .subtopic-card li {
+            margin: 8px 0;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c92a2a;
+        }
+        
+        .warning {
+            background: #ffe3e3;
+            border-left: 5px solid #fa5252;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning::before {
+            content: "⚠️ ";
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .subtopics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Pattern Recognition Principles</h1>
+            <p>Lecture 5: Discriminant Functions for Normal Density & Parameter Estimation</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Created By Armaan Kachhawa</p>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction</a></li>
+                <li><a href="#discriminant-function">2. Discriminant Function for Normal Density</a>
+                    <ul>
+                        <li><a href="#df-basics">2.1 Discriminant Function Basics</a></li>
+                        <li><a href="#bayesian-df">2.2 Discriminant Function in Bayesian Decision Theory</a></li>
+                        <li><a href="#normal-density">2.3 Discriminant Function for Normal Density</a></li>
+                        <li><a href="#decision-boundary">2.4 Decision Boundaries</a></li>
+                        <li><a href="#special-cases">2.5 Special Cases and Visualization</a></li>
+                    </ul>
+                </li>
+                <li><a href="#parameter-estimation">3. Parameter Estimation</a>
+                    <ul>
+                        <li><a href="#intro-param">3.1 Introduction to Parameter Estimation</a></li>
+                        <li><a href="#mle">3.2 Maximum Likelihood Estimation (MLE)</a></li>
+                        <li><a href="#mle-derivation">3.3 MLE Derivation for Gaussian Distribution</a></li>
+                        <li><a href="#mle-shortcomings">3.4 Shortcomings of MLE</a></li>
+                        <li><a href="#map-bayesian">3.5 MAP and Bayesian Estimation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#summary">4. Summary and Key Takeaways</a></li>
+                <li><a href="#mind-map">5. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        
+        <section id="introduction">
+            <h2>1. Introduction</h2>
+            
+            <p>Welcome to Lecture 5 on <strong>Pattern Recognition</strong>! In this comprehensive lecture, we will explore two fundamental topics that are crucial for understanding modern pattern recognition systems:</p>
+            
+            <ul style="margin-left: 40px; margin-top: 15px;">
+                <li><strong>Discriminant Functions for Normal Density:</strong> Understanding how to define discriminant functions when data follows Gaussian/Normal distributions</li>
+                <li><strong>Parameter Estimation:</strong> Learning techniques to estimate distribution parameters from given data samples</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor emphasizes that parameter estimation is particularly important because in real-world scenarios, we often assume data follows a Gaussian distribution, but we need to determine the exact parameters (mean and variance/covariance matrix) from the available data samples. This is a non-trivial problem that forms the foundation of many machine learning algorithms.
+            </div>
+            
+            <p>In <strong>Gaussian distribution</strong>, there are two key parameters:</p>
+            <ul style="margin-left: 40px;">
+                <li><strong>Mean ($\mu$):</strong> The center of the distribution</li>
+                <li><strong>Variance ($\sigma^2$):</strong> The spread of the distribution (for univariate case)</li>
+                <li><strong>Covariance Matrix ($\Sigma$):</strong> For multivariate cases, this captures the relationship between dimensions</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>Is lecture mein hum do main topics padhenge. Pehla hai discriminant functions jo normal/Gaussian distribution ke liye kaise define karte hain, aur doosra hai parameter estimation. Parameter estimation ka matlab hai ki jab humein kuch data points milte hain aur hum assume karte hain ki yeh Gaussian distribution follow kar rahe hain, toh hum mean aur variance/covariance matrix kaise nikaalein. Yeh bahut important hai kyunki real-world mein hume exact parameters pata nahi hote, sirf data milta hai.</p>
+            </div>
+        </section>
+        
+        <section id="discriminant-function">
+            <h2>2. Discriminant Function for Normal Density</h2>
+            
+            <div id="df-basics">
+                <h3>2.1 Discriminant Function Basics</h3>
+                
+                <p>A <strong class="key-term">discriminant function</strong> is one of the most useful ways to represent pattern classifiers. Instead of working directly with probabilities, we define a set of functions that help us make classification decisions.</p>
+                
+                <h4>Definition</h4>
+                <p>For a <strong>$C$-class classification problem</strong>, we define $C$ discriminant functions:</p>
+                
+                <div class="equation">
+
+                    $$g_1(\mathbf{x}), g_2(\mathbf{x}), g_3(\mathbf{x}), \ldots, g_C(\mathbf{x})$$
+                </div>
+                
+                <p>Where:</p>
+                <ul style="margin-left: 40px;">
+                    <li>Each function $g_i(\mathbf{x})$ takes a <strong>$d$-dimensional feature vector</strong> $\mathbf{x}$ as input</li>
+                    <li>Each function returns a <strong>real value</strong></li>
+                    <li>We evaluate all $C$ functions for a given input</li>
+                </ul>
+                
+                <h4>Classification Rule</h4>
+                <div class="formula-box">
+                    <p><strong>The classifier assigns a feature vector $\mathbf{x}$ to class $\omega_i$ if:</strong></p>
+                    <div class="equation">
+
+                        $$g_i(\mathbf{x}) > g_j(\mathbf{x}) \quad \text{for all } j \neq i$$
+                    </div>
+                    <p style="text-align: center; margin-top: 15px;">In other words: <em>"Choose the class with the maximum discriminant function value"</em></p>
+                </div>
+                
+                <div class="professor-note">
+                    The professor explains that we evaluate the discriminant function separately for all $C$ classes, and then whichever function gives the maximum value, we classify the input to that particular class. This is a very intuitive and practical approach.
+                </div>
+                
+                <h4>Decision Boundary</h4>
+                <p>The <strong class="key-term">decision boundary</strong> is the set of points where two or more discriminant functions are equal:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = g_j(\mathbf{x})$$
+                </div>
+                
+                <p>At these points, the classifier is ambiguous between classes $\omega_i$ and $\omega_j$.</p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Decision regions and boundaries for discriminant functions - Reference: Duda, Hart and Stork]
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Discriminant function ek aisa function hai jo classification karne mein help karta hai. Agar humein $C$ classes hain, toh hum $C$ functions banate hain. Har function ek value deta hai, aur jo sabse bada value deta hai, hum us class mein data point ko assign kar dete hain. Decision boundary woh jagah hai jahan do ya zyada functions ki value equal hoti hai - yahan classifier confused hota hai.</p>
+                </div>
+            </div>
+            
+            <div id="bayesian-df">
+                <h3>2.2 Discriminant Function in Bayesian Decision Theory</h3>
+                
+                <p>In <strong class="key-term">Bayesian Decision Theory</strong>, we use posterior probabilities as discriminant functions. The discriminant function is defined as:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = P(\omega_i | \mathbf{x})$$
+                </div>
+                
+                <p>Using <strong>Bayes' theorem</strong>, we can expand this:</p>
+                
+                <div class="equation">
+
+                    $$P(\omega_i | \mathbf{x}) = \frac{P(\mathbf{x} | \omega_i) \cdot P(\omega_i)}{P(\mathbf{x})}$$
+                </div>
+                
+                <p>Where:</p>
+                <table>
+                    <tr>
+                        <th>Term</th>
+                        <th>Name</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td>$P(\omega_i | \mathbf{x})$</td>
+                        <td>Posterior Probability</td>
+                        <td>Probability of class $\omega_i$ given observation $\mathbf{x}$</td>
+                    </tr>
+                    <tr>
+                        <td>$P(\mathbf{x} | \omega_i)$</td>
+                        <td>Likelihood</td>
+                        <td>Probability of observing $\mathbf{x}$ given class $\omega_i$</td>
+                    </tr>
+                    <tr>
+                        <td>$P(\omega_i)$</td>
+                        <td>Prior Probability</td>
+                        <td>Prior belief about class $\omega_i$</td>
+                    </tr>
+                    <tr>
+                        <td>$P(\mathbf{x})$</td>
+                        <td>Evidence</td>
+                        <td>Total probability of observing $\mathbf{x}$</td>
+                    </tr>
+                </table>
+                
+                <h4>Simplification</h4>
+                <p>Since $P(\mathbf{x})$ is <strong>common for all classes</strong>, it doesn't affect the classification decision. We can simplify:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = P(\mathbf{x} | \omega_i) \cdot P(\omega_i)$$
+                </div>
+                
+                <p>This is the <strong>likelihood times prior</strong>, which we want to maximize for classification.</p>
+                
+                <h4>Taking Logarithm</h4>
+                <p>To make computations easier (especially for Gaussian distributions), we often take the natural logarithm:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = \ln[P(\mathbf{x} | \omega_i) \cdot P(\omega_i)]$$
+
+                    $$= \ln P(\mathbf{x} | \omega_i) + \ln P(\omega_i)$$
+                </div>
+                
+                <p>The logarithm is a <strong>monotonic function</strong>, so maximizing $\ln g_i(\mathbf{x})$ is equivalent to maximizing $g_i(\mathbf{x})$.</p>
+                
+                <div class="professor-note">
+                    The professor emphasizes that taking the logarithm converts multiplication into addition, which is mathematically more convenient. Also, when we have exponential terms (like in Gaussian distribution), the log and exponential cancel out, making calculations simpler.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Bayesian decision theory mein, discriminant function posterior probability ke equal hota hai. Bayes theorem use karke, yeh likelihood aur prior ka multiplication ban jata hai. $P(\mathbf{x})$ common hai sabke liye, toh hum use ignore kar sakte hain. Log lene se multiplication addition mein convert ho jata hai, jo calculations ko easier banata hai. Aur Gaussian distribution mein exponential terms hote hain, jo log lene se simplify ho jate hain.</p>
+                </div>
+            </div>
+            
+            <div id="normal-density">
+                <h3>2.3 Discriminant Function for Normal Density</h3>
+                
+                <p>Now let's consider the case where the likelihood follows a <strong class="key-term">Normal (Gaussian) Distribution</strong>. This is one of the most important cases in pattern recognition.</p>
+                
+                <h4>Multivariate Gaussian Distribution</h4>
+                <p>For a $d$-dimensional feature vector $\mathbf{x}$, the multivariate Gaussian distribution for class $\omega_i$ is:</p>
+                
+                <div class="equation">
+
+                    $$P(\mathbf{x} | \omega_i) = \frac{1}{(2\pi)^{d/2} |\Sigma_i|^{1/2}} \exp\left[-\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \Sigma_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i)\right]$$
+                </div>
+                
+                <p>Where:</p>
+                <ul style="margin-left: 40px;">
+                    <li>$\boldsymbol{\mu}_i$ is the <strong>mean vector</strong> (size $d \times 1$)</li>
+                    <li>$\Sigma_i$ is the <strong>covariance matrix</strong> (size $d \times d$)</li>
+                    <li>$|\Sigma_i|$ is the determinant of the covariance matrix</li>
+                    <li>$\Sigma_i^{-1}$ is the inverse of the covariance matrix</li>
+                </ul>
+                
+                <h4>Deriving the Discriminant Function</h4>
+                <p>Starting with the Bayesian discriminant function:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = \ln P(\mathbf{x} | \omega_i) + \ln P(\omega_i)$$
+                </div>
+                
+                <p><strong>Step 1:</strong> Substitute the Gaussian distribution:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = \ln\left[\frac{1}{(2\pi)^{d/2} |\Sigma_i|^{1/2}} \exp\left(-\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \Sigma_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i)\right)\right] + \ln P(\omega_i)$$
+                </div>
+                
+                <p><strong>Step 2:</strong> Use logarithm properties to separate terms:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = \ln\frac{1}{(2\pi)^{d/2}} + \ln\frac{1}{|\Sigma_i|^{1/2}} - \frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \Sigma_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i) + \ln P(\omega_i)$$
+                </div>
+                
+                <p><strong>Step 3:</strong> Simplify further:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = -\frac{d}{2}\ln(2\pi) - \frac{1}{2}\ln|\Sigma_i| - \frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \Sigma_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i) + \ln P(\omega_i)$$
+                </div>
+                
+                <p><strong>Step 4:</strong> Remove constant terms that don't depend on class $i$:</p>
+                
+                <p>The term $-\frac{d}{2}\ln(2\pi)$ is constant across all classes, so it can be eliminated. The final discriminant function becomes:</p>
+                
+                <div class="formula-box">
+                    <h4>Final Discriminant Function for Normal Density:</h4>
+                    <div class="equation">
+
+                        $$g_i(\mathbf{x}) = -\frac{1}{2}\ln|\Sigma_i| - \frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \Sigma_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i) + \ln P(\omega_i)$$
+                    </div>
+                </div>
+                
+                <div class="professor-note">
+                    The professor explains that constant terms like $\ln(2\pi)$ are removed because when we compare $g_i(\mathbf{x})$ with $g_j(\mathbf{x})$, these constants cancel out. Only terms with the class subscript $i$ are meaningful for classification decisions.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Jab data Gaussian distribution follow karta hai, toh hum uska likelihood formula discriminant function mein substitute karte hain. Log lene ke baad, multiplication addition mein convert ho jata hai. Exponential aur log cancel ho jate hain. Jo terms sabhi classes ke liye same hain (jaise $2\pi$), unhe hum hata dete hain kyunki comparison mein woh cancel ho jayenge. Final discriminant function mein teen main terms hote hain: covariance ka determinant, quadratic form wala term, aur prior probability.</p>
+                </div>
+            </div>
+            
+            <div id="decision-boundary">
+                <h3>2.4 Decision Boundaries</h3>
+                
+                <p>The <strong class="key-term">decision boundary</strong> between two classes $\omega_i$ and $\omega_j$ is found by setting their discriminant functions equal:</p>
+                
+                <div class="equation">
+
+                    $$g_i(\mathbf{x}) = g_j(\mathbf{x})$$
+                </div>
+                
+                <p>For a <strong>two-class problem</strong> (classes $\omega_1$ and $\omega_2$), the decision boundary is:</p>
+                
+                <div class="equation">
+
+                    $$g_1(\mathbf{x}) = g_2(\mathbf{x})$$
+
+                    $$\Rightarrow g_1(\mathbf{x}) - g_2(\mathbf{x}) = 0$$
+                </div>
+                
+                <p>Expanding using our discriminant function:</p>
+                
+                <div class="equation">
+
+                    $$-\frac{1}{2}\ln|\Sigma_1| - \frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_1)^T \Sigma_1^{-1} (\mathbf{x} - \boldsymbol{\mu}_1) + \ln P(\omega_1)$$
+
+                    $$= -\frac{1}{2}\ln|\Sigma_2| - \frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_2)^T \Sigma_2^{-1} (\mathbf{x} - \boldsymbol{\mu}_2) + \ln P(\omega_2)$$
+                </div>
+                
+                <p>Rearranging:</p>
+                
+                <div class="equation">
+
+                    $$\frac{1}{2}\ln\frac{|\Sigma_2|}{|\Sigma_1|} + \frac{1}{2}[(\mathbf{x} - \boldsymbol{\mu}_1)^T \Sigma_1^{-1} (\mathbf{x} - \boldsymbol{\mu}_1) - (\mathbf{x} - \boldsymbol{\mu}_2)^T \Sigma_2^{-1} (\mathbf{x} - \boldsymbol{\mu}_2)]$$
+
+                    $$+ \ln\frac{P(\omega_1)}{P(\omega_2)} = 0$$
+                </div>
+                
+                <p>This is the <strong>general form</strong> of the decision boundary for Gaussian distributions. The nature of this boundary (linear, quadratic, etc.) depends on the properties of $\Sigma_1$ and $\Sigma_2$.</p>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Decision boundary nikalne ke liye hum do classes ke discriminant functions ko equal kar dete hain aur solve karte hain. Yeh boundary kaisa hoga (linear, curved, etc.) yeh depend karta hai covariance matrices ke properties par. General case mein, yeh boundary complex ho sakti hai, but kuch special cases mein yeh simple ban jati hai.</p>
+                </div>
+            </div>
+            
+            <div id="special-cases">
+                <h3>2.5 Special Cases and Visualization</h3>
+                
+                <h4>Case 1: Equal Covariance Matrices with $\Sigma_i = \sigma^2 \mathbf{I}$ and Equal Priors</h4>
+                
+                <p>This is the <strong>simplest case</strong> where:</p>
+                <ul style="margin-left: 40px;">
+                    <li>$\Sigma_1 = \Sigma_2 = \sigma^2 \mathbf{I}$ (equal covariance, spherical/isotropic)</li>
+                    <li>$P(\omega_1) = P(\omega_2)$ (equal prior probabilities)</li>
+                    <li>$\mathbf{I}$ is the identity matrix</li>
+                </ul>
+                
+                <p><strong>Simplification:</strong></p>
+                
+                <p>With these assumptions:</p>
+                <ul style="margin-left: 40px;">
+                    <li>The $\ln\frac{|\Sigma_2|}{|\Sigma_1|}$ term becomes 0</li>
+                    <li>The $\ln\frac{P(\omega_1)}{P(\omega_2)}$ term becomes 0</li>
+                    <li>$\Sigma^{-1} = \frac{1}{\sigma^2}\mathbf{I}$</li>
+                </ul>
+                
+                <p>The decision boundary equation becomes:</p>
+                
+                <div class="equation">
+
+                    $$\frac{1}{2\sigma^2}[(\mathbf{x} - \boldsymbol{\mu}_1)^T(\mathbf{x} - \boldsymbol{\mu}_1) - (\mathbf{x} - \boldsymbol{\mu}_2)^T(\mathbf{x} - \boldsymbol{\mu}_2)] = 0$$
+                </div>
+                
+                <p>Expanding the quadratic forms:</p>
+                
+                <div class="equation">
+
+                    $$(\mathbf{x} - \boldsymbol{\mu}_1)^T(\mathbf{x} - \boldsymbol{\mu}_1) = \mathbf{x}^T\mathbf{x} - 2\boldsymbol{\mu}_1^T\mathbf{x} + \boldsymbol{\mu}_1^T\boldsymbol{\mu}_1$$
+
+                    $$(\mathbf{x} - \boldsymbol{\mu}_2)^T(\mathbf{x} - \boldsymbol{\mu}_2) = \mathbf{x}^T\mathbf{x} - 2\boldsymbol{\mu}_2^T\mathbf{x} + \boldsymbol{\mu}_2^T\boldsymbol{\mu}_2$$
+                </div>
+                
+                <p>The $\mathbf{x}^T\mathbf{x}$ terms cancel out:</p>
+                
+                <div class="equation">
+
+                    $$\boldsymbol{\mu}_1^T\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2^T\boldsymbol{\mu}_2 - 2(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^T\mathbf{x} = 0$$
+                </div>
+                
+                <p>Solving for $\mathbf{x}$:</p>
+                
+                <div class="formula-box">
+                    <h4>Decision Boundary (Linear Hyperplane):</h4>
+                    <div class="equation">
+
+                        $$(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^T\mathbf{x} = \frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)^T(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$$
+                    </div>
+                    <p style="text-align: center; margin-top: 15px;">Or equivalently:</p>
+                    <div class="equation">
+
+                        $$(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^T\left[\mathbf{x} - \frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)\right] = 0$$
+                    </div>
+                </div>
+                
+                <p><strong>Geometric Interpretation:</strong></p>
+                <ul style="margin-left: 40px;">
+                    <li>This is a <strong>linear hyperplane</strong> perpendicular to the line joining $\boldsymbol{\mu}_1$ and $\boldsymbol{\mu}_2$</li>
+                    <li>The hyperplane passes through the <strong>midpoint</strong> $\frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)$</li>
+                    <li>The decision boundary is <strong>equidistant</strong> from both means</li>
+                </ul>
+                
+                <div class="professor-note">
+                    The professor emphasizes that this is a very simple and intuitive result: when both classes have the same covariance and prior probability, the decision boundary is simply in the middle of the two means. This makes perfect sense geometrically!
+                </div>
+                
+                <h4>Visualization: Equal Priors</h4>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Two Gaussian distributions with equal covariance $\sigma^2\mathbf{I}$ and equal priors $P(\omega_1) = P(\omega_2)$. The decision boundary is a vertical line (hyperplane in higher dimensions) exactly at the midpoint between $\mu_1$ and $\mu_2$. Both distributions have the same shape and height.]
+                </div>
+                
+                <p>In this visualization:</p>
+                <ul style="margin-left: 40px;">
+                    <li>Both Gaussian distributions have the <strong>same shape</strong> (spherical)</li>
+                    <li>The decision boundary is <strong>in the middle</strong> of the means</li>
+                    <li>This is a <strong>hyperplane</strong> (line in 2D, plane in 3D, etc.)</li>
+                    <li>Classification is based on <strong>proximity to means</strong></li>
+                </ul>
+                
+                <h4>Case 2: Equal Covariance but Unequal Priors</h4>
+                
+                <p>When $\Sigma_1 = \Sigma_2 = \sigma^2 \mathbf{I}$ but $P(\omega_1) \neq P(\omega_2)$:</p>
+                
+                <p>If $P(\omega_1) > P(\omega_2)$ (class 1 is more likely a priori), the decision boundary <strong>shifts toward class 2</strong>. This makes sense because:</p>
+                <ul style="margin-left: 40px;">
+                    <li>Class 1 is more probable, so we're more willing to classify points as class 1</li>
+                    <li>The boundary moves away from $\mu_1$ and toward $\mu_2$</li>
+                    <li>This increases the region where points are classified as $\omega_1$</li>
+                </ul>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Two Gaussian distributions where $P(\omega_1) >> P(\omega_2)$. The decision boundary is shifted toward $\mu_2$, giving more classification area to class 1. The distribution for class 1 appears taller (more probable).]
+                </div>
+                
+                <div class="professor-note">
+                    The professor explains that this shift makes classification more realistic. If one class appears 60% of the time in training data and the other only 40%, it makes sense that the decision boundary should favor the more common class. The boundary is still a hyperplane, but it's not in the exact middle anymore.
+                </div>
+                
+                <h4>Other Cases (For Self-Study)</h4>
+                
+                <p>The textbook (Duda, Hart, and Stork, Chapter 2) covers additional important cases:</p>
+                
+                <table>
+                    <tr>
+                        <th>Case</th>
+                        <th>Assumptions</th>
+                        <th>Decision Boundary Type</th>
+                    </tr>
+                    <tr>
+                        <td>Case 2</td>
+                        <td>$\Sigma_i = \Sigma$ (equal but arbitrary covariance)</td>
+                        <td>Linear hyperplane (not necessarily through midpoint)</td>
+                    </tr>
+                    <tr>
+                        <td>Case 3</td>
+                        <td>$\Sigma_i$ arbitrary (different covariances)</td>
+                        <td>Quadratic (hyperquadric)</td>
+                    </tr>
+                </table>
+                
+                <div class="note">
+                    <strong>📚 Self-Study Recommendation:</strong> Students are strongly encouraged to work through Cases 2 and 3 from the textbook. These cases show how the decision boundary becomes more complex when covariance matrices differ between classes. The mathematical derivation follows similar steps but results in quadratic boundaries instead of linear ones.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Sabse simple case mein jab dono classes ka covariance same hai ($\sigma^2\mathbf{I}$ type) aur prior probabilities bhi equal hain, toh decision boundary bilkul middle mein hoti hai dono means ke beech. Yeh ek straight line (hyperplane) hoti hai. Agar prior probabilities different hain, toh boundary shift ho jati hai - jo class zyada common hai, uski taraf se boundary door chali jati hai. Aur bhi complex cases hain jahan covariance matrices different hote hain, tab boundary quadratic (curved) ban jati hai.</p>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Discriminant Functions</h4>
+                <ul>
+                    <li>Discriminant functions provide a practical way to implement classifiers by comparing function values</li>
+                    <li>In Bayesian framework, we use $g_i(\mathbf{x}) = \ln P(\mathbf{x}|\omega_i) + \ln P(\omega_i)$ as the discriminant function</li>
+                    <li>For Gaussian distributions, the discriminant function has three main components: covariance determinant, quadratic form, and prior probability</li>
+                    <li>Decision boundaries are found by equating discriminant functions: $g_i(\mathbf{x}) = g_j(\mathbf{x})$</li>
+                    <li>When covariances are equal and spherical ($\sigma^2\mathbf{I}$) with equal priors, the decision boundary is a linear hyperplane at the midpoint between means</li>
+                    <li>Unequal priors shift the boundary toward the less probable class</li>
+                    <li>Different covariance matrices lead to quadratic (curved) decision boundaries</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions - Discriminant Functions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> For a 3-class problem, how many discriminant functions do we need to define? How does the classifier make its decision?
+                    <div class="answer">
+                        <strong>Answer:</strong> We need to define 3 discriminant functions: $g_1(\mathbf{x})$, $g_2(\mathbf{x})$, and $g_3(\mathbf{x})$. The classifier evaluates all three functions for the input vector $\mathbf{x}$ and assigns it to the class with the maximum discriminant function value. For example, if $g_2(\mathbf{x}) > g_1(\mathbf{x})$ and $g_2(\mathbf{x}) > g_3(\mathbf{x})$, then $\mathbf{x}$ is assigned to class $\omega_2$.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why can we eliminate the $P(\mathbf{x})$ term from the Bayesian discriminant function?
+                    <div class="answer">
+                        <strong>Answer:</strong> The term $P(\mathbf{x})$ is the evidence or total probability of observing $\mathbf{x}$, which is the same for all classes. Since we're comparing $g_i(\mathbf{x})$ across different classes to find the maximum, $P(\mathbf{x})$ acts as a common multiplicative constant. It doesn't change which class has the maximum value, so it can be safely eliminated from the discriminant function.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Given two classes with means $\boldsymbol{\mu}_1 = [0, 0]^T$ and $\boldsymbol{\mu}_2 = [4, 0]^T$, both with covariance $\Sigma = \mathbf{I}$ and equal priors, what is the equation of the decision boundary?
+                    <div class="answer">
+                        <strong>Answer:</strong> Using the formula for equal covariance and equal priors:<br>
+                        $(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^T\mathbf{x} = \frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)^T(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$<br>
+                        $\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = [-4, 0]^T$<br>
+                        $\frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2) = [2, 0]^T$<br>
+                        Therefore: $-4x_1 = -4(2)$, which gives $x_1 = 2$<br>
+                        The decision boundary is the vertical line $x_1 = 2$, which is exactly at the midpoint between the two means.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4:</strong> What happens to the decision boundary if $P(\omega_1) = 0.7$ and $P(\omega_2) = 0.3$ while keeping all other parameters the same as Q3?
+                    <div class="answer">
+                        <strong>Answer:</strong> The decision boundary will shift toward $\boldsymbol{\mu}_2$ (to the right). Since class 1 is more probable (70% vs 30%), we're more willing to classify points as belonging to class 1. The boundary moves to $x_1 > 2$, increasing the region where points are classified as $\omega_1$. The exact position depends on $\ln(P(\omega_1)/P(\omega_2)) = \ln(0.7/0.3) \approx 0.847$, which adds to the decision boundary equation.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="parameter-estimation">
+            <h2>3. Parameter Estimation</h2>
+            
+            <div id="intro-param">
+                <h3>3.1 Introduction to Parameter Estimation</h3>
+                
+                <p><strong class="key-term">Parameter estimation</strong> addresses a fundamental challenge in pattern recognition: given a set of data points, how do we determine the parameters of the underlying probability distribution?</p>
+                
+                <h4>The Problem</h4>
+                <p>In many real-world scenarios:</p>
+                <ul style="margin-left: 40px;">
+                    <li>We have <strong>observed data</strong> (training samples)</li>
+                    <li>We <strong>assume</strong> the data follows a certain distribution (e.g., Gaussian)</li>
+                    <li>But we <strong>don't know</strong> the exact parameters (mean, variance, etc.)</li>
+                    <li>We need to <strong>estimate</strong> these parameters from the data</li>
+                </ul>
+                
+                <div class="professor-note">
+                    The professor provides an excellent example: Imagine you have data points on a 1D line: -4, -3, -2, -1, 0, 0, 0, 1, 1, 2, 3, etc. You can see there are many points around 0, fewer around ±1, and the data seems to spread out. If you assume this is Gaussian, which Gaussian is it? A wide one? A narrow one? Centered where? These are the questions parameter estimation answers.
+                </div>
+                
+                <h4>For Gaussian Distribution</h4>
+                <p>The Gaussian (Normal) distribution has specific parameters we need to estimate:</p>
+                
+                <table>
+                    <tr>
+                        <th>Case</th>
+                        <th>Parameters to Estimate</th>
+                    </tr>
+                    <tr>
+                        <td>Univariate (1D)</td>
+                        <td>
+                            • Mean: $\mu$ (scalar)<br>
+                            • Variance: $\sigma^2$ (scalar)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Multivariate ($d$-dimensional)</td>
+                        <td>
+                            • Mean vector: $\boldsymbol{\mu}$ (size $d \times 1$)<br>
+                            • Covariance matrix: $\Sigma$ (size $d \times d$)
+                        </td>
+                    </tr>
+                </table>
+                
+                <h4>Visual Example: Multiple Possible Gaussians</h4>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: A 1D line with scattered data points mostly concentrated around 0. Three different Gaussian curves overlaid:
+                    - Curve A: Wide, low peak (high variance)
+                    - Curve B: Narrow, tall peak (low variance)
+                    - Curve C: Medium width (medium variance)
+                    All centered approximately at 0 but with different spreads]
+                </div>
+                
+                <p>Given the same data points, multiple Gaussians could potentially fit:</p>
+                <ul style="margin-left: 40px;">
+                    <li><strong>Gaussian A (wide):</strong> $\mu \approx 0$, $\sigma^2 = \text{large}$ (high variance)</li>
+                    <li><strong>Gaussian B (narrow):</strong> $\mu \approx 0$, $\sigma^2 = \text{small}$ (low variance)</li>
+                    <li><strong>Gaussian C (medium):</strong> $\mu \approx 0$, $\sigma^2 = \text{medium}$ (medium variance)</li>
+                </ul>
+                
+                <p><strong>Question:</strong> Which Gaussian is the "best fit"? Parameter estimation techniques give us principled ways to answer this.</p>
+                
+                <h4>Connection to Bayesian Decision Theory</h4>
+                
+                <p>Recall from Bayesian Decision Theory:</p>
+                
+                <div class="equation">
+
+                    $$P(\omega_i | \mathbf{x}) = \frac{P(\mathbf{x} | \omega_i) \cdot P(\omega_i)}{P(\mathbf{x})}$$
+                </div>
+                
+                <p>We need to estimate:</p>
+                <ul style="margin-left: 40px;">
+                    <li><strong>$P(\omega_i)$ (Prior):</strong> Relatively easy - just count class frequencies in training data
+                        <div class="equation">$$P(\omega_i) = \frac{\text{Number of samples in class } \omega_i}{\text{Total number of samples}}$$</div>
+                        Example: If 60% of training data belongs to class 1, then $P(\omega_1) = 0.6$
+                    </li>
+                    <li><strong>$P(\mathbf{x} | \omega_i)$ (Likelihood):</strong> Non-trivial! This requires estimating the distribution parameters from data samples of each class</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>Parameter estimation ka problem yeh hai ki humein data points mil gaye hain aur hum assume kar rahe hain ki yeh Gaussian distribution follow kar rahe hain, but exactly kaun sa Gaussian? Mean kya hai, variance kya hai - yeh pata nahi. Training data se hi humein yeh parameters nikalne hain. Prior probability $P(\omega_i)$ toh simple hai - bas count kar lo kitni baar har class appear hoti hai. But likelihood $P(\mathbf{x}|\omega_i)$ mushkil hai, kyunki iske liye distribution ke parameters chahiye.</p>
+                </div>
+            </div>
+            
+            <div id="mle">
+                <h3>3.2 Maximum Likelihood Estimation (MLE)</h3>
+                
+                <p><strong class="key-term">Maximum Likelihood Estimation (MLE)</strong> is one of the most popular and widely-used techniques for parameter estimation. The key idea is simple yet powerful:</p>
+                
+                <div class="formula-box">
+                    <p><strong>MLE Principle:</strong></p>
+                    <p style="text-align: center; font-size: 1.1em;">
+                        "Choose the parameters that make the observed data most probable"
+                    </p>
+                </div>
+                
+                <h4>Mathematical Framework</h4>
+                
+                <p>Suppose we have:</p>
+                <ul style="margin-left: 40px;">
+                    <li>Data samples: $\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n$</li>
+                    <li>Assumed distribution: Normal with parameters $\theta = (\mu, \sigma)$</li>
+                    <li>Goal: Find $\mu$ and $\sigma$ that best explain the observed data</li>
+                </ul>
+                
+                <h4>The Likelihood Function</h4>
+                
+                <p>The <strong class="key-term">likelihood</strong> of observing data point $x_i$ given parameters $\theta$ is:</p>
+                
+                <div class="equation">
+
+                    $$P(x_i | \theta) = P(x_i | \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left[-\frac{1}{2}\left(\frac{x_i - \mu}{\sigma}\right)^2\right]$$
+                </div>
+                
+                <p>This is just the Gaussian probability density function evaluated at $x_i$.</p>
+                
+                <p>For multiple <strong>independent and identically distributed (i.i.d.)</strong> samples, the joint likelihood is the <strong>product</strong>:</p>
+                
+                <div class="equation">
+
+                    $$L(\theta) = P(\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n | \theta) = \prod_{i=1}^{n} P(x_i | \theta)$$
+                </div>
+                
+                <div class="equation">
+
+                    $$L(\mu, \sigma) = \prod_{i=1}^{n} \frac{1}{\sigma\sqrt{2\pi}} \exp\left[-\frac{1}{2}\left(\frac{x_i - \mu}{\sigma}\right)^2\right]$$
+                </div>
+                
+                <div class="professor-note">
+                    The professor emphasizes that we can multiply these probabilities because we assume the samples are independent and identically distributed (i.i.d.). This is a standard assumption in most machine learning scenarios.
+                </div>
+                
+                <h4>The Log-Likelihood Function</h4>
+                
+                <p>Taking the <strong>natural logarithm</strong> converts products to sums, making optimization much easier:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = \ln L(\mu, \sigma) = \sum_{i=1}^{n} \ln P(x_i | \mu, \sigma)$$
+                </div>
+                
+                <p>Expanding:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = \sum_{i=1}^{n} \left[\ln\frac{1}{\sigma\sqrt{2\pi}} + \ln\exp\left(-\frac{1}{2}\left(\frac{x_i - \mu}{\sigma}\right)^2\right)\right]$$
+                </div>
+                
+                <p>Since $\ln(\exp(a)) = a$:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = \sum_{i=1}^{n} \left[\ln\frac{1}{\sigma\sqrt{2\pi}} - \frac{1}{2}\left(\frac{x_i - \mu}{\sigma}\right)^2\right]$$
+                </div>
+                
+                <p>Separating terms:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = -n\ln(\sigma) - \frac{n}{2}\ln(2\pi) - \frac{1}{2\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <p>Since $\ln(2\pi)$ is a constant that doesn't depend on $\mu$ or $\sigma$, we can define:</p>
+                
+                <div class="formula-box">
+                    <h4>Simplified Log-Likelihood:</h4>
+                    <div class="equation">
+
+                        $$\ell(\mu, \sigma) = -n\ln(\sigma) - \frac{1}{2\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2 + C$$
+                    </div>
+                    <p style="text-align: center;">where $C$ is a constant</p>
+                </div>
+                
+                <h4>MLE Objective</h4>
+                
+                <p>Our goal is to <strong>maximize</strong> the log-likelihood:</p>
+                
+                <div class="equation">
+
+                    $$\hat{\theta}_{MLE} = \arg\max_{\theta} \ell(\theta)$$
+                </div>
+                
+                <p>Or equivalently, <strong>minimize</strong> the negative log-likelihood:</p>
+                
+                <div class="equation">
+
+                    $$\hat{\theta}_{MLE} = \arg\min_{\theta} [-\ell(\theta)]$$
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>MLE ka basic idea hai ki hum aise parameters choose karein jo hamari observed data ko sabse zyada probable banayein. Har data point ke liye probability nikaal ke, unhe multiply kar dete hain (kyunki independent hain). But multiplication mushkil hai, toh log le lete hain - tab multiplication sum ban jata hai. Is log-likelihood ko maximize karna hai. Constant terms jo $\mu$ ya $\sigma$ par depend nahi karte, unhe hata dete hain kyunki woh optimization mein koi role nahi play karte.</p>
+                </div>
+            </div>
+            
+            <div id="mle-derivation">
+                <h3>3.3 MLE Derivation for Gaussian Distribution</h3>
+                
+                <p>To find the MLE estimates, we use <strong>calculus</strong> - specifically, we take derivatives with respect to the parameters and set them to zero.</p>
+                
+                <h4>Step 1: Estimating the Mean ($\mu$)</h4>
+                
+                <p>Starting with the log-likelihood:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = -n\ln(\sigma) - \frac{1}{2\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <p>Take the partial derivative with respect to $\mu$:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial \ell}{\partial \mu} = -\frac{1}{2\sigma^2} \cdot \frac{\partial}{\partial \mu}\sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <p>Using the chain rule:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial}{\partial \mu}(x_i - \mu)^2 = 2(x_i - \mu) \cdot (-1) = -2(x_i - \mu)$$
+                </div>
+                
+                <p>Therefore:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial \ell}{\partial \mu} = -\frac{1}{2\sigma^2}\sum_{i=1}^{n}[-2(x_i - \mu)] = \frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu)$$
+                </div>
+                
+                <p>Set equal to zero for maximization:</p>
+                
+                <div class="equation">
+
+                    $$\frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu) = 0$$
+                </div>
+                
+                <p>Since $\sigma^2 \neq 0$:</p>
+                
+                <div class="equation">
+
+                    $$\sum_{i=1}^{n}(x_i - \mu) = 0$$
+
+                    $$\sum_{i=1}^{n}x_i - n\mu = 0$$
+
+                    $$\sum_{i=1}^{n}x_i = n\mu$$
+                </div>
+                
+                <div class="formula-box">
+                    <h4>MLE Estimate for Mean:</h4>
+                    <div class="equation">
+
+                        $$\hat{\mu}_{MLE} = \frac{1}{n}\sum_{i=1}^{n}x_i$$
+                    </div>
+                    <p style="text-align: center; margin-top: 10px;">
+                        <strong>This is simply the sample mean!</strong>
+                    </p>
+                </div>
+                
+                <div class="professor-note">
+                    The professor points out that this is a beautiful result - the MLE estimate for the mean of a Gaussian distribution is just the average of your data points. This aligns perfectly with our intuition!
+                </div>
+                
+                <h4>Step 2: Estimating the Variance ($\sigma^2$)</h4>
+                
+                <p>Now take the partial derivative with respect to $\sigma$:</p>
+                
+                <div class="equation">
+
+                    $$\ell(\mu, \sigma) = -n\ln(\sigma) - \frac{1}{2\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <div class="equation">
+
+                    $$\frac{\partial \ell}{\partial \sigma} = -\frac{n}{\sigma} - \frac{1}{2}\sum_{i=1}^{n}(x_i - \mu)^2 \cdot \frac{\partial}{\partial \sigma}(\sigma^{-2})$$
+                </div>
+                
+                <p>Using the power rule:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial}{\partial \sigma}(\sigma^{-2}) = -2\sigma^{-3}$$
+                </div>
+                
+                <p>Therefore:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial \ell}{\partial \sigma} = -\frac{n}{\sigma} - \frac{1}{2}\sum_{i=1}^{n}(x_i - \mu)^2 \cdot (-2\sigma^{-3})$$
+
+                    $$= -\frac{n}{\sigma} + \frac{1}{\sigma^3}\sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <p>Factor out $\frac{1}{\sigma}$:</p>
+                
+                <div class="equation">
+
+                    $$\frac{\partial \ell}{\partial \sigma} = \frac{1}{\sigma}\left[-n + \frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2\right]$$
+                </div>
+                
+                <p>Set equal to zero:</p>
+                
+                <div class="equation">
+
+                    $$-n + \frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2 = 0$$
+                </div>
+                
+                <p>Solving for $\sigma^2$:</p>
+                
+                <div class="equation">
+
+                    $$n = \frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2$$
+
+                    $$n\sigma^2 = \sum_{i=1}^{n}(x_i - \mu)^2$$
+                </div>
+                
+                <div class="formula-box">
+                    <h4>MLE Estimate for Variance:</h4>
+                    <div class="equation">
+
+                        $$\hat{\sigma}^2_{MLE} = \frac{1}{n}\sum_{i=1}^{n}(x_i - \hat{\mu})^2$$
+                    </div>
+                    <p style="text-align: center; margin-top: 10px;">
+                        <strong>This is the sample variance!</strong>
+                    </p>
+                </div>
+                
+                <div class="note">
+                    <strong>Note:</strong> We use $\hat{\mu}$ in the variance formula because we've already estimated the mean from the data. In practice, we compute the mean first, then use it to compute the variance.
+                </div>
+                
+                <h4>Summary of MLE for Gaussian</h4>
+                
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>MLE Estimate</th>
+                        <th>Interpretation</th>
+                    </tr>
+                    <tr>
+                        <td>Mean ($\mu$)</td>
+                        <td>$\hat{\mu}_{MLE} = \frac{1}{n}\sum_{i=1}^{n}x_i$</td>
+                        <td>Average of all data points</td>
+                    </tr>
+                    <tr>
+                        <td>Variance ($\sigma^2$)</td>
+                        <td>$\hat{\sigma}^2_{MLE} = \frac{1}{n}\sum_{i=1}^{n}(x_i - \hat{\mu})^2$</td>
+                        <td>Average squared deviation from mean</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    The professor emphasizes that these are exactly the formulas we use in basic statistics for computing mean and variance. MLE provides the theoretical justification for why these simple calculations are actually optimal under the assumption of Gaussian data.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>MLE se parameters nikalne ke liye calculus use karte hain. Log-likelihood ka derivative le kar zero ke equal kar dete hain. Mean ke liye, result aata hai simple average - sabhi data points ko jod kar $n$ se divide kar do. Variance ke liye, har point ki mean se deviation nikal ke square kar lo, sab ko add kar ke $n$ se divide kar do. Yeh wahi formulas hain jo basic statistics mein use hote hain, but MLE mathematically prove karta hai ki yeh best estimates hain.</p>
+                </div>
+            </div>
+            
+            <div id="mle-shortcomings">
+                <h3>3.4 Shortcomings of MLE</h3>
+                
+                <p>Despite its popularity and simplicity, MLE has several important <strong>limitations</strong> that practitioners must be aware of:</p>
+                
+                <h4>1. Ignores Prior Knowledge ❌</h4>
+                
+                <p>MLE only maximizes the <strong>likelihood</strong> $P(\mathbf{x}|\theta)$, completely ignoring the <strong>prior</strong> $P(\theta)$.</p>
+                
+                <div class="warning">
+                    <strong>Problem:</strong> If we have prior knowledge or beliefs about the parameters (e.g., from previous experiments or domain expertise), MLE doesn't incorporate this information.
+                </div>
+                
+                <p><strong>Example:</strong> Suppose from previous studies, we know that a certain biological measurement typically has mean around 5.0. If we only have 10 new samples with mean 6.0, MLE would estimate $\mu = 6.0$ completely ignoring our prior knowledge of 5.0. A Bayesian approach would balance both.</p>
+                
+                <h4>2. Overfitting Risk ⚠️</h4>
+                
+                <p>MLE tends to <strong>overfit</strong>, especially with <strong>small datasets</strong>.</p>
+                
+                <div class="warning">
+                    <strong>Problem:</strong> MLE perfectly fits the training data but may not generalize well to new, unseen data.
+                </div>
+                
+                <p><strong>Example:</strong> Imagine you flip a coin 3 times and get 3 heads. MLE would estimate $P(\text{heads}) = 1.0$, suggesting the coin always lands heads! This is clearly overfitting to the limited data.</p>
+                
+                <p>With more data, MLE estimates become more reliable, but with small samples, they can be quite misleading.</p>
+                
+                <h4>3. Sensitive to Outliers 📊</h4>
+                
+                <p>MLE computes mean and variance using <strong>all data points equally</strong>, making it vulnerable to outliers.</p>
+                
+                <div class="warning">
+                    <strong>Problem:</strong> A few extreme outliers can significantly skew MLE estimates.
+                </div>
+                
+                <p><strong>Example:</strong> Consider data: [1, 2, 3, 3, 4, 4, 5, 100]. The MLE mean is $\hat{\mu} = 15.25$, heavily influenced by the outlier 100, even though most data is in the range 1-5.</p>
+                
+                <div class="professor-note">
+                    The professor notes that despite these shortcomings, MLE is still very widely used in practice because:
+                    <ul style="margin-left: 40px; margin-top: 10px;">
+                        <li>It's computationally simple and fast</li>
+                        <li>It works well with large, balanced datasets</li>
+                        <li>It has good theoretical properties (consistency, efficiency)</li>
+                        <li>It's the foundation for many machine learning algorithms</li>
+                    </ul>
+                    However, when you have small data, significant prior knowledge, or noisy data with outliers, alternative methods like MAP or full Bayesian estimation should be considered.
+                </div>
+                
+                <h4>Comparison Table</h4>
+                
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>MLE Behavior</th>
+                        <th>When Problematic</th>
+                    </tr>
+                    <tr>
+                        <td>Prior Knowledge</td>
+                        <td>Ignores completely</td>
+                        <td>When you have reliable domain knowledge</td>
+                    </tr>
+                    <tr>
+                        <td>Data Size</td>
+                        <td>Works best with large datasets</td>
+                        <td>Small sample sizes</td>
+                    </tr>
+                    <tr>
+                        <td>Outliers</td>
+                        <td>Treats all points equally</td>
+                        <td>Noisy data with extreme values</td>
+                    </tr>
+                    <tr>
+                        <td>Generalization</td>
+                        <td>Can overfit training data</td>
+                        <td>Limited training samples</td>
+                    </tr>
+                </table>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>MLE ki teen main problems hain. Pehla, yeh prior knowledge ko completely ignore kar deta hai - bas data ko dekh ke parameters estimate karta hai. Doosra, agar data kam hai toh overfitting ho sakti hai - training data ko perfectly fit kar lega but new data par kaam nahi karega. Teesra, outliers se bahut sensitive hai - ek do extreme values poori estimation ko bigad sakti hain. Lekin phir bhi MLE popular hai kyunki fast hai, simple hai, aur large balanced datasets ke saath acche se kaam karta hai.</p>
+                </div>
+            </div>
+            
+            <div id="map-bayesian">
+                <h3>3.5 MAP and Bayesian Estimation</h3>
+                
+                <p>To address the limitations of MLE, we have two alternative approaches that incorporate prior information:</p>
+                
+                <h4>Maximum A Posteriori (MAP) Estimation</h4>
+                
+                <p><strong class="key-term">MAP estimation</strong> combines the likelihood with prior beliefs about the parameters.</p>
+                
+                <div class="formula-box">
+                    <h4>MAP Objective:</h4>
+                    <div class="equation">
+
+                        $$\hat{\theta}_{MAP} = \arg\max_{\theta} P(\theta | \mathbf{X})$$
+                    </div>
+                    <p style="text-align: center;">where $\mathbf{X} = \{x_1, x_2, \ldots, x_n\}$ is the observed data</p>
+                </div>
+                
+                <p>Using Bayes' theorem:</p>
+                
+                <div class="equation">
+
+                    $$P(\theta | \mathbf{X}) = \frac{P(\mathbf{X} | \theta) \cdot P(\theta)}{P(\mathbf{X})}$$
+                </div>
+                
+                <p>Since $P(\mathbf{X})$ doesn't depend on $\theta$:</p>
+                
+                <div class="equation">
+
+                    $$\hat{\theta}_{MAP} = \arg\max_{\theta} [P(\mathbf{X} | \theta) \cdot P(\theta)]$$
+
+                    $$= \arg\max_{\theta} [\text{Likelihood} \times \text{Prior}]$$
+                </div>
+                
+                <p><strong>Key Difference from MLE:</strong></p>
+                <ul style="margin-left: 40px;">
+                    <li><strong>MLE:</strong> Maximizes only $P(\mathbf{X} | \theta)$ (likelihood)</li>
+                    <li><strong>MAP:</strong> Maximizes $P(\mathbf{X} | \theta) \cdot P(\theta)$ (likelihood × prior)</li>
+                </ul>
+                
+                <p><strong>Advantages of MAP:</strong></p>
+                <ul style="margin-left: 40px;">
+                    <li>✅ Incorporates prior domain knowledge</li>
+                    <li>✅ Reduces overfitting by regularizing estimates</li>
+                    <li>✅ Works better with small datasets</li>
+                    <li>✅ Still provides point estimates (like MLE)</li>
+                </ul>
+                
+                <div class="note">
+                    <strong>Special Case:</strong> When the prior $P(\theta)$ is uniform (all parameter values equally likely), MAP estimation reduces to MLE. This is because the uniform prior is constant and doesn't affect the location of the maximum.
+                </div>
+                
+                <h4>Bayesian Estimation (Full Posterior)</h4>
+                
+                <p><strong class="key-term">Bayesian estimation</strong> goes beyond finding a single best estimate. Instead, it considers the <strong>entire posterior distribution</strong> of parameters.</p>
+                
+                <div class="formula-box">
+                    <h4>Bayesian Approach:</h4>
+                    <p style="text-align: center;">Instead of finding $\hat{\theta}$, compute the full distribution:</p>
+                    <div class="equation">
+
+                        $$P(\theta | \mathbf{X}) = \frac{P(\mathbf{X} | \theta) \cdot P(\theta)}{P(\mathbf{X})}$$
+                    </div>
+                </div>
+                
+                <p><strong>Key Features:</strong></p>
+                
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>Full Distribution</td>
+                        <td>Provides complete information about parameter uncertainty, not just a single point estimate</td>
+                    </tr>
+                    <tr>
+                        <td>Uncertainty Quantification</td>
+                        <td>Tells you how confident you should be in your estimates through the spread of the posterior</td>
+                    </tr>
+                    <tr>
+                        <td>Sequential Updates</td>
+                        <td>As more data arrives, you can update your beliefs systematically using the previous posterior as the new prior</td>
+                    </tr>
+                    <tr>
+                        <td>Predictions</td>
+                        <td>Make predictions by integrating over all possible parameter values, weighted by their posterior probability</td>
+                    </tr>
+                </table>
+                
+                <p><strong>Example of Sequential Updating:</strong></p>
+                
+                <div class="equation">
+
+                    $$\text{Prior} \xrightarrow{\text{Data Batch 1}} \text{Posterior}_1 \xrightarrow{\text{becomes Prior}} \xrightarrow{\text{Data Batch 2}} \text{Posterior}_2$$
+                </div>
+                
+                <p>This allows beliefs to evolve naturally as evidence accumulates.</p>
+                
+                <h4>Comparison of All Three Methods</h4>
+                
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>What It Maximizes/Computes</th>
+                        <th>Output</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>MLE</strong></td>
+                        <td>$\max P(\mathbf{X} | \theta)$<br>(Likelihood only)</td>
+                        <td>Point estimate $\hat{\theta}$</td>
+                        <td>Large datasets, no prior knowledge, speed is important</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MAP</strong></td>
+                        <td>$\max P(\theta | \mathbf{X})$<br>$= \max P(\mathbf{X} | \theta) \cdot P(\theta)$</td>
+                        <td>Point estimate $\hat{\theta}$</td>
+                        <td>Small datasets, some prior knowledge, need single estimate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bayesian</strong></td>
+                        <td>Full distribution $P(\theta | \mathbf{X})$</td>
+                        <td>Entire distribution</td>
+                        <td>Need uncertainty quantification, sequential learning, comprehensive analysis</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    The professor notes that in the upcoming lectures, they'll see practical examples of these methods, particularly in the context of Naive Bayes classification for spam detection. Understanding these parameter estimation techniques is crucial for implementing real-world pattern recognition systems.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>🇮🇳 Hinglish Summary</h4>
+                    <p>MLE ki problems solve karne ke liye do alternatives hain. MAP estimation mein hum likelihood aur prior dono ko multiply kar ke maximize karte hain - isse prior knowledge bhi consider hota hai aur overfitting kam hoti hai. Full Bayesian estimation mein sirf ek point estimate nahi nikalte, balki poora distribution nikaalte hain - isse pata chalta hai kitna confidence hai estimate mein. Bayesian approach mein jaise jaise naya data aata hai, beliefs ko systematically update kar sakte hain. Chote datasets aur uncertainty quantification ke liye Bayesian methods best hain.</p>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Parameter Estimation</h4>
+                <ul>
+                    <li>Parameter estimation is the process of determining distribution parameters (mean, variance, etc.) from observed data samples</li>
+                    <li>MLE finds parameters that maximize the likelihood of observing the data: $\hat{\theta}_{MLE} = \arg\max P(\mathbf{X}|\theta)$</li>
+                    <li>For Gaussian distribution, MLE gives simple formulas: sample mean for $\mu$ and sample variance for $\sigma^2$</li>
+                    <li>MLE has three main shortcomings: ignores prior knowledge, risk of overfitting with small data, and sensitivity to outliers</li>
+                    <li>MAP estimation combines likelihood with prior: $\hat{\theta}_{MAP} = \arg\max [P(\mathbf{X}|\theta) \cdot P(\theta)]$</li>
+                    <li>Full Bayesian estimation computes the entire posterior distribution, providing uncertainty quantification and enabling sequential updates</li>
+                    <li>Choice of method depends on dataset size, availability of prior knowledge, and whether point estimates or full distributions are needed</li>
+                </ul>
+            </div>
+            
+            <div class="practice-questions">
+                <h4>📝 Practice Questions - Parameter Estimation</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Given data samples [2, 4, 6, 8, 10], compute the MLE estimates for mean and variance assuming Gaussian distribution.
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        <strong>Mean:</strong> $\hat{\mu}_{MLE} = \frac{1}{5}(2 + 4 + 6 + 8 + 10) = \frac{30}{5} = 6$<br><br>
+                        <strong>Variance:</strong> $\hat{\sigma}^2_{MLE} = \frac{1}{5}[(2-6)^2 + (4-6)^2 + (6-6)^2 + (8-6)^2 + (10-6)^2]$<br>
+                        $= \frac{1}{5}[16 + 4 + 0 + 4 + 16] = \frac{40}{5} = 8$<br><br>
+                        Therefore: $\hat{\mu}_{MLE} = 6$ and $\hat{\sigma}^2_{MLE} = 8$
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why do we take the logarithm of the likelihood function in MLE? Give at least two reasons.
+                    <div class="answer">
+                        <strong>Answer:</strong> We take the logarithm for several important reasons:<br>
+                        1. <strong>Computational convenience:</strong> Converts products into sums, which are easier to compute and less prone to numerical underflow<br>
+                        2. <strong>Simplifies derivatives:</strong> Logarithm of exponential functions (like in Gaussian) cancels out, making calculus much simpler<br>
+                        3. <strong>Monotonic transformation:</strong> Since log is monotonically increasing, maximizing log-likelihood is equivalent to maximizing likelihood<br>
+                        4. <strong>Numerical stability:</strong> Probabilities can be very small; their logs are more numerically stable in computers
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> You flip a coin 5 times and observe 5 heads. Compare what MLE and MAP would estimate for $P(\text{heads})$, assuming a prior belief that the coin is fair.
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        <strong>MLE estimate:</strong> $\hat{p}_{MLE} = \frac{5}{5} = 1.0$ (100% heads - clearly overfitting!)<br><br>
+                        <strong>MAP estimate:</strong> Would incorporate the prior belief that $p \approx 0.5$. Using a Beta(2,2) prior (centered at 0.5), the MAP estimate would be:
+                        $\hat{p}_{MAP} = \frac{5 + 2 - 1}{5 + 2 + 2 - 2} = \frac{6}{7} \approx 0.857$<br><br>
+                        MAP's estimate is more reasonable - it acknowledges the observed data (more heads) but doesn't jump to the extreme conclusion that the coin always lands heads. This demonstrates how priors help with small sample sizes.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4:</strong> What is the main advantage of full Bayesian estimation over MAP estimation?
+                    <div class="answer">
+                        <strong>Answer:</strong> The main advantage of full Bayesian estimation is that it provides the <strong>entire posterior distribution</strong> $P(\theta|\mathbf{X})$ rather than just a single point estimate. This offers several benefits:<br>
+                        • <strong>Uncertainty quantification:</strong> You know how confident you should be in your estimates<br>
+                        • <strong>Rich information:</strong> Can compute means, medians, confidence intervals, and other statistics from the distribution<br>
+                        • <strong>Better predictions:</strong> Can integrate over all possible parameter values weighted by their probability<br>
+                        • <strong>Risk assessment:</strong> Can evaluate worst-case and best-case scenarios<br>
+                        MAP only gives you the most probable parameter value, losing all information about uncertainty and alternative possibilities.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="summary">
+            <h2>4. Summary and Key Takeaways</h2>
+            
+            <p>In this comprehensive lecture, we covered two fundamental topics in pattern recognition that form the backbone of many machine learning algorithms:</p>
+            
+            <h3>Part 1: Discriminant Functions for Normal Density</h3>
+            
+            <p>We learned how to define and use <strong>discriminant functions</strong> when data follows Gaussian distributions:</p>
+            
+            <ul style="margin-left: 40px;">
+                <li>Discriminant functions provide a practical framework for pattern classification</li>
+                <li>In Bayesian Decision Theory, we use posterior probabilities as discriminant functions</li>
+                <li>For Gaussian distributions, the discriminant function has a specific mathematical form involving the covariance matrix, quadratic terms, and prior probabilities</li>
+                <li>Decision boundaries occur where discriminant functions are equal</li>
+                <li>Special case: When covariance matrices are equal and spherical ($\sigma^2\mathbf{I}$) with equal priors, the decision boundary is a linear hyperplane at the midpoint between class means</li>
+                <li>Unequal priors shift the boundary toward the less probable class</li>
+                <li>Different covariance matrices lead to quadratic (curved) decision boundaries</li>
+            </ul>
+            
+            <h3>Part 2: Parameter Estimation</h3>
+            
+            <p>We explored techniques for estimating distribution parameters from observed data:</p>
+            
+            <ul style="margin-left: 40px;">
+                <li><strong>Maximum Likelihood Estimation (MLE):</strong> Finds parameters that maximize the probability of observing the data
+                    <ul style="margin-left: 30px;">
+                        <li>For Gaussian: $\hat{\mu} = \frac{1}{n}\sum x_i$ (sample mean)</li>
+                        <li>$\hat{\sigma}^2 = \frac{1}{n}\sum(x_i - \hat{\mu})^2$ (sample variance)</li>
+                        <li>Simple and fast, but has limitations</li>
+                    </ul>
+                </li>
+                <li><strong>MLE Shortcomings:</strong> Ignores prior knowledge, risk of overfitting with small data, sensitive to outliers</li>
+                <li><strong>MAP Estimation:</strong> Combines likelihood with prior beliefs, reducing overfitting</li>
+                <li><strong>Full Bayesian Estimation:</strong> Computes entire posterior distribution, providing uncertainty quantification and sequential learning capabilities</li>
+            </ul>
+            
+            <div class="professor-note">
+                The professor concludes by mentioning that in the next lecture, they will explore <strong>Naive Bayes classification</strong>, a practical application of these concepts. Naive Bayes uses parameter estimation techniques to build classifiers for real-world problems like spam detection (spam vs ham classification). The independence assumption in Naive Bayes, combined with the parameter estimation methods we've learned, creates a powerful yet simple classification algorithm.
+            </div>
+            
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Complete Lecture Summary (Hinglish)</h4>
+                <p>Is lecture mein humne do main topics cover kiye. Pehla tha discriminant functions for normal density - jahan humne dekha ki jab data Gaussian distribution follow karta hai toh classification kaise karte hain. Simple case mein jab dono classes ka covariance same ho aur priors bhi equal hon, toh decision boundary straight line hoti hai exactly middle mein. Priors different hone par yeh shift ho jati hai.</p>
+                
+                <p>Doosra major topic tha parameter estimation - yeh bahut important hai kyunki real-world mein humein exact parameters pata nahi hote, sirf data milta hai. MLE sabse popular method hai jahan hum likelihood ko maximize karte hain. Gaussian ke liye MLE simple formulas deta hai - mean ke liye average aur variance ke liye squared deviations ka average. But MLE ki kuch problems hain - prior knowledge ignore karta hai, small data par overfit kar sakta hai, aur outliers se sensitive hai.</p>
+                
+                <p>In problems ko solve karne ke liye MAP aur Bayesian estimation hain. MAP mein prior bhi consider hota hai, aur full Bayesian approach mein poora distribution nikalte hain jo uncertainty ke baare mein complete information deta hai. Next lecture mein Naive Bayes classification padhenge jo in concepts ka practical application hai.</p>
+            </div>
+        </section>
+        
+        <section id="mind-map">
+            <div class="mind-map">
+                <h3>📊 Comprehensive Mind Map: Lecture 5 Overview</h3>
+                
+                <div class="mind-map-content">
+                    <div class="main-topic">
+                        Pattern Recognition Lecture 5:<br>
+                        Discriminant Functions & Parameter Estimation
+                    </div>
+                    
+                    <div class="subtopics">
+                        <div class="subtopic-card">
+                            <h4>🎯 Discriminant Functions</h4>
+                            <ul>
+                                <li><strong>Definition:</strong> Functions that help classify data by comparing values</li>
+                                <li><strong>Rule:</strong> Assign to class with max $g_i(\mathbf{x})$</li>
+                                <li><strong>Decision Boundary:</strong> Where $g_i(\mathbf{x}) = g_j(\mathbf{x})$</li>
+                                <li><strong>Bayesian Form:</strong> $g_i(\mathbf{x}) = \ln P(\mathbf{x}|\omega_i) + \ln P(\omega_i)$</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>📈 Normal Density Case</h4>
+                            <ul>
+                                <li><strong>Gaussian Formula:</strong> Multivariate normal with $\boldsymbol{\mu}_i$ and $\Sigma_i$</li>
+                                <li><strong>Discriminant:</strong> $-\frac{1}{2}\ln|\Sigma_i| - \frac{1}{2}(\mathbf{x}-\boldsymbol{\mu}_i)^T\Sigma_i^{-1}(\mathbf{x}-\boldsymbol{\mu}_i) + \ln P(\omega_i)$</li>
+                                <li><strong>Special Cases:</strong>
+                                    <ul>
+                                        <li>Equal $\Sigma$, equal priors → Linear boundary at midpoint</li>
+                                        <li>Unequal priors → Shifted linear boundary</li>
+                                        <li>Different $\Sigma$ → Quadratic boundary</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>🔢 Parameter Estimation Problem</h4>
+                            <ul>
+                                <li><strong>Challenge:</strong> Given data, find distribution parameters</li>
+                                <li><strong>For Gaussian:</strong> Need to estimate $\mu$ and $\sigma^2$ (or $\Sigma$)</li>
+                                <li><strong>Prior $P(\omega_i)$:</strong> Easy - count class frequencies</li>
+                                <li><strong>Likelihood $P(\mathbf{x}|\omega_i)$:</strong> Hard - need parameter estimation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>📊 Maximum Likelihood (MLE)</h4>
+                            <ul>
+                                <li><strong>Principle:</strong> Choose $\theta$ that makes observed data most probable</li>
+                                <li><strong>Method:</strong> Maximize $L(\theta) = \prod P(x_i|\theta)$ or $\ell(\theta) = \sum \ln P(x_i|\theta)$</li>
+                                <li><strong>For Gaussian:</strong>
+                                    <ul>
+                                        <li>$\hat{\mu}_{MLE} = \frac{1}{n}\sum x_i$ (sample mean)</li>
+                                        <li>$\hat{\sigma}^2_{MLE} = \frac{1}{n}\sum(x_i-\hat{\mu})^2$ (sample variance)</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Advantages:</strong> Simple, fast, works well with large data</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>⚠️ MLE Limitations</h4>
+                            <ul>
+                                <li><strong>Ignores Priors:</strong> No incorporation of prior knowledge</li>
+                                <li><strong>Overfitting:</strong> Can overfit with small datasets</li>
+                                <li><strong>Outlier Sensitivity:</strong> Extreme values heavily influence estimates</li>
+                                <li><strong>Solution:</strong> Use MAP or full Bayesian estimation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>🎯 Alternative Methods</h4>
+                            <ul>
+                                <li><strong>MAP Estimation:</strong>
+                                    <ul>
+                                        <li>Maximizes $P(\theta|\mathbf{X}) \propto P(\mathbf{X}|\theta) \cdot P(\theta)$</li>
+                                        <li>Includes prior knowledge</li>
+                                        <li>Reduces overfitting</li>
+                                        <li>Still gives point estimate</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Bayesian Estimation:</strong>
+                                    <ul>
+                                        <li>Computes full $P(\theta|\mathbf{X})$ distribution</li>
+                                        <li>Provides uncertainty quantification</li>
+                                        <li>Enables sequential updates</li>
+                                        <li>Best for comprehensive analysis</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>🔗 Connections & Applications</h4>
+                            <ul>
+                                <li><strong>Bayesian Decision Theory:</strong> Foundation for all methods</li>
+                                <li><strong>Real-World Use:</strong> Spam detection, medical diagnosis, recommendation systems</li>
+                                <li><strong>Next Topic:</strong> Naive Bayes classification (applies these concepts)</li>
+                                <li><strong>Key Textbook:</strong> Duda, Hart, and Stork - Chapter 2</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="subtopic-card">
+                            <h4>💡 Key Insights</h4>
+                            <ul>
+                                <li>Discriminant functions simplify classification decisions</li>
+                                <li>Gaussian assumption enables analytical solutions</li>
+                                <li>Decision boundary shape depends on covariance structure</li>
+                                <li>MLE provides intuitive estimates (mean & variance)</li>
+                                <li>Choice of method depends on data size and prior knowledge</li>
+                                <li>Trade-off between simplicity (MLE) and robustness (Bayesian)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; text-align: center;">
+            
+          <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        
+            <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;">
+                📖 Recommended Reading: Duda, Hart, and Stork - Pattern Classification, Chapter 2
+            </p>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                🔜 Next Lecture: Naive Bayes Classification & Spam Detection
+            </p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

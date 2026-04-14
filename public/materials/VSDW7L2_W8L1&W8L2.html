@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Plotly - Interactive Plots (Part 1)</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        /* ==================== ROOT VARIABLES ==================== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --code-bg: #282c34;
+            --border-color: #ddd;
+            --highlight-bg: #fff3cd;
+            --success-color: #27ae60;
+        }
+
+        /* ==================== GENERAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ==================== HEADER ==================== */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: white;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .toc h2 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .toc ul li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+        }
+
+        .toc ul ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        .toc a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1.05em;
+        }
+
+        .toc a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* ==================== SECTION STYLES ==================== */
+        section {
+            background: white;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        /* ==================== KEY TERMS ==================== */
+        strong {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .key-term {
+            background-color: var(--highlight-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* ==================== CODE BLOCKS ==================== */
+        pre {
+            background-color: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+        }
+
+        /* ==================== PROFESSOR NOTES ==================== */
+        .professor-note {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #1976d2;
+            font-style: normal;
+        }
+
+        /* ==================== HINGLISH SUMMARY ==================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #fff7e6, #ffe0b2);
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            box-shadow: 0 3px 8px rgba(255, 152, 0, 0.2);
+        }
+
+        .hinglish-summary h4 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .hinglish-summary:before {
+            content: "🇮🇳";
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        /* ==================== DIAGRAM PLACEHOLDER ==================== */
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed var(--secondary-color);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: #e8f5e9;
+            border-left: 5px solid var(--success-color);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .key-takeaways h4 {
+            color: var(--success-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-questions {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .practice-questions h4 {
+            color: #7b1fa2;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .question strong {
+            color: #7b1fa2;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .answer {
+            background: #fafafa;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .answer:before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        /* ==================== MIND MAP ==================== */
+        .mind-map {
+            background: white;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .mind-map h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .branch {
+            background: #f8f9fa;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .branch h4 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .branch li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .branch li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: white;
+            }
+
+            section {
+                page-break-inside: avoid;
+                box-shadow: none;
+            }
+
+            .toc a {
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== HEADER SECTION ==================== -->
+    <header>
+        <h1>📊 Introduction to Plotly - Interactive Plots (Part 1)</h1>
+        <p>Visual Data Science Workshop | Week 7-8 Lectures</p>
+        <p><em>Creating Dynamic and Interactive Visualizations with Python</em></p>
+    </header>
+
+    <!-- ==================== TABLE OF CONTENTS ==================== -->
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#introduction">1. Introduction to Plotly</a></li>
+            <li><a href="#basic-interactive">2. Basic Interactive Plot using Plotly</a>
+                <ul>
+                    <li><a href="#basic-setup">2.1 Library Setup and Data Creation</a></li>
+                    <li><a href="#basic-plot">2.2 Creating Your First Interactive Plot</a></li>
+                </ul>
+            </li>
+            <li><a href="#multiple-lines">3. Multiple Lines in One Plot</a>
+                <ul>
+                    <li><a href="#multiple-data">3.1 Creating Multiple Datasets</a></li>
+                    <li><a href="#multiple-visualization">3.2 Visualizing Multiple Functions</a></li>
+                    <li><a href="#multiple-interactions">3.3 Interactive Features</a></li>
+                </ul>
+            </li>
+            <li><a href="#interactive-subplots">4. Interactive Subplots using make_subplots</a>
+                <ul>
+                    <li><a href="#subplot-grid">4.1 Creating Subplot Grids</a></li>
+                    <li><a href="#subplot-traces">4.2 Adding Multiple Traces</a></li>
+                </ul>
+            </li>
+            <li><a href="#mixing-charts">5. Mixing Chart Types in Subplots</a>
+                <ul>
+                    <li><a href="#graph-objects">5.1 Using Graph Objects</a></li>
+                    <li><a href="#combining-charts">5.2 Combining Line and Bar Charts</a></li>
+                </ul>
+            </li>
+            <li><a href="#scatter-plot">6. Interactive Scatter Plot (Hover, Zoom, Pan)</a>
+                <ul>
+                    <li><a href="#iris-dataset">6.1 Working with Iris Dataset</a></li>
+                    <li><a href="#multi-dimensional">6.2 Multi-dimensional Data Visualization</a></li>
+                </ul>
+            </li>
+            <li><a href="#bar-chart">7. Interactive Bar Chart with Hover Labels</a>
+                <ul>
+                    <li><a href="#custom-data">7.1 Creating Custom Data</a></li>
+                    <li><a href="#customizing-bars">7.2 Customizing Bar Chart Appearance</a></li>
+                </ul>
+            </li>
+            <li><a href="#line-chart-slider">8. Interactive Line Chart with Range Slider</a>
+                <ul>
+                    <li><a href="#time-series">8.1 Generating Time Series Data</a></li>
+                    <li><a href="#range-slider">8.2 Implementing Range Slider</a></li>
+                </ul>
+            </li>
+            <li><a href="#histogram">9. Interactive Histogram</a>
+                <ul>
+                    <li><a href="#random-data">9.1 Generating Random Data</a></li>
+                    <li><a href="#color-customization">9.2 Color Customization with Hexadecimal</a></li>
+                </ul>
+            </li>
+            <li><a href="#mind-map">10. Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+
+    <!-- ==================== SECTION 1: INTRODUCTION ==================== -->
+    <section id="introduction">
+        <h2>1. Introduction to Plotly</h2>
+        
+        <p><strong>Plotly</strong> is a powerful Python library for creating <strong>interactive visualizations</strong>. Unlike static plots created with Matplotlib or Seaborn, Plotly charts allow users to interact with the data through features like <strong>hovering</strong>, <strong>zooming</strong>, <strong>panning</strong>, and <strong>filtering</strong>.</p>
+
+        <p>The key advantage of Plotly is that it generates web-based visualizations that can be embedded in web applications, dashboards, or Jupyter notebooks. This makes it ideal for data exploration and presentation where interactivity enhances understanding.</p>
+
+        <div class="professor-note">
+            Interactive plots allow you to take your mouse over the graph and it shows you tooltips with all the data. This makes data exploration much more intuitive and user-friendly.
+        </div>
+
+        <h3>Why Use Plotly?</h3>
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>Description</th>
+                <th>Benefit</th>
+            </tr>
+            <tr>
+                <td><strong>Interactivity</strong></td>
+                <td>Hover tooltips, zoom, pan, selection</td>
+                <td>Better data exploration and understanding</td>
+            </tr>
+            <tr>
+                <td><strong>Web-Based</strong></td>
+                <td>HTML/JavaScript rendering</td>
+                <td>Easy embedding in websites and dashboards</td>
+            </tr>
+            <tr>
+                <td><strong>Express API</strong></td>
+                <td>High-level interface for quick plots</td>
+                <td>Faster development, less code</td>
+            </tr>
+            <tr>
+                <td><strong>Graph Objects</strong></td>
+                <td>Low-level control for customization</td>
+                <td>Fine-grained control over every element</td>
+            </tr>
+            <tr>
+                <td><strong>Multiple Chart Types</strong></td>
+                <td>Line, bar, scatter, histogram, etc.</td>
+                <td>Versatile visualization options</td>
+            </tr>
+        </table>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Plotly ek powerful library hai jo interactive graphs banane ke liye use hoti hai. Isme aap mouse hover karke data dekh sakte ho, zoom in-out kar sakte ho, aur bahut saare interactive features milte hain. Ye web-based hai toh aap isko easily websites aur dashboards mein use kar sakte ho. Plotly Express simple hai quick plots ke liye, jabki Graph Objects se aap detailed customization kar sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Plotly creates <strong>interactive, web-based visualizations</strong> with hover tooltips, zooming, and panning capabilities</li>
+                <li><strong>Plotly Express (px)</strong> provides a high-level, easy-to-use API for quick plotting</li>
+                <li><strong>Graph Objects (go)</strong> offers low-level control for advanced customization</li>
+                <li>Interactive plots enhance <strong>data exploration and presentation</strong></li>
+                <li>All Plotly charts are rendered as <strong>HTML/JavaScript</strong>, making them web-ready</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: What is the main advantage of Plotly over static plotting libraries like Matplotlib?</strong>
+                <div class="answer">
+                    Plotly creates interactive visualizations with features like hover tooltips, zoom, pan, and selection, making data exploration more intuitive and user-friendly compared to static plots.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What are the two main APIs provided by Plotly?</strong>
+                <div class="answer">
+                    Plotly Express (px) for high-level, quick plotting, and Graph Objects (go) for detailed customization and low-level control over visualization elements.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: Why are Plotly visualizations called "web-based"?</strong>
+                <div class="answer">
+                    Plotly renders charts as HTML/JavaScript, which makes them interactive in web browsers and easy to embed in websites, dashboards, and web applications.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 2: BASIC INTERACTIVE PLOT ==================== -->
+    <section id="basic-interactive">
+        <h2>2. Basic Interactive Plot using Plotly</h2>
+
+        <h3 id="basic-setup">2.1 Library Setup and Data Creation</h3>
+
+        <p>To get started with Plotly, we need to import three essential libraries:</p>
+
+        <ul>
+            <li><strong>plotly.express</strong> - High-level plotting interface</li>
+            <li><strong>pandas</strong> - Data manipulation and DataFrame creation</li>
+            <li><strong>numpy</strong> - Numerical computations and array operations</li>
+        </ul>
+
+<pre><code>import plotly.express as px
+import pandas as pd
+import numpy as np</code></pre>
+
+        <div class="professor-note">
+            We are using Plotly's express method for creating interactive plots. It's important to store your data in DataFrame format as it's quite efficient for handling multiple datasets.
+        </div>
+
+        <p>Now let's create our data. We'll generate a <strong>sine wave</strong> for demonstration:</p>
+
+<pre><code># Create data
+x = np.linspace(0, 10, 100)  # 100 points from 0 to 10
+y = np.sin(x)                 # Calculate sine values
+
+# Store in DataFrame
+data = pd.DataFrame({'x': x, 'y': y})</code></pre>
+
+        <p>Here's what each line does:</p>
+        <ul>
+            <li><code>np.linspace(0, 10, 100)</code> - Creates 100 equally spaced values between 0 and 10</li>
+            <li><code>np.sin(x)</code> - Calculates the sine value for each x point</li>
+            <li><code>pd.DataFrame()</code> - Converts our data into a structured DataFrame with labeled columns</li>
+        </ul>
+
+        <div class="professor-note">
+            We have created 100 values between 0 and 10 for x-axis, and for each x value, we calculate the equivalent sine value. We capture both datasets into a single DataFrame structure, which is an inbuilt Python data structure.
+        </div>
+
+        <h3 id="basic-plot">2.2 Creating Your First Interactive Plot</h3>
+
+        <p>Now we can create our first <strong>interactive line plot</strong>:</p>
+
+<pre><code># Interactive line plot
+fig = px.line(data, x='x', y='y', title='Interactive Sine Wave')
+fig.show()</code></pre>
+
+        <p>Let's break down the <code>px.line()</code> function parameters:</p>
+
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>data</code></td>
+                <td>DataFrame object</td>
+                <td>Source of data for the plot</td>
+            </tr>
+            <tr>
+                <td><code>x='x'</code></td>
+                <td>Column name</td>
+                <td>Specifies which column to use for x-axis</td>
+            </tr>
+            <tr>
+                <td><code>y='y'</code></td>
+                <td>Column name</td>
+                <td>Specifies which column to use for y-axis</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>String</td>
+                <td>Sets the title of the plot</td>
+            </tr>
+        </table>
+
+        <p>The <code>fig.show()</code> method renders the plot in your browser or Jupyter notebook.</p>
+
+        <h3>Interactive Features</h3>
+
+        <p>Once the plot is displayed, you can interact with it in several ways:</p>
+
+        <ul>
+            <li><strong>Hover</strong> - Move your mouse over the line to see exact x and y values in a tooltip</li>
+            <li><strong>Zoom In</strong> - Click and drag to select an area to zoom into</li>
+            <li><strong>Zoom Out</strong> - Double-click anywhere to reset the zoom</li>
+            <li><strong>Pan</strong> - Click the pan tool in the toolbar and drag to move around</li>
+            <li><strong>Auto Scale</strong> - Automatically adjusts the axes to fit all data</li>
+            <li><strong>Reset Axes</strong> - Returns to the original view</li>
+        </ul>
+
+        <div class="professor-note">
+            If you take the mouse over any particular portion of the graph, that portion will get highlighted. With double click, you can go back to the original view. Creating this highly interactive graph is not that difficult with Plotly's inbuilt library support.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Pehle humne teen libraries import ki - plotly.express, pandas aur numpy. Phir humne data create kiya using linspace function jo 0 se 10 tak 100 points generate karta hai. Iske baad sine values calculate ki aur sab kuch DataFrame mein store kiya. Finally, px.line() function use karke interactive plot bana diya jisme x-axis, y-axis aur title specify kiya. Plot show karne ke baad aap mouse hover, zoom in-out, aur pan kar sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Import <strong>plotly.express, pandas, and numpy</strong> to get started</li>
+                <li>Use <strong>np.linspace()</strong> to create evenly spaced data points</li>
+                <li>Store data in <strong>pandas DataFrame</strong> for efficient handling</li>
+                <li><strong>px.line()</strong> creates interactive line plots with minimal code</li>
+                <li>Interactive features include <strong>hover tooltips, zoom, pan, and auto-scale</strong></li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Write code to create an interactive plot of a cosine wave from 0 to 2π.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+import pandas as pd
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.cos(x)
+data = pd.DataFrame({'x': x, 'y': y})
+fig = px.line(data, x='x', y='y', title='Cosine Wave')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What does np.linspace(0, 10, 100) do?</strong>
+                <div class="answer">
+                    It creates an array of 100 equally spaced values starting from 0 and ending at 10, which provides smooth continuous data for plotting.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How do you reset the zoom on a Plotly chart?</strong>
+                <div class="answer">
+                    Double-click anywhere on the plot to reset the zoom and return to the original view.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: Why do we store data in a pandas DataFrame before plotting?</strong>
+                <div class="answer">
+                    DataFrame provides an efficient, structured way to store multiple datasets with labeled columns, making it easier to reference and manipulate data for plotting.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 3: MULTIPLE LINES ==================== -->
+    <section id="multiple-lines">
+        <h2>3. Multiple Lines in One Plot</h2>
+
+        <p>Often in data analysis, we need to <strong>compare multiple trends</strong> or datasets simultaneously. Plotly makes it easy to plot multiple lines on the same graph, allowing for direct visual comparison.</p>
+
+        <h3 id="multiple-data">3.1 Creating Multiple Datasets</h3>
+
+        <p>To plot multiple lines, we need to create a DataFrame with multiple y-columns:</p>
+
+<pre><code>x = np.linspace(0, 10, 100)
+df = pd.DataFrame({
+    'x': x,
+    'sin(x)': np.sin(x),
+    'cos(x)': np.cos(x)
+})</code></pre>
+
+        <div class="professor-note">
+            We are creating two data sets - sin(x) and cos(x). Both functions share the same x-axis. If the range or domain is different between features, then obviously you cannot combine the data on the same plot.
+        </div>
+
+        <p>In this DataFrame:</p>
+        <ul>
+            <li><strong>'x'</strong> - Common x-axis values (0 to 10)</li>
+            <li><strong>'sin(x)'</strong> - First dataset (sine function values)</li>
+            <li><strong>'cos(x)'</strong> - Second dataset (cosine function values)</li>
+        </ul>
+
+        <h3 id="multiple-visualization">3.2 Visualizing Multiple Functions</h3>
+
+        <p>Now we can plot both functions on the same graph:</p>
+
+<pre><code>fig = px.line(df, x='x', y=['sin(x)', 'cos(x)'], 
+              title='Sine and Cosine Waves')
+fig.show()</code></pre>
+
+        <p>Notice that the <code>y</code> parameter now accepts a <strong>list of column names</strong>: <code>['sin(x)', 'cos(x)']</code>. This tells Plotly to plot both columns as separate lines on the same graph.</p>
+
+        <div class="professor-note">
+            We are using five columns out of the dataset - sepal length and sepal width for x and y coordinates, petal length for size of the point, species for color, and petal width for hover information.
+        </div>
+
+        <h3 id="multiple-interactions">3.3 Interactive Features</h3>
+
+        <p>When you display the plot, you'll notice several powerful interactive features:</p>
+
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>How to Use</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><strong>Color Coding</strong></td>
+                <td>Automatic assignment</td>
+                <td>Each line gets a distinct color for easy identification</td>
+            </tr>
+            <tr>
+                <td><strong>Legend</strong></td>
+                <td>Click on legend items</td>
+                <td>Show/hide specific lines to focus on particular data</td>
+            </tr>
+            <tr>
+                <td><strong>Hover Tooltips</strong></td>
+                <td>Move mouse over lines</td>
+                <td>See exact values for all lines at that x-position</td>
+            </tr>
+            <tr>
+                <td><strong>Zoom</strong></td>
+                <td>Click and drag</td>
+                <td>Focus on specific regions of interest</td>
+            </tr>
+            <tr>
+                <td><strong>Pan</strong></td>
+                <td>Use pan tool</td>
+                <td>Navigate around the zoomed view</td>
+            </tr>
+            <tr>
+                <td><strong>Reset</strong></td>
+                <td>Double-click</td>
+                <td>Return to original view</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            You can zoom in by double clicking, zoom out, see the complete pan. You can select to show particular cosine or sine wave. If you zoom in, auto scale takes you out. You can reset the axis and hide particular labels or show them.
+        </div>
+
+        <h3>When to Use Multiple Lines</h3>
+
+        <p>Multiple line plots are ideal for:</p>
+        <ul>
+            <li><strong>Trend Comparison</strong> - Comparing how different variables change over time</li>
+            <li><strong>Mathematical Functions</strong> - Visualizing multiple functions simultaneously</li>
+            <li><strong>Performance Metrics</strong> - Comparing KPIs or performance indicators</li>
+            <li><strong>Scientific Data</strong> - Comparing experimental results or measurements</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Multiple lines plot mein hum ek hi graph par do ya zyada lines dikha sakte hain. Pehle DataFrame mein multiple columns banate hain - ek x-axis ke liye aur baaki y-values ke liye jaise sin(x) aur cos(x). Phir px.line() mein y parameter mein list pass karte hain jisme saari column names hoti hain. Plotly automatically har line ko alag color deta hai. Aap legend se particular line hide ya show kar sakte ho, zoom kar sakte ho, aur hover se exact values dekh sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Create a DataFrame with <strong>one x-column and multiple y-columns</strong> for multiple lines</li>
+                <li>Pass a <strong>list of column names</strong> to the y parameter: <code>y=['col1', 'col2']</code></li>
+                <li>Plotly <strong>automatically assigns different colors</strong> to each line</li>
+                <li>Use the <strong>legend to toggle visibility</strong> of individual lines</li>
+                <li>All lines must share the <strong>same x-axis scale</strong> for meaningful comparison</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Write code to plot three functions (sin, cos, and tan) on the same graph.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+import pandas as pd
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+df = pd.DataFrame({
+    'x': x,
+    'sin(x)': np.sin(x),
+    'cos(x)': np.cos(x),
+    'tan(x)': np.tan(x)
+})
+fig = px.line(df, x='x', y=['sin(x)', 'cos(x)', 'tan(x)'], 
+              title='Trigonometric Functions')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: How do you hide a specific line from the plot without removing it from the code?</strong>
+                <div class="answer">
+                    Click on the line's name in the legend. This toggles the visibility of that particular line while keeping others visible.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: What is the requirement for plotting multiple lines on the same graph?</strong>
+                <div class="answer">
+                    All lines must share the same x-axis scale and have compatible y-axis ranges. If domains are different, the data cannot be meaningfully combined.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: How does Plotly distinguish between multiple lines visually?</strong>
+                <div class="answer">
+                    Plotly automatically assigns different colors to each line and creates a legend with the corresponding column names for easy identification.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 4: INTERACTIVE SUBPLOTS ==================== -->
+    <section id="interactive-subplots">
+        <h2>4. Interactive Subplots using make_subplots</h2>
+
+        <p>When you need to display <strong>multiple separate visualizations</strong> in an organized grid layout, Plotly's <code>make_subplots</code> function is the perfect tool. Unlike multiple lines on one plot, subplots allow each chart to have its own axes, scale, and data.</p>
+
+        <h3 id="subplot-grid">4.1 Creating Subplot Grids</h3>
+
+        <p>First, we need to import the necessary modules:</p>
+
+<pre><code>from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import numpy as np</code></pre>
+
+        <p>Now let's prepare data for four different mathematical functions:</p>
+
+<pre><code># Data
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)           # Sine function
+y2 = np.cos(x)           # Cosine function
+y3 = np.exp(-x)          # Exponential decay
+y4 = np.log(x + 1)       # Logarithmic function</code></pre>
+
+        <p>Create a 2×2 subplot grid:</p>
+
+<pre><code># Create subplot grid
+fig = make_subplots(rows=2, cols=2, 
+                    subplot_titles=('Sine', 'Cosine', 
+                                   'Exponential Decay', 'Logarithm'))</code></pre>
+
+        <p>Key parameters of <code>make_subplots()</code>:</p>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Purpose</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><code>rows</code></td>
+                <td>Number of rows in the grid</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><code>cols</code></td>
+                <td>Number of columns in the grid</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><code>subplot_titles</code></td>
+                <td>Tuple of titles for each subplot</td>
+                <td>('Title1', 'Title2', ...)</td>
+            </tr>
+        </table>
+
+        <h3 id="subplot-traces">4.2 Adding Multiple Traces</h3>
+
+        <p>Now we add each plot to specific positions in the grid:</p>
+
+<pre><code># Add plots to specific positions
+fig.add_trace(go.Scatter(x=x, y=y1, name='sin(x)'), row=1, col=1)
+fig.add_trace(go.Scatter(x=x, y=y2, name='cos(x)'), row=1, col=2)
+fig.add_trace(go.Scatter(x=x, y=y3, name='exp(-x)'), row=2, col=1)
+fig.add_trace(go.Scatter(x=x, y=y4, name='log(x+1)'), row=2, col=2)</code></pre>
+
+        <p>Understanding <code>add_trace()</code>:</p>
+        <ul>
+            <li><strong>go.Scatter()</strong> - Creates a scatter/line trace using graph objects</li>
+            <li><strong>x, y</strong> - Data for the plot</li>
+            <li><strong>name</strong> - Legend label for the trace</li>
+            <li><strong>row, col</strong> - Position in the subplot grid (1-indexed)</li>
+        </ul>
+
+        <p>Finally, customize the overall layout and display:</p>
+
+<pre><code># Update layout
+fig.update_layout(height=700, width=900, 
+                 title_text="Interactive Subplots with Plotly")
+fig.show()</code></pre>
+
+        <h3>Subplot Position Grid</h3>
+
+        <div class="diagram-placeholder">
+            [Grid Layout Visualization]<br>
+            Row 1, Col 1: Sine | Row 1, Col 2: Cosine<br>
+            Row 2, Col 1: Exponential Decay | Row 2, Col 2: Logarithm
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Subplots mein hum multiple alag-alag charts ko ek organized grid mein dikha sakte hain. Pehle make_subplots() se grid banate hain jisme rows aur columns specify karte hain. Phir har chart ko add_trace() se add karte hain aur row, col parameters se position batate hain. Graph Objects (go) ka use karke Scatter plot banate hain. Har subplot ka apna axis aur scale hota hai. Last mein update_layout() se overall height, width aur title set karte hain.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Use <strong>make_subplots()</strong> to create organized grid layouts</li>
+                <li><strong>Graph Objects (go)</strong> provide low-level control for subplot traces</li>
+                <li><strong>add_trace()</strong> places each plot at specific row/col positions</li>
+                <li>Each subplot has <strong>independent axes and scales</strong></li>
+                <li><strong>update_layout()</strong> customizes overall figure properties</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a 3×2 subplot grid showing 6 different mathematical functions.</strong>
+                <div class="answer">
+<pre><code>from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import numpy as np
+
+x = np.linspace(0, 10, 100)
+fig = make_subplots(rows=3, cols=2)
+
+fig.add_trace(go.Scatter(x=x, y=np.sin(x)), row=1, col=1)
+fig.add_trace(go.Scatter(x=x, y=np.cos(x)), row=1, col=2)
+fig.add_trace(go.Scatter(x=x, y=np.tan(x)), row=2, col=1)
+# Add 3 more traces at remaining positions
+fig.update_layout(height=900, title_text="6 Functions")
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What is the difference between Plotly Express and Graph Objects?</strong>
+                <div class="answer">
+                    Plotly Express (px) provides a high-level, simple API for quick plots, while Graph Objects (go) offers low-level, detailed control for complex customizations and subplot creation.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How do you specify which subplot to add a trace to?</strong>
+                <div class="answer">
+                    Use the row and col parameters in add_trace() method. For example: fig.add_trace(trace, row=2, col=1) places the trace in row 2, column 1.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 5: MIXING CHART TYPES ==================== -->
+    <section id="mixing-charts">
+        <h2>5. Mixing Chart Types in Subplots</h2>
+
+        <p>One of Plotly's most powerful features is the ability to <strong>combine different chart types</strong> in the same subplot figure. This allows you to present diverse data visualizations side-by-side for comprehensive analysis.</p>
+
+        <h3 id="graph-objects">5.1 Using Graph Objects</h3>
+
+        <p>First, import the required libraries:</p>
+
+<pre><code>from plotly.subplots import make_subplots
+import plotly.graph_objects as go</code></pre>
+
+        <div class="professor-note">
+            The subplot library allows us to combine multiple different types of charts together in one plot. Graph Objects (go) gives us the flexibility to use different chart types like line charts, bar charts, histograms, etc.
+        </div>
+
+        <p><strong>Graph Objects (go)</strong> provides access to all chart types:</p>
+        <ul>
+            <li><code>go.Scatter()</code> - Line and scatter plots</li>
+            <li><code>go.Bar()</code> - Bar charts</li>
+            <li><code>go.Histogram()</code> - Histogram plots</li>
+            <li><code>go.Pie()</code> - Pie charts</li>
+            <li><code>go.Box()</code> - Box plots</li>
+            <li>And many more...</li>
+        </ul>
+
+        <h3 id="combining-charts">5.2 Combining Line and Bar Charts</h3>
+
+        <p>Let's create a figure with a line chart and a bar chart side-by-side:</p>
+
+<pre><code># Create mixed subplots
+fig = make_subplots(rows=1, cols=2, 
+                    subplot_titles=('Line Chart', 'Bar Chart'))
+
+# Add a line chart to first position
+fig.add_trace(
+    go.Scatter(x=[1, 2, 3, 4], 
+               y=[10, 15, 13, 17], 
+               mode='lines', 
+               name='Line'),
+    row=1, col=1
+)
+
+# Add a bar chart to second position
+fig.add_trace(
+    go.Bar(x=['A', 'B', 'C', 'D'], 
+           y=[20, 14, 23, 25], 
+           name='Bar'),
+    row=1, col=2
+)
+
+# Update layout and display
+fig.update_layout(title_text='Combining Chart Types', height=500)
+fig.show()</code></pre>
+
+        <div class="professor-note">
+            We first create the subplot using make_subplots with one row and two columns. Then we add traces - first a line chart in row 1, column 1, and then a bar chart in row 1, column 2. Each chart type is treated as a trace that we add to the figure.
+        </div>
+
+        <h3>Understanding the Code Structure</h3>
+
+        <table>
+            <tr>
+                <th>Step</th>
+                <th>Code</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td>1. Create Grid</td>
+                <td><code>make_subplots(rows=1, cols=2)</code></td>
+                <td>Sets up 1×2 layout</td>
+            </tr>
+            <tr>
+                <td>2. Add Line Chart</td>
+                <td><code>fig.add_trace(go.Scatter(...))</code></td>
+                <td>Adds line plot to position (1,1)</td>
+            </tr>
+            <tr>
+                <td>3. Add Bar Chart</td>
+                <td><code>fig.add_trace(go.Bar(...))</code></td>
+                <td>Adds bar chart to position (1,2)</td>
+            </tr>
+            <tr>
+                <td>4. Customize</td>
+                <td><code>fig.update_layout(...)</code></td>
+                <td>Sets overall title and size</td>
+            </tr>
+            <tr>
+                <td>5. Display</td>
+                <td><code>fig.show()</code></td>
+                <td>Renders the figure</td>
+            </tr>
+        </table>
+
+        <h3>Interactive Features</h3>
+
+        <p>When you display mixed chart types, each subplot maintains full interactivity:</p>
+
+        <ul>
+            <li><strong>Independent Zoom</strong> - Zoom in/out on each chart separately</li>
+            <li><strong>Selective Legend</strong> - Hide/show specific chart traces</li>
+            <li><strong>Individual Hover</strong> - Each chart type has appropriate hover information</li>
+            <li><strong>Double-Click Reset</strong> - Reset each subplot independently</li>
+        </ul>
+
+        <div class="professor-note">
+            You can see there are two interactive charts combined together using subplots. You can zoom in, zoom out on each chart individually. You can hide bars or show them. Each chart maintains its own interactivity.
+        </div>
+
+        <h3>Common Chart Type Combinations</h3>
+
+        <table>
+            <tr>
+                <th>Combination</th>
+                <th>Use Case</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td>Line + Bar</td>
+                <td>Trend vs. Category comparison</td>
+                <td>Sales trend + Product categories</td>
+            </tr>
+            <tr>
+                <td>Scatter + Histogram</td>
+                <td>Distribution with correlation</td>
+                <td>Data points + Frequency distribution</td>
+            </tr>
+            <tr>
+                <td>Bar + Pie</td>
+                <td>Absolute vs. Relative values</td>
+                <td>Revenue by region + Market share</td>
+            </tr>
+            <tr>
+                <td>Line + Box</td>
+                <td>Trend with statistical spread</td>
+                <td>Average performance + Variability</td>
+            </tr>
+        </table>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Mixed chart types mein hum alag-alag tarah ke charts ko ek saath dikha sakte hain jaise line chart aur bar chart. Pehle make_subplots() se grid banate hain. Phir Graph Objects (go) ka use karke different chart types add karte hain - go.Scatter() line charts ke liye aur go.Bar() bar charts ke liye. Har chart ko add_trace() se specific position par place karte hain using row aur col parameters. Har subplot apni independent interactivity maintain karta hai jaise alag-alag zoom, hover, aur legend control.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li><strong>Graph Objects</strong> enable mixing different chart types in subplots</li>
+                <li>Use <code>go.Scatter()</code> for line charts and <code>go.Bar()</code> for bar charts</li>
+                <li>Each chart type is added as a <strong>separate trace</strong> with add_trace()</li>
+                <li>Different chart types can have <strong>different data structures</strong></li>
+                <li>Each subplot maintains <strong>independent interactivity</strong></li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a figure combining a scatter plot and a histogram side-by-side.</strong>
+                <div class="answer">
+<pre><code>from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import numpy as np
+
+fig = make_subplots(rows=1, cols=2, 
+                    subplot_titles=('Scatter', 'Histogram'))
+data = np.random.randn(100)
+fig.add_trace(go.Scatter(x=data, y=data**2, mode='markers'), 
+              row=1, col=1)
+fig.add_trace(go.Histogram(x=data), row=1, col=2)
+fig.update_layout(title_text='Mixed Charts')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What is the purpose of the 'mode' parameter in go.Scatter()?</strong>
+                <div class="answer">
+                    The 'mode' parameter determines how data points are displayed: 'lines' for line plot, 'markers' for scatter plot, or 'lines+markers' for both.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: Can you mix more than two chart types in one figure?</strong>
+                <div class="answer">
+                    Yes, you can create a grid with multiple rows and columns and add different chart types to each position using appropriate row and col parameters.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 6: SCATTER PLOT ==================== -->
+    <section id="scatter-plot">
+        <h2>6. Interactive Scatter Plot (Hover, Zoom, Pan)</h2>
+
+        <p>Scatter plots are excellent for visualizing <strong>relationships between variables</strong> and identifying <strong>patterns, clusters, and correlations</strong>. Plotly's interactive scatter plots allow encoding multiple dimensions of data through color, size, and hover information.</p>
+
+        <h3 id="iris-dataset">6.1 Working with Iris Dataset</h3>
+
+        <p>The <strong>Iris dataset</strong> is a classic dataset in machine learning containing measurements of iris flowers. Let's load and explore it:</p>
+
+<pre><code>import plotly.express as px
+import pandas as pd
+
+# Load built-in Iris dataset
+df = px.data.iris()
+
+# Display the dataset
+print(df.head())</code></pre>
+
+        <div class="professor-note">
+            The Iris dataset has 150 rows and 6 columns: sepal_length, sepal_width, petal_length, petal_width, species, and species_id. This gives us multiple attributes to work with for creating rich visualizations.
+        </div>
+
+        <h3>Dataset Structure</h3>
+
+        <table>
+            <tr>
+                <th>Column Name</th>
+                <th>Data Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>sepal_length</td>
+                <td>Float</td>
+                <td>Length of sepal in cm</td>
+            </tr>
+            <tr>
+                <td>sepal_width</td>
+                <td>Float</td>
+                <td>Width of sepal in cm</td>
+            </tr>
+            <tr>
+                <td>petal_length</td>
+                <td>Float</td>
+                <td>Length of petal in cm</td>
+            </tr>
+            <tr>
+                <td>petal_width</td>
+                <td>Float</td>
+                <td>Width of petal in cm</td>
+            </tr>
+            <tr>
+                <td>species</td>
+                <td>String</td>
+                <td>Species name (setosa, versicolor, virginica)</td>
+            </tr>
+            <tr>
+                <td>species_id</td>
+                <td>Integer</td>
+                <td>Numeric species identifier</td>
+            </tr>
+        </table>
+
+        <h3 id="multi-dimensional">6.2 Multi-dimensional Data Visualization</h3>
+
+        <p>Now let's create an interactive scatter plot that uses <strong>five different columns</strong> to visualize the data:</p>
+
+<pre><code># Interactive scatter plot
+fig = px.scatter(df, 
+                x='sepal_width',           # X-axis
+                y='sepal_length',          # Y-axis
+                color='species',           # Color encoding
+                size='petal_length',       # Size encoding
+                hover_data=['petal_width'], # Additional hover info
+                title='Interactive Iris Scatter Plot')
+
+fig.show()</code></pre>
+
+        <h3>Understanding Multi-dimensional Encoding</h3>
+
+        <p>This single plot encodes <strong>5 dimensions of data</strong>:</p>
+
+        <table>
+            <tr>
+                <th>Visual Element</th>
+                <th>Data Column</th>
+                <th>What It Shows</th>
+            </tr>
+            <tr>
+                <td><strong>X-axis Position</strong></td>
+                <td>sepal_width</td>
+                <td>Horizontal position of point</td>
+            </tr>
+            <tr>
+                <td><strong>Y-axis Position</strong></td>
+                <td>sepal_length</td>
+                <td>Vertical position of point</td>
+            </tr>
+            <tr>
+                <td><strong>Color</strong></td>
+                <td>species</td>
+                <td>Category/group membership</td>
+            </tr>
+            <tr>
+                <td><strong>Size</strong></td>
+                <td>petal_length</td>
+                <td>Magnitude through marker size</td>
+            </tr>
+            <tr>
+                <td><strong>Hover Tooltip</strong></td>
+                <td>petal_width</td>
+                <td>Additional information on hover</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            Out of six columns, we are using five to display information. Sepal length and sepal width define x and y coordinates, species defines color, petal length defines size of the point, and petal width shows as hover information. This is how you can use multiple columns to show a single data point with rich information.
+        </div>
+
+        <h3>Interactive Features</h3>
+
+        <ul>
+            <li><strong>Color-coded Species</strong> - Each species automatically gets a distinct color</li>
+            <li><strong>Size Variation</strong> - Larger points indicate larger petal length</li>
+            <li><strong>Hover Information</strong> - Shows all encoded values plus additional petal_width data</li>
+            <li><strong>Legend Selection</strong> - Click species names to show/hide groups</li>
+            <li><strong>Zoom & Pan</strong> - Focus on specific clusters or outliers</li>
+            <li><strong>Box/Lasso Select</strong> - Select multiple points for detailed inspection</li>
+        </ul>
+
+        <div class="professor-note">
+            You can zoom in and zoom out with double click. You can pick particular class to be shown based on species. Higher the petal length, bigger the size of the point. Smaller points have smaller petal length, bigger points have bigger petal length.
+        </div>
+
+        <h3>Benefits of Multi-dimensional Visualization</h3>
+
+        <ol>
+            <li><strong>Comprehensive View</strong> - See multiple relationships simultaneously</li>
+            <li><strong>Pattern Recognition</strong> - Identify clusters and groupings easily</li>
+            <li><strong>Outlier Detection</strong> - Unusual points stand out visually</li>
+            <li><strong>Category Comparison</strong> - Compare different groups at a glance</li>
+            <li><strong>Efficient Communication</strong> - Convey complex data in one visualization</li>
+        </ol>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Interactive scatter plot mein hum multiple dimensions ko ek saath visualize kar sakte hain. Iris dataset use karke humne scatter plot banaya jisme 5 columns ka data dikhaya. X aur Y axes se position pata chalta hai, color se species identify hoti hai, size se petal length ka idea milta hai, aur hover karne par petal width bhi dikhta hai. Isse ek single plot mein bahut saari information efficiently convey ho jaati hai. Aap zoom, pan kar sakte ho, particular species ko hide/show kar sakte ho, aur patterns easily identify kar sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li><strong>px.scatter()</strong> creates interactive scatter plots with multi-dimensional encoding</li>
+                <li>Use <strong>color parameter</strong> to encode categorical data (species, groups)</li>
+                <li>Use <strong>size parameter</strong> to encode quantitative data (measurements)</li>
+                <li><strong>hover_data</strong> allows adding extra information visible on hover</li>
+                <li>One scatter plot can effectively visualize <strong>5+ dimensions of data</strong></li>
+                <li>Interactive features like <strong>legend selection and zoom</strong> enhance exploration</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a scatter plot showing the relationship between petal_width and petal_length, colored by species.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+df = px.data.iris()
+fig = px.scatter(df, x='petal_width', y='petal_length', 
+                color='species', 
+                title='Petal Dimensions by Species')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What does the 'size' parameter do in a scatter plot?</strong>
+                <div class="answer">
+                    The 'size' parameter controls the size of each marker based on a data column's values. Larger values result in bigger points, creating a visual encoding of magnitude.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How many dimensions of data can you visualize in a single Plotly scatter plot?</strong>
+                <div class="answer">
+                    You can visualize 5+ dimensions: x-axis, y-axis, color, size, hover_data, and potentially symbol/shape for additional categorical encoding.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: Why use hover_data instead of always displaying all information?</strong>
+                <div class="answer">
+                    hover_data keeps the plot clean and uncluttered by showing additional information only when users hover over specific points, maintaining visual clarity while providing detailed data on demand.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 7: BAR CHART ==================== -->
+    <section id="bar-chart">
+        <h2>7. Interactive Bar Chart with Hover Labels</h2>
+
+        <p><strong>Bar charts</strong> are ideal for comparing <strong>categorical data</strong> and showing quantities across different categories. Plotly's interactive bar charts add hover information, color coding, and customization options.</p>
+
+        <h3 id="custom-data">7.1 Creating Custom Data</h3>
+
+        <p>Let's create our own dataset for a fruit inventory system:</p>
+
+<pre><code>import plotly.express as px
+import pandas as pd
+
+# Create custom data
+data = {
+    'Fruit': ['Apple', 'Banana', 'Orange', 'Grapes', 'Pineapple'],
+    'Quantity': [120, 80, 150, 90, 60]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(data)</code></pre>
+
+        <div class="professor-note">
+            For bar charts, we generally need categorical data. We are defining fruit names as categories and their quantities as numeric values. This data structure is perfect for bar chart visualization.
+        </div>
+
+        <p>Our dataset structure:</p>
+        <table>
+            <tr>
+                <th>Fruit (Category)</th>
+                <th>Quantity (Value)</th>
+            </tr>
+            <tr>
+                <td>Apple</td>
+                <td>120</td>
+            </tr>
+            <tr>
+                <td>Banana</td>
+                <td>80</td>
+            </tr>
+            <tr>
+                <td>Orange</td>
+                <td>150</td>
+            </tr>
+            <tr>
+                <td>Grapes</td>
+                <td>90</td>
+            </tr>
+            <tr>
+                <td>Pineapple</td>
+                <td>60</td>
+            </tr>
+        </table>
+
+        <h3 id="customizing-bars">7.2 Customizing Bar Chart Appearance</h3>
+
+        <p>Now let's create a fully customized interactive bar chart:</p>
+
+<pre><code># Create interactive bar chart
+fig = px.bar(df, 
+            x='Fruit',                  # Categories on x-axis
+            y='Quantity',               # Values on y-axis
+            text='Quantity',            # Display quantity on bars
+            color='Fruit',              # Color by category
+            title='Interactive Fruit Sales Chart')
+
+# Customize text position and legend
+fig.update_traces(textposition='outside')
+fig.update_layout(showlegend=False)
+
+fig.show()</code></pre>
+
+        <h3>Understanding the Parameters</h3>
+
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>x</code></td>
+                <td>'Fruit'</td>
+                <td>Categories displayed on x-axis</td>
+            </tr>
+            <tr>
+                <td><code>y</code></td>
+                <td>'Quantity'</td>
+                <td>Height of bars</td>
+            </tr>
+            <tr>
+                <td><code>text</code></td>
+                <td>'Quantity'</td>
+                <td>Text labels displayed on/near bars</td>
+            </tr>
+            <tr>
+                <td><code>color</code></td>
+                <td>'Fruit'</td>
+                <td>Assigns different color to each category</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>String</td>
+                <td>Chart title</td>
+            </tr>
+        </table>
+
+        <h3>Advanced Customization Methods</h3>
+
+        <p><strong>fig.update_traces()</strong> - Modifies properties of chart traces:</p>
+
+<pre><code>fig.update_traces(textposition='outside')  # Places text above bars</code></pre>
+
+        <p>Options for <code>textposition</code>:</p>
+        <ul>
+            <li><strong>'outside'</strong> - Text appears above the bar</li>
+            <li><strong>'inside'</strong> - Text appears inside the bar at the top</li>
+            <li><strong>'auto'</strong> - Plotly automatically chooses best position</li>
+        </ul>
+
+        <p><strong>fig.update_layout()</strong> - Modifies overall figure properties:</p>
+
+<pre><code>fig.update_layout(showlegend=False)  # Hides the legend</code></pre>
+
+        <div class="professor-note">
+            We use figure update functions to add or remove options. For example, setting showlegend=True displays legends where you can hide or show particular bars. When False, the legend is hidden entirely.
+        </div>
+
+        <h3>Interactive Features</h3>
+
+        <p>The interactive bar chart provides:</p>
+        <ul>
+            <li><strong>Hover Information</strong> - Shows exact quantity when hovering over bars</li>
+            <li><strong>Color Coding</strong> - Each fruit category has a distinct color</li>
+            <li><strong>Text Labels</strong> - Quantity displayed outside bars for quick reference</li>
+            <li><strong>Zoom Capability</strong> - Focus on specific categories</li>
+            <li><strong>Legend Toggle</strong> - Show/hide specific categories (when legend enabled)</li>
+        </ul>
+
+        <h3>Comparing Legend Settings</h3>
+
+        <table>
+            <tr>
+                <th>Setting</th>
+                <th>Code</th>
+                <th>Effect</th>
+            </tr>
+            <tr>
+                <td>Legend Hidden</td>
+                <td><code>showlegend=False</code></td>
+                <td>Clean view, more space for chart</td>
+            </tr>
+            <tr>
+                <td>Legend Visible</td>
+                <td><code>showlegend=True</code></td>
+                <td>Ability to toggle individual categories</td>
+            </tr>
+        </table>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Interactive bar chart banane ke liye pehle categorical data create karte hain jaise fruits ke names aur unki quantities. Phir px.bar() function use karte hain jisme x-axis par categories aur y-axis par values aate hain. 'text' parameter se bar par numbers display hote hain aur 'color' parameter se har category ko alag color milta hai. update_traces() se text position control karte hain - 'outside' means number bar ke upar dikhega. update_layout() se legend show/hide kar sakte hain. Hovering se exact values dikhte hain aur zoom in-out bhi kar sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li><strong>px.bar()</strong> creates interactive bar charts from categorical data</li>
+                <li>Use <strong>text parameter</strong> to display values on bars</li>
+                <li><strong>color parameter</strong> assigns distinct colors to each category</li>
+                <li><strong>update_traces()</strong> customizes trace properties like text position</li>
+                <li><strong>update_layout()</strong> controls overall figure properties like legends</li>
+                <li>Bar charts are ideal for <strong>comparing quantities across categories</strong></li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a bar chart showing sales of 5 different products with custom colors.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+import pandas as pd
+
+data = {'Product': ['A', 'B', 'C', 'D', 'E'],
+        'Sales': [250, 180, 300, 220, 150]}
+df = pd.DataFrame(data)
+fig = px.bar(df, x='Product', y='Sales', text='Sales',
+            color='Product', title='Product Sales')
+fig.update_traces(textposition='outside')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What is the difference between update_traces() and update_layout()?</strong>
+                <div class="answer">
+                    update_traces() modifies properties of the data traces (like bars, lines), while update_layout() modifies the overall figure properties (like title, legend, size, axes).
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How do you display bar values inside the bars instead of outside?</strong>
+                <div class="answer">
+                    Use fig.update_traces(textposition='inside') to place the text labels inside the bars at the top.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: When would you set showlegend=True vs showlegend=False?</strong>
+                <div class="answer">
+                    Set showlegend=True when you want users to toggle categories on/off. Set showlegend=False for cleaner presentation when legend is redundant (e.g., when x-axis already shows category names).
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 8: LINE CHART WITH SLIDER ==================== -->
+    <section id="line-chart-slider">
+        <h2>8. Interactive Line Chart with Range Slider</h2>
+
+        <p>When working with <strong>time series data</strong> or large datasets, a <strong>range slider</strong> provides an intuitive way to focus on specific portions of the data while maintaining context of the overall trend.</p>
+
+        <h3 id="time-series">8.1 Generating Time Series Data</h3>
+
+        <p>First, let's import libraries and generate time series data:</p>
+
+<pre><code>import plotly.express as px
+import numpy as np
+import pandas as pd
+
+# Generate Time Series Data
+dates = pd.date_range("2024-01-01", periods=100)  # 100 days starting Jan 1, 2024
+values = np.random.randn(100).cumsum()            # Random walk data
+
+# Create DataFrame
+df = pd.DataFrame({'Date': dates, 'Value': values})</code></pre>
+
+        <div class="professor-note">
+            For a slider with interactive data, it's good to have time series data. We use pd.date_range to generate dates and np.random.randn to generate random values. The cumsum() creates a cumulative sum which produces a random walk pattern.
+        </div>
+
+        <h3>Understanding the Data Generation</h3>
+
+        <table>
+            <tr>
+                <th>Function</th>
+                <th>Purpose</th>
+                <th>Output</th>
+            </tr>
+            <tr>
+                <td><code>pd.date_range()</code></td>
+                <td>Generate date sequence</td>
+                <td>100 consecutive dates from start date</td>
+            </tr>
+            <tr>
+                <td><code>np.random.randn(100)</code></td>
+                <td>Generate random normal values</td>
+                <td>100 random numbers from normal distribution</td>
+            </tr>
+            <tr>
+                <td><code>.cumsum()</code></td>
+                <td>Cumulative sum</td>
+                <td>Creates random walk pattern (trending data)</td>
+            </tr>
+        </table>
+
+        <h3 id="range-slider">8.2 Implementing Range Slider</h3>
+
+        <p>Now let's create the line chart with an interactive range slider:</p>
+
+<pre><code># Create line chart
+fig = px.line(df, x='Date', y='Value', 
+             title='Time Series with Range Slider')
+
+# Add range slider to x-axis
+fig.update_xaxes(rangeslider_visible=True)
+
+fig.show()</code></pre>
+
+        <p>The key line is:</p>
+        <pre><code>fig.update_xaxes(rangeslider_visible=True)</code></pre>
+
+        <p>This adds an interactive range slider below the main plot on the x-axis.</p>
+
+        <div class="professor-note">
+            The slider appears at the bottom on the x-axis. You can extend the right side or left side of this window, and that particular data will be shown. You can move this window and interact with the data more freely compared to just using zoom.
+        </div>
+
+        <h3>Range Slider Features</h3>
+
+        <table>
+            <tr>
+                <th>Interaction</th>
+                <th>How to Use</th>
+                <th>Effect</th>
+            </tr>
+            <tr>
+                <td><strong>Drag Handles</strong></td>
+                <td>Drag left/right edges of slider</td>
+                <td>Expand or contract the visible date range</td>
+            </tr>
+            <tr>
+                <td><strong>Drag Window</strong></td>
+                <td>Drag the middle section</td>
+                <td>Move the window while maintaining range size</td>
+            </tr>
+            <tr>
+                <td><strong>Precise Selection</strong></td>
+                <td>Click and drag on slider bar</td>
+                <td>Select exact date range</td>
+            </tr>
+            <tr>
+                <td><strong>Main Plot Zoom</strong></td>
+                <td>Zoom on main plot</td>
+                <td>Also updates slider selection</td>
+            </tr>
+            <tr>
+                <td><strong>Double-Click</strong></td>
+                <td>Double-click main plot</td>
+                <td>Reset to full date range</td>
+            </tr>
+        </table>
+
+        <h3>Benefits of Range Slider</h3>
+
+        <ol>
+            <li><strong>Context + Detail</strong> - See overall pattern while focusing on specific period</li>
+            <li><strong>Easy Navigation</strong> - Quickly move through large datasets</li>
+            <li><strong>Precise Selection</strong> - Select exact date ranges</li>
+            <li><strong>Visual Feedback</strong> - Slider shows your current position in full dataset</li>
+            <li><strong>Combined with Zoom</strong> - Works alongside other interactive features</li>
+        </ol>
+
+        <h3>Example: 100-Day Time Series</h3>
+
+        <div class="diagram-placeholder">
+            [Visualization Description]<br>
+            Main Plot: Line chart showing value fluctuations from Jan 1 to April 10, 2024<br>
+            Range Slider: Interactive slider below plot allowing selection of any date range<br>
+            Current Selection: User can drag to focus on any subset (e.g., Jan 15-Feb 15)
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Time series data ke liye range slider bahut useful hota hai. Pehle pd.date_range() se dates generate karte hain aur np.random.randn() se random values banate hain. cumsum() function se cumulative sum milta hai jo ek trending pattern create karta hai. Phir px.line() se normal line chart banate hain aur update_xaxes(rangeslider_visible=True) se x-axis par ek interactive slider add ho jaata hai. Is slider ko drag karke aap kisi bhi specific time period par focus kar sakte ho while puri trend ka context bana rahta hai. Window ko move kar sakte ho, expand/contract kar sakte ho, aur main plot ke saath bhi zoom kar sakte ho.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Use <strong>pd.date_range()</strong> to generate time series date sequences</li>
+                <li><strong>.cumsum()</strong> on random data creates realistic trending patterns</li>
+                <li><strong>update_xaxes(rangeslider_visible=True)</strong> adds interactive range slider</li>
+                <li>Range slider provides <strong>context + detail navigation</strong> for large datasets</li>
+                <li>Users can <strong>drag handles or window</strong> to select specific ranges</li>
+                <li>Range slider works <strong>in conjunction with zoom and pan</strong> features</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a time series plot showing 365 days of stock price simulation with a range slider.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+import pandas as pd
+import numpy as np
+
+dates = pd.date_range("2024-01-01", periods=365)
+prices = 100 + np.random.randn(365).cumsum()
+df = pd.DataFrame({'Date': dates, 'Price': prices})
+fig = px.line(df, x='Date', y='Price', 
+             title='Stock Price with Range Slider')
+fig.update_xaxes(rangeslider_visible=True)
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What does cumsum() do in the context of time series data?</strong>
+                <div class="answer">
+                    cumsum() calculates cumulative sum, creating a random walk pattern where each value is the sum of all previous values. This simulates realistic trending behavior in time series data.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How do you enable/disable the range slider?</strong>
+                <div class="answer">
+                    Use fig.update_xaxes(rangeslider_visible=True) to enable or rangeslider_visible=False to disable the range slider on the x-axis.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: What are the advantages of range slider over simple zoom?</strong>
+                <div class="answer">
+                    Range slider maintains visual context of the entire dataset while allowing precise selection of any range. It's easier to navigate large datasets and provides visual feedback of your position within the full data.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 9: HISTOGRAM ==================== -->
+    <section id="histogram">
+        <h2>9. Interactive Histogram</h2>
+
+        <p>A <strong>histogram</strong> displays the <strong>frequency distribution</strong> of numerical data by dividing the data range into bins and counting observations in each bin. Plotly's interactive histograms make it easy to explore data distributions.</p>
+
+        <h3 id="random-data">9.1 Generating Random Data</h3>
+
+        <p>Let's create a histogram using randomly generated data:</p>
+
+<pre><code>import plotly.express as px
+import numpy as np
+import pandas as pd
+
+# Generate random data from normal distribution
+data = np.random.randn(500)  # 500 random values
+
+# Convert to DataFrame
+df = pd.DataFrame({'Values': data})</code></pre>
+
+        <div class="professor-note">
+            We are generating 500 data points using normal random distribution. This will create data that follows a bell curve pattern, which is perfect for demonstrating histogram visualization.
+        </div>
+
+        <p>The <code>np.random.randn(500)</code> function generates:</p>
+        <ul>
+            <li>500 random numbers</li>
+            <li>From a <strong>standard normal distribution</strong> (mean=0, std=1)</li>
+            <li>Values typically range from approximately -3 to +3</li>
+            <li>Follows a bell curve pattern</li>
+        </ul>
+
+        <h3>Creating the Histogram</h3>
+
+        <p>Now let's create an interactive histogram:</p>
+
+<pre><code># Create interactive histogram
+fig = px.histogram(df, 
+                  x='Values',                           # Data column
+                  nbins=30,                             # Number of bins
+                  color_discrete_sequence=['#636EFA'],  # Hex color
+                  title='Interactive Histogram with Hover Tooltips')
+
+fig.show()</code></pre>
+
+        <h3>Understanding Histogram Parameters</h3>
+
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>x</code></td>
+                <td>'Values'</td>
+                <td>Column containing numerical data to bin</td>
+            </tr>
+            <tr>
+                <td><code>nbins</code></td>
+                <td>30</td>
+                <td>Number of bins to divide the data range into</td>
+            </tr>
+            <tr>
+                <td><code>color_discrete_sequence</code></td>
+                <td>['#636EFA']</td>
+                <td>List of colors in hexadecimal format</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>String</td>
+                <td>Chart title</td>
+            </tr>
+        </table>
+
+        <h3>Number of Bins (nbins)</h3>
+
+        <p>The <strong>nbins parameter</strong> controls histogram resolution:</p>
+
+        <table>
+            <tr>
+                <th>Number of Bins</th>
+                <th>Effect</th>
+                <th>Best For</th>
+            </tr>
+            <tr>
+                <td>Too Few (5-10)</td>
+                <td>Overly smooth, loses detail</td>
+                <td>Very large datasets, general trends</td>
+            </tr>
+            <tr>
+                <td>Moderate (20-30)</td>
+                <td>Balanced detail and clarity</td>
+                <td>Most datasets (recommended)</td>
+            </tr>
+            <tr>
+                <td>Too Many (50+)</td>
+                <td>Noisy, hard to interpret</td>
+                <td>Large datasets needing fine detail</td>
+            </tr>
+        </table>
+
+        <h3 id="color-customization">9.2 Color Customization with Hexadecimal</h3>
+
+        <p><strong>Hexadecimal color codes</strong> provide precise color control using RGB values:</p>
+
+        <pre><code>color_discrete_sequence=['#636EFA']</code></pre>
+
+        <div class="professor-note">
+            You can define colors using hexadecimal code. For example, #636EFA where '63' is Red component, '6E' is Green component, and 'FA' is Blue component. Each component uses two hexadecimal digits (00-FF).
+        </div>
+
+        <h3>Understanding Hexadecimal Color Format</h3>
+
+        <p>Format: <code>#RRGGBB</code></p>
+
+        <table>
+            <tr>
+                <th>Position</th>
+                <th>Component</th>
+                <th>Range</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td>1-2</td>
+                <td>Red (R)</td>
+                <td>00 to FF (0-255)</td>
+                <td>#<strong>FF</strong>0000 = Pure Red</td>
+            </tr>
+            <tr>
+                <td>3-4</td>
+                <td>Green (G)</td>
+                <td>00 to FF (0-255)</td>
+                <td>#00<strong>FF</strong>00 = Pure Green</td>
+            </tr>
+            <tr>
+                <td>5-6</td>
+                <td>Blue (B)</td>
+                <td>00 to FF (0-255)</td>
+                <td>#0000<strong>FF</strong> = Pure Blue</td>
+            </tr>
+        </table>
+
+        <h3>Example Color Modifications</h3>
+
+<pre><code># Pure blue (no red or green)
+color_discrete_sequence=['#0000FF']
+
+# Red + Green = Yellow
+color_discrete_sequence=['#FFFF00']
+
+# Remove all color components = Black
+color_discrete_sequence=['#000000']
+
+# Maximum all components = White
+color_discrete_sequence=['#FFFFFF']</code></pre>
+
+        <div class="professor-note">
+            You can change the hexadecimal values to modify the color. For example, setting red and green to 00 leaves only blue. Setting red and green high creates yellow color. You can experiment with different combinations to get the color you want.
+        </div>
+
+        <h3>Interactive Histogram Features</h3>
+
+        <ul>
+            <li><strong>Hover Tooltips</strong> - Shows exact count and bin range</li>
+            <li><strong>Zoom</strong> - Focus on specific parts of the distribution</li>
+            <li><strong>Automatic Binning</strong> - Plotly calculates bin ranges automatically</li>
+            <li><strong>Distribution Shape</strong> - Visually identify normal, skewed, or uniform distributions</li>
+            <li><strong>Frequency Analysis</strong> - See how many values fall in each range</li>
+        </ul>
+
+        <div class="professor-note">
+            The histogram automatically takes the count for each bin. Values are spreading from approximately minus 3 to plus 3, which is typical for normal distribution. It's looking like a bell curve, confirming our data follows normal distribution pattern.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary</h4>
+            <p>Interactive histogram banane ke liye pehle random data generate karte hain using np.random.randn() jo normal distribution se 500 values deta hai. Phir isko DataFrame mein convert karte hain. px.histogram() function use karke histogram banate hain jisme 'nbins' parameter se kitne bins chahiye wo specify karte hain (30 ek balanced value hai). Color ko hexadecimal code se customize kar sakte hain - format hai #RRGGBB jaha RR red, GG green, aur BB blue component hai. Har component 00 to FF (0-255) tak ho sakta hai. Hover karne se exact count aur bin range dikhta hai. Normal distribution mein data -3 se +3 tak spread hota hai aur bell curve shape banta hai.</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li><strong>px.histogram()</strong> creates interactive frequency distribution plots</li>
+                <li><strong>nbins parameter</strong> controls the number of bins (20-30 is typically optimal)</li>
+                <li><strong>Hexadecimal colors</strong> format: #RRGGBB (00-FF for each component)</li>
+                <li>Plotly <strong>automatically calculates bin ranges</strong> and frequencies</li>
+                <li><strong>Hover tooltips</strong> show exact counts and bin boundaries</li>
+                <li>Histograms reveal <strong>distribution shape</strong> (normal, skewed, uniform, etc.)</li>
+            </ul>
+        </div>
+
+        <div class="practice-questions">
+            <h4>💡 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Create a histogram with 1000 random data points, 40 bins, and red color.</strong>
+                <div class="answer">
+<pre><code>import plotly.express as px
+import numpy as np
+import pandas as pd
+
+data = np.random.randn(1000)
+df = pd.DataFrame({'Values': data})
+fig = px.histogram(df, x='Values', nbins=40, 
+                  color_discrete_sequence=['#FF0000'],
+                  title='Red Histogram')
+fig.show()</code></pre>
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q2: What hexadecimal color code represents pure green?</strong>
+                <div class="answer">
+                    #00FF00 represents pure green (no red, maximum green, no blue).
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q3: How does the nbins parameter affect histogram appearance?</strong>
+                <div class="answer">
+                    Lower nbins creates wider, smoother bins showing general trends. Higher nbins creates narrower bins showing more detail but potentially more noise. 20-30 bins typically provides good balance.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q4: What does np.random.randn() generate?</strong>
+                <div class="answer">
+                    It generates random numbers from a standard normal distribution with mean=0 and standard deviation=1, typically ranging from -3 to +3.
+                </div>
+            </div>
+
+            <div class="question">
+                <strong>Q5: How do you create a purple color using hexadecimal?</strong>
+                <div class="answer">
+                    Purple is a mix of red and blue, so you can use codes like #800080 (medium purple) or #FF00FF (magenta/bright purple) by combining high red and blue with low/no green.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== COMPREHENSIVE MIND MAP ==================== -->
+    <section id="mind-map">
+        <div class="mind-map">
+            <h2>🧠 Comprehensive Mind Map: Introduction to Plotly (Part 1)</h2>
+            
+            <div class="mind-map-container">
+                <div class="central-node">
+                    Interactive Plots with Plotly
+                </div>
+
+                <div class="branches">
+                    <!-- Branch 1: Core Concepts -->
+                    <div class="branch">
+                        <h4>🎯 Core Concepts</h4>
+                        <ul>
+                            <li>Web-based visualization</li>
+                            <li>HTML/JavaScript rendering</li>
+                            <li>Hover tooltips</li>
+                            <li>Zoom & Pan interactions</li>
+                            <li>Legend controls</li>
+                            <li>Auto-scaling</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 2: Libraries & APIs -->
+                    <div class="branch">
+                        <h4>📚 Libraries & APIs</h4>
+                        <ul>
+                            <li>Plotly Express (px) - High-level</li>
+                            <li>Graph Objects (go) - Low-level</li>
+                            <li>Pandas for DataFrames</li>
+                            <li>NumPy for computations</li>
+                            <li>make_subplots for grids</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 3: Basic Plots -->
+                    <div class="branch">
+                        <h4>📈 Basic Plots</h4>
+                        <ul>
+                            <li>Single line plot (px.line)</li>
+                            <li>Multiple lines in one plot</li>
+                            <li>DataFrame with multiple y-columns</li>
+                            <li>Common x-axis required</li>
+                            <li>Automatic color coding</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 4: Subplots -->
+                    <div class="branch">
+                        <h4>🔲 Subplots</h4>
+                        <ul>
+                            <li>make_subplots(rows, cols)</li>
+                            <li>Subplot titles</li>
+                            <li>add_trace() with row/col</li>
+                            <li>Independent axes</li>
+                            <li>Mixed chart types</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 5: Chart Types -->
+                    <div class="branch">
+                        <h4>📊 Chart Types</h4>
+                        <ul>
+                            <li>Line (px.line, go.Scatter)</li>
+                            <li>Bar (px.bar, go.Bar)</li>
+                            <li>Scatter (px.scatter)</li>
+                            <li>Histogram (px.histogram)</li>
+                            <li>Combining multiple types</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 6: Advanced Features -->
+                    <div class="branch">
+                        <h4>🚀 Advanced Features</h4>
+                        <ul>
+                            <li>Multi-dimensional encoding</li>
+                            <li>Color by category</li>
+                            <li>Size by value</li>
+                            <li>hover_data for extra info</li>
+                            <li>Range slider for time series</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 7: Customization -->
+                    <div class="branch">
+                        <h4>🎨 Customization</h4>
+                        <ul>
+                            <li>update_traces() - trace properties</li>
+                            <li>update_layout() - figure properties</li>
+                            <li>update_xaxes()/update_yaxes()</li>
+                            <li>Hexadecimal colors (#RRGGBB)</li>
+                            <li>Text position control</li>
+                            <li>Legend show/hide</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 8: Data Structures -->
+                    <div class="branch">
+                        <h4>💾 Data Structures</h4>
+                        <ul>
+                            <li>pandas DataFrame</li>
+                            <li>Labeled columns</li>
+                            <li>np.linspace() for ranges</li>
+                            <li>np.random.randn() for distributions</li>
+                            <li>pd.date_range() for time series</li>
+                            <li>.cumsum() for trending data</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 9: Interactive Elements -->
+                    <div class="branch">
+                        <h4>🖱️ Interactive Elements</h4>
+                        <ul>
+                            <li>Hover tooltips</li>
+                            <li>Click-and-drag zoom</li>
+                            <li>Double-click reset</li>
+                            <li>Pan tool</li>
+                            <li>Legend toggle</li>
+                            <li>Range slider navigation</li>
+                            <li>Box/Lasso selection</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 10: Use Cases -->
+                    <div class="branch">
+                        <h4>💼 Use Cases</h4>
+                        <ul>
+                            <li>Data exploration</li>
+                            <li>Trend comparison</li>
+                            <li>Distribution analysis</li>
+                            <li>Category comparison</li>
+                            <li>Time series analysis</li>
+                            <li>Multi-dimensional visualization</li>
+                            <li>Dashboard creation</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 11: Key Functions -->
+                    <div class="branch">
+                        <h4>⚙️ Key Functions</h4>
+                        <ul>
+                            <li>px.line() - Line plots</li>
+                            <li>px.bar() - Bar charts</li>
+                            <li>px.scatter() - Scatter plots</li>
+                            <li>px.histogram() - Histograms</li>
+                            <li>make_subplots() - Grid layout</li>
+                            <li>fig.add_trace() - Add plots</li>
+                            <li>fig.show() - Display</li>
+                        </ul>
+                    </div>
+
+                    <!-- Branch 12: Best Practices -->
+                    <div class="branch">
+                        <h4>✅ Best Practices</h4>
+                        <ul>
+                            <li>Use DataFrame for efficiency</li>
+                            <li>Label columns clearly</li>
+                            <li>Choose appropriate chart type</li>
+                            <li>Optimize number of bins</li>
+                            <li>Maintain consistent color schemes</li>
+                            <li>Provide meaningful titles</li>
+                            <li>Test interactivity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer style="text-align: center; padding: 30px; margin-top: 50px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 10px;">
+        <h3>📚 End of Lecture Notes - Part 1</h3>
+        <p><em>Introduction to Plotly: Interactive Plots</em></p>
+        <p style="margin-top: 15px;">Visual Data Science Workshop | Week 7-8</p>
+        <p style="font-size: 0.9em; margin-top: 10px;">Created with ❤️ for better learning</p>
+          
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+           <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong>
+            </p>
+    </footer>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Algebra: Addition, Subtraction, Multiplication and Transpose</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 2.2rem; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { font-size: 1.8rem; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; }
+        h3 { font-size: 1.4rem; }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .hinglish-summary {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+            font-style: italic;
+        }
+        .extra-content {
+            background-color: #f0f8ea;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .practice-question {
+            background-color: #fef9e7;
+            border: 1px solid #f1c40f;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .key-takeaways {
+            background-color: #f4ece8;
+            border: 1px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        .mind-map {
+            padding: 20px;
+            background-color: #f7f9fc;
+            border-radius: 5px;
+            margin: 30px 0;
+            overflow: auto;
+        }
+        pre {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .matrix-box {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            background-color: #f9f9f9;
+            font-family: 'Courier New', monospace;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .toc-item {
+            padding: 5px 0;
+        }
+        .toc-h2 {
+            margin-left: 20px;
+        }
+        .toc-h3 {
+            margin-left: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="text-center py-10">
+            <h1 class="text-center text-4xl font-bold mb-4">Matrix Algebra: Addition, Subtraction, Multiplication and Transpose</h1>
+            <p class="text-xl text-gray-600 mb-2">BS./BSc. in Applied AI and Data Science</p>
+            <p class="text-xl text-gray-600">Linear Algebra and Numerical Analysis</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2 class="text-2xl font-bold mb-4">Table of Contents</h2>
+            <div class="toc-content">
+                <div class="toc-item"><a href="#learning-objectives">Learning Objectives</a></div>
+                <div class="toc-item toc-h2"><a href="#module-02">Module 02: Matrix Algebra</a></div>
+                <div class="toc-item toc-h2"><a href="#real-world-examples">Real-world Examples of Matrix Operations</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-notation">Basic Matrix Notation</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-properties">Key Matrix Properties</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-addition">Matrix Addition and Subtraction</a></div>
+                <div class="toc-item toc-h3"><a href="#real-world-addition">Real-world Applications of Matrix Addition</a></div>
+                <div class="toc-item toc-h3"><a href="#commutative">Commutative Property of Matrix Addition</a></div>
+                <div class="toc-item toc-h2"><a href="#python-implementation">Python Implementation for Matrix Operations</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-shifting">Shifting a Matrix</a></div>
+                <div class="toc-item toc-h2"><a href="#scalar-multiplication">Matrix Scalar Multiplication</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-multiplication">Matrix Multiplication</a></div>
+                <div class="toc-item toc-h3"><a href="#multiplication-properties">Key Matrix Multiplication Properties</a></div>
+                <div class="toc-item toc-h3"><a href="#multiplication-restrictions">Restrictions on Matrix Multiplication</a></div>
+                <div class="toc-item toc-h3"><a href="#multiplication-examples">Examples of Matrix Multiplication</a></div>
+                <div class="toc-item toc-h2"><a href="#matrix-algebra-summary">Matrix Algebra Summary</a></div>
+                <div class="toc-item toc-h2"><a href="#ai-applications">Matrix Multiplication in AI Applications</a></div>
+                <div class="toc-item"><a href="#mind-map">Mind Map</a></div>
+                <div class="toc-item"><a href="#practice-questions">Practice Questions</a></div>
+            </div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <section id="learning-objectives">
+            <h2 class="font-bold">Learning Objectives</h2>
+            <ul class="list-disc ml-8 mb-4">
+                <li>Understand the <strong>basics operations with Matrices</strong> and the fundamentals of Matrix Algebra</li>
+                <li>Recognize <strong>applications of Matrix Algebra</strong> in everyday life</li>
+                <li>Learn <strong>Python code and syntax</strong> to solve Matrix Algebra problems</li>
+                <li>Gain <strong>hands-on experience</strong> in solving simple Matrix Algebra problems</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                Is course mein, hum matrix algebra ke basic operations seekhenge, jaise addition, subtraction, aur multiplication. Hum ye bhi dekhenge ki real life mein matrix algebra kaise use hota hai. Python code ke through hum in operations ko implement karna seekhenge, aur hands-on practice karenge matrix algebra problems solve karne ke liye.
+            </div>
+        </section>
+
+        <!-- Module 02: Matrix Algebra -->
+        <section id="module-02">
+            <h2 class="font-bold">Module 02: Matrix Algebra</h2>
+            <p>This module focuses on the fundamental operations in Matrix Algebra, including:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>Matrix addition and subtraction</li>
+                <li>Scalar multiplication</li>
+                <li>Matrix multiplication</li>
+                <li>Shifting of matrices</li>
+            </ul>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "Once we covered addition and subtraction, we can move into scalar multiplication of matrices. And then we can focus on looking at matrix multiplication and some of their real world applications. After that, we can discuss concepts of transpose of a matrix, inverse of a matrix and possibly determinants."
+            </div>
+        </section>
+
+        <!-- Real-world Examples -->
+        <section id="real-world-examples">
+            <h2 class="font-bold">Real-world Examples of Matrix Operations</h2>
+            
+            <h3 class="font-bold mt-6">Cryptography: Encoding and Decoding Messages</h3>
+            <p>A cryptogram is a message written according to a secret code (from the Greek word "kryptos" meaning "hidden"). Matrix multiplication can be used to encode and decode messages, which is fundamental in cybersecurity and privacy protection.</p>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "During World War time, messages were encoded using what used to be called a cipher. Matrix multiplication can be used as a hidden code to encode and decode messages. Spies encode messages in terms of matrix multiplications, and people working for secret services try to decode these messages to prevent criminal activities like cybercrime."
+            </div>
+            
+            <h3 class="font-bold mt-6">Other Applications</h3>
+            <ul class="list-disc ml-8 mb-4">
+                <li><strong>Image processing:</strong> All images can be represented in matrix format</li>
+                <li><strong>Computer Graphics:</strong> In computer graphics, every element is represented by a matrix</li>
+                <li><strong>Digital world:</strong> Audio, video, and image compression, including MP3, JPEG, and MPEG video</li>
+                <li><strong>Animation:</strong> Hollywood movies like Toy Story use matrix representations for 3D rendering</li>
+            </ul>
+            
+            <div class="hinglish-summary">
+                Matrix operations hamare daily life mein bahut jagah use hote hain. Cryptography mein, matrix multiplication ka use messages ko encode aur decode karne ke liye hota hai. Images, computer graphics, audio, video compression sab mein matrix ka use hota hai. Hollywood ki animation movies jaise Toy Story bhi matrix operations par depend karti hain 3D rendering ke liye.
+            </div>
+        </section>
+
+        <!-- Basic Matrix Notation -->
+        <section id="matrix-notation">
+            <h2 class="font-bold">Basic Matrix Notation</h2>
+            
+            <p>A matrix is a rectangular array of numbers arranged in rows and columns. For example, we can represent data in table form where the rows could represent different days of the week and columns could represent different subjects:</p>
+            
+            <div class="overflow-x-auto my-4">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Math</th>
+                            <th>History</th>
+                            <th>Language</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Monday</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Tuesday</td>
+                            <td>3</td>
+                            <td>0</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>Wednesday</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>0</td>
+                        </tr>
+                        <!-- Continue for other days -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <p>When we suppress the headings, we are left with just the numerical values, which forms a matrix:</p>
+            
+            <div class="matrix-box text-center">
+                ⎡ 2 1 1 ⎤<br>
+                ⎢ 3 0 2 ⎥<br>
+                ⎣ 1 2 0 ⎦
+            </div>
+            
+            <p>This is a 3×3 matrix (3 rows and 3 columns).</p>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "This table is comprised of certain numbers which are conveying information about the days of the week and the subjects that you are probably learning over those days and how many hours may have been spent on each of those subjects over the week."
+            </div>
+        </section>
+
+        <!-- Key Matrix Properties -->
+        <section id="matrix-properties">
+            <h2 class="font-bold">Key Matrix Properties</h2>
+            
+            <p>Some fundamental properties of matrices include:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>If A = B, then B = A for all A and B (symmetry of equality)</li>
+                <li>If A = B and B = C, then A = C for all A, B, and C (transitivity of equality)</li>
+            </ul>
+            
+            <p>For example, if we have two matrices:</p>
+            
+            <div class="flex flex-wrap items-center justify-center gap-8 my-6">
+                <div>
+                    <p class="text-center mb-2">Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 3 ⎤<br>
+                        ⎣ 4 5 6 ⎦
+                    </div>
+                </div>
+                <div>
+                    <p class="text-center mb-2">Matrix B</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 3 ⎤<br>
+                        ⎣ 4 5 6 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <p>If A = B, then each corresponding element in both matrices must be equal: A<sub>ij</sub> = B<sub>ij</sub> for all i and j.</p>
+        </section>
+
+        <!-- Matrix Addition and Subtraction -->
+        <section id="matrix-addition">
+            <h2 class="font-bold">Matrix Addition and Subtraction</h2>
+            
+            <p>The sum or difference of two matrices A and B of the same size yields a matrix C of the same size. <strong>Matrices of different sizes cannot be added or subtracted</strong>.</p>
+            
+            <h3 class="font-bold">Rules for Addition/Subtraction:</h3>
+            <ol class="list-decimal ml-8 mb-4">
+                <li>Both matrices must have the same dimensions (same number of rows and columns)</li>
+                <li>Addition/subtraction is performed element by element</li>
+            </ol>
+            
+            <p>For two matrices A and B with the same dimensions, the sum C = A + B is defined as:</p>
+            <p class="text-center my-4">C<sub>ij</sub> = A<sub>ij</sub> + B<sub>ij</sub> for all i, j</p>
+            
+            <div class="flex flex-wrap items-center justify-center gap-8 my-6">
+                <div>
+                    <p class="text-center mb-2">Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 ⎤<br>
+                        ⎣ 2 1 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">+</div>
+                <div>
+                    <p class="text-center mb-2">Matrix B</p>
+                    <div class="matrix-box">
+                        ⎡ -1 0 ⎤<br>
+                        ⎣  0 2 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">=</div>
+                <div>
+                    <p class="text-center mb-2">Matrix C</p>
+                    <div class="matrix-box">
+                        ⎡ 0 2 ⎤<br>
+                        ⎣ 2 3 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <p>Similarly, the difference D = A - B is defined as:</p>
+            <p class="text-center my-4">D<sub>ij</sub> = A<sub>ij</sub> - B<sub>ij</sub> for all i, j</p>
+            
+            <div class="hinglish-summary">
+                Matrix addition aur subtraction tab hi possible hai jab dono matrices ka size same ho. Addition element-by-element kiya jata hai - ek matrix ke har element mein dusre matrix ke corresponding element ko add karte hain. Subtraction bhi isi tarah hota hai, bas add karne ki jagah subtract karte hain. Alag size ke matrices ko add ya subtract nahi kiya ja sakta.
+            </div>
+            
+            <h3 id="real-world-addition" class="font-bold mt-6">Real-world Application of Matrix Addition and Subtraction</h3>
+            
+            <p>Consider an insurance company with data about policies sold by different agents:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>Matrix J represents the number of life insurance, car insurance, and homeowner's insurance policies sold by eight different agents in January</li>
+                <li>Matrix F represents the number of policies sold by those same agents in February</li>
+                <li>J + F represents the total number of policies for each agent across both months</li>
+            </ul>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "These metric tables can be defined in data science using Python programming languages, which can be in the form of pie tables or pie charts, and can be represented as NumPy arrays."
+            </div>
+            
+            <h3 id="commutative" class="font-bold mt-6">Matrix Addition is Commutative</h3>
+            
+            <p>Like vector addition, matrix addition is <strong>commutative</strong>, meaning that:</p>
+            <p class="text-center my-4">A + B = B + A</p>
+            
+            <p>For example:</p>
+            
+            <div class="flex flex-wrap items-center justify-center gap-8 my-6">
+                <div>
+                    <p class="text-center mb-2">Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 ⎤<br>
+                        ⎣ 3 4 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">+</div>
+                <div>
+                    <p class="text-center mb-2">Matrix B</p>
+                    <div class="matrix-box">
+                        ⎡ 5 6 ⎤<br>
+                        ⎣ 7 8 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">=</div>
+                <div>
+                    <p class="text-center mb-2">Matrix C</p>
+                    <div class="matrix-box">
+                        ⎡ 6 8 ⎤<br>
+                        ⎣ 10 12 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-center gap-8 my-6">
+                <div>
+                    <p class="text-center mb-2">Matrix B</p>
+                    <div class="matrix-box">
+                        ⎡ 5 6 ⎤<br>
+                        ⎣ 7 8 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">+</div>
+                <div>
+                    <p class="text-center mb-2">Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 ⎤<br>
+                        ⎣ 3 4 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">=</div>
+                <div>
+                    <p class="text-center mb-2">Matrix C</p>
+                    <div class="matrix-box">
+                        ⎡ 6 8 ⎤<br>
+                        ⎣ 10 12 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h4 class="font-bold mb-2">Key Takeaways - Matrix Addition and Subtraction</h4>
+                <ol class="list-decimal ml-6">
+                    <li>Matrices can only be added or subtracted if they have the same dimensions</li>
+                    <li>Addition and subtraction are performed element by element</li>
+                    <li>Matrix addition is commutative: A + B = B + A</li>
+                    <li>These operations are fundamental to solving many real-world data problems</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Python Implementation -->
+        <section id="python-implementation">
+            <h2 class="font-bold">Python Implementation for Matrix Operations</h2>
+            
+            <h3 class="font-bold">Adding Matrices Using Python</h3>
+            
+            <p>Python's NumPy library provides powerful tools for matrix operations:</p>
+            
+            <pre>
+import numpy as np
+
+# create random matrices
+A = np.random.randn(5, 4)
+B = np.random.randn(5, 3)
+C = np.random.randn(5, 4)
+
+# Sample output for A
+A = np.random.randn(5, 4)
+print(A)
+# Output:
+# array([[-0.78744152, -1.46661041,  2.34016363,  1.56843125],
+#        [-0.62755523, -0.02645865,  1.35160825,  0.59611772],
+#        [-0.05722104, -0.14407712,  0.30686938, -0.23179142],
+#        [-0.25340969, -0.29993093,  2.24714325,  0.57879988],
+#        [ 1.21139259,  0.91730765, -0.55045054, -0.03369767]])
+
+# try to add them
+# A + B  # This will fail because dimensions don't match (5x4 vs 5x3)
+# A + C  # This will work because both are 5x4 matrices
+</pre>
+
+            <div class="extra-content">
+                Professor mentioned in class: "You can generate a 5x4 array, and then you can similarly generate B 5x3 and C 5x4, and you can try yourself to get matrix B in this case, and then try to add A + B. This will give you a hands-on experience using Python to add two matrices."
+            </div>
+            
+            <div class="practice-question">
+                <h4 class="font-bold mb-2">Practice Question:</h4>
+                <p>Create two matrices of the same size using NumPy and add them together. Then try to add two matrices of different sizes and observe what happens.</p>
+                <p class="mt-3"><strong>Answer:</strong></p>
+                <pre>
+import numpy as np
+
+# Create two matrices of the same size
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# Add matrices of the same size
+C = A + B
+print("Result of adding matrices of same size:")
+print(C)
+# Output: 
+# array([[ 6,  8],
+#        [10, 12]])
+
+# Try to add matrices of different sizes
+D = np.array([[1, 2, 3], [4, 5, 6]])
+try:
+    E = A + D
+    print(E)
+except ValueError as e:
+    print("Error when adding matrices of different sizes:")
+    print(e)
+# Output: Error when adding matrices of different sizes:
+# operands could not be broadcast together with shapes (2,2) (2,3)
+</pre>
+            </div>
+        </section>
+
+        <!-- Shifting a Matrix -->
+        <section id="matrix-shifting">
+            <h2 class="font-bold">Shifting a Matrix</h2>
+            
+            <p>There is a linear algebra way to add a scalar to a square matrix, which is called <strong>shifting a matrix</strong>. It works by adding a constant value to the diagonal elements, which is implemented by adding a scalar multiplied by an identity matrix:</p>
+            
+            <p class="text-center my-4">A + λI</p>
+            
+            <p>Where:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>A is the original matrix</li>
+                <li>λ (lambda) is the scalar value</li>
+                <li>I is the identity matrix of the same size as A</li>
+            </ul>
+            
+            <h3 class="font-bold">Example:</h3>
+            
+            <div class="flex flex-wrap items-center justify-center gap-4 my-6">
+                <div>
+                    <p class="text-center mb-2">Original Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 ⎤<br>
+                        ⎣ 2 1 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">+</div>
+                <div>
+                    <p class="text-center mb-2">λI (λ = 3)</p>
+                    <div class="matrix-box">
+                        ⎡ 3 0 ⎤<br>
+                        ⎣ 0 3 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">=</div>
+                <div>
+                    <p class="text-center mb-2">Shifted Matrix</p>
+                    <div class="matrix-box">
+                        ⎡ 4 2 ⎤<br>
+                        ⎣ 2 4 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "Only the diagonal elements change; the rest of the matrix is unadulterated by shifting. In practice, one shifts a relatively small amount to preserve as much information as possible in the matrix while benefiting from the effects of shifting, including increasing the numerical stability of the matrix."
+            </div>
+            
+            <h3 class="font-bold">Implementing Shifting in Python</h3>
+            
+<pre>
+import numpy as np
+
+# Define a matrix
+A = np.array([[4, 5, 1], 
+              [0, 1, 11], 
+              [4, 9, 7]])
+              
+# Define the scalar value
+lambda_val = 6
+
+# Create identity matrix of the same size as A
+I = np.eye(len(A))
+
+# Shift the matrix
+shifted_A = A + lambda_val * I
+
+print("Original matrix:")
+print(A)
+print("\nShifted matrix:")
+print(shifted_A)
+
+# Output:
+# Original matrix:
+# [[ 4  5  1]
+#  [ 0  1 11]
+#  [ 4  9  7]]
+#
+# Shifted matrix:
+# [[10  5  1]
+#  [ 0  7 11]
+#  [ 4  9 13]]
+</pre>
+            
+            <div class="hinglish-summary">
+                Matrix shifting ek special operation hai jisme hum matrix ke diagonal elements ko ek constant value se increase karte hain. Iske liye hum matrix mein scalar multiplied identity matrix add karte hain (A + λI). Is operation mein sirf diagonal elements change hote hain, baaki elements same rehte hain. Ye operation numerical stability badhane mein help karta hai, especially computational problems mein.
+            </div>
+        </section>
+
+        <!-- Matrix Scalar Multiplication -->
+        <section id="scalar-multiplication">
+            <h2 class="font-bold">Matrix Scalar Multiplication</h2>
+            
+            <p>Matrices can be multiplied by a scalar (constant value). If k is a scalar and A is a matrix, then:</p>
+            <p class="text-center my-4">kA = Ak</p>
+            
+            <p>In scalar multiplication, each element of the matrix is multiplied by the scalar:</p>
+            <p class="text-center my-4">(kA)<sub>ij</sub> = k·A<sub>ij</sub></p>
+            
+            <h3 class="font-bold">Example:</h3>
+            
+            <div class="flex flex-wrap items-center justify-center gap-4 my-6">
+                <div>
+                    <p class="text-center mb-2">Scalar k = 4</p>
+                </div>
+                <div class="text-2xl">×</div>
+                <div>
+                    <p class="text-center mb-2">Matrix A</p>
+                    <div class="matrix-box">
+                        ⎡ 3  -1 ⎤<br>
+                        ⎢ 2   1 ⎥<br>
+                        ⎣-3  -4 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">=</div>
+                <div>
+                    <p class="text-center mb-2">Result</p>
+                    <div class="matrix-box">
+                        ⎡ 12  -4 ⎤<br>
+                        ⎢  8   4 ⎥<br>
+                        ⎣-12 -16 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="font-bold">General Properties of Scalar Multiplication</h3>
+            
+            <p>For matrices A and B and scalars k and g:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>k(A + B) = kA + kB (distributive property)</li>
+                <li>(k + g)A = kA + gA (distributive property)</li>
+                <li>k(AB) = (kA)B = A(kB) (associative property)</li>
+                <li>k(gA) = (kg)A (associative property)</li>
+            </ul>
+            
+            <div class="key-takeaways">
+                <h4 class="font-bold mb-2">Key Takeaways - Matrix Scalar Multiplication</h4>
+                <ol class="list-decimal ml-6">
+                    <li>Scalar multiplication involves multiplying each element of a matrix by the same scalar value</li>
+                    <li>The order does not matter: kA = Ak</li>
+                    <li>Scalar multiplication follows both distributive and associative properties</li>
+                    <li>This operation is essential for scaling data in many machine learning algorithms</li>
+                </ol>
+            </div>
+            
+            <div class="practice-question">
+                <h4 class="font-bold mb-2">Practice Question:</h4>
+                <p>Given the matrix A = [[2, -1], [3, 4]], calculate:</p>
+                <ol class="list-decimal ml-6">
+                    <li>3A</li>
+                    <li>-2A</li>
+                </ol>
+                <p class="mt-3"><strong>Answer:</strong></p>
+                <p>1. 3A = [[6, -3], [9, 12]]</p>
+                <p>2. -2A = [[-4, 2], [-6, -8]]</p>
+            </div>
+            
+            <div class="hinglish-summary">
+                Scalar multiplication mein hum matrix ke har ek element ko same number (scalar) se multiply karte hain. Agar k ek scalar hai aur A ek matrix, to kA ka result woh matrix hoga jisme A ke har element ko k se multiply kiya gaya hai. Properties mein, k(A + B) = kA + kB aur (k + g)A = kA + gA. Ye operation data scaling aur transformation mein bahut useful hai.
+            </div>
+        </section>
+
+        <!-- Matrix Multiplication -->
+        <section id="matrix-multiplication">
+            <h2 class="font-bold">Matrix Multiplication</h2>
+            
+            <p>Matrix multiplication is a fundamental operation in linear algebra that involves <strong>two different operations: multiplication and addition</strong>. Unlike scalar multiplication, matrix multiplication has specific requirements and properties.</p>
+            
+            <h3 id="multiplication-properties" class="font-bold mt-6">Key Matrix Multiplication Properties</h3>
+            
+            <p>The product of two matrices is another matrix. Two matrices A and B must be <strong>conformable for multiplication</strong> to be possible, meaning:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>The number of columns of A must equal the number of rows of B</li>
+            </ul>
+            
+            <p>If A is an m×n matrix (m rows, n columns) and B is an n×k matrix (n rows, k columns), then:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>A×B is possible and results in an m×k matrix</li>
+                <li>B×A may not be possible or may result in a different-sized matrix</li>
+            </ul>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "This is an entirely new rule and game of multiplication which we have not seen before. So matrix multiplication can be visualised and memorised using this picture where it is always the case that the number of rows is equal to the number of columns of the first matrix."
+            </div>
+            
+            <h3 id="multiplication-restrictions" class="font-bold mt-6">Restrictions on Matrix Multiplication</h3>
+            
+            <p>Consider these examples:</p>
+            <ul class="list-disc ml-8 mb-4">
+                <li>A (1×3) × B (3×1) = C (1×1) ✓ Possible</li>
+                <li>B (2×1) × A (4×2) ✗ Not possible (columns of B ≠ rows of A)</li>
+                <li>A (6×2) × B (6×3) ✗ Not possible (columns of A ≠ rows of B)</li>
+                <li>A (2×3) × B (3×2) = C (2×2) ✓ Possible</li>
+            </ul>
+            
+            <div class="text-center my-6">
+                <img src="https://www.mathsisfun.com/algebra/images/matrix-multiply-c.svg" alt="Matrix Multiplication Dimensions" class="inline-block" style="max-width: 80%;">
+            </div>
+            
+            <h3 id="multiplication-examples" class="font-bold mt-6">Matrix Multiplication Step by Step</h3>
+            
+            <p>Let's multiply two matrices:</p>
+            
+            <div class="flex flex-wrap items-center justify-center gap-4 my-6">
+                <div>
+                    <p class="text-center mb-2">Matrix A (2×3)</p>
+                    <div class="matrix-box">
+                        ⎡ 1 2 4 ⎤<br>
+                        ⎣ 2 6 0 ⎦
+                    </div>
+                </div>
+                <div class="text-2xl">×</div>
+                <div>
+                    <p class="text-center mb-2">Matrix B (3×4)</p>
+                    <div class="matrix-box">
+                        ⎡ 4 3 1 2 ⎤<br>
+                        ⎢ 5 4 3 1 ⎥<br>
+                        ⎣ 6 5 2 3 ⎦
+                    </div>
+                </div>
+            </div>
+            
+            <p>The result will be a 2×4 matrix. To calculate each element:</p>
+            <ol class="list-decimal ml-8 mb-4">
+                <li>For the element at position (1,1), multiply corresponding elements from row 1 of A and column 1 of B:
+                    <br>1×4 + 2×5 + 4×6 = 4 + 10 + 24 = 38</li>
+                <li>For the element at position (1,2), multiply row 1 of A and column 2 of B:
+                    <br>1×3 + 2×4 + 4×5 = 3 + 8 + 20 = 31</li>
+                <li>Continue this process for all elements</li>
+            </ol>
+            
+            <p>The complete result:</p>
+            
+            <div class="text-center my-6">
+                <div class="matrix-box">
+                    ⎡ 38 31 13 16 ⎤<br>
+                    ⎣ 38 30 20 10 ⎦
+                </div>
+            </div>
+            
+            <div class="practice-question">
+                <h4 class="font-bold mb-2">Practice Question:</h4>
+                <p>Multiply the following matrices:</p>
+                <div class="flex flex-wrap items-center justify-center gap-4 my-3">
+                    <div>
+                        <p class="text-center mb-2">A</p>
+                        <div class="matrix-box">
+                            ⎡ 2 3 ⎤<br>
+                            ⎣ 1 4 ⎦
+                        </div>
+                    </div>
+                    <div class="text-2xl">×</div>
+                    <div>
+                        <p class="text-center mb-2">B</p>
+                        <div class="matrix-box">
+                            ⎡ 5 1 ⎤<br>
+                            ⎣ 2 6 ⎦
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-3"><strong>Answer:</strong></p>
+                <div class="matrix-box mt-2">
+                    ⎡ 16 20 ⎤<br>
+                    ⎣ 13 25 ⎦
+                </div>
+                <p class="mt-2">Calculations:</p>
+                <ul class="list-disc ml-6">
+                    <li>(1,1): 2×5 + 3×2 = 10 + 6 = 16</li>
+                    <li>(1,2): 2×1 + 3×6 = 2 + 18 = 20</li>
+                    <li>(2,1): 1×5 + 4×2 = 5 + 8 = 13</li>
+                    <li>(2,2): 1×1 + 4×6 = 1 + 24 = 25</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-summary">
+                Matrix multiplication mein do operations hote hain: multiplication aur addition. Iske liye, first matrix ke columns ki number aur second matrix ke rows ki number same honi chahiye. Agar A ki dimension m×n hai aur B ki dimension n×k hai, to result ki dimension m×k hogi. Har element calculate karne ke liye, A ke row ke elements aur B ke corresponding column ke elements ko multiply karke add karte hain. Matrix multiplication commutative nahi hoti - A×B generally B×A ke equal nahi hota.
+            </div>
+        </section>
+
+        <!-- Matrix Algebra Summary -->
+        <section id="matrix-algebra-summary">
+            <h2 class="font-bold">Matrix Algebra Summary</h2>
+            
+            <p>Assuming that matrices A, B, and C are conformable for the operations indicated, the following are true:</p>
+            
+            <ol class="list-decimal ml-8 mb-6">
+                <li>AI = IA = A (identity property)</li>
+                <li>A(BC) = (AB)C = ABC (associative law)</li>
+                <li>A(B+C) = AB + AC (first distributive law)</li>
+                <li>(A+B)C = AC + BC (second distributive law)</li>
+            </ol>
+            
+            <h3 class="font-bold text-red-600">Caution!</h3>
+            <ol class="list-decimal ml-8 mb-4">
+                <li>AB is not generally equal to BA; BA may not even be conformable</li>
+                <li>If AB = 0, neither A nor B necessarily equals 0</li>
+                <li>If AB = AC, B is not necessarily equal to C</li>
+            </ol>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "Matrix multiplication like matrix addition is non-commutative, which takes us into further advanced topics which we'll see during eigenvalue problem and their solutions."
+            </div>
+            
+            <div class="key-takeaways">
+                <h4 class="font-bold mb-2">Key Takeaways - Matrix Algebra</h4>
+                <ol class="list-decimal ml-6">
+                    <li>Matrix operations (addition, subtraction, scalar multiplication, and matrix multiplication) form the foundation of matrix algebra</li>
+                    <li>Matrix multiplication requires compatible dimensions: the number of columns in the first matrix must equal the number of rows in the second matrix</li>
+                    <li>Unlike scalar multiplication, matrix multiplication is not commutative (AB ≠ BA in general)</li>
+                    <li>These operations are crucial for solving systems of linear equations, data transformation, and various applications in AI and data science</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Matrix Multiplication in AI Applications -->
+        <section id="ai-applications">
+            <h2 class="font-bold">Matrix Multiplication in AI Applications</h2>
+            
+            <p>Matrix multiplication is not just a theoretical concept but has significant practical applications in modern AI and machine learning:</p>
+            
+            <ul class="list-disc ml-8 mb-4">
+                <li><strong>Neural Networks:</strong> Matrix operations form the backbone of neural network computations</li>
+                <li><strong>Image Processing:</strong> Convolutional operations in CNNs use matrix multiplication</li>
+                <li><strong>Natural Language Processing:</strong> Word embeddings and transformers rely on matrix operations</li>
+                <li><strong>Data Transformation:</strong> Feature scaling, PCA, and other transformations use matrix operations</li>
+            </ul>
+            
+            <div class="extra-content">
+                Professor mentioned in class: "A recent work in 2022 by Google DeepMind from Damish Hassabes, who is a Nobel laureate in 2024, shown that faster matrix algorithm is invaluable for AI and machine learning applications. The faster algorithms we can design for matrix multiplication, the better we can come up with our solutions in different real-world applications."
+            </div>
+            
+            <p>Research into faster matrix multiplication algorithms remains an active area, as improvements directly benefit computational efficiency in AI applications.</p>
+            
+            <div class="hinglish-summary">
+                Matrix multiplication AI aur machine learning mein bahut important hai. Neural networks, image processing, aur natural language processing sab matrix operations par depend karte hain. Google DeepMind ne dikhaya hai ki faster matrix multiplication algorithms AI applications ke liye bahut zaroori hain. Matrix algorithms mein improvement se direct computational efficiency badhti hai, jisse complex AI models faster ban sakte hain.
+            </div>
+        </section>
+
+        <!-- Mind Map -->
+        <section id="mind-map">
+            <h2 class="font-bold">Mind Map: Matrix Algebra and Its Operations</h2>
+            
+            <div class="mind-map border p-6 rounded-lg">
+                <div class="text-center">
+                    <svg width="900" height="600" viewBox="0 0 900 600">
+                        <!-- Central Node -->
+                        <g>
+                            <circle cx="450" cy="300" r="60" fill="#3498db" />
+                            <text x="450" y="300" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Matrix Algebra</text>
+                        </g>
+                        
+                        <!-- Matrix Addition -->
+                        <g>
+                            <line x1="450" y1="300" x2="250" y2="150" stroke="#333" stroke-width="2" />
+                            <circle cx="250" cy="150" r="45" fill="#e74c3c" />
+                            <text x="250" y="150" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Addition</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="250" y1="150" x2="150" y2="80" stroke="#333" stroke-width="1" />
+                            <circle cx="150" cy="80" r="35" fill="#e67e22" />
+                            <text x="150" y="80" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">Same Dimensions</text>
+                            
+                            <line x1="250" y1="150" x2="350" y2="80" stroke="#333" stroke-width="1" />
+                            <circle cx="350" cy="80" r="35" fill="#e67e22" />
+                            <text x="350" y="80" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">Commutative</text>
+                        </g>
+                        
+                        <!-- Matrix Subtraction -->
+                        <g>
+                            <line x1="450" y1="300" x2="200" y2="300" stroke="#333" stroke-width="2" />
+                            <circle cx="200" cy="300" r="45" fill="#9b59b6" />
+                            <text x="200" y="300" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Subtraction</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="200" y1="300" x2="120" y2="240" stroke="#333" stroke-width="1" />
+                            <circle cx="120" cy="240" r="35" fill="#8e44ad" />
+                            <text x="120" y="240" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">Same Dimensions</text>
+                        </g>
+                        
+                        <!-- Scalar Multiplication -->
+                        <g>
+                            <line x1="450" y1="300" x2="250" y2="450" stroke="#333" stroke-width="2" />
+                            <circle cx="250" cy="450" r="45" fill="#2ecc71" />
+                            <text x="250" y="450" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold" font-size="11">Scalar Multiplication</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="250" y1="450" x2="150" y2="500" stroke="#333" stroke-width="1" />
+                            <circle cx="150" cy="500" r="35" fill="#27ae60" />
+                            <text x="150" y="500" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">kA = Ak</text>
+                            
+                            <line x1="250" y1="450" x2="180" y2="380" stroke="#333" stroke-width="1" />
+                            <circle cx="180" cy="380" r="35" fill="#27ae60" />
+                            <text x="180" y="380" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">Distributive</text>
+                        </g>
+                        
+                        <!-- Matrix Multiplication -->
+                        <g>
+                            <line x1="450" y1="300" x2="650" y2="300" stroke="#333" stroke-width="2" />
+                            <circle cx="650" cy="300" r="45" fill="#f1c40f" />
+                            <text x="650" y="300" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold" font-size="11">Matrix Multiplication</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="650" y1="300" x2="730" y2="220" stroke="#333" stroke-width="1" />
+                            <circle cx="730" cy="220" r="35" fill="#f39c12" />
+                            <text x="730" y="220" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="8">Conformable Matrices</text>
+                            
+                            <line x1="650" y1="300" x2="750" y2="300" stroke="#333" stroke-width="1" />
+                            <circle cx="750" cy="300" r="35" fill="#f39c12" />
+                            <text x="750" y="300" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="9">Not Commutative</text>
+                            
+                            <line x1="650" y1="300" x2="730" y2="380" stroke="#333" stroke-width="1" />
+                            <circle cx="730" cy="380" r="35" fill="#f39c12" />
+                            <text x="730" y="380" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="9">Associative</text>
+                        </g>
+                        
+                        <!-- Matrix Shifting -->
+                        <g>
+                            <line x1="450" y1="300" x2="650" y2="150" stroke="#333" stroke-width="2" />
+                            <circle cx="650" cy="150" r="45" fill="#1abc9c" />
+                            <text x="650" y="150" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Shifting</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="650" y1="150" x2="750" y2="100" stroke="#333" stroke-width="1" />
+                            <circle cx="750" cy="100" r="35" fill="#16a085" />
+                            <text x="750" y="100" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">A + λI</text>
+                        </g>
+                        
+                        <!-- Applications -->
+                        <g>
+                            <line x1="450" y1="300" x2="650" y2="450" stroke="#333" stroke-width="2" />
+                            <circle cx="650" cy="450" r="45" fill="#34495e" />
+                            <text x="650" y="450" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Applications</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="650" y1="450" x2="730" y2="500" stroke="#333" stroke-width="1" />
+                            <circle cx="730" cy="500" r="35" fill="#2c3e50" />
+                            <text x="730" y="500" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">AI & ML</text>
+                            
+                            <line x1="650" y1="450" x2="580" y2="520" stroke="#333" stroke-width="1" />
+                            <circle cx="580" cy="520" r="35" fill="#2c3e50" />
+                            <text x="580" y="520" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">Cryptography</text>
+                            
+                            <line x1="650" y1="450" x2="700" y2="540" stroke="#333" stroke-width="1" />
+                            <circle cx="700" cy="540" r="35" fill="#2c3e50" />
+                            <text x="700" y="540" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="8">Image Processing</text>
+                        </g>
+                        
+                        <!-- Python Implementation -->
+                        <g>
+                            <line x1="450" y1="300" x2="450" y2="500" stroke="#333" stroke-width="2" />
+                            <circle cx="450" cy="500" r="45" fill="#7f8c8d" />
+                            <text x="450" y="500" text-anchor="middle" alignment-baseline="middle" fill="white" font-weight="bold">Python/NumPy</text>
+                            
+                            <!-- Subnodes -->
+                            <line x1="450" y1="500" x2="370" y2="550" stroke="#333" stroke-width="1" />
+                            <circle cx="370" cy="550" r="35" fill="#95a5a6" />
+                            <text x="370" y="550" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">np.array</text>
+                            
+                            <line x1="450" y1="500" x2="530" y2="550" stroke="#333" stroke-width="1" />
+                            <circle cx="530" cy="550" r="35" fill="#95a5a6" />
+                            <text x="530" y="550" text-anchor="middle" alignment-baseline="middle" fill="white" font-size="10">np.eye</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Questions -->
+        <section id="practice-questions">
+            <h2 class="font-bold">Practice Questions</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 1: Matrix Addition</h4>
+                    <p>Add the following matrices:</p>
+                    <div class="flex flex-wrap items-center justify-center gap-4 my-3">
+                        <div class="matrix-box">
+                            ⎡ 3 -1 2 ⎤<br>
+                            ⎣ 0  4 5 ⎦
+                        </div>
+                        <span>+</span>
+                        <div class="matrix-box">
+                            ⎡ 2  0 -2 ⎤<br>
+                            ⎣-1  3  1 ⎦
+                        </div>
+                    </div>
+                    <p class="mt-3 text-right"><strong>Answer:</strong> [[5, -1, 0], [-1, 7, 6]]</p>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 2: Scalar Multiplication</h4>
+                    <p>Multiply the matrix by scalar 3:</p>
+                    <div class="flex flex-wrap items-center justify-center gap-4 my-3">
+                        <div class="matrix-box">
+                            ⎡-2  1 ⎤<br>
+                            ⎢ 0  4 ⎥<br>
+                            ⎣ 3 -1 ⎦
+                        </div>
+                    </div>
+                    <p class="mt-3 text-right"><strong>Answer:</strong> [[-6, 3], [0, 12], [9, -3]]</p>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 3: Matrix Multiplication</h4>
+                    <p>Multiply the following matrices:</p>
+                    <div class="flex flex-wrap items-center justify-center gap-4 my-3">
+                        <div class="matrix-box">
+                            ⎡ 1 2 ⎤<br>
+                            ⎢ 3 0 ⎥<br>
+                            ⎣-1 4 ⎦
+                        </div>
+                        <span>×</span>
+                        <div class="matrix-box">
+                            ⎡ 2  1  3 ⎤<br>
+                            ⎣-1  0  2 ⎦
+                        </div>
+                    </div>
+                    <p class="mt-3 text-right"><strong>Answer:</strong> [[0, 1, 7], [6, 3, 9], [-6, -1, 5]]</p>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 4: Matrix Shifting</h4>
+                    <p>Shift the following matrix by λ = 2:</p>
+                    <div class="flex flex-wrap items-center justify-center gap-4 my-3">
+                        <div class="matrix-box">
+                            ⎡ 5  1  3 ⎤<br>
+                            ⎢-2  0  4 ⎥<br>
+                            ⎣ 7  2 -1 ⎦
+                        </div>
+                    </div>
+                    <p class="mt-3 text-right"><strong>Answer:</strong> [[7, 1, 3], [-2, 2, 4], [7, 2, 1]]</p>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 5: Python Implementation</h4>
+                    <p>Write Python code using NumPy to create a 3×3 identity matrix, then shift another 3×3 matrix by it with λ = 3.</p>
+                    <p class="mt-3"><strong>Answer:</strong></p>
+                    <pre>
+import numpy as np
+
+# Create a 3x3 matrix
+A = np.array([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+])
+
+# Create identity matrix
+I = np.eye(3)
+
+# Shift matrix by λ = 3
+lambda_val = 3
+shifted_A = A + lambda_val * I
+print(shifted_A)
+
+# Output:
+# [[ 4  2  3]
+#  [ 4  8  6]
+#  [ 7  8 12]]
+</pre>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 6: Application</h4>
+                    <p>In image processing, explain how matrix multiplication can be used to implement a simple blur effect on an image.</p>
+                    <p class="mt-3"><strong>Answer:</strong> A blur effect can be created by convolving an image (represented as a matrix) with a kernel (another small matrix). This convolution is implemented through matrix multiplication. For example, a 3×3 kernel with equal values of 1/9 would average each pixel with its 8 neighbors, creating a simple blur effect. The process involves sliding this kernel over the image matrix, performing element-wise multiplication and summation for each position.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recap and Next Topic -->
+        <section class="mt-12 p-6 bg-gray-100 rounded-lg">
+            <h2 class="font-bold">Recap</h2>
+            <ul class="list-disc ml-8 mb-6">
+                <li>Converting data in terms of Matrix representations allows us to solve numerous real-world problems</li>
+                <li>Matrix addition and subtractions are fundamental operations dealing with matrix algebra</li>
+                <li>Scalar multiplication and shifting of matrices are cornerstones of numerically solving matrix equations</li>
+                <li>Matrix Multiplication Algorithm is invaluable for AI, Machine learning and data science applications</li>
+                <li>Matrix Multiplication is crucial for understanding eigenvalue problems</li>
+                <li>Python coding of matrix operations using NumPy arrays provides a convenient way to approach solutions</li>
+            </ul>
+            
+            <h3 class="font-bold">Coming up next...</h3>
+            <p class="text-xl text-center font-bold text-blue-700 mt-4">Matrix Algebra: Transpose, Inverse and Determinants of a Matrix</p>
+        </section>
+
+        <!-- Footer -->
+        <footer style="margin-top: 50px; padding: 20px; background-color: #2c3e50; color: white; border-radius: 10px; text-align: center;">
+            <h3 style= "color:#f8f9fa ">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</h3>
+            <h3 style= "color:#f8f9fa ">~ Armaan Kachhawa </h3>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/prp/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Pattern Recognition - Probability and Distributions Lecture Notes
+    </title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+          processEscapes: true,
+        },
+        options: {
+          // keep default behavior but ensure scripts/noscript/style/textarea/pre/code are skipped
+          skipHtmlTags: [
+            "script",
+            "noscript",
+            "style",
+            "textarea",
+            "pre",
+            "code",
+          ],
+        },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.8;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        color: #333;
+      }
+      h1 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+        margin-top: 40px;
+      }
+      h2 {
+        color: #34495e;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 8px;
+        margin-top: 30px;
+      }
+      h3 {
+        color: #546e7a;
+        margin-top: 25px;
+      }
+      .highlight {
+        background-color: #fff3cd;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-weight: 600;
+      }
+      .prof-note {
+        background-color: #e8f4f8;
+        border-left: 4px solid #2196f3;
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-style: italic;
+      }
+      .hinglish-summary {
+        background-color: #f0f8ff;
+        border: 2px dashed #5e92f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+      .hinglish-summary h4 {
+        color: #1565c0;
+        margin-top: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .toc {
+        background-color: #fff;
+        border: 2px solid #3498db;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 8px;
+      }
+      .toc h2 {
+        margin-top: 0;
+        color: #2c3e50;
+        border: none;
+      }
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .toc ul ul {
+        padding-left: 20px;
+      }
+      .toc a {
+        text-decoration: none;
+        color: #3498db;
+        transition: color 0.3s;
+      }
+      .toc a:hover {
+        color: #2c3e50;
+        text-decoration: underline;
+      }
+      .formula-box {
+        background-color: #f8f9fa;
+        border: 2px solid #dee2e6;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .example-box {
+        background-color: #fff9e6;
+        border: 2px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .practice-section {
+        background-color: #f3e5f5;
+        border: 2px solid #9c27b0;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 8px;
+      }
+      .key-takeaways {
+        background-color: #e8f5e9;
+        border: 2px solid #4caf50;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+      .key-takeaways ul {
+        margin: 10px 0;
+      }
+      .diagram-placeholder {
+        background-color: #f0f0f0;
+        border: 2px dashed #999;
+        padding: 30px;
+        text-align: center;
+        margin: 20px 0;
+        color: #666;
+        font-style: italic;
+      }
+      .mind-map {
+        background-color: white;
+        border: 2px solid #333;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 10px;
+      }
+      .mind-map svg {
+        width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pattern Recognition: Probability Theory and Distributions</h1>
+
+    <div class="toc">
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#recap">📚 Recap of Previous Lecture</a></li>
+        <li>
+          <a href="#conditional-probability">🎯 Conditional Probability</a>
+          <ul>
+            <li><a href="#cp-axioms">Axioms of Conditional Probability</a></li>
+            <li><a href="#chain-rule">Chain Rule (Multiplication Rule)</a></li>
+            <li><a href="#total-probability">Total Probability</a></li>
+          </ul>
+        </li>
+        <li><a href="#bayes-theorem">🔮 Bayes' Theorem</a></li>
+        <li>
+          <a href="#independence"
+            >🔗 Independence and Conditional Independence</a
+          >
+        </li>
+        <li>
+          <a href="#distributions">📊 Probability Distributions</a>
+          <ul>
+            <li><a href="#uniform">Uniform Distribution</a></li>
+            <li><a href="#gaussian">Gaussian (Normal) Distribution</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <section id="recap">
+      <h2>📚 Recap of Previous Lecture</h2>
+      <p>
+        Before diving into today's topics, let's quickly review what we covered
+        in the last lecture:
+      </p>
+
+      <table>
+        <tr>
+          <th>Concept</th>
+          <th>Definition</th>
+          <th>Key Points</th>
+        </tr>
+        <tr>
+          <td><span class="highlight">Experiment</span></td>
+          <td>
+            Something which can be repeated infinitely many times and then
+            observed
+          </td>
+          <td>Example: Measuring height of students in a class</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Sample Space</span></td>
+          <td>Well-defined possible set of outcomes of an experiment</td>
+          <td>For height measurement: all possible heights in centimeters</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Random Variable</span></td>
+          <td>A mapping between sample space and real numbers</td>
+          <td>Denoted as X, maps outcomes to numerical values</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">PMF</span></td>
+          <td>Probability Mass Function for discrete random variables</td>
+          <td>Y-axis shows probability at specific points</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">PDF</span></td>
+          <td>Probability Density Function for continuous random variables</td>
+          <td>Y-axis shows likelihood density, not direct probability</td>
+        </tr>
+      </table>
+
+      <p>
+        We also discussed
+        <span class="highlight">statistical properties</span> like mean,
+        variance, and for multivariate cases, mean vector and covariance matrix
+        (which captures both within-dimension variance and inter-dimension
+        variance).
+      </p>
+    </section>
+
+    <section id="conditional-probability">
+      <h2>🎯 Conditional Probability</h2>
+
+      <p>
+        Let's start with an intuitive example to understand conditional
+        probability:
+      </p>
+
+      <div class="example-box">
+        <h4>Example: Rain in Jodhpur</h4>
+        <p>
+          <strong>Question:</strong> What is the chance of rain in Jodhpur on
+          any random day?
+        </p>
+        <p>
+          Since Jodhpur is in Rajasthan, close to the Thar Desert, the
+          likelihood of rain is very low - maybe less than 10%.
+        </p>
+        <p>
+          <strong>But what if I tell you:</strong> "It's a cloudy and windy day
+          today"
+        </p>
+        <p>
+          Now your belief changes dramatically! Given this observation, you
+          might predict more than 50% chance of rain.
+        </p>
+      </div>
+
+      <p>
+        This change in belief based on new information is exactly what
+        <span class="highlight">conditional probability</span> captures!
+      </p>
+
+      <div class="formula-box">
+        <h4>Conditional Probability Formula</h4>
+        <p>For two events A and B:</p>
+        <p>$$P(A|B) = \frac{P(A \cap B)}{P(B)}$$</p>
+        <p>Read as: "Probability of A given B"</p>
+      </div>
+
+      <p>In our example:</p>
+      <ul>
+        <li>Event A = Rain on a random day at Jodhpur</li>
+        <li>Event B = Weather is cloudy and windy</li>
+        <li>$P(A|B)$ = Probability of rain given that it's cloudy and windy</li>
+      </ul>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "By observing something,
+        your belief of something else has changed. So this is exactly what is
+        conditional probability... We can also write two events: whether is
+        cloudy is one event, whether is windy is another event. But for this
+        example, let's consider cloudy and windy as a single event."
+      </div>
+
+      <h3 id="cp-axioms">Axioms of Conditional Probability</h3>
+
+      <p>
+        Since conditional probability is still a probability, it must satisfy
+        the three fundamental axioms:
+      </p>
+
+      <table>
+        <tr>
+          <th>Axiom</th>
+          <th>Statement</th>
+          <th>Mathematical Form</th>
+        </tr>
+        <tr>
+          <td>1. Non-negativity</td>
+          <td>Conditional probability is always non-negative</td>
+          <td>$P(A|B) \geq 0$</td>
+        </tr>
+        <tr>
+          <td>2. Normalization</td>
+          <td>Probability of sample space given B is 1</td>
+          <td>$P(S|B) = 1$</td>
+        </tr>
+        <tr>
+          <td>3. Additivity</td>
+          <td>For mutually exclusive events A₁ and A₂</td>
+          <td>$P(A_1 \cup A_2|B) = P(A_1|B) + P(A_2|B)$</td>
+        </tr>
+      </table>
+
+      <div class="prof-note">
+        <strong>Professor's proof for Axiom 3:</strong> The professor
+        demonstrated that for mutually exclusive events A₁ and A₂: <br />$P(A_1
+        \cup A_2|B) = \frac{P((A_1 \cup A_2) \cap B)}{P(B)} = \frac{P((A_1 \cap
+        B) \cup (A_2 \cap B))}{P(B)}$ <br />Since A₁ and A₂ are mutually
+        exclusive, $(A_1 \cap B)$ and $(A_2 \cap B)$ are also mutually
+        exclusive, so: <br />$= \frac{P(A_1 \cap B) + P(A_2 \cap B)}{P(B)} =
+        P(A_1|B) + P(A_2|B)$
+      </div>
+
+      <h3 id="chain-rule">Chain Rule (Multiplication Rule)</h3>
+
+      <p>
+        From the conditional probability formula, we can derive the
+        <span class="highlight">chain rule</span>:
+      </p>
+
+      <div class="formula-box">
+        <p>$$P(A \cap B) = P(B) \cdot P(A|B) = P(A) \cdot P(B|A)$$</p>
+        <p>This gives us: $P(A) \cdot P(B|A) = P(B) \cdot P(A|B)$</p>
+      </div>
+
+      <h3 id="total-probability">Total Probability</h3>
+
+      <p>
+        If events $A_1, A_2, ..., A_n$ form a
+        <span class="highlight">partition</span> of the sample space (mutually
+        exclusive and their union equals the sample space), then:
+      </p>
+
+      <div class="formula-box">
+        <h4>Total Probability Theorem</h4>
+        <p>$$P(B) = \sum_{i=1}^{n} P(A_i) \cdot P(B|A_i)$$</p>
+      </div>
+
+      <div class="example-box">
+        <h4>Example: The Monster Roads</h4>
+        <p>
+          There are three roads (A₁, A₂, A₃), each with a monster. Event B =
+          encountering a monster.
+        </p>
+        <ul>
+          <li>$P(B|A_1) = 0.2$ (20% chance if taking road 1)</li>
+          <li>$P(B|A_2) = 0.8$ (80% chance if taking road 2)</li>
+          <li>$P(B|A_3) = 0.4$ (40% chance if taking road 3)</li>
+        </ul>
+        <p>
+          If we choose roads randomly: $P(A_1) = P(A_2) = P(A_3) = \frac{1}{3}$
+        </p>
+        <p>Total probability of encountering a monster:</p>
+        <p>
+          $P(B) = \frac{1}{3}(0.2) + \frac{1}{3}(0.8) + \frac{1}{3}(0.4) =
+          \frac{1}{3}(1.4) = 0.467$
+        </p>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "Since you don't know
+        anything about which path to choose, all the three paths are equal to
+        you... If you knew which path to choose, then you will obviously be
+        choosing A₁ because the chances of getting killed is less there."
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>💡 Hinglish Summary</h4>
+        <p>
+          Conditional probability ka matlab hai ki jab aapko kuch pata chal
+          jaata hai (like weather cloudy hai), toh aapka belief change ho jaata
+          hai about something else (like rain hone ka chance). Formula simple
+          hai: P(A|B) = P(A and B happening together) divided by P(B). Chain
+          rule se hum multiply kar sakte hain probabilities ko, aur total
+          probability theorem se hum sab possible cases ko add kar sakte hain.
+          Jaise monster wale example mein, teen roads hain aur har road pe alag
+          chance hai monster milne ka!
+        </p>
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🔑 Key Takeaways</h4>
+        <ul>
+          <li>
+            Conditional probability measures how probabilities change when we
+            gain new information
+          </li>
+          <li>Formula: $P(A|B) = \frac{P(A \cap B)}{P(B)}$</li>
+          <li>Chain rule allows us to compute joint probabilities</li>
+          <li>
+            Total probability theorem helps when we have a partition of the
+            sample space
+          </li>
+        </ul>
+      </div>
+
+      <div class="practice-section">
+        <h4>📝 Practice Questions</h4>
+        <ol>
+          <li>
+            <strong>Q:</strong> If P(Rain) = 0.3 and P(Cloudy|Rain) = 0.9, and
+            P(Cloudy) = 0.4, what is P(Rain|Cloudy)? <br /><strong>A:</strong>
+            Using Bayes' theorem: P(Rain|Cloudy) = P(Cloudy|Rain) × P(Rain) /
+            P(Cloudy) = 0.9 × 0.3 / 0.4 = 0.675
+          </li>
+
+          <li>
+            <strong>Q:</strong> Two roads lead to a city. Road A has 30% chance
+            of traffic, Road B has 70% chance. If you choose randomly, what's
+            the overall chance of encountering traffic? <br /><strong
+              >A:</strong
+            >
+            P(Traffic) = 0.5 × 0.3 + 0.5 × 0.7 = 0.15 + 0.35 = 0.5 or 50%
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="bayes-theorem">
+      <h2>🔮 Bayes' Theorem</h2>
+
+      <p>
+        Bayes' theorem is one of the most important concepts in pattern
+        recognition and machine learning. It connects different types of
+        probabilities in a powerful way.
+      </p>
+
+      <div class="formula-box">
+        <h4>Bayes' Theorem Formula</h4>
+        <p>$$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$$</p>
+        <p>Or in general form:</p>
+        <p>
+          $$\text{Posterior} = \frac{\text{Likelihood} \times
+          \text{Prior}}{\text{Evidence}}$$
+        </p>
+      </div>
+
+      <table>
+        <tr>
+          <th>Term</th>
+          <th>Symbol</th>
+          <th>Meaning</th>
+          <th>Example (Rain in Jodhpur)</th>
+        </tr>
+        <tr>
+          <td><span class="highlight">Posterior</span></td>
+          <td>$P(A|B)$</td>
+          <td>Updated probability after observing evidence</td>
+          <td>P(Rain|Cloudy)</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Likelihood</span></td>
+          <td>$P(B|A)$</td>
+          <td>How likely is the evidence given the hypothesis</td>
+          <td>P(Cloudy|Rain)</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Prior</span></td>
+          <td>$P(A)$</td>
+          <td>Initial belief before seeing evidence</td>
+          <td>P(Rain) = 0.1</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Evidence</span></td>
+          <td>$P(B)$</td>
+          <td>Total probability of observing the evidence</td>
+          <td>P(Cloudy)</td>
+        </tr>
+      </table>
+
+      <div class="example-box">
+        <h4>Complete Example: Rain Prediction with Bayes' Theorem</h4>
+        <p><strong>Given:</strong></p>
+        <ul>
+          <li>Prior: P(Rain) = 0.1, P(No Rain) = 0.9</li>
+          <li>Likelihood: P(Cloudy|Rain) = 0.7, P(Cloudy|No Rain) = 0.5</li>
+        </ul>
+        <p>
+          <strong>Step 1:</strong> Calculate Evidence using Total Probability
+        </p>
+        <p>
+          $P(\text{Cloudy}) = P(\text{Rain}) \cdot P(\text{Cloudy|Rain}) +
+          P(\text{No Rain}) \cdot P(\text{Cloudy|No Rain})$
+        </p>
+        <p>
+          $P(\text{Cloudy}) = 0.1 \times 0.7 + 0.9 \times 0.5 = 0.07 + 0.45 =
+          0.52$
+        </p>
+        <p><strong>Step 2:</strong> Apply Bayes' Theorem</p>
+        <p>
+          $P(\text{Rain|Cloudy}) = \frac{P(\text{Cloudy|Rain}) \cdot
+          P(\text{Rain})}{P(\text{Cloudy})} = \frac{0.7 \times 0.1}{0.52} =
+          \frac{0.07}{0.52} \approx 0.135$
+        </p>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "Posterior probability is
+        nothing but we have observed something and then we are deciding
+        something. Prior is something you have prior knowledge about some
+        system. Likelihood is sometimes called observation because this is what
+        you observe from data on different rainy days... Sometimes with less
+        cloud also there is rain, of course without cloud there is no rain, but
+        when there is some heavy cloud also sometimes it does not rain."
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>💡 Hinglish Summary</h4>
+        <p>
+          Bayes' theorem bahut important hai pattern recognition mein. Ye
+          basically bolta hai ki aapka prior belief (pehle se kya sochte the)
+          update hota hai jab aap kuch observe karte ho. Formula simple hai:
+          Posterior = (Likelihood × Prior) / Evidence. Jaise rain ka example -
+          pehle sirf 10% chance tha rain ka (prior), lekin cloudy dekh ke ye
+          belief change ho gaya (posterior). Machine learning mein isi concept
+          se Bayesian classifiers bante hain!
+        </p>
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🔑 Key Takeaways</h4>
+        <ul>
+          <li>Bayes' theorem updates our beliefs based on new evidence</li>
+          <li>
+            Four key components: Posterior, Likelihood, Prior, and Evidence
+          </li>
+          <li>Forms the foundation for Bayesian machine learning</li>
+          <li>Evidence is calculated using total probability theorem</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="independence">
+      <h2>🔗 Independence and Conditional Independence</h2>
+
+      <h3>Independent Events</h3>
+
+      <div class="example-box">
+        <h4>Example: Breakfast and Rain</h4>
+        <p>Event A: I had idli in my breakfast</p>
+        <p>Event B: It will rain today</p>
+        <p>
+          If A has occurred, will you change your belief about B?
+          <strong>No!</strong>
+        </p>
+        <p>
+          These events are intuitively unrelated - they are
+          <span class="highlight">independent</span>.
+        </p>
+      </div>
+
+      <div class="formula-box">
+        <h4>Mathematical Definition of Independence</h4>
+        <p>Two events A and B are independent if and only if:</p>
+        <p>
+          $$P(A|B) = P(A)$$ or equivalently $$P(A \cap B) = P(A) \cdot P(B)$$
+        </p>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "It's always advised to
+        do this independent check by using one of these formulas and not going
+        just by intuition because sometimes intuitions may fail but these
+        mathematical formulas will not."
+      </div>
+
+      <h3>Conditional Independence</h3>
+
+      <p>
+        This concept is crucial in pattern recognition, especially for
+        algorithms like Naive Bayes.
+      </p>
+
+      <div class="example-box">
+        <h4>Example: The Muddy Park</h4>
+        <p>Three events:</p>
+        <ul>
+          <li>A: It rained yesterday</li>
+          <li>B: Forgot to turn off the sprinkler</li>
+          <li>C: Park was muddy</li>
+        </ul>
+        <p>
+          <strong>Without knowing C:</strong> A and B are independent (rain and
+          forgetting sprinkler are unrelated)
+        </p>
+        <p>
+          <strong>Given C (park is muddy):</strong> A and B become dependent!
+        </p>
+        <p>
+          Why? If the park is muddy and it didn't rain (A is false), then B must
+          be true (sprinkler was left on). The observation of C creates a
+          dependency between A and B.
+        </p>
+      </div>
+
+      <div class="formula-box">
+        <h4>Conditional Independence Definition</h4>
+        <p>A and B are conditionally independent given C if:</p>
+        <p>$$P(A \cap B | C) = P(A|C) \cdot P(B|C)$$</p>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "Park was muddy and you
+        know that it did not rain yesterday. Then the probability of forgetting
+        to turn off the sprinkler is going to be extremely high because
+        otherwise there is no other reason for park to be muddy. Either it
+        rained or I forgot to turn off the sprinkler... So my belief about B is
+        changing because of this observation."
+      </div>
+
+      <div class="hinglish-summary">
+        <h4>💡 Hinglish Summary</h4>
+        <p>
+          Independent events wo hote hain jo ek dusre ko affect nahi karte -
+          jaise breakfast mein kya khaya aur rain hona. Mathematical check karne
+          ke liye formula use karo, sirf intuition pe mat jao. Conditional
+          independence thoda tricky hai - do events jo normally independent
+          hain, kisi teesre event ke hone pe dependent ban sakte hain. Jaise
+          park muddy hai (C) pata chalne pe, rain (A) aur sprinkler (B)
+          dependent ho jaate hain kyunki koi ek toh reason hoga muddy hone ka!
+        </p>
+      </div>
+
+      <div class="practice-section">
+        <h4>📝 Practice Questions</h4>
+        <ol>
+          <li>
+            <strong>Q:</strong> If P(A) = 0.4, P(B) = 0.3, and P(A∩B) = 0.12,
+            are A and B independent? <br /><strong>A:</strong> Check: P(A) ×
+            P(B) = 0.4 × 0.3 = 0.12 = P(A∩B). Yes, they are independent!
+          </li>
+
+          <li>
+            <strong>Q:</strong> Given three coins, Event A: first coin is heads,
+            Event B: second coin is heads. Are they independent? <br /><strong
+              >A:</strong
+            >
+            Yes, coin flips are independent. P(A∩B) = 0.5 × 0.5 = 0.25 = P(A) ×
+            P(B)
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="distributions">
+      <h2>📊 Probability Distributions</h2>
+
+      <p>
+        Understanding probability distributions is crucial because
+        <span class="highlight"
+          >most real-world data tends to follow specific distributions</span
+        >, especially the Gaussian distribution.
+      </p>
+
+      <h3 id="uniform">Uniform Distribution</h3>
+
+      <p>
+        In a uniform distribution,
+        <span class="highlight">every outcome is equally likely</span>.
+      </p>
+
+      <div class="example-box">
+        <h4>Example: Rolling a Fair Die</h4>
+        <p>
+          To generate numbers from 1 to 6 with uniform distribution, we can roll
+          a fair die. Each number has probability 1/6.
+        </p>
+        <p>
+          The professor demonstrated: "Throw the dice, got 2... throw again, got
+          1... got 6... got 5..." Each outcome is equally likely!
+        </p>
+      </div>
+
+      <h4>Discrete Uniform Distribution</h4>
+
+      <div class="formula-box">
+        <p>For a random variable X taking values between a and b (integers):</p>
+        <p>$$P(X = x) = \frac{1}{b - a + 1}$$ for $x \in \{a, a+1, ..., b\}$</p>
+        <p>$$P(X = x) = 0$$ otherwise</p>
+      </div>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Bar chart showing equal height bars from a to b on
+        x-axis, each with height 1/(b-a+1)]
+      </div>
+
+      <h4>Continuous Uniform Distribution</h4>
+
+      <div class="formula-box">
+        <p>For a continuous random variable X in interval [a, b]:</p>
+        <p>$$f(x) = \frac{1}{b - a}$$ for $x \in [a, b]$</p>
+        <p>$$f(x) = 0$$ otherwise</p>
+      </div>
+
+      <p>
+        We denote uniform distribution as
+        <span class="highlight">U(a, b)</span>.
+      </p>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "You can easily verify
+        that the summation... the integration from a to b of f(x) dx, this also
+        is 1. This also says that it is a valid probability density function."
+      </div>
+
+      <h3 id="gaussian">Gaussian (Normal) Distribution</h3>
+
+      <p>
+        The Gaussian distribution is
+        <span class="highlight"
+          >the most important distribution in pattern recognition</span
+        >
+        because most real-world data follows this pattern.
+      </p>
+
+      <h4>How to Generate Gaussian Distribution?</h4>
+
+      <div class="example-box">
+        <h4>Central Limit Theorem in Action</h4>
+        <p>The professor demonstrated using multiple dice:</p>
+        <ol>
+          <li>Roll 6 dice and sum the results</li>
+          <li>First roll: 5+3+8+5+5+13 = 31</li>
+          <li>Second roll: 6+4+10+11+12+18 = 23</li>
+          <li>Continue many times...</li>
+        </ol>
+        <p>
+          The distribution of these sums follows a
+          <span class="highlight">bell curve</span> (Gaussian distribution)!
+        </p>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "By the Central Limit
+        Theorem, if you just generate few things randomly and sum them up, the
+        underlying numbers what you finally get is going to have Gaussian
+        nature... If you have a very large class and if everything is fair and
+        there are many components where you are getting evaluated, and if I just
+        sum each of these components, what I usually see is this type of
+        distribution, which says that many people are around average."
+      </div>
+
+      <h4>One-Dimensional Gaussian Distribution</h4>
+
+      <div class="formula-box">
+        <p>For a random variable X with mean μ and variance σ²:</p>
+        <p>
+          $f(x) = \frac{1}{\sigma\sqrt{2\pi}}
+          \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$
+        </p>
+        <p>Denoted as: $X \sim \mathcal{N}(\mu, \sigma^2)$</p>
+      </div>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Bell curve showing normal distribution with μ at
+        center, σ markings showing spread]
+      </div>
+
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Symbol</th>
+          <th>Effect on Distribution</th>
+        </tr>
+        <tr>
+          <td><span class="highlight">Mean</span></td>
+          <td>μ (mu)</td>
+          <td>Shifts the center of the bell curve left or right</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Variance</span></td>
+          <td>σ² (sigma squared)</td>
+          <td>
+            Controls spread: High variance = flat curve, Low variance = sharp
+            peak
+          </td>
+        </tr>
+        <tr>
+          <td><span class="highlight">Standard Deviation</span></td>
+          <td>σ (sigma)</td>
+          <td>Square root of variance, measures typical deviation from mean</td>
+        </tr>
+      </table>
+
+      <h4>Multivariate Gaussian Distribution</h4>
+
+      <p>
+        In pattern recognition, we typically work with
+        <span class="highlight">high-dimensional data</span>, so we need the
+        multivariate version:
+      </p>
+
+      <div class="formula-box">
+        <p>For a d-dimensional random vector X:</p>
+        <p>
+          $f(\mathbf{x}) = \frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}}
+          \exp\left(-\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})^T\Sigma^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)$
+        </p>
+        <p>Where:</p>
+        <ul>
+          <li>$\boldsymbol{\mu}$ is the mean vector (d × 1)</li>
+          <li>$\Sigma$ is the covariance matrix (d × d)</li>
+          <li>$|\Sigma|$ is the determinant of the covariance matrix</li>
+          <li>$\Sigma^{-1}$ is the inverse of the covariance matrix</li>
+        </ul>
+      </div>
+
+      <div class="prof-note">
+        <strong>Professor mentioned in class:</strong> "If your data is, let's
+        say you have n data points, each of which is d dimension, the mean
+        vector is going to be d × 1... Covariance matrix on the other way is
+        going to be d × d... You can visualize till three dimension but beyond
+        that we just have to treat mathematically."
+      </div>
+
+      <h4>Properties of Gaussian Distribution</h4>
+
+      <table>
+        <tr>
+          <th>Property</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>Symmetry</td>
+          <td>Symmetric about the mean on both sides</td>
+        </tr>
+        <tr>
+          <td>Central Tendency</td>
+          <td>Mean = Median = Mode</td>
+        </tr>
+        <tr>
+          <td>68-95-99.7 Rule</td>
+          <td>
+            • 68% of data within μ ± σ<br />
+            • 95% of data within μ ± 2σ<br />
+            • 99.7% of data within μ ± 3σ
+          </td>
+        </tr>
+        <tr>
+          <td>Complete Characterization</td>
+          <td>Fully determined by μ and σ (just two parameters!)</td>
+        </tr>
+      </table>
+
+      <div class="hinglish-summary">
+        <h4>💡 Hinglish Summary</h4>
+        <p>
+          Uniform distribution mein sab outcomes equally likely hote hain, jaise
+          dice roll karne pe 1-6 sab ka same chance. Gaussian distribution bahut
+          important hai kyunki real-world data mostly isi pattern ko follow
+          karta hai - bell curve shape. Central Limit Theorem kehta hai ki agar
+          aap kai random numbers ko add karo, toh result Gaussian distribution
+          follow karega. Mean (μ) center decide karta hai aur variance (σ²)
+          spread decide karta hai. 68% data mean ke ± 1 sigma mein aata hai, 95%
+          data ± 2 sigma mein!
+        </p>
+      </div>
+
+      <div class="key-takeaways">
+        <h4>🔑 Key Takeaways</h4>
+        <ul>
+          <li>Uniform distribution: All outcomes equally likely</li>
+          <li>Gaussian distribution: Most important for pattern recognition</li>
+          <li>Central Limit Theorem explains why Gaussian is so common</li>
+          <li>
+            Gaussian is completely characterized by mean (μ) and variance (σ²)
+          </li>
+          <li>68-95-99.7 rule helps understand data spread</li>
+          <li>Multivariate Gaussian uses mean vector and covariance matrix</li>
+        </ul>
+      </div>
+
+      <div class="practice-section">
+        <h4>📝 Practice Questions</h4>
+        <ol>
+          <li>
+            <strong>Q:</strong> For U(1, 10), what is P(X = 5)? <br /><strong
+              >A:</strong
+            >
+            For discrete uniform: P(X = 5) = 1/(10-1+1) = 1/10 = 0.1
+          </li>
+
+          <li>
+            <strong>Q:</strong> If X ~ N(100, 25), what percentage of data lies
+            between 90 and 110? <br /><strong>A:</strong> μ = 100, σ = 5. Range
+            is μ ± 2σ, so approximately 95% of data
+          </li>
+
+          <li>
+            <strong>Q:</strong> Why do exam scores often follow a normal
+            distribution? <br /><strong>A:</strong> Due to Central Limit Theorem
+            - scores are sum of many independent components (questions), leading
+            to Gaussian distribution
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="mind-map">
+      <h2>🧠 Concept Mind Map</h2>
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <!-- Central Node -->
+        <circle
+          cx="400"
+          cy="300"
+          r="60"
+          fill="#3498db"
+          stroke="#2c3e50"
+          stroke-width="3"
+        />
+        <text
+          x="400"
+          y="305"
+          text-anchor="middle"
+          fill="white"
+          font-size="14"
+          font-weight="bold"
+        >
+          Probability Theory
+        </text>
+
+        <!-- Conditional Probability Branch -->
+        <line
+          x1="340"
+          y1="300"
+          x2="200"
+          y2="150"
+          stroke="#34495e"
+          stroke-width="2"
+        />
+        <circle
+          cx="200"
+          cy="150"
+          r="45"
+          fill="#e74c3c"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text x="200" y="155" text-anchor="middle" fill="white" font-size="12">
+          Conditional
+          <tspan x="200" dy="15">Probability</tspan>
+        </text>
+
+        <!-- Sub-nodes for Conditional Probability -->
+        <line
+          x1="155"
+          y1="150"
+          x2="100"
+          y2="100"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="50"
+          y="85"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="100" y="104" text-anchor="middle" font-size="11">
+          P(A|B) Formula
+        </text>
+
+        <line
+          x1="155"
+          y1="150"
+          x2="100"
+          y2="200"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="50"
+          y="185"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="100" y="204" text-anchor="middle" font-size="11">
+          Chain Rule
+        </text>
+
+        <line
+          x1="200"
+          y1="105"
+          x2="200"
+          y2="50"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="150"
+          y="35"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="200" y="54" text-anchor="middle" font-size="11">
+          Total Probability
+        </text>
+
+        <!-- Bayes Theorem Branch -->
+        <line
+          x1="400"
+          y1="240"
+          x2="400"
+          y2="150"
+          stroke="#34495e"
+          stroke-width="2"
+        />
+        <circle
+          cx="400"
+          cy="150"
+          r="45"
+          fill="#9b59b6"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text x="400" y="155" text-anchor="middle" fill="white" font-size="12">
+          Bayes'
+          <tspan x="400" dy="15">Theorem</tspan>
+        </text>
+
+        <!-- Sub-nodes for Bayes -->
+        <line
+          x1="355"
+          y1="150"
+          x2="300"
+          y2="100"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="250"
+          y="85"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="300" y="104" text-anchor="middle" font-size="11">
+          Posterior
+        </text>
+
+        <line
+          x1="445"
+          y1="150"
+          x2="500"
+          y2="100"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="450"
+          y="85"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="500" y="104" text-anchor="middle" font-size="11">
+          Likelihood
+        </text>
+
+        <line
+          x1="400"
+          y1="105"
+          x2="400"
+          y2="50"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="350"
+          y="35"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="400" y="54" text-anchor="middle" font-size="11">
+          Prior/Evidence
+        </text>
+
+        <!-- Independence Branch -->
+        <line
+          x1="460"
+          y1="300"
+          x2="600"
+          y2="150"
+          stroke="#34495e"
+          stroke-width="2"
+        />
+        <circle
+          cx="600"
+          cy="150"
+          r="45"
+          fill="#f39c12"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text x="600" y="155" text-anchor="middle" fill="white" font-size="12">
+          Independence
+        </text>
+
+        <!-- Sub-nodes for Independence -->
+        <line
+          x1="600"
+          y1="105"
+          x2="600"
+          y2="50"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="530"
+          y="35"
+          width="140"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="600" y="54" text-anchor="middle" font-size="11">
+          P(A∩B) = P(A)P(B)
+        </text>
+
+        <line
+          x1="645"
+          y1="150"
+          x2="700"
+          y2="100"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="650"
+          y="85"
+          width="100"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="700" y="104" text-anchor="middle" font-size="11">
+          Conditional Indep.
+        </text>
+
+        <!-- Distributions Branch -->
+        <line
+          x1="400"
+          y1="360"
+          x2="400"
+          y2="450"
+          stroke="#34495e"
+          stroke-width="2"
+        />
+        <circle
+          cx="400"
+          cy="450"
+          r="45"
+          fill="#27ae60"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text x="400" y="455" text-anchor="middle" fill="white" font-size="12">
+          Distributions
+        </text>
+
+        <!-- Sub-nodes for Distributions -->
+        <line
+          x1="355"
+          y1="450"
+          x2="250"
+          y2="500"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="180"
+          y="485"
+          width="140"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="250" y="504" text-anchor="middle" font-size="11">
+          Uniform U(a,b)
+        </text>
+
+        <line
+          x1="445"
+          y1="450"
+          x2="550"
+          y2="500"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="480"
+          y="485"
+          width="140"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="550" y="504" text-anchor="middle" font-size="11">
+          Gaussian N(μ,σ²)
+        </text>
+
+        <line
+          x1="400"
+          y1="495"
+          x2="400"
+          y2="550"
+          stroke="#95a5a6"
+          stroke-width="1"
+        />
+        <rect
+          x="330"
+          y="535"
+          width="140"
+          height="30"
+          fill="#ecf0f1"
+          stroke="#7f8c8d"
+          stroke-width="1"
+          rx="5"
+        />
+        <text x="400" y="554" text-anchor="middle" font-size="11">
+          Central Limit Theorem
+        </text>
+
+        <!-- Connection lines showing relationships -->
+        <line
+          x1="245"
+          y1="150"
+          x2="355"
+          y2="150"
+          stroke="#95a5a6"
+          stroke-width="1"
+          stroke-dasharray="5,5"
+          opacity="0.5"
+        />
+        <text
+          x="300"
+          y="145"
+          text-anchor="middle"
+          font-size="10"
+          fill="#7f8c8d"
+        >
+          uses
+        </text>
+      </svg>
+    </div>
+
+    <footer
+      style="
+        margin-top: 50px;
+        padding: 20px;
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        border-radius: 8px;
+      "
+    >
+      <p>📚 <strong>Pattern Recognition Principles - Lecture 3</strong></p>
+      <p>
+        Topics Covered: Conditional Probability | Bayes' Theorem | Independence
+        | Probability Distributions
+      </p>
+      <p> Created by: Armaan Kachhawa</p>
+    </footer>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation of AI: Game Trees, Min-Max Algorithm & Alpha-Beta Pruning</title>
+    
+    <!-- MathJax Configuration -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><path d="M0,20 Q250,0 500,20 T1000,20 L1000,100 L0,100 Z"/></svg>');
+            background-size: cover;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .toc {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        
+        .toc li {
+            counter-increment: toc-counter;
+            margin: 15px 0;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .toc li:hover {
+            transform: translateX(10px);
+        }
+        
+        .toc li::before {
+            content: counter(toc-counter);
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        .toc a:hover {
+            color: #3498db;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h2 {
+            font-size: 2em;
+            border-left: 5px solid #e74c3c;
+            padding-left: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 30px 0 20px 0;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #e74c3c;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+        
+        .key-term {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .definition-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .definition-box::before {
+            content: '💡';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        
+        .definition-box h4 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            padding-left: 20px;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .example-box::before {
+            content: '📝';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #ffc107;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        
+        .example-box h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            padding-left: 20px;
+        }
+        
+        .professor-note {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            border: 2px solid #17a2b8;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .professor-note::before {
+            content: '👨‍🏫';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #17a2b8;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        
+        .professor-note p {
+            padding-left: 20px;
+            color: #0c5460;
+            font-weight: 500;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .hinglish-summary::before {
+            content: '🎯';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        
+        .hinglish-summary h4 {
+            color: #721c24;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            padding-left: 20px;
+        }
+        
+        .hinglish-summary p {
+            color: #721c24;
+            font-weight: 500;
+            padding-left: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e8f4f8;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .algorithm-steps {
+            background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #5f6368;
+        }
+        
+        .algorithm-steps h4 {
+            color: #202124;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .algorithm-steps ol {
+            counter-reset: step-counter;
+            list-style: none;
+        }
+        
+        .algorithm-steps li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            padding-left: 60px;
+        }
+        
+        .algorithm-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #5f6368;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .complexity-box {
+            background: linear-gradient(135deg, #ffe8e8 0%, #ffcccb 100%);
+            border: 3px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .complexity-box h4 {
+            color: #d63031;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .complexity-formula {
+            font-size: 1.3em;
+            color: #2d3436;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .practice-questions {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .practice-questions h4 {
+            color: #155724;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question h5 {
+            color: #28a745;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196f3;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .key-takeaways h4 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+        }
+        
+        .key-takeaways li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e1f5fe;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .key-takeaways li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2196f3;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .mind-map {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 3px solid #9c27b0;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .mind-map h3 {
+            color: #4a148c;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .mind-map-node {
+            background: white;
+            border: 3px solid #9c27b0;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .mind-map-node:hover {
+            transform: scale(1.05);
+        }
+        
+        .mind-map-node h4 {
+            color: #4a148c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .mind-map-node ul {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .mind-map-node li {
+            padding: 5px 0;
+            color: #6a1b9a;
+            font-weight: 500;
+        }
+        
+        .mind-map-node li::before {
+            content: '→';
+            margin-right: 10px;
+            color: #9c27b0;
+            font-weight: bold;
+        }
+        
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+            border: 2px dashed #9e9e9e;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 25px 0;
+            text-align: center;
+            color: #616161;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .mind-map-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .toc li {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Foundation of AI</h1>
+            <div class="subtitle">Game Trees, Min-Max Algorithm & Alpha-Beta Pruning</div>
+            <div class="subtitle">IIT Jodhpur | BS/BSc in Applied AI and Data Science | Sem 2 - 2025</div>
+        </header>
+        
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h2>📚 Table of Contents</h2>
+                <ol>
+                    <li><a href="#introduction">Introduction to Game Trees</a></li>
+                    <li><a href="#minmax">Min-Max Algorithm</a></li>
+                    <li><a href="#alphabeta">Alpha-Beta Pruning</a></li>
+                    <li><a href="#mindmap">Comprehensive Mind Map</a></li>
+                </ol>
+            </div>
+
+            <!-- Introduction to Game Trees -->
+            <section id="introduction">
+                <h1>1. Introduction to Game Trees</h1>
+                
+                <div class="definition-box">
+                    <h4>What is a Game Tree?</h4>
+                    <p>A <span class="key-term">game tree</span> represents all possible moves in a <span class="key-term">two-player, zero-sum game</span> where:</p>
+                    <ul>
+                        <li>Each <span class="key-term">node</span> represents a game state</li>
+                        <li><span class="key-term">Edges</span> represent possible moves</li>
+                        <li><span class="key-term">Leaf nodes</span> have utility values (scores)</li>
+                        <li>Players alternate turns: <span class="key-term">MAX player</span> (maximizes score) and <span class="key-term">MIN player</span> (minimizes score)</li>
+                    </ul>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "Today we will talk about the strategy of agents in a game scenario. We are considering a two-player game where my objective is to reach the goal - which is to win. As I am trying to win, my opponent is also trying to win the game."</p>
+                </div>
+
+                <h3>Key Concepts from Game Theory</h3>
+                
+                <div class="example-box">
+                    <h4>Zero-Sum Game Example</h4>
+                    <p>In a zero-sum game, if I win (+1), my opponent loses (-1). The total sum is always zero: (+1) + (-1) = 0. This is why it's called a "zero-sum" game.</p>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "As an AI agent, my moves not only depend on the board configuration, it also depends on what the opposition is going to play. If I can foresee the game in the long run - looking 10 moves ahead, 20 moves ahead, 30 moves ahead - that actually determines how intelligent I am as an AI agent."</p>
+                </div>
+
+                <h3>Game State Representation</h3>
+                <p>In games like chess, the <span class="key-term">state</span> is the configuration of the board. Each time a move is made, the state changes. An intelligent AI agent must be able to:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Capability</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Look Ahead</strong></td>
+                            <td>Predict future game states</td>
+                            <td>Chess master analyzing 10-20 moves ahead</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Evaluate States</strong></td>
+                            <td>Use evaluation function on board configurations</td>
+                            <td>Assigning numerical values to positions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plan Strategy</strong></td>
+                            <td>Choose moves that maximize winning chances</td>
+                            <td>Selecting moves that lead to favorable positions</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Simple Game Tree with MAX and MIN nodes showing values 3, 5, 2, 8]
+                </div>
+
+                <div class="hinglish-summary">
+                    <h4>🎯 Hinglish Summary</h4>
+                    <p>Game tree matlab ek structure hai jo saare possible moves ko represent karta hai do players ke beech mein. Har node ek game state hai, aur edges possible moves hain. MAX player score maximize karne ki koshish karta hai, MIN player minimize karne ki. Zero-sum game mein agar main jeetun (+1) to opponent harega (-1), total hamesha zero.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <h4>🤔 Practice Questions</h4>
+                    <div class="question">
+                        <h5>Q1: What makes a game "zero-sum"?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> A game is zero-sum when one player's gain equals the other player's loss, making the total sum of all players' gains and losses equal to zero.
+                        </div>
+                    </div>
+                    <div class="question">
+                        <h5>Q2: Why is "looking ahead" important for an AI agent?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> Looking ahead allows the AI to predict future game states and choose moves that lead to better outcomes, similar to how expert chess players analyze multiple moves in advance.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4>🔑 Key Takeaways</h4>
+                    <ul>
+                        <li>Game trees model two-player competitive scenarios</li>
+                        <li>Each node represents a game state, edges represent moves</li>
+                        <li>MAX player maximizes utility, MIN player minimizes it</li>
+                        <li>Intelligence in AI comes from the ability to look ahead multiple moves</li>
+                        <li>Zero-sum games have winners and losers with opposite outcomes</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Min-Max Algorithm -->
+            <section id="minmax">
+                <h1>2. Min-Max Algorithm</h1>
+                
+                <div class="definition-box">
+                    <h4>Min-Max Algorithm Concept</h4>
+                    <p>The <span class="key-term">Min-Max algorithm</span> is used to find the optimal move in a two-player, zero-sum game. It assumes both players play optimally:</p>
+                    <ul>
+                        <li><span class="key-term">MAX player</span> tries to maximize the utility</li>
+                        <li><span class="key-term">MIN player</span> tries to minimize the utility</li>
+                        <li>Works by recursively evaluating game states</li>
+                        <li><strong>Key Idea:</strong> Choose the move that leads to the best worst-case scenario</li>
+                    </ul>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "The concept of the min-max algorithm is to find the optimal move in a two-player zero-sum game and we are assuming that both the players are playing optimally. MAX player will try to maximize this utility, and the MIN player will try to minimize the utility."</p>
+                </div>
+
+                <h3>How Min-Max Works</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Min-Max Algorithm Steps</h4>
+                    <ol>
+                        <li>Start from the leaf nodes (terminal states) with their utility values</li>
+                        <li>Work backwards level by level towards the root</li>
+                        <li>At MIN levels: select the minimum value among children</li>
+                        <li>At MAX levels: select the maximum value among children</li>
+                        <li>Continue until reaching the root node</li>
+                        <li>The root value indicates the best achievable score for MAX player</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <h4>Min-Max Example Walkthrough</h4>
+                    <p>Consider a game tree with leaf values: 3, 5, 2, 8</p>
+                    <p><strong>Step-by-step evaluation:</strong></p>
+                    <ul>
+                        <li><strong>Level 2 (MIN nodes):</strong> 
+                            <ul>
+                                <li>Left MIN node: min(3, 5) = 3</li>
+                                <li>Right MIN node: min(2, 8) = 2</li>
+                            </ul>
+                        </li>
+                        <li><strong>Level 1 (MAX node):</strong> 
+                            <ul>
+                                <li>Root MAX node: max(3, 2) = 3</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>Result:</strong> MAX player can guarantee a score of at least 3</p>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "Nobody gets what they wished for - it's like a compromised position they come across. The MAX player's objective was to reach the maximum value (8), and the MIN player's objective was to make the MAX player get the minimum (2), but we end up with a value of 3."</p>
+                </div>
+
+                <h3>Detailed Example Analysis</h3>
+                
+                <div class="example-box">
+                    <h4>Another Min-Max Example (Values: 2, 7, 1, 8)</h4>
+                    <p><strong>Professor's explanation:</strong></p>
+                    <ul>
+                        <li><strong>Left branch:</strong> min(2, 7) = 2 → MAX knows it can get ≥ 2 from left</li>
+                        <li><strong>Right branch:</strong> min(1, 8) = 1 → MAX would only get ≤ 1 from right</li>
+                        <li><strong>Decision:</strong> MAX chooses left branch (value = 2)</li>
+                        <li><strong>Outcome:</strong> Neither player gets their ideal result - compromise at value 2</li>
+                    </ul>
+                </div>
+
+                <h3>Time Complexity Analysis</h3>
+                
+                <div class="complexity-box">
+                    <h4>⏱️ Time Complexity</h4>
+                    <div class="complexity-formula">
+                        $$O(b^d)$$
+                        <p>where <strong>b</strong> = branching factor, <strong>d</strong> = depth</p>
+                    </div>
+                    <p><strong>Chess Example:</strong> b ≈ 35, d ≈ 6 ⟹ $35^6$ ≈ 1.8 billion positions!</p>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "If you look at games like chess, there are so many moves at any given state. When d is large and b is also large, this complexity becomes huge. So our next objective is: can we do better than this?"</p>
+                </div>
+
+                <div class="hinglish-summary">
+                    <h4>🎯 Hinglish Summary</h4>
+                    <p>Min-Max algorithm optimal move find karne ke liye use hota hai. MAX player maximum score chahiye, MIN player maximum ko minimum score dena chahiye. Algorithm leaf nodes se start karke upar tak recursively calculate karta hai. Time complexity $O(b^d)$ hai jo bohot zyada ho sakti hai large games mein jaise chess.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <h4>🤔 Practice Questions</h4>
+                    <div class="question">
+                        <h5>Q1: In a Min-Max tree, if MAX player can choose between paths leading to values 4 and 7, which will it choose?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> MAX player will choose the path leading to value 7 because it wants to maximize its utility.
+                        </div>
+                    </div>
+                    <div class="question">
+                        <h5>Q2: Why does Min-Max assume both players play optimally?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> This assumption ensures the algorithm finds the best strategy against the strongest possible opponent, providing guaranteed performance bounds.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4>🔑 Key Takeaways</h4>
+                    <ul>
+                        <li>Min-Max finds optimal moves assuming perfect play from both sides</li>
+                        <li>Algorithm works recursively from leaf nodes to root</li>
+                        <li>MAX levels choose maximum values, MIN levels choose minimum values</li>
+                        <li>Results often represent compromise positions, not ideal outcomes</li>
+                        <li>Time complexity $O(b^d)$ can be prohibitive for deep, wide trees</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Alpha-Beta Pruning -->
+            <section id="alphabeta">
+                <h1>3. Alpha-Beta Pruning</h1>
+                
+                <div class="definition-box">
+                    <h4>Alpha-Beta Pruning Motivation</h4>
+                    <p><strong>Problem with Min-Max:</strong></p>
+                    <ul>
+                        <li>Explores entire game tree</li>
+                        <li>Time complexity: $O(b^d)$ where b is branching factor, d is depth</li>
+                        <li>For chess: b ≈ 35, d ≈ 6 ⟹ $35^6$ ≈ 1.8 billion positions!</li>
+                    </ul>
+                    <p><strong>Solution: Alpha-Beta Pruning</strong></p>
+                    <ul>
+                        <li>Eliminates branches that cannot affect the final result</li>
+                        <li>Same result as Min-Max, but faster</li>
+                        <li>Best case: $O(b^{d/2})$ - can search twice as deep!</li>
+                    </ul>
+                </div>
+
+                <h3>Alpha-Beta Concepts</h3>
+                
+                <div class="definition-box">
+                    <h4>Key Parameters</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Definition</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Alpha (α)</strong></td>
+                                <td>Best value MAX can guarantee so far</td>
+                                <td>Lower bound for MAX</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Beta (β)</strong></td>
+                                <td>Best value MIN can guarantee so far</td>
+                                <td>Upper bound for MIN</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>Pruning Condition:</strong> If α ≥ β, prune remaining branches</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>Pruning Intuition</h4>
+                    <p><strong>Key Insight:</strong> If MAX has a choice that's already better than what MIN will allow, no need to explore further. MIN won't choose a path that gives MAX a better outcome.</p>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "Once we have computed some values, we can immediately know whether we need to evaluate the remaining branches or not. For example, if the MAX player can already guarantee a value ≥ 7 from the left branch, and the right branch can only provide ≤ 3, then we can cut off the right branch."</p>
+                </div>
+
+                <h3>Alpha-Beta Algorithm Steps</h3>
+                
+                <div class="algorithm-steps">
+                    <h4>Alpha-Beta Pruning Process</h4>
+                    <ol>
+                        <li>Initialize α = -∞ (best for MAX), β = +∞ (best for MIN)</li>
+                        <li>Evaluate nodes from left to right</li>
+                        <li>At MAX nodes: update α = max(α, child_value)</li>
+                        <li>At MIN nodes: update β = min(β, child_value)</li>
+                        <li>If α ≥ β at any point, prune remaining children</li>
+                        <li>Return the final value without exploring pruned branches</li>
+                    </ol>
+                </div>
+
+                <h3>Detailed Example Walkthrough</h3>
+                
+                <div class="example-box">
+                    <h4>Alpha-Beta Example (Values: 8, 7, 3, 9, 8, 1, 8, 9)</h4>
+                    <p><strong>Step-by-step execution:</strong></p>
+                    <ol>
+                        <li><strong>Evaluate 8, 7:</strong> MIN node gets min(8,7) = 7, MAX node gets α ≥ 7</li>
+                        <li><strong>Start right branch, find 3:</strong> MIN node gets β ≤ 3</li>
+                        <li><strong>Pruning decision:</strong> Since α(7) ≥ β(3), cut off remaining evaluation</li>
+                        <li><strong>Result:</strong> Significant computation saved without exploring all branches</li>
+                    </ol>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "We have two types of cutoffs: adjacent cutoffs (when we're looking at adjacent values) and deep cutoffs (when the values are apart from each other in the tree but we can still prune based on alpha-beta values)."</p>
+                </div>
+
+                <h3>Types of Cutoffs</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cutoff Type</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Adjacent Cutoff</strong></td>
+                            <td>Pruning between sibling nodes</td>
+                            <td>MIN node with children 2 and 7 → no need to check further children</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deep Cutoff</strong></td>
+                            <td>Pruning distant branches based on α-β values</td>
+                            <td>Pruning entire subtrees when α ≥ β condition is met</td>
+                        </tr>
+                    </tbody>
+                    </table>
+
+                <div class="complexity-box">
+                    <h4>⚡ Performance Improvement</h4>
+                    <div class="complexity-formula">
+                        Best Case: $O(b^{d/2})$<br>
+                        Average Case: $O(b^{3d/4})$<br>
+                        Worst Case: $O(b^d)$ (same as Min-Max)
+                    </div>
+                    <p><strong>Practical Benefit:</strong> Can search twice as deep in the same time!</p>
+                </div>
+
+                <div class="professor-note">
+                    <p><strong>Professor mentioned in class:</strong> "Alpha-beta pruning gives the same result as Min-Max but in less time. We don't have to evaluate certain branches, and we don't have to generate those moves, which saves complexity. The final value is the same - both algorithms give value 8 in our example."</p>
+                </div>
+
+                <div class="diagram-placeholder">
+                    [Insert diagram: Alpha-Beta pruning example showing cut-off branches with α and β values]
+                </div>
+
+                <div class="hinglish-summary">
+                    <h4>🎯 Hinglish Summary</h4>
+                    <p>Alpha-Beta pruning Min-Max algorithm ko faster banata hai bina result change kiye. Alpha (α) MAX player ka best guarantee hai, Beta (β) MIN player ka. Jab α ≥ β ho jaye, remaining branches ko cut kar dete hain kyunki unka explore karna waste hai. Best case mein complexity $O(b^{d/2})$ ho jati hai, matlab double depth tak search kar sakte hain same time mein.</p>
+                </div>
+
+                <div class="practice-questions">
+                    <h4>🤔 Practice Questions</h4>
+                    <div class="question">
+                        <h5>Q1: When does Alpha-Beta pruning occur?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> Pruning occurs when α ≥ β, meaning the MAX player already has a better option than what the MIN player will allow.
+                        </div>
+                    </div>
+                    <div class="question">
+                        <h5>Q2: Does Alpha-Beta pruning change the final result compared to Min-Max?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> No, Alpha-Beta pruning produces the exact same result as Min-Max but with improved efficiency by eliminating unnecessary computations.
+                        </div>
+                    </div>
+                    <div class="question">
+                        <h5>Q3: What is the best-case time complexity improvement?</h5>
+                        <div class="answer">
+                            <strong>Answer:</strong> Best case improves from $O(b^d)$ to $O(b^{d/2})$, allowing search to twice the depth in the same time.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4>🔑 Key Takeaways</h4>
+                    <ul>
+                        <li>Alpha-Beta pruning optimizes Min-Max without changing results</li>
+                        <li>Uses α (MAX's best) and β (MIN's best) to identify unnecessary branches</li>
+                        <li>Pruning condition: α ≥ β eliminates remaining child exploration</li>
+                        <li>Best case complexity: $O(b^{d/2})$ vs Min-Max's $O(b^d)$</li>
+                        <li>Enables deeper search in practical game-playing applications</li>
+                        <li>Both adjacent and deep cutoffs contribute to efficiency gains</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Comprehensive Mind Map -->
+            <section id="mindmap">
+                <div class="mind-map">
+                    <h3>🧠 Comprehensive Mind Map</h3>
+                    <div class="mind-map-content">
+                        <div class="mind-map-node">
+                            <h4>Game Trees</h4>
+                            <ul>
+                                <li>Two-player games</li>
+                                <li>Zero-sum property</li>
+                                <li>Nodes = game states</li>
+                                <li>Edges = possible moves</li>
+                                <li>Leaf nodes = utility values</li>
+                                <li>MAX vs MIN players</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mind-map-node">
+                            <h4>Min-Max Algorithm</h4>
+                            <ul>
+                                <li>Optimal move selection</li>
+                                <li>Recursive evaluation</li>
+                                <li>Bottom-up computation</li>
+                                <li>MAX maximizes utility</li>
+                                <li>MIN minimizes utility</li>
+                                <li>Time: $O(b^d)$</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mind-map-node">
+                            <h4>Alpha-Beta Pruning</h4>
+                            <ul>
+                                <li>Efficiency optimization</li>
+                                <li>Branch elimination</li>
+                                <li>α = MAX's best guarantee</li>
+                                <li>β = MIN's best guarantee</li>
+                                <li>Pruning: α ≥ β</li>
+                                <li>Best case: $O(b^{d/2})$</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mind-map-node">
+                            <h4>Key Connections</h4>
+                            <ul>
+                                <li>Game trees → structure</li>
+                                <li>Min-Max → strategy</li>
+                                <li>Alpha-Beta → efficiency</li>
+                                <li>All produce same results</li>
+                                <li>Complexity trade-offs</li>
+                                <li>Practical applications</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Summary -->
+            <div class="hinglish-summary">
+                <h4>🎯 Complete Course Summary (Hinglish)</h4>
+                <p>Is lecture mein humne dekha ki AI agents kaise games khelte hain. Game trees saare possible moves ko represent karte hain. Min-Max algorithm optimal moves find karta hai assuming dono players perfect khel rahe hain. Lekin ye algorithm bohot slow hai $O(b^d)$ complexity ke saath. Alpha-Beta pruning same result deta hai but much faster - best case mein $O(b^{d/2})$. Ye technique real games like chess mein bahut useful hai kyunki deeper search kar sakte hain same time mein.</p>
+            </div>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

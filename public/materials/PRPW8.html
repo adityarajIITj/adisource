@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition Principles - Lecture 8: Distance Metrics and KNN Algorithm</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+          processEscapes: true,
+        },
+        options: {
+          // keep default behavior but ensure scripts/noscript/style/textarea/pre/code are skipped
+          skipHtmlTags: [
+            "script",
+            "noscript",
+            "style",
+            "textarea",
+            "pre",
+            "code",
+          ],
+        },
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        /* ==================== HEADER SECTION ==================== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header .subtitle {
+            color: #764ba2;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .header .course-info {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #764ba2;
+        }
+        
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .toc li.sub-item {
+            margin-left: 25px;
+            font-size: 0.95em;
+        }
+        
+        /* ==================== SECTION HEADINGS ==================== */
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* ==================== TEXT CONTENT ==================== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            font-size: 1.05em;
+        }
+        
+        strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* ==================== SPECIAL BOXES ==================== */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box {
+            background: #f1f8e9;
+            border-left: 5px solid #8bc34a;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #fce4ec;
+            border-left: 5px solid #e91e63;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #e91e63;
+        }
+        
+        /* ==================== FORMULA BOXES ==================== */
+        .formula {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        /* ==================== HINGLISH SUMMARY ==================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border: 3px solid #ff6b6b;
+        }
+        
+        .hinglish-summary h4 {
+            color: #c92a2a;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            color: #333;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+        
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: #e8f5e9;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .key-takeaways h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding-left: 30px;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .key-takeaways li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-questions {
+            background: #fff9c4;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #fbc02d;
+        }
+        
+        .practice-questions h4 {
+            color: #f57f17;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .answer:before {
+            content: "Answer: ";
+            font-weight: bold;
+            color: #4caf50;
+        }
+        
+        /* ==================== IMAGE PLACEHOLDERS ==================== */
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            margin: 25px 0;
+            text-align: center;
+            border-radius: 8px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* ==================== MIND MAP ==================== */
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 3px solid #667eea;
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .main-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .subtopics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .subtopic {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .subtopic h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .subtopic ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .subtopic li {
+            padding: 5px 0;
+            color: #333;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 3px solid #667eea;
+            text-align: center;
+            color: #666;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .subtopics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ==================== HEADER SECTION ==================== -->
+        <div class="header">
+            <h1>Pattern Recognition Principles</h1>
+            <div class="subtitle">Lecture 8: Distance Metrics and K-Nearest Neighbors (KNN) Algorithm</div>
+            <div class="course-info">By Armaan Kachhawa</div>
+        </div>
+        
+        <!-- ==================== TABLE OF CONTENTS ==================== -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap: Performance Metrics</a></li>
+                <li><a href="#intro">2. Introduction to Distance in Pattern Recognition</a></li>
+                <li><a href="#representation">3. Feature Representation: The Apple vs Orange Example</a></li>
+                <li class="sub-item"><a href="#2d-representation">3.1 Representing Fruits in 2D Space</a></li>
+                <li class="sub-item"><a href="#feature-space">3.2 Understanding Feature Space</a></li>
+                <li><a href="#distance-metrics">4. Distance Metrics</a></li>
+                <li class="sub-item"><a href="#euclidean">4.1 Euclidean Distance (L2)</a></li>
+                <li class="sub-item"><a href="#manhattan">4.2 Manhattan Distance (L1)</a></li>
+                <li class="sub-item"><a href="#chebyshev">4.3 Chebyshev Distance (L∞)</a></li>
+                <li class="sub-item"><a href="#distance-comparison">4.4 Comparing Distance Metrics</a></li>
+                <li><a href="#knn-algorithm">5. K-Nearest Neighbors (KNN) Algorithm</a></li>
+                <li class="sub-item"><a href="#knn-concept">5.1 Concept and Intuition</a></li>
+                <li class="sub-item"><a href="#knn-steps">5.2 Algorithm Steps</a></li>
+                <li class="sub-item"><a href="#knn-examples">5.3 Worked Examples</a></li>
+                <li><a href="#knn-drawbacks">6. Drawbacks and Limitations of KNN</a></li>
+                <li><a href="#conclusion">7. Summary and Key Takeaways</a></li>
+                <li><a href="#mind-map">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 1: RECAP ==================== -->
+        <section id="recap">
+            <h2>1. Recap: Performance Metrics</h2>
+            
+            <p>In the previous lecture, we covered various <strong>performance metrics</strong> that are essential for evaluating machine learning models, particularly in supervised learning scenarios. These metrics help us understand how well our pattern recognition algorithms are performing.</p>
+            
+            <h3>Key Performance Metrics Covered:</h3>
+            <ul>
+                <li><strong>Accuracy</strong>: Overall correctness of predictions</li>
+                <li><strong>True Positive (TP)</strong>: Correctly predicted positive cases</li>
+                <li><strong>False Positive (FP)</strong>: Incorrectly predicted as positive (Type I error)</li>
+                <li><strong>True Negative (TN)</strong>: Correctly predicted negative cases</li>
+                <li><strong>False Negative (FN)</strong>: Incorrectly predicted as negative (Type II error)</li>
+                <li><strong>Precision</strong>: Accuracy of positive predictions</li>
+                <li><strong>Recall (Sensitivity)</strong>: Coverage of actual positive cases</li>
+                <li><strong>F1-Score</strong>: Harmonic mean of precision and recall</li>
+                <li><strong>ROC Curve</strong>: Trade-off between true positive and false positive rates</li>
+            </ul>
+            
+            <div class="professor-note">
+                These metrics will be used throughout this course while measuring the performance of any ML algorithm, especially in supervised learning. They are fundamental tools for understanding model effectiveness.
+            </div>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Pichle lecture mein humne performance metrics ke baare mein padha tha - jaise ki accuracy, precision, recall, F1-score, aur ROC curve. Ye sab metrics humein batate hain ki hamara ML model kitna achha perform kar raha hai. Aaj hum distance-based algorithms ke baare mein padhenge, specifically KNN algorithm, jo ki in metrics ka use karke apna performance measure karta hai.</p>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 2: INTRODUCTION ==================== -->
+        <section id="intro">
+            <h2>2. Introduction to Distance in Pattern Recognition</h2>
+            
+            <p>Today's lecture focuses on a particular type of machine learning algorithm that is fundamentally based on the concept of <strong>distance</strong>. Distance is a crucial concept in pattern recognition because it helps us understand how similar or different data points are from each other in the feature space.</p>
+            
+            <h3>Why is Distance Important?</h3>
+            <p>Distance measures allow us to:</p>
+            <ul>
+                <li>Quantify similarity between data samples</li>
+                <li>Classify new samples based on their proximity to known samples</li>
+                <li>Create decision boundaries in the feature space</li>
+                <li>Implement intuitive and interpretable classification algorithms</li>
+            </ul>
+            
+            <div class="info-box">
+                <strong>Learning Objectives:</strong><br>
+                • Understand different types of distance metrics<br>
+                • Learn how distance is used in classification<br>
+                • Master the K-Nearest Neighbors (KNN) algorithm<br>
+                • Apply distance-based classification to real-world problems
+            </div>
+            
+            <div class="professor-note">
+                Distance is something we'll discuss first, and then we'll explore an algorithm based on distance that tries to classify points or samples - this is called KNN (K-Nearest Neighbors). Before jumping into KNN, let's first understand the concept of distance itself.
+            </div>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Aaj ke lecture mein hum distance ke concept ko samjhenge pattern recognition mein. Distance basically batata hai ki do data points ek dusre se kitne similar ya different hain. Ye bahut important hai kyunki isse hum naye samples ko classify kar sakte hain - agar naya sample kisi known sample ke paas hai, to wo shayad same class ka hoga. Humara main focus KNN algorithm par hoga jo purely distance par based hai.</p>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 3: FEATURE REPRESENTATION ==================== -->
+        <section id="representation">
+            <h2>3. Feature Representation: The Apple vs Orange Example</h2>
+            
+            <p>To understand distance in pattern recognition, let's revisit a classic example: distinguishing between apples and oranges using a robot.</p>
+            
+            <h3 id="problem-setup">Problem Setup</h3>
+            <p>Imagine a farmer who has a farm and wants to create a robot that can automatically classify apples and oranges. This would eliminate the need for manual labor in sorting fruits. Our goal is to design a pattern recognition algorithm for this robot.</p>
+            
+            <div class="example-box">
+                <strong>Hardware Capabilities:</strong><br>
+                • <strong>Camera</strong>: Can take pictures of fruits<br>
+                • <strong>Weighing Machine</strong>: Can measure the weight of fruits<br>
+                • <strong>Processor</strong>: Can perform computations and make classifications
+            </div>
+            
+            <h3>Teaching the Robot</h3>
+            <p>Just like we teach children by showing them many examples in the real world, we need to train our robot using sample fruits. The farmer provides us with multiple apples and oranges for training purposes. However, there's a challenge: <strong>machines don't understand concepts like "apple" or "orange" directly - they only work with numbers</strong>.</p>
+            
+            <div class="professor-note">
+                While kids can understand and learn from visual examples, machines need everything represented as numbers. Computers or machines will always deal with numbers, so we have to represent things using numerical features. Only then will it make sense to the machine.
+            </div>
+            
+            <h3 id="2d-representation">3.1 Representing Fruits in 2D Space</h3>
+            
+            <p>Since a single number isn't enough to distinguish between apples and oranges reliably, we'll use <strong>two features</strong> to represent each fruit:</p>
+            
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>How to Measure</th>
+                </tr>
+                <tr>
+                    <td><strong>Color (Redness)</strong></td>
+                    <td>Measures how red the fruit is</td>
+                    <td>Take a picture and compute mean pixel values from the red channel of the RGB image. Higher values indicate more redness.</td>
+                </tr>
+                <tr>
+                    <td><strong>Weight</strong></td>
+                    <td>Mass of the fruit in grams</td>
+                    <td>Use the weighing machine to directly measure weight</td>
+                </tr>
+            </table>
+            
+            <div class="professor-note">
+                How do you measure redness? It's simple - you can take a picture of the fruit and compute the mean pixel values from the red channel. Color pictures have red, green, and blue channels. If the red channel is dominating, you may say that fruit is red. The robot has a weighing machine, so it can also compute the weight.
+            </div>
+            
+            <h3 id="feature-space">3.2 Understanding Feature Space</h3>
+            
+            <p>Now that we have two features (redness and weight), we can represent each fruit as a <strong>point in a 2D space</strong>:</p>
+            
+            <ul>
+                <li><strong>X-axis</strong>: Redness (color values from pixel intensity)</li>
+                <li><strong>Y-axis</strong>: Weight (in grams)</li>
+                <li>Each fruit becomes a point: <strong>[redness, weight]</strong></li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D Feature Space showing apples and oranges plotted as points]<br>
+                • Orange points (typically lighter, lower weight)<br>
+                • Red points (apples - typically heavier, redder)
+            </div>
+            
+            <h4>Generalizing to Higher Dimensions</h4>
+            
+            <p>While we're using 2 features for simplicity, this concept extends to any number of features:</p>
+            
+            <ul>
+                <li><strong>3 features</strong> → Points in 3D space (still visualizable)</li>
+                <li><strong>n features</strong> → Points in n-dimensional space (not visualizable, but mathematically valid)</li>
+            </ul>
+            
+            <div class="formula">
+                If we have <em>d</em> features, each sample is represented as a point in <em>d</em>-dimensional space:<br>
+                $\mathbf{x} = [x_1, x_2, x_3, ..., x_d]$
+            </div>
+            
+            <div class="professor-note">
+                Each sample is a point - we don't worry about the actual fruit anymore! We only worry about this feature space and points. In this example, we have a two-dimensional feature space, but in general, it could be a d-dimensional feature space with n samples.
+            </div>
+            
+            <h3>The Classification Challenge</h3>
+            
+            <p>When a new fruit arrives (test sample), the robot will:</p>
+            <ol>
+                <li>Measure its color and weight</li>
+                <li>Plot it as a point in the same 2D feature space</li>
+                <li>Determine its class by asking: <strong>"How far is this point from other known points?"</strong></li>
+            </ol>
+            
+            <div class="info-box">
+                <strong>Key Insight:</strong> If the new point is closer to apple points, classify it as an apple. If it's closer to orange points, classify it as an orange. This is the intuition behind distance-based classification!
+            </div>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Apple aur orange ko distinguish karne ke liye, hum robot ko do features use karke train karenge: redness (lali) aur weight (wajan). Har fruit ab ek 2D point ban jata hai - X-axis pe redness, Y-axis pe weight. Jab naya fruit aayega, robot uski position dekh kar decide karega - agar wo apple points ke paas hai to apple, agar orange points ke paas hai to orange. Is tarah se har sample ek point ban jata hai feature space mein, aur classification ka kaam distance measure karne se hota hai.</p>
+            </div>
+            
+            <!-- Key Takeaways -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Machines work with numbers, not concepts - we must convert objects into numerical features</li>
+                    <li>Each sample can be represented as a point in d-dimensional feature space</li>
+                    <li>With 2 features, we get 2D space (visualizable); with n features, we get n-dimensional space</li>
+                    <li>Classification is based on proximity: similar objects should be close in feature space</li>
+                    <li>Distance measurement is fundamental to determining similarity between samples</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 4: DISTANCE METRICS ==================== -->
+        <section id="distance-metrics">
+            <h2>4. Distance Metrics</h2>
+            
+            <p>Now that we understand feature spaces and why distance matters, let's explore different ways to measure distance between points. In pattern recognition, there are several commonly used distance metrics, each with its own characteristics and use cases.</p>
+            
+            <h3>Converting Fruits to Points</h3>
+            
+            <p>Remember, once we represent fruits as numerical features, they become simple points. For example:</p>
+            
+            <div class="example-box">
+                <strong>Example Points:</strong><br>
+                • Apple 1: [180, 150] → (redness=180, weight=150g)<br>
+                • Apple 2: [160, 145] → (redness=160, weight=145g)<br>
+                • Orange 1: [240, 180] → (redness=240, weight=180g)
+            </div>
+            
+            <p>The question now is: <strong>How do we measure the distance between these points?</strong></p>
+            
+            <!-- Subsection: Euclidean Distance -->
+            <h3 id="euclidean">4.1 Euclidean Distance (L2 Distance)</h3>
+            
+            <p>The most commonly used distance metric in pattern recognition is <strong>Euclidean distance</strong>, also known as <strong>L2 distance</strong>. This represents the straight-line distance between two points.</p>
+            
+            <h4>For 2D Points</h4>
+            
+            <p>Given two points A$(x_1, y_1)$ and B$(x_2, y_2)$ in 2D space, the Euclidean distance is:</p>
+            
+            <div class="formula">
+                $d_{AB} = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$
+            </div>
+            
+            <div class="info-box">
+                <strong>Intuition:</strong> This formula comes directly from the <strong>Pythagorean theorem</strong>. The horizontal distance is $(x_2 - x_1)$, the vertical distance is $(y_2 - y_1)$, and the diagonal (actual distance) is calculated using $a^2 + b^2 = c^2$.
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Right triangle showing Euclidean distance calculation]<br>
+                • Point A at (x₁, y₁)<br>
+                • Point B at (x₂, y₂)<br>
+                • Horizontal leg: x₂ - x₁<br>
+                • Vertical leg: y₂ - y₁<br>
+                • Hypotenuse: √[(x₂-x₁)² + (y₂-y₁)²]
+            </div>
+            
+            <h4>For 3D Points</h4>
+            
+            <p>In three-dimensional space with points A$(x_1, y_1, z_1)$ and B$(x_2, y_2, z_2)$:</p>
+            
+            <div class="formula">
+                $d_{AB} = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$
+            </div>
+            
+            <h4>For n-Dimensional Points (General Formula)</h4>
+            
+            <p>For points in n-dimensional space, $\mathbf{x} = [x_1, x_2, ..., x_n]$ and $\mathbf{y} = [y_1, y_2, ..., y_n]$:</p>
+            
+            <div class="formula">
+                $d(\mathbf{x}, \mathbf{y}) = \sqrt{\sum_{i=1}^{n} (x_i - y_i)^2}$
+            </div>
+            
+            <div class="professor-note">
+                This is the shortest distance from A to B and is also called L2 distance. In many pattern recognition examples, we deal with much higher dimensions, but the idea remains the same - we just sum up the squared differences for all dimensions.
+            </div>
+            
+            <h4>Worked Example</h4>
+            
+            <div class="example-box">
+                <strong>Calculate Euclidean distance between:</strong><br>
+                • Point 1: [180, 150]<br>
+                • Point 2: [240, 180]<br><br>
+                
+                <strong>Solution:</strong><br>
+                $d = \sqrt{(240-180)^2 + (180-150)^2}$<br>
+                $d = \sqrt{60^2 + 30^2}$<br>
+                $d = \sqrt{3600 + 900}$<br>
+                $d = \sqrt{4500}$<br>
+                $d = 67.08$
+            </div>
+            
+            <div class="example-box">
+                <strong>Calculate Euclidean distance between:</strong><br>
+                • Point 1: [180, 150]<br>
+                • Point 2: [160, 145]<br><br>
+                
+                <strong>Solution:</strong><br>
+                $d = \sqrt{(160-180)^2 + (145-150)^2}$<br>
+                $d = \sqrt{(-20)^2 + (-5)^2}$<br>
+                $d = \sqrt{400 + 25}$<br>
+                $d = \sqrt{425}$<br>
+                $d = 20.62$
+            </div>
+            
+            <div class="warning-box">
+                <strong>Important Observation:</strong> Sometimes distance can be deceiving! Two apples might have different distances, and sometimes one apple might be closer to an orange than to another apple. This is why we use multiple training samples - relying on just one nearest neighbor might not always give good results.
+            </div>
+            
+            <!-- Subsection: Manhattan Distance -->
+            <h3 id="manhattan">4.2 Manhattan Distance (L1 Distance)</h3>
+            
+            <p><strong>Manhattan distance</strong>, also known as <strong>L1 distance</strong> or <strong>taxicab distance</strong>, measures the distance between two points by calculating the sum of absolute differences of their coordinates. The name comes from the grid-like street pattern in Manhattan, where you can only travel along streets (horizontal and vertical), not diagonally.</p>
+            
+            <h4>For 2D Points</h4>
+            
+            <p>Given two points A$(x_1, y_1)$ and B$(x_2, y_2)$:</p>
+            
+            <div class="formula">
+                $d_{AB} = |x_2 - x_1| + |y_2 - y_1|$
+            </div>
+            
+            <div class="professor-note">
+                Manhattan distance is like traveling in a city with only straight roads - you can only move horizontally or vertically, not diagonally. The total distance is the sum of horizontal distance plus vertical distance.
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Manhattan distance visualization]<br>
+                • Point A at (x₁, y₁)<br>
+                • Point B at (x₂, y₂)<br>
+                • Path 1: Horizontal then vertical<br>
+                • Path 2: Vertical then horizontal<br>
+                • Both paths have same total length: |x₂-x₁| + |y₂-y₁|
+            </div>
+            
+            <h4>For n-Dimensional Points (General Formula)</h4>
+            
+            <div class="formula">
+                $d(\mathbf{x}, \mathbf{y}) = \sum_{i=1}^{n} |x_i - y_i|$
+            </div>
+            
+            <div class="info-box">
+                <strong>Key Difference from Euclidean:</strong><br>
+                • Euclidean distance: Shortest (diagonal) path<br>
+                • Manhattan distance: Grid-based path (longer than Euclidean)
+            </div>
+            
+            <!-- Subsection: Chebyshev Distance -->
+            <h3 id="chebyshev">4.3 Chebyshev Distance (L∞ Distance)</h3>
+            
+            <p><strong>Chebyshev distance</strong>, also known as <strong>L∞ (L-infinity) distance</strong> or <strong>maximum metric</strong>, is defined as the maximum absolute difference among all dimensions.</p>
+            
+            <h4>Formula for n-Dimensional Points</h4>
+            
+            <p>Given two points $\mathbf{x} = [x_1, x_2, ..., x_n]$ and $\mathbf{y} = [y_1, y_2, ..., y_n]$:</p>
+            
+            <div class="formula">
+                $d(\mathbf{x}, \mathbf{y}) = \max_{i=1}^{n} |x_i - y_i|$
+            </div>
+            
+            <div class="info-box">
+                <strong>Intuition:</strong> Chebyshev distance considers only the dimension with the largest difference. It's like asking: "What's the maximum difference in any single feature?"
+            </div>
+            
+            <!-- Subsection: Distance Comparison -->
+            <h3 id="distance-comparison">4.4 Comparing Distance Metrics with Grid Example</h3>
+            
+            <p>Let's compare all three distance metrics using a grid example to understand their differences clearly.</p>
+            
+            <h4>Grid Setup</h4>
+            
+            <p>Consider a 5×5 grid where we can denote positions as (row, column):</p>
+            
+            <table>
+                <tr>
+                    <th>Position</th>
+                    <th>Coordinates</th>
+                </tr>
+                <tr>
+                    <td>Row 1, Columns 1-5</td>
+                    <td>(1,1), (1,2), (1,3), (1,4), (1,5)</td>
+                </tr>
+                <tr>
+                    <td>Row 2, Columns 1-5</td>
+                    <td>(2,1), (2,2), (2,3), (2,4), (2,5)</td>
+                </tr>
+                <tr>
+                    <td>...</td>
+                    <td>...</td>
+                </tr>
+                <tr>
+                    <td>Row 5, Columns 1-5</td>
+                    <td>(5,1), (5,2), (5,3), (5,4), (5,5)</td>
+                </tr>
+            </table>
+            
+            <h4>Example Calculation</h4>
+            
+            <p>Let's find the distance from Point A at (1, 3) to Point B at (4, 1):</p>
+            
+            <div class="example-box">
+                <strong>1. Euclidean Distance (L2):</strong><br>
+                $d_{AB} = \sqrt{(4-1)^2 + (1-3)^2}$<br>
+                $d_{AB} = \sqrt{3^2 + (-2)^2}$<br>
+                $d_{AB} = \sqrt{9 + 4}$<br>
+                $d_{AB} = \sqrt{13}$<br>
+                $d_{AB} \approx 3.61$<br><br>
+                
+                This is the <strong>shortest (diagonal) distance</strong>.
+            </div>
+            
+            <div class="example-box">
+                <strong>2. Manhattan Distance (L1):</strong><br>
+                $d_{AB} = |4-1| + |1-3|$<br>
+                $d_{AB} = |3| + |-2|$<br>
+                $d_{AB} = 3 + 2$<br>
+                $d_{AB} = 5$<br><br>
+                
+                You must travel 3 units vertically and 2 units horizontally (or vice versa).
+            </div>
+            
+            <div class="example-box">
+                <strong>3. Chebyshev Distance (L∞):</strong><br>
+                $d_{AB} = \max(|4-1|, |1-3|)$<br>
+                $d_{AB} = \max(3, 2)$<br>
+                $d_{AB} = 3$<br><br>
+                
+                Only the <strong>maximum difference</strong> in any dimension matters.
+            </div>
+            
+            <h4>Summary Comparison Table</h4>
+            
+            <table>
+                <tr>
+                    <th>Distance Type</th>
+                    <th>Also Known As</th>
+                    <th>Formula (2D)</th>
+                    <th>Example Result</th>
+                    <th>Characteristics</th>
+                </tr>
+                <tr>
+                    <td><strong>Euclidean</strong></td>
+                    <td>L2 Distance</td>
+                    <td>$\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$</td>
+                    <td>3.61</td>
+                    <td>Shortest path (diagonal)</td>
+                </tr>
+                <tr>
+                    <td><strong>Manhattan</strong></td>
+                    <td>L1 Distance</td>
+                    <td>$|x_2-x_1| + |y_2-y_1|$</td>
+                    <td>5</td>
+                    <td>Grid-based path</td>
+                </tr>
+                <tr>
+                    <td><strong>Chebyshev</strong></td>
+                    <td>L∞ Distance</td>
+                    <td>$\max(|x_2-x_1|, |y_2-y_1|)$</td>
+                    <td>3</td>
+                    <td>Maximum dimension difference</td>
+                </tr>
+            </table>
+            
+            <div class="professor-note">
+                These are the three different types of distances we've learned: L1 (Manhattan), L2 (Euclidean), and L∞ (Chebyshev). These distances will be used to compute the distance between sample points in pattern recognition, and based on these distances, we'll perform classification using algorithms like KNN.
+            </div>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Teen tarah ke distance metrics hain: <strong>Euclidean (L2)</strong> - seedha diagonal distance, sabse chhota; <strong>Manhattan (L1)</strong> - sirf horizontal aur vertical movement allow hai, jaise city roads mein; <strong>Chebyshev (L∞)</strong> - sabse bada difference kisi bhi dimension mein. Euclidean sabse commonly use hota hai kyunki wo actual shortest distance deta hai. In teeno ka use different situations mein hota hai pattern recognition mein.</p>
+            </div>
+            
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                
+                <div class="question">
+                    <div class="question-text">Q1: Calculate all three distances between points P(2, 5) and Q(7, 9).</div>
+                    <div class="answer">
+                        <strong>Euclidean:</strong> $\sqrt{(7-2)^2 + (9-5)^2} = \sqrt{25+16} = \sqrt{41} \approx 6.40$<br>
+                        <strong>Manhattan:</strong> $|7-2| + |9-5| = 5 + 4 = 9$<br>
+                        <strong>Chebyshev:</strong> $\max(|7-2|, |9-5|) = \max(5, 4) = 5$
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">Q2: In which scenario would Manhattan distance be more appropriate than Euclidean?</div>
+                    <div class="answer">
+                        Manhattan distance is more appropriate when movement is restricted to grid-like paths, such as:
+                        • Navigation in city blocks with perpendicular streets
+                        • Warehouse robot movement along aisles
+                        • Pixel-based image processing where diagonal movement isn't natural
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">Q3: For 3D points A(1, 2, 3) and B(4, 6, 7), calculate the Euclidean distance.</div>
+                    <div class="answer">
+                        $d = \sqrt{(4-1)^2 + (6-2)^2 + (7-3)^2}$<br>
+                        $d = \sqrt{3^2 + 4^2 + 4^2}$<br>
+                        $d = \sqrt{9 + 16 + 16}$<br>
+                        $d = \sqrt{41} \approx 6.40$
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Takeaways -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Euclidean distance (L2) is the most common metric, representing straight-line distance</li>
+                    <li>Manhattan distance (L1) is useful for grid-based movements and constrained paths</li>
+                    <li>Chebyshev distance (L∞) considers only the maximum difference across dimensions</li>
+                    <li>Euclidean distance is always ≤ Manhattan distance ≤ n × Euclidean distance</li>
+                    <li>Choice of distance metric depends on the problem domain and data characteristics</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 5: KNN ALGORITHM ==================== -->
+        <section id="knn-algorithm">
+            <h2>5. K-Nearest Neighbors (KNN) Algorithm</h2>
+            
+            <p>Now that we understand distance metrics, let's explore one of the simplest and most intuitive algorithms in pattern recognition: the <strong>K-Nearest Neighbors (KNN)</strong> algorithm. It is a <strong>distance-based classification algorithm</strong> that works beautifully in practice despite its simplicity.</p>
+            
+            <div class="info-box">
+                <strong>What is KNN?</strong><br>
+                KNN is a <strong>lazy learner</strong> that classifies new samples based on the majority class of their k nearest neighbors in the feature space. It requires no explicit training phase - it simply stores all training data and uses it directly during prediction.
+            </div>
+            
+            <h3 id="knn-concept">5.1 Concept and Intuition</h3>
+            
+            <h4>Understanding the Name</h4>
+            
+            <ul>
+                <li><strong>K</strong>: A parameter (hyperparameter) that specifies how many neighbors to consider</li>
+                <li><strong>Nearest</strong>: Closest samples based on distance metric</li>
+                <li><strong>Neighbors</strong>: Training samples in the feature space</li>
+            </ul>
+            
+            <h4>Visual Intuition with Apple vs Orange</h4>
+            
+            <p>Let's return to our apple and orange example to understand KNN visually:</p>
+            
+            <div class="example-box">
+                <strong>Scenario:</strong><br>
+                • We have training data: several oranges (orange points) and apples (red points)<br>
+                • A new test fruit arrives, and we represent it as a point in the feature space<br>
+                • <strong>Question:</strong> Is this new fruit an apple or an orange?
+            </div>
+            
+            <h4>KNN Decision Process</h4>
+            
+            <ol>
+                <li><strong>Compute distances</strong>: Calculate the distance from the test point to ALL training points</li>
+                <li><strong>Sort by distance</strong>: Arrange training points from nearest to farthest</li>
+                <li><strong>Select k neighbors</strong>: Choose the k closest points (e.g., if k=3, select the 3 nearest)</li>
+                <li><strong>Majority voting</strong>: Count class labels among the k neighbors and predict the majority class</li>
+            </ol>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Test point with k=5 nearest neighbors]<br>
+                • Test point (black) in center<br>
+                • 1st nearest: Apple (distance = d₁)<br>
+                • 2nd nearest: Apple (distance = d₂)<br>
+                • 3rd nearest: Orange (distance = d₃)<br>
+                • 4th nearest: Apple (distance = d₄)<br>
+                • 5th nearest: Orange (distance = d₅)<br>
+                • Majority: 3 Apples, 2 Oranges → Classify as Apple
+            </div>
+            
+            <div class="professor-note">
+                The algorithm is very simple: compute distance to all points, sort them, find the k nearest samples, and take majority vote. If k=5 and you find 3 apples and 2 oranges among the nearest neighbors, you classify the test sample as apple because majority is apple.
+            </div>
+            
+            <h3>Choosing the Value of K</h3>
+            
+            <div class="warning-box">
+                <strong>k=1 (Single Nearest Neighbor):</strong><br>
+                • Very sensitive to noise and outliers<br>
+                • One mislabeled or noisy training point can cause incorrect classification<br>
+                • Decision boundaries are very irregular<br>
+                • Example: If one orange looks similar to apples, k=1 might misclassify many samples
+            </div>
+            
+            <div class="warning-box">
+                <strong>k too large:</strong><br>
+                • Considers too many neighbors, including distant ones<br>
+                • Can oversmooth decision boundaries<br>
+                • May ignore local patterns in data<br>
+                • Example: If k equals total training samples, every test point gets classified as the majority class in the entire dataset!
+            </div>
+            
+            <div class="info-box">
+                <strong>Best Practice for k:</strong><br>
+                • Choose k that's neither too small nor too large<br>
+                • Typically use odd numbers to avoid ties (e.g., 3, 5, 7, 9)<br>
+                • Use cross-validation to find optimal k for your specific dataset<br>
+                • Common starting point: k = √n where n is the number of training samples
+            </div>
+            
+            <h3 id="knn-steps">5.2 Formal Algorithm Steps</h3>
+            
+            <h4>Input Data</h4>
+            
+            <table>
+                <tr>
+                    <th>Input</th>
+                    <th>Description</th>
+                    <th>Dimensions</th>
+                </tr>
+                <tr>
+                    <td><strong>X_train</strong></td>
+                    <td>Training features (matrix)</td>
+                    <td>n × d (n samples, d features)</td>
+                </tr>
+                <tr>
+                    <td><strong>y_train</strong></td>
+                    <td>Training labels (vector)</td>
+                    <td>n × 1 (one label per sample)</td>
+                </tr>
+                <tr>
+                    <td><strong>X_test</strong></td>
+                    <td>Test sample features (vector)</td>
+                    <td>1 × d (single sample with d features)</td>
+                </tr>
+                <tr>
+                    <td><strong>k</strong></td>
+                    <td>Number of neighbors</td>
+                    <td>User-defined hyperparameter</td>
+                </tr>
+            </table>
+            
+            <div class="professor-note">
+                In the apple vs orange example, if we had 200 training samples with 2 features each, X_train would be 200×2 matrix. Each row is one fruit sample with [redness, weight]. y_train would be a 200×1 vector containing labels like "apple" or "orange".
+            </div>
+            
+            <h4>Algorithm Steps (Pseudocode)</h4>
+            
+            <div class="formula">
+                <strong>KNN Classification Algorithm:</strong><br><br>
+                <strong>Input:</strong> X_train, y_train, X_test, k<br>
+                <strong>Output:</strong> Predicted class label for X_test<br><br>
+                
+                <strong>Step 1:</strong> For each sample x<sub>i</sub> in X_train:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Compute distance: d<sub>i</sub> = distance(x<sub>i</sub>, X_test)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Store d<sub>i</sub> with its corresponding label y<sub>i</sub><br><br>
+                
+                <strong>Step 2:</strong> Sort all training points by increasing distance d<sub>i</sub><br><br>
+                
+                <strong>Step 3:</strong> Select the k closest points (k nearest neighbors)<br><br>
+                
+                <strong>Step 4:</strong> For classification:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Count occurrences of each class among k neighbors<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Predict the majority class<br><br>
+                
+                <strong>Step 5:</strong> Return predicted class label
+            </div>
+            
+            <div class="info-box">
+                <strong>Why is KNN called a "Lazy Learner"?</strong><br>
+                Unlike other algorithms that build a model during training, KNN doesn't learn anything during the training phase. It simply stores the training data. All computation happens during prediction time when it calculates distances to make classifications. This makes training instant but prediction slower.
+            </div>
+            
+            <h3 id="knn-examples">5.3 Worked Examples</h3>
+            
+            <h4>Example 1: Fitness Classification</h4>
+            
+            <p>Let's work through a detailed example where we classify whether a person is "Fit" or "Unfit" based on their physical measurements.</p>
+            
+            <div class="example-box">
+                <strong>Training Data (5 samples, 3 features):</strong>
+                
+                <table>
+                    <tr>
+                        <th>Person</th>
+                        <th>Height (cm)</th>
+                        <th>Weight (kg)</th>
+                        <th>Age (years)</th>
+                        <th>Class Label</th>
+                    </tr>
+                    <tr>
+                        <td>A</td>
+                        <td>170</td>
+                        <td>65</td>
+                        <td>25</td>
+                        <td>Fit</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>160</td>
+                        <td>80</td>
+                        <td>35</td>
+                        <td>Unfit</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>175</td>
+                        <td>70</td>
+                        <td>28</td>
+                        <td>Fit</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td>180</td>
+                        <td>85</td>
+                        <td>40</td>
+                        <td>Unfit</td>
+                    </tr>
+                    <tr>
+                        <td>E</td>
+                        <td>165</td>
+                        <td>68</td>
+                        <td>22</td>
+                        <td>Fit</td>
+                    </tr>
+                </table>
+                
+                <br>
+                <strong>Test Sample X:</strong><br>
+                Height = 168 cm, Weight = 72 kg, Age = 30 years<br>
+                <strong>Task:</strong> Classify as Fit or Unfit using k=3
+            </div>
+            
+            <h4>Solution - Step by Step</h4>
+            
+            <p><strong>Step 1: Compute Euclidean Distance from X to each training sample</strong></p>
+            
+            <div class="example-box">
+                <strong>Distance from X [168, 72, 30] to:</strong><br><br>
+                
+                <strong>Person A [170, 65, 25]:</strong><br>
+                $d_A = \sqrt{(170-168)^2 + (65-72)^2 + (25-30)^2}$<br>
+                $d_A = \sqrt{4 + 49 + 25} = \sqrt{78} \approx 8.83$<br><br>
+                
+                <strong>Person B [160, 80, 35]:</strong><br>
+                $d_B = \sqrt{(160-168)^2 + (80-72)^2 + (35-30)^2}$<br>
+                $d_B = \sqrt{64 + 64 + 25} = \sqrt{153} \approx 12.37$<br><br>
+                
+                <strong>Person C [175, 70, 28]:</strong><br>
+                $d_C = \sqrt{(175-168)^2 + (70-72)^2 + (28-30)^2}$<br>
+                $d_C = \sqrt{49 + 4 + 4} = \sqrt{57} \approx 7.55$<br><br>
+                
+                <strong>Person D [180, 85, 40]:</strong><br>
+                $d_D = \sqrt{(180-168)^2 + (85-72)^2 + (40-30)^2}$<br>
+                $d_D = \sqrt{144 + 169 + 100} = \sqrt{413} \approx 20.32$<br><br>
+                
+                <strong>Person E [165, 68, 22]:</strong><br>
+                $d_E = \sqrt{(165-168)^2 + (68-72)^2 + (22-30)^2}$<br>
+                $d_E = \sqrt{9 + 16 + 64} = \sqrt{89} \approx 9.43$
+            </div>
+            
+            <p><strong>Step 2: Sort by Distance</strong></p>
+            
+            <table>
+                <tr>
+                    <th>Rank</th>
+                    <th>Person</th>
+                    <th>Distance</th>
+                    <th>Class Label</th>
+                </tr>
+                <tr style="background-color: #c8e6c9;">
+                    <td>1st (Nearest)</td>
+                    <td>C</td>
+                    <td>7.55</td>
+                    <td><strong>Fit</strong></td>
+                </tr>
+                <tr style="background-color: #c8e6c9;">
+                    <td>2nd</td>
+                    <td>A</td>
+                    <td>8.83</td>
+                    <td><strong>Fit</strong></td>
+                </tr>
+                <tr style="background-color: #c8e6c9;">
+                    <td>3rd</td>
+                    <td>E</td>
+                    <td>9.43</td>
+                    <td><strong>Fit</strong></td>
+                </tr>
+                <tr>
+                    <td>4th</td>
+                    <td>B</td>
+                    <td>12.37</td>
+                    <td>Unfit</td>
+                </tr>
+                <tr>
+                    <td>5th (Farthest)</td>
+                    <td>D</td>
+                    <td>20.32</td>
+                    <td>Unfit</td>
+                </tr>
+            </table>
+            
+            <p><strong>Step 3: Select k=3 Nearest Neighbors</strong></p>
+            
+            <p>The 3 nearest neighbors (highlighted in green) are:</p>
+            <ul>
+                <li>Person C: Fit</li>
+                <li>Person A: Fit</li>
+                <li>Person E: Fit</li>
+            </ul>
+            
+            <p><strong>Step 4: Majority Voting</strong></p>
+            
+            <div class="formula">
+                Among k=3 neighbors:<br>
+                • Fit: 3 votes<br>
+                • Unfit: 0 votes<br><br>
+                <strong>Majority Class = Fit</strong>
+            </div>
+            
+            <p><strong>Step 5: Prediction</strong></p>
+            
+            <div class="info-box">
+                <strong>Final Classification:</strong> The person with [Height=168cm, Weight=72kg, Age=30] is classified as <strong>FIT</strong> because all 3 nearest neighbors are fit individuals.
+            </div>
+            
+            <div class="professor-note">
+                So a person with height 168 cm, weight 72 kg, and age 30 is classified as FIT based on our training data. That's how the KNN algorithm works - very simple! Just compute distances, sort them, find the majority in the nearest neighbors, and predict.
+            </div>
+            
+            <h4>Example 2: Leave-One-Out Cross-Validation</h4>
+            
+            <p>Now let's explore a more advanced concept: <strong>Leave-One-Out Cross-Validation (LOOCV)</strong> with KNN.</p>
+            
+            <div class="info-box">
+                <strong>What is Leave-One-Out Cross-Validation?</strong><br>
+                LOOCV is a validation technique where:
+                <ul style="margin-top: 10px;">
+                    <li>Take one sample out from the training set</li>
+                    <li>Treat that sample as a test sample</li>
+                    <li>Train on the remaining samples</li>
+                    <li>Classify the held-out sample</li>
+                    <li>Repeat for all samples</li>
+                    <li>Calculate overall accuracy</li>
+                </ul>
+                This helps us understand how well our algorithm generalizes without needing a separate test set.
+            </div>
+            
+            <div class="example-box">
+                <strong>Given Data:</strong> 10 points in 2D space<br>
+                • 5 points with class "+" (plus)<br>
+                • 5 points with class "○" (circle)<br><br>
+                
+                Let's label them: A, B, C, D, E (plus class) and F, G, H, I, J (circle class)
+            </div>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D scatter plot with labeled points]<br>
+                • Plus points: A(1,3), B(2,4), C(3,5), D(2,2), E(1,1)<br>
+                • Circle points: F(4,2), G(5,3), H(4,4), I(5,1), J(3,2)
+            </div>
+            
+            <p><strong>Question 1: What is the validation error when using 1-NN (k=1)?</strong></p>
+            
+            <div class="example-box">
+                <strong>Analysis with k=1:</strong><br><br>
+                
+                <strong>Hold out point A (plus):</strong><br>
+                • Nearest neighbor to A is likely from the circle class (based on diagram)<br>
+                • Predicted: Circle | Actual: Plus → <span style="color: red;">Error</span><br><br>
+                
+                <strong>Hold out point B (plus):</strong><br>
+                • Nearest neighbor is from circle class<br>
+                • Predicted: Circle | Actual: Plus → <span style="color: red;">Error</span><br><br>
+                
+                <strong>Continue for all points...</strong><br><br>
+                
+                <strong>Result:</strong> Due to the data distribution, when using k=1, most or all samples are misclassified because the nearest neighbor often belongs to the opposite class.
+            </div>
+            
+            <div class="formula">
+                <strong>Validation Error with k=1:</strong><br>
+                Errors = 10 out of 10 samples<br>
+                Validation Accuracy = 0%<br>
+                Validation Error = 100%
+            </div>
+            
+            <div class="professor-note">
+                If you do leave-one-out validation with k=1 in this particular example, your accuracy validation error will be 100%, meaning none of the samples will be classified correctly. This shows that k=1 is the worst choice for this dataset.
+            </div>
+            
+            <p><strong>Question 2: Which k value (3, 5, or 9) leads to minimum validation errors?</strong></p>
+            
+            <div class="example-box">
+                <strong>Analysis with k=3:</strong><br>
+                • For held-out point A (plus):<br>
+                  - 3 nearest neighbors might be: 2 circles, 1 plus<br>
+                  - Majority: Circle → Misclassification<br>
+                • Similar issues occur for other points<br>
+                • <strong>Result:</strong> Still high error rate<br><br>
+                
+                <strong>Analysis with k=5:</strong><br>
+                • For held-out point A (plus):<br>
+                  - 5 nearest neighbors might be: 3 circles, 2 plus<br>
+                  - Majority: Circle → Misclassification<br>
+                • <strong>Result:</strong> Still significant errors<br><br>
+                
+                <strong>Analysis with k=7:</strong><br>
+                • For held-out point A (plus):<br>
+                  - 7 nearest neighbors: 4 plus, 3 circles<br>
+                  - Majority: Plus → Correct!<br>
+                • <strong>Result:</strong> Much better accuracy!
+            </div>
+            
+            <div class="info-box">
+                <strong>Answer:</strong> For this particular dataset, <strong>k=7</strong> gives the best results with lowest validation error (possibly 0% error), while k=1 gives the worst results (100% error). This demonstrates the importance of choosing an appropriate k value.
+            </div>
+            
+            <div class="professor-note">
+                This example we can discuss more during the live session or doubt-clearing session. The key takeaway is that k=1 gives 100% error (worst case), while k=7 might give 0% error (best case) for this data. Different values of k work better for different datasets - this is why we use validation to find the optimal k.
+            </div>
+            
+            <h4>Interactive Demo</h4>
+            
+            <div class="info-box">
+                <strong>Stanford CS231n KNN Demo:</strong><br>
+                Visit: <a href="http://vision.stanford.edu/teaching/cs231n-demos/knn/" target="_blank">http://vision.stanford.edu/teaching/cs231n-demos/knn/</a><br><br>
+                
+                This interactive visualization allows you to:
+                <ul style="margin-top: 10px;">
+                    <li>Add points with different classes (e.g., red and blue)</li>
+                    <li>Drag points to see how decision boundaries change</li>
+                    <li>Change k value and observe different classifications</li>
+                    <li>Visualize decision regions in real-time</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                In the demo, if you arrange data points in a circular pattern (one class inside, another outside), you'll see that KNN can create circular decision boundaries. This shows that KNN is a non-linear classifier - it's not limited to straight-line boundaries. It can classify samples that are separable by circles, curves, or complex shapes.
+            </div>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>KNN algorithm bahut simple hai - bas teen steps: (1) Test point se sabhi training points tak distance calculate karo, (2) Distances ko sort karke k sabse nazdeeki points choose karo, (3) In k neighbors mein majority class dekho aur wahi predict karo. Agar k=5 hai aur 3 apples aur 2 oranges nearest hain, to apple predict karenge. k ka value bahut important hai - agar k bohot chhota (jaise 1) to noise ka effect zyada hoga, agar bohot bada to decision boundary blur ho jayega. Usually odd numbers (3, 5, 7) use karte hain ties avoid karne ke liye. KNN ek lazy learner hai - training mein kuch nahi seekhta, sab kaam prediction time pe karta hai.</p>
+            </div>
+            
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                
+                <div class="question">
+                    <div class="question-text">Q1: Given training data: A[1,2]→Red, B[2,3]→Red, C[3,1]→Blue, D[5,5]→Blue. For test point X[2,2] with k=3, what will be the prediction?</div>
+                    <div class="answer">
+                        Calculate distances:<br>
+                        • d(X,A) = √[(2-1)² + (2-2)²] = 1.0<br>
+                        • d(X,B) = √[(2-2)² + (2-3)²] = 1.0<br>
+                        • d(X,C) = √[(2-3)² + (2-1)²] = √2 ≈ 1.41<br>
+                        • d(X,D) = √[(2-5)² + (2-5)²] = √18 ≈ 4.24<br><br>
+                        3 nearest: A(Red), B(Red), C(Blue)<br>
+                        Majority: 2 Red, 1 Blue → <strong>Prediction: Red</strong>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">Q2: Why do we typically use odd values of k in KNN?</div>
+                    <div class="answer">
+                        We use odd values of k (like 3, 5, 7, 9) to <strong>avoid ties</strong> in binary classification. If k=4 and we have 2 samples from each class among the nearest neighbors, there's no clear majority. With odd k, we always have a definite winner (e.g., k=5 might give 3 vs 2, k=7 might give 4 vs 3). For multi-class problems with more than 2 classes, ties can still occur, but odd k reduces this probability.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">Q3: What happens if we set k equal to the total number of training samples?</div>
+                    <div class="answer">
+                        If k = n (total training samples), the algorithm will consider ALL training points for every prediction. This means every test point will be classified as the <strong>majority class in the entire training set</strong>. For example, if you have 60 apples and 40 oranges in training data, all test points will be classified as "apple" regardless of their features. This is an example of over-smoothing and loss of local pattern information.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Takeaways -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>KNN is a simple, intuitive, non-parametric classification algorithm based on distance</li>
+                    <li>It's a "lazy learner" - no training phase, all computation during prediction</li>
+                    <li>Algorithm: Compute distances → Sort → Select k nearest → Majority vote</li>
+                    <li>k is a critical hyperparameter: too small = noise sensitive, too large = oversmoothing</li>
+                    <li>Use cross-validation (like LOOCV) to find optimal k for your dataset</li>
+                    <li>KNN can create non-linear decision boundaries (circles, curves, complex shapes)</li>
+                    <li>Works well for small datasets but has scalability issues with large data</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 6: DRAWBACKS ==================== -->
+        <section id="knn-drawbacks">
+            <h2>6. Drawbacks and Limitations of KNN</h2>
+            
+            <p>While KNN is simple and intuitive, it has several significant limitations that restrict its use in modern, large-scale applications. Understanding these drawbacks is crucial for knowing when to use KNN and when to choose alternative algorithms.</p>
+            
+            <h3>1. Computationally Expensive</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> KNN must compute the distance between the test sample and <strong>every single training sample</strong>.<br><br>
+                <strong>Impact:</strong><br>
+                • If you have 1,000 training samples → 1,000 distance calculations per prediction<br>
+                • If you have 1 million samples → 1 million distance calculations per prediction<br>
+                • Time complexity: O(n × d) where n = training samples, d = dimensions<br><br>
+                <strong>Why this matters:</strong> As datasets grow larger (millions of samples), prediction becomes unbearably slow.
+            </div>
+            
+            <div class="professor-note">
+                Imagine you have 1 million data points in your training set. For every new test sample, you have to compute 1 million distances! This is a massive amount of computation, making KNN impractical for large-scale real-time applications.
+            </div>
+            
+            <h3>2. Memory Intensive</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> KNN stores the <strong>entire training dataset</strong> in memory.<br><br>
+                <strong>Impact:</strong><br>
+                • No model compression or learning<br>
+                • Storage requirements = size of training data<br>
+                • For high-dimensional features with many samples, memory usage becomes prohibitive<br><br>
+                <strong>Example:</strong> If each sample is 1000 features × 8 bytes (float64) = 8KB, then 1 million samples = 8GB of memory just for features!
+            </div>
+            
+            <h3>3. Sensitive to Irrelevant Features</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> All features contribute equally to distance calculations.<br><br>
+                <strong>Impact:</strong><br>
+                • Irrelevant or noisy features can dominate distance calculations<br>
+                • Important features may be overshadowed<br><br>
+                <strong>Example:</strong> When classifying fruits:<br>
+                • Relevant features: weight, color, size<br>
+                • Irrelevant feature: timestamp of when fruit was picked<br>
+                If included, the timestamp might create meaningless distance variations that hurt accuracy.
+            </div>
+            
+            <h3>4. Curse of Dimensionality</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> In high-dimensional spaces, distance metrics become less meaningful.<br><br>
+                <strong>Why this happens:</strong><br>
+                • As dimensions increase, all points become roughly equidistant<br>
+                • The concept of "nearest" loses meaning<br>
+                • Volume of space grows exponentially, data becomes sparse<br><br>
+                <strong>Impact:</strong> KNN performance degrades significantly in high-dimensional feature spaces (e.g., image pixels, text embeddings).
+            </div>
+            
+            <div class="info-box">
+                <strong>Note:</strong> We will discuss the <strong>Curse of Dimensionality</strong> in much more detail in the next lecture. This is a fundamental challenge in machine learning that affects many algorithms, not just KNN.
+            </div>
+            
+            <h3>5. Sensitive to Feature Scaling</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> Features with larger scales dominate distance calculations.<br><br>
+                <strong>Example:</strong><br>
+                • Feature 1: Weight in grams (range: 100-200)<br>
+                • Feature 2: Redness (range: 0-1)<br><br>
+                Distance calculation: $\sqrt{(w_2-w_1)^2 + (r_2-r_1)^2}$<br>
+                • Weight difference: up to 100²  = 10,000<br>
+                • Redness difference: up to 1² = 1<br>
+                • Weight completely dominates! Redness has almost no effect.<br><br>
+                <strong>Solution:</strong> Requires <strong>normalization</strong> or <strong>standardization</strong> of features.
+            </div>
+            
+            <h4>Feature Scaling Methods (Preview)</h4>
+            
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>Formula</th>
+                    <th>Result Range</th>
+                </tr>
+                <tr>
+                    <td><strong>Min-Max Normalization</strong></td>
+                    <td>$x' = \frac{x - x_{min}}{x_{max} - x_{min}}$</td>
+                    <td>[0, 1]</td>
+                </tr>
+                <tr>
+                    <td><strong>Z-Score Standardization</strong></td>
+                    <td>$x' = \frac{x - \mu}{\sigma}$</td>
+                    <td>Mean=0, Std=1</td>
+                </tr>
+            </table>
+            
+            <div class="professor-note">
+                Normalization and standardization are extremely important preprocessing steps for KNN. Without proper scaling, features with larger numeric ranges will unfairly dominate the distance calculations. We'll discuss these techniques in detail in the next lecture.
+            </div>
+            
+            <h3>6. Choice of K Matters</h3>
+            
+            <div class="warning-box">
+                <strong>Problem:</strong> No universal "best" k value - it's dataset-dependent.<br><br>
+                <strong>Challenges:</strong><br>
+                • <strong>k too small</strong> (e.g., k=1): Sensitive to noise, irregular boundaries<br>
+                • <strong>k too large</strong> (e.g., k=n): Oversmoothed boundaries, ignores local patterns<br>
+                • Finding optimal k requires cross-validation (computational overhead)<br><br>
+                <strong>Trade-off:</strong> Bias-variance trade-off<br>
+                • Small k: Low bias, high variance (overfitting)<br>
+                • Large k: High bias, low variance (underfitting)
+            </div>
+            
+            <h3>7. No Interpretable Model</h3>
+            
+            <div class="info-box">
+                While KNN's decision-making is intuitive ("classify like your neighbors"), it doesn't produce:
+                <ul style="margin-top: 10px;">
+                    <li>Explicit rules or patterns</li>
+                    <li>Feature importance rankings</li>
+                    <li>A compact model representation</li>
+                </ul>
+                This makes it difficult to gain insights about what the algorithm learned from the data.
+            </div>
+            
+            <h3>Summary of Limitations</h3>
+            
+            <table>
+                <tr>
+                    <th>Limitation</th>
+                    <th>Impact</th>
+                    <th>Severity</th>
+                </tr>
+                <tr>
+                    <td>Computational Cost</td>
+                    <td>Slow predictions for large datasets</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>Memory Requirements</td>
+                    <td>Must store all training data</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>Irrelevant Features</td>
+                    <td>Accuracy degradation</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>Curse of Dimensionality</td>
+                    <td>Poor performance in high dimensions</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>Feature Scaling</td>
+                    <td>Requires preprocessing</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>Hyperparameter k</td>
+                    <td>Needs tuning via cross-validation</td>
+                    <td>Medium</td>
+                </tr>
+            </table>
+            
+            <!-- Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>KNN ki kai limitations hain: (1) <strong>Computationally expensive</strong> - har test point ke liye sabhi training points se distance calculate karna padta hai, agar lakho samples hain to bahut slow ho jata hai; (2) <strong>Memory intensive</strong> - pura training data memory mein store karna padta hai; (3) <strong>Irrelevant features</strong> se sensitive hai - bekar features bhi distance calculations ko affect kar sakte hain; (4) <strong>Curse of dimensionality</strong> - jab bahut zyada features hote hain (high dimensions), to distance ka concept hi meaningless ho jata hai; (5) <strong>Feature scaling</strong> zaroori hai - warna bade values wale features dominate karenge; (6) <strong>k ka choice</strong> difficult hai - har dataset ke liye alag optimal k hota hai. In limitations ki wajah se KNN modern large-scale problems mein kam use hota hai.</p>
+            </div>
+            
+            <!-- Key Takeaways -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>KNN doesn't scale well: O(n×d) computation per prediction makes it slow for large datasets</li>
+                    <li>Memory requirements equal training data size - no model compression</li>
+                    <li>High-dimensional data causes "curse of dimensionality" - distances become meaningless</li>
+                    <li>Feature scaling (normalization/standardization) is mandatory for fair distance calculations</li>
+                    <li>Optimal k value varies by dataset and must be found through cross-validation</li>
+                    <li>Best suited for: small datasets, low dimensions, baseline comparisons, interpretable results</li>
+                    <li>Not recommended for: large-scale applications, high-dimensional data, real-time systems</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 7: CONCLUSION ==================== -->
+        <section id="conclusion">
+            <h2>7. Summary and Key Takeaways</h2>
+            
+            <p>In today's lecture, we covered fundamental concepts in distance-based pattern recognition, focusing on distance metrics and the K-Nearest Neighbors (KNN) algorithm.</p>
+            
+            <h3>What We Learned</h3>
+            
+            <h4>1. Distance Metrics</h4>
+            <ul>
+                <li><strong>Euclidean Distance (L2)</strong>: Most common, represents straight-line distance
+                    <div class="formula">$d = \sqrt{\sum_{i=1}^{n} (x_i - y_i)^2}$</div>
+                </li>
+                <li><strong>Manhattan Distance (L1)</strong>: Grid-based, sum of absolute differences
+                    <div class="formula">$d = \sum_{i=1}^{n} |x_i - y_i|$</div>
+                </li>
+                <li><strong>Chebyshev Distance (L∞)</strong>: Maximum difference across dimensions
+                    <div class="formula">$d = \max_{i=1}^{n} |x_i - y_i|$</div>
+                </li>
+            </ul>
+            
+            <h4>2. KNN Algorithm</h4>
+            <ul>
+                <li>Simplest and most intuitive classification algorithm</li>
+                <li>Based purely on distance in feature space</li>
+                <li>No explicit training phase (lazy learner)</li>
+                <li>Steps: Compute distances → Sort → Select k → Majority vote</li>
+                <li>Can create non-linear decision boundaries</li>
+            </ul>
+            
+            <h4>3. Key Concepts</h4>
+            <ul>
+                <li>Feature representation: Converting real-world objects to numerical points</li>
+                <li>Feature space: Multi-dimensional space where each sample is a point</li>
+                <li>Distance-based similarity: Closer points likely belong to same class</li>
+                <li>Hyperparameter k: Critical parameter that needs tuning</li>
+                <li>Cross-validation: Method to find optimal k and evaluate performance</li>
+            </ul>
+            
+            <h3>Advantages of KNN</h3>
+            <div class="info-box">
+                ✓ Simple and intuitive - easy to understand and implement<br>
+                ✓ No training phase - instant "training"<br>
+                ✓ Non-parametric - makes no assumptions about data distribution<br>
+                ✓ Naturally handles multi-class problems<br>
+                ✓ Good baseline algorithm for pattern recognition<br>
+                ✓ Interpretable - decisions based on similar neighbors
+            </div>
+            
+            <h3>Disadvantages of KNN</h3>
+            <div class="warning-box">
+                ✗ Computationally expensive - O(n×d) per prediction<br>
+                ✗ Memory intensive - stores entire training set<br>
+                ✗ Sensitive to irrelevant features and noise<br>
+                ✗ Curse of dimensionality - poor performance in high dimensions<br>
+                ✗ Requires feature scaling/normalization<br>
+                ✗ Choosing optimal k can be challenging
+            </div>
+            
+            <h3>When to Use KNN</h3>
+            
+            <table>
+                <tr>
+                    <th>✅ Good Use Cases</th>
+                    <th>❌ Poor Use Cases</th>
+                </tr>
+                <tr>
+                    <td>
+                        • Small to medium datasets<br>
+                        • Low-dimensional feature space<br>
+                        • Quick baseline comparison<br>
+                        • When interpretability matters<br>
+                        • Non-linear decision boundaries needed
+                    </td>
+                    <td>
+                        • Large-scale datasets (millions of samples)<br>
+                        • High-dimensional data (thousands of features)<br>
+                        • Real-time prediction requirements<br>
+                        • Limited memory environments<br>
+                        • When training time doesn't matter but prediction speed does
+                    </td>
+                </tr>
+            </table>
+            
+            <h3>Next Lecture Topics</h3>
+            
+            <div class="info-box">
+                <strong>Coming Up Next:</strong><br><br>
+                
+                <strong>1. Implementation of KNN</strong><br>
+                • Writing KNN from scratch in Python<br>
+                • Using scikit-learn's KNN implementation<br>
+                • Practical tips and tricks<br><br>
+                
+                <strong>2. Curse of Dimensionality (Detailed Study)</strong><br>
+                • Why high dimensions cause problems<br>
+                • Mathematical explanation<br>
+                • Strategies to combat it<br><br>
+                
+                <strong>3. Feature Normalization and Standardization</strong><br>
+                • Min-Max normalization<br>
+                • Z-score standardization<br>
+                • When to use which method<br>
+                • Impact on KNN performance
+            </div>
+            
+            <div class="professor-note">
+                So that's it for today! We discussed three different distance matrices: Euclidean (L2), Manhattan (L1), and Chebyshev (L∞). We learned the KNN algorithm, which is the simplest PR algorithm to classify test samples. It's simple, interpretable, and works as a good baseline, but scalability and dimensionality issues limit its use in modern high-dimensional problems. In the next class, we'll implement KNN practically and dive deeper into the curse of dimensionality. Thank you!
+            </div>
+            
+            <!-- Final Hinglish Summary -->
+            <div class="hinglish-summary">
+                <h4>📝 Complete Lecture Ka Hinglish Summary</h4>
+                <p>Aaj ke lecture mein humne distance-based pattern recognition ke baare mein padha. Pehle humne teen tarah ke distances dekhe - <strong>Euclidean</strong> (seedha diagonal, sabse chhota), <strong>Manhattan</strong> (grid jaisa, sirf horizontal aur vertical), aur <strong>Chebyshev</strong> (maximum difference kisi bhi dimension mein). Phir humne <strong>KNN algorithm</strong> sikha jo ki sabse simple classification algorithm hai - bas distances calculate karo, sort karo, k nearest points dekho, aur majority class predict karo. KNN ek "lazy learner" hai - training mein kuch nahi seekhta, prediction time pe sab kaam karta hai. Ye non-linear decision boundaries bana sakta hai (circles, curves). Lekin iski limitations bhi hain - large datasets pe slow hai, bahut memory chahiye, high dimensions mein kaam nahi karta achhe se (curse of dimensionality), aur feature scaling zaroori hai. Small datasets ke liye ye ek achha baseline algorithm hai. Next lecture mein hum implementation dekhenge aur curse of dimensionality ko detail mein samjhenge.</p>
+            </div>
+            
+            <!-- Key Takeaways -->
+            <div class="key-takeaways">
+                <h4>🎯 Final Key Takeaways</h4>
+                <ul>
+                    <li>Distance is fundamental to measuring similarity in pattern recognition</li>
+                    <li>Three main distance metrics: Euclidean (L2), Manhattan (L1), Chebyshev (L∞)</li>
+                    <li>KNN is the simplest distance-based classification algorithm</li>
+                    <li>KNN algorithm: Calculate distances → Sort → Select k → Majority vote → Predict</li>
+                    <li>k is a critical hyperparameter - use cross-validation to find optimal value</li>
+                    <li>KNN is a lazy learner with no training phase but slow predictions</li>
+                    <li>Major limitations: computational cost, memory, curse of dimensionality, scaling sensitivity</li>
+                    <li>Best for small datasets and low dimensions; not suitable for large-scale problems</li>
+                    <li>Performance metrics from previous lectures used to evaluate KNN accuracy</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 8: MIND MAP ==================== -->
+        <section id="mind-map">
+            <div class="mind-map">
+                <h2>🧠 Comprehensive Mind Map: Distance Metrics & KNN</h2>
+                
+                <div class="mind-map-container">
+                    <!-- Central Topic -->
+                    <div class="main-topic">
+                        Pattern Recognition: Distance-Based Classification
+                    </div>
+                    
+                    <!-- Subtopics Grid -->
+                    <div class="subtopics">
+                        <!-- Subtopic 1 -->
+                        <div class="subtopic">
+                            <h4>📏 Distance Metrics</h4>
+                            <ul>
+                                <li><strong>Euclidean (L2)</strong></li>
+                                <li>→ Straight-line distance</li>
+                                <li>→ √Σ(xi - yi)²</li>
+                                <li>→ Most commonly used</li>
+                                <li><strong>Manhattan (L1)</strong></li>
+                                <li>→ Grid-based distance</li>
+                                <li>→ Σ|xi - yi|</li>
+                                <li>→ Taxicab geometry</li>
+                                <li><strong>Chebyshev (L∞)</strong></li>
+                                <li>→ Maximum difference</li>
+                                <li>→ max|xi - yi|</li>
+                                <li>→ Chessboard distance</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 2 -->
+                        <div class="subtopic">
+                            <h4>🤖 KNN Algorithm</h4>
+                            <ul>
+                                <li><strong>Definition:</strong> K-Nearest Neighbors</li>
+                                <li><strong>Type:</strong> Lazy learner</li>
+                                <li><strong>Steps:</strong></li>
+                                <li>1. Compute distances</li>
+                                <li>2. Sort by distance</li>
+                                <li>3. Select k nearest</li>
+                                <li>4. Majority vote</li>
+                                <li>5. Predict class</li>
+                                <li><strong>Hyperparameter:</strong> k value</li>
+                                <li><strong>Output:</strong> Class label</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 3 -->
+                        <div class="subtopic">
+                            <h4>🎯 Feature Representation</h4>
+                            <ul>
+                                <li><strong>Concept:</strong> Objects → Numbers</li>
+                                <li><strong>Feature Space:</strong></li>
+                                <li>→ d-dimensional space</li>
+                                <li>→ Each sample is a point</li>
+                                <li>→ Features are axes</li>
+                                <li><strong>Example: Apple vs Orange</strong></li>
+                                <li>→ Feature 1: Redness</li>
+                                <li>→ Feature 2: Weight</li>
+                                <li>→ 2D point representation</li>
+                                <li><strong>Generalization:</strong> n samples, d features</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 4 -->
+                        <div class="subtopic">
+                            <h4>⚙️ Parameter k</h4>
+                            <ul>
+                                <li><strong>Small k (e.g., 1):</strong></li>
+                                <li>→ Sensitive to noise</li>
+                                <li>→ Irregular boundaries</li>
+                                <li>→ High variance</li>
+                                <li><strong>Large k (e.g., n):</strong></li>
+                                <li>→ Over-smoothing</li>
+                                <li>→ Ignores local patterns</li>
+                                <li>→ High bias</li>
+                                <li><strong>Optimal k:</strong></li>
+                                <li>→ Use cross-validation</li>
+                                <li>→ Typically odd numbers</li>
+                                <li>→ Dataset-dependent</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 5 -->
+                        <div class="subtopic">
+                            <h4>✅ Advantages</h4>
+                            <ul>
+                                <li>Simple & intuitive</li>
+                                <li>No training phase</li>
+                                <li>Non-parametric</li>
+                                <li>Multi-class naturally</li>
+                                <li>Non-linear boundaries</li>
+                                <li>Good baseline algorithm</li>
+                                <li>Interpretable decisions</li>
+                                <li>No assumptions on data</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 6 -->
+                        <div class="subtopic">
+                            <h4>❌ Limitations</h4>
+                            <ul>
+                                <li><strong>Computational:</strong> O(n×d)</li>
+                                <li><strong>Memory:</strong> Stores all data</li>
+                                <li><strong>Curse of dimensionality</strong></li>
+                                <li><strong>Feature scaling</strong> required</li>
+                                <li><strong>Irrelevant features</strong> impact</li>
+                                <li><strong>Slow predictions</strong> (large data)</li>
+                                <li><strong>k selection</strong> challenging</li>
+                                <li><strong>Not scalable</strong> for big data</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 7 -->
+                        <div class="subtopic">
+                            <h4>🔧 Practical Considerations</h4>
+                            <ul>
+                                <li><strong>Preprocessing:</strong></li>
+                                <li>→ Feature normalization</li>
+                                <li>→ Feature standardization</li>
+                                <li>→ Feature selection</li>
+                                <li><strong>Validation:</strong></li>
+                                <li>→ Leave-one-out CV</li>
+                                <li>→ K-fold CV</li>
+                                <li>→ Performance metrics</li>
+                                <li><strong>Optimization:</strong></li>
+                                <li>→ KD-trees for faster search</li>
+                                <li>→ Ball trees</li>
+                                <li>→ Approximate neighbors</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Subtopic 8 -->
+                        <div class="subtopic">
+                            <h4>🎓 Use Cases</h4>
+                            <ul>
+                                <li><strong>Good For:</strong></li>
+                                <li>→ Small datasets</li>
+                                <li>→ Low dimensions</li>
+                                <li>→ Baseline models</li>
+                                <li>→ Recommendation systems</li>
+                                <li>→ Pattern recognition</li>
+                                <li><strong>Not Good For:</strong></li>
+                                <li>→ Large-scale data</li>
+                                <li>→ High dimensions</li>
+                                <li>→ Real-time systems</li>
+                                <li>→ Limited memory</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Connections Visualization -->
+                    <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+                        <h3 style="color: #667eea; text-align: center; margin-bottom: 20px;">🔗 Concept Connections</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #667eea;">
+                                <strong>Distance Metrics ↔ KNN:</strong> KNN relies entirely on distance calculation to find nearest neighbors
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #764ba2;">
+                                <strong>Feature Space ↔ Distance:</strong> Distance only makes sense in properly defined feature space
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #2196F3;">
+                                <strong>k Parameter ↔ Performance:</strong> Optimal k value directly impacts classification accuracy
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #4caf50;">
+                                <strong>Dimensionality ↔ Distance:</strong> High dimensions make distance metrics less meaningful
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #ff9800;">
+                                <strong>Scaling ↔ Fairness:</strong> Feature scaling ensures all dimensions contribute equally to distance
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #e91e63;">
+                                <strong>Validation ↔ k Selection:</strong> Cross-validation helps find optimal k for specific datasets
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ==================== FOOTER ==================== -->
+        <div class="footer">
+           <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis: Matrix Transpose, Symmetric Matrices, and Determinants</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .page-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+            margin: 30px 0 20px;
+        }
+        h3 {
+            margin: 25px 0 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .toc-link {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .toc-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            border: 1px solid #e1e1e8;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #e1e1e8;
+            border-radius: 3px;
+            padding: 10px;
+            white-space: pre-wrap;
+            margin: 15px 0;
+            position: relative;
+        }
+        pre code {
+            border: none;
+            background-color: transparent;
+            padding: 0;
+        }
+        .code-header {
+            background-color: #e1e1e8;
+            padding: 5px 10px;
+            border-radius: 3px 3px 0 0;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: -1px;
+        }
+        .code-content {
+            border: 1px solid #e1e1e8;
+            border-radius: 0 0 3px 3px;
+            padding: 10px;
+            background-color: #f8f8f8;
+        }
+        .hinglish-summary {
+            background-color: #FFF8E1;
+            border-left: 4px solid #FFB74D;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .practice-question {
+            background-color: #E8F5E9;
+            border-left: 4px solid #66BB6A;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .key-takeaway {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .extra-content {
+            background-color: #F3E5F5;
+            border-left: 4px solid #AB47BC;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .image-caption {
+            font-style: italic;
+            margin-top: 10px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .mindmap {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        .example-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center mb-4">Linear Algebra and Numerical Analysis</h1>
+            <h2 class="text-2xl font-bold text-center mb-6">Matrix Transpose, Symmetric Matrices, and Determinants</h2>
+            <p class="text-center text-gray-600">BS./BSc. in Applied AI and Data Science</p>
+        </header>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-bold mb-4">Table of Contents</h2>
+            <ul class="list-disc ml-6 space-y-2">
+                <li><a href="#module-2-1" class="toc-link">Module 2.1: Matrix Transpose</a>
+                    <ul class="list-circle ml-6 space-y-1 mt-1">
+                        <li><a href="#learning-objectives-2-1" class="toc-link">Learning Objectives</a></li>
+                        <li><a href="#matrix-transpose-basics" class="toc-link">Matrix Transpose Basics</a></li>
+                        <li><a href="#everyday-examples-transpose" class="toc-link">Everyday Examples</a></li>
+                        <li><a href="#python-code-transpose" class="toc-link">Python Code for Matrix Transpose</a></li>
+                        <li><a href="#matrix-operations-order" class="toc-link">Matrix Operations: Order of Operations</a></li>
+                        <li><a href="#practice-questions-transpose" class="toc-link">Practice Questions</a></li>
+                    </ul>
+                </li>
+                <li><a href="#module-2-2" class="toc-link">Module 2.2: Symmetric Matrices, Determinants, and Inverse</a>
+                    <ul class="list-circle ml-6 space-y-1 mt-1">
+                        <li><a href="#learning-objectives-2-2" class="toc-link">Learning Objectives</a></li>
+                        <li><a href="#symmetric-matrices" class="toc-link">Symmetric Matrices</a></li>
+                        <li><a href="#everyday-examples-symmetric" class="toc-link">Everyday Examples of Symmetric Matrices</a></li>
+                        <li><a href="#creating-symmetric-matrices" class="toc-link">Creating Symmetric Matrices</a></li>
+                        <li><a href="#determinants" class="toc-link">Determinants</a></li>
+                        <li><a href="#determinant-calculation" class="toc-link">Determinant Calculation</a></li>
+                        <li><a href="#practice-questions-determinants" class="toc-link">Practice Questions</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mind-map" class="toc-link">Comprehensive Mind Map</a></li>
+                <li><a href="#key-takeaways" class="toc-link">Key Takeaways</a></li>
+            </ul>
+        </div>
+
+        <section id="module-2-1">
+            <h2 class="text-2xl font-bold mb-4">Module 2.1: Matrix Transpose</h2>
+            
+            <p>Welcome back to our course on linear algebra and numerical analysis. In our previous session, we covered matrix multiplication, and today we'll focus on another fundamental operation: matrix transpose.</p>
+
+            <div id="learning-objectives-2-1" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Learning Objectives</h3>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Understand basic operations with matrices</li>
+                    <li>Master the concept of matrix transpose</li>
+                    <li>Recognize applications of matrix transpose in everyday scenarios</li>
+                    <li>Learn Python code and syntax for matrix transpose operations</li>
+                    <li>Gain hands-on experience solving matrix transpose problems</li>
+                </ul>
+            </div>
+
+            <div id="matrix-transpose-basics" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Matrix Transpose Basics</h3>
+                
+                <p>The transpose of a matrix is created by interchanging its rows and columns. Think of it as "flipping" the matrix over its main diagonal (the diagonal from the top-left to the bottom-right corner).</p>
+                
+                <div class="image-container">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/gpt_image_generated/6d172803-5d95-462c-8184-ef85267bbddc_wm" alt="Matrix Transpose Visualization">
+                    <p class="image-caption">Fig 1: Visualization of Matrix Transpose, showing how rows become columns</p>
+                </div>
+                
+                <p>If we have a matrix A with dimensions m × n (m rows and n columns), then its transpose (A<sup>T</sup>) will have dimensions n × m (n rows and m columns).</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example:</h4>
+                    <p>If A is a 2×3 matrix:</p>
+                    <p>A = [
+                        [2, 4, 7],
+                        [5, 3, 1]
+                    ]</p>
+                    
+                    <p>Then A<sup>T</sup> is a 3×2 matrix:</p>
+                    <p>A<sup>T</sup> = [
+                        [2, 5],
+                        [4, 3],
+                        [7, 1]
+                    ]</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Matrix transpose operation me hum matrix ke rows aur columns ko interchange karte hain. Agar aapke paas ek matrix hai jisme m rows aur n columns hain, toh transpose matrix me n rows aur m columns honge. Ye operation bahut useful hai jab aapko data ka structure change karna ho, especially machine learning me. Ise main diagonal ke around matrix ko flip karna bhi keh sakte hain.</p>
+                </div>
+            </div>
+
+            <div id="everyday-examples-transpose" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Everyday Examples of Matrix Transpose</h3>
+                
+                <p>Matrix transpose operations are far from being just theoretical concepts. They have numerous practical applications:</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 1: Data Analysis and Machine Learning</h4>
+                    <p><strong>Scenario:</strong> In data science, rows in a dataset often represent samples (e.g., customers), and columns represent features (e.g., age, income, purchase history).</p>
+                    <p><strong>Problem:</strong> Some machine learning algorithms (e.g., Principal Component Analysis) require features to be rows and samples to be columns.</p>
+                    <p><strong>Solution:</strong> You can transpose the data matrix to switch rows (samples) and columns (features).</p>
+                    
+                    <div class="image-container">
+                        <img src="https://i.ytimg.com/vi/g4ecBFmvAYU/maxresdefault.jpg" alt="Matrix Transpose in Data Science">
+                        <p class="image-caption">Fig 2: Matrix transpose application in data science - converting between sample-feature orientations</p>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 2: Image Processing</h4>
+                    <p>In image processing, transposing a matrix can rotate an image. Digital images are represented as matrices where each cell corresponds to a pixel. Transposing the image matrix can help in operations like rotation and reflection.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 3: Network Analysis</h4>
+                    <p>In graph theory and network analysis, adjacency matrices represent connections between nodes. Transposing such matrices can help analyze different aspects of the network, particularly when working with directed graphs.</p>
+                </div>
+                
+                <div class="extra-content">
+                    <h4 class="font-bold mb-2">Professor mentioned in class:</h4>
+                    <p>In Markov processes, matrix transpose operations help predict future states based on transition probabilities, such as in the land usage example where we predicted how commercial, industrial, and residential land usage would change over 5-year periods from 2004 to 2019.</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Matrix transpose ke real-life applications bahut sare hain. Data science me, jab samples ko features me convert karna ho, tab hum matrix transpose use karte hain. Image processing me, transpose matrix operations se hum images ko rotate kar sakte hain. Network analysis me bhi iska use hota hai. Professor ne class me bataya ki Markov processes me bhi hum transpose ka use karke future states predict kar sakte hain, jaise land usage example me 2004 se 2019 tak ke changes ko.</p>
+                </div>
+            </div>
+
+            <div id="python-code-transpose" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Python Code for Matrix Transpose</h3>
+                
+                <p>In Python, NumPy is the most commonly used library for matrix operations. Here's how to perform matrix transpose:</p>
+                
+                <div class="mb-4">
+                    <div class="code-header">Python - Matrix Transpose using NumPy</div>
+                    <div class="code-content">
+<pre>
+import numpy as np
+
+# Define a matrix A
+A = np.array([
+    [3, 4, 5],
+    [1, 2, 3]
+])
+
+# Method 1: Using the transpose() method
+A_T1 = A.transpose()
+
+# Method 2: Using the T attribute
+A_T2 = A.T
+
+# Method 3: Using np.transpose() function
+A_T3 = np.transpose(A)
+
+# Print results
+print("Original Matrix:")
+print(A)
+print("\nTranspose of the Matrix (Method 1):")
+print(A_T1)
+print("\nTranspose of the Matrix (Method 2):")
+print(A_T2)
+print("\nTranspose of the Matrix (Method 3):")
+print(A_T3)
+</pre>
+                    </div>
+                </div>
+                
+                <p>The output of the above code would be:</p>
+                
+                <div class="code-content">
+<pre>
+Original Matrix:
+[[3 4 5]
+ [1 2 3]]
+
+Transpose of the Matrix (Method 1):
+[[3 1]
+ [4 2]
+ [5 3]]
+
+Transpose of the Matrix (Method 2):
+[[3 1]
+ [4 2]
+ [5 3]]
+
+Transpose of the Matrix (Method 3):
+[[3 1]
+ [4 2]
+ [5 3]]
+</pre>
+                </div>
+                
+                <div class="key-takeaway">
+                    <h4 class="font-bold mb-2">Key Takeaway:</h4>
+                    <p>In Python's NumPy library, there are three equivalent ways to compute the transpose of a matrix:</p>
+                    <ul class="list-disc ml-6">
+                        <li><code>A.transpose()</code> - Using the transpose() method</li>
+                        <li><code>A.T</code> - Using the T attribute (shorthand notation)</li>
+                        <li><code>np.transpose(A)</code> - Using the transpose() function</li>
+                    </ul>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Python me matrix transpose karne ke liye NumPy library ka use karte hain. Teen different tareeke hain: A.transpose() method se, A.T attribute se (jo sabse short hai), aur np.transpose(A) function se. Teen methods same result dete hain, aapko jo convenient lage wo use kar sakte hain. Code example me ek 2x3 matrix transpose karke 3x2 matrix banaya gaya hai.</p>
+                </div>
+            </div>
+
+            <div id="matrix-operations-order" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Matrix Operations: Order of Operations (LIVE EVIL)</h3>
+                
+                <p>When working with matrix operations and transpose, it's important to understand how the order of operations affects the result. A helpful way to remember the rule for transposing a product of matrices is the "LIVE EVIL" principle:</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">The LIVE EVIL Rule:</h4>
+                    <p>If we think of LIVE as a sequence of matrices L, I, V, E, then:</p>
+                    <p>(LIVE)<sup>T</sup> = E<sup>T</sup> V<sup>T</sup> I<sup>T</sup> L<sup>T</sup> = EVIL</p>
+                    <p>In other words, the transpose of a product of matrices is equal to the product of their transposes in reverse order.</p>
+                    <p>Mathematically: (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example:</h4>
+                    <p>Given matrices A = [[1, 2], [3, 4]] and B = [[5, 6], [7, 8]]</p>
+                    
+                    <p>First, we calculate AB:</p>
+                    <p>AB = [[19, 22], [43, 50]]</p>
+                    
+                    <p>Then, we take the transpose of AB:</p>
+                    <p>(AB)<sup>T</sup> = [[19, 43], [22, 50]]</p>
+                    
+                    <p>Next, we calculate B<sup>T</sup>A<sup>T</sup>:</p>
+                    <p>B<sup>T</sup> = [[5, 7], [6, 8]]</p>
+                    <p>A<sup>T</sup> = [[1, 3], [2, 4]]</p>
+                    <p>B<sup>T</sup>A<sup>T</sup> = [[19, 43], [22, 50]]</p>
+                    
+                    <p>As we can see, (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></p>
+                </div>
+                
+                <p><strong>Properties of Transposed Matrices:</strong></p>
+                <ol class="list-decimal ml-6 space-y-1">
+                    <li>(A+B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup></li>
+                    <li>(AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></li>
+                    <li>(kA)<sup>T</sup> = kA<sup>T</sup> (where k is a scalar)</li>
+                    <li>(A<sup>T</sup>)<sup>T</sup> = A</li>
+                </ol>
+                
+                <div class="image-container">
+                    <img src="https://media.geeksforgeeks.org/wp-content/uploads/20241228164445302561/transpose.webp" alt="Properties of Matrix Transpose">
+                    <p class="image-caption">Fig 3: Visualizing properties of matrix transpose</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Matrix operations me order bahut important hota hai. "LIVE EVIL" principle yaad rakhne me help karta hai ki jab do matrices ke product ka transpose lete hain, toh result individual matrices ke transpose ka product hota hai, but reverse order me. Matlab (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> hota hai. Iske alava, matrix transpose ke aur properties bhi hain jaise (A+B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup> aur kisi matrix ka double transpose original matrix ko wapas deta hai.</p>
+                </div>
+            </div>
+
+            <div id="practice-questions-transpose" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 1:</h4>
+                    <p>Compute (A×B)<sup>T</sup> and B<sup>T</sup>×A<sup>T</sup>, and verify that they are equal.</p>
+                    <p>Where A = [[-2, 1, 0], [3, -1, -3]] and B = [[-2, 1, 2], [-1, 2, 0], [0, 0, -1]]</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>First, calculate the product A×B:</p>
+                        <p>A×B = [[-2, 1, 0], [3, -1, -3]] × [[-2, 1, 2], [-1, 2, 0], [0, 0, -1]] = [[3, 0, -4], [-9, 1, 9]]</p>
+                        
+                        <p>Then, find the transpose of A×B:</p>
+                        <p>(A×B)<sup>T</sup> = [[3, -9], [0, 1], [-4, 9]]</p>
+                        
+                        <p>Now, calculate B<sup>T</sup> and A<sup>T</sup>:</p>
+                        <p>B<sup>T</sup> = [[-2, -1, 0], [1, 2, 0], [2, 0, -1]]</p>
+                        <p>A<sup>T</sup> = [[-2, 3], [1, -1], [0, -3]]</p>
+                        
+                        <p>Finally, multiply B<sup>T</sup>×A<sup>T</sup>:</p>
+                        <p>B<sup>T</sup>×A<sup>T</sup> = [[-2, -1, 0], [1, 2, 0], [2, 0, -1]] × [[-2, 3], [1, -1], [0, -3]] = [[3, -9], [0, 1], [-4, 9]]</p>
+                        
+                        <p>Therefore, (A×B)<sup>T</sup> = B<sup>T</sup>×A<sup>T</sup></p>
+                    </div>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 2:</h4>
+                    <p>If A is a 3×2 matrix, what are the dimensions of A<sup>T</sup>A and AA<sup>T</sup>?</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>If A is a 3×2 matrix (3 rows, 2 columns), then:</p>
+                        <ul class="list-disc ml-6">
+                            <li>A<sup>T</sup> is a 2×3 matrix (2 rows, 3 columns)</li>
+                            <li>A<sup>T</sup>A would be a (2×3) × (3×2) = 2×2 matrix</li>
+                            <li>AA<sup>T</sup> would be a (3×2) × (2×3) = 3×3 matrix</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 3:</h4>
+                    <p>Prove that if A is any matrix, then both A<sup>T</sup>A and AA<sup>T</sup> are symmetric matrices.</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>To prove a matrix M is symmetric, we need to show that M = M<sup>T</sup>.</p>
+                        
+                        <p>For A<sup>T</sup>A:</p>
+                        <p>(A<sup>T</sup>A)<sup>T</sup> = A<sup>T</sup>(A<sup>T</sup>)<sup>T</sup> = A<sup>T</sup>A</p>
+                        <p>Therefore, A<sup>T</sup>A = (A<sup>T</sup>A)<sup>T</sup>, which means A<sup>T</sup>A is symmetric.</p>
+                        
+                        <p>For AA<sup>T</sup>:</p>
+                        <p>(AA<sup>T</sup>)<sup>T</sup> = (A<sup>T</sup>)<sup>T</sup>A<sup>T</sup> = AA<sup>T</sup></p>
+                        <p>Therefore, AA<sup>T</sup> = (AA<sup>T</sup>)<sup>T</sup>, which means AA<sup>T</sup> is symmetric.</p>
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>In practice questions me, humne matrix transpose ke important properties ko verify kiya hai. Pehle question me humne (A×B)<sup>T</sup> = B<sup>T</sup>×A<sup>T</sup> ko prove kiya calculation karke. Dusre question me humne dimensions ke bare me socha - ek 3×2 matrix ke liye A<sup>T</sup>A ka size 2×2 hoga aur AA<sup>T</sup> ka size 3×3 hoga. Teesre question me humne prove kiya ki A<sup>T</sup>A aur AA<sup>T</sup> hamesha symmetric matrices hote hain, chahe A kaisa bhi ho. Ye properties bahut useful hain advanced linear algebra aur machine learning me.</p>
+                </div>
+            </div>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Module 2.1 Key Takeaways:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>The transpose of a matrix is created by interchanging its rows and columns.</li>
+                    <li>If A is an m×n matrix, then A<sup>T</sup> is an n×m matrix.</li>
+                    <li>Matrix transpose is used in data science to switch between sample-feature orientations.</li>
+                    <li>In Python, we can use <code>A.transpose()</code>, <code>A.T</code>, or <code>np.transpose(A)</code>.</li>
+                    <li>The transpose of a product follows the rule: (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup>.</li>
+                    <li>For any matrix A, both A<sup>T</sup>A and AA<sup>T</sup> are symmetric matrices.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="module-2-2" class="mt-10">
+            <h2 class="text-2xl font-bold mb-4">Module 2.2: Symmetric Matrices, Determinants, and Inverse</h2>
+            
+            <p>In this module, we'll explore symmetric matrices, determinants, and touch upon the concept of matrix inverse.</p>
+
+            <div id="learning-objectives-2-2" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Learning Objectives</h3>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Understand symmetric and square matrices</li>
+                    <li>Learn about determinants and their properties</li>
+                    <li>Introduce the concept of matrix inverse</li>
+                    <li>Explore the rank of a matrix</li>
+                    <li>Apply these concepts to real-world examples</li>
+                </ul>
+            </div>
+
+            <div id="symmetric-matrices" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Symmetric Matrices</h3>
+                
+                <p>A symmetric matrix is a square matrix that is equal to its transpose. In other words, for a symmetric matrix A:</p>
+                <p class="text-center font-bold">A = A<sup>T</sup></p>
+                
+                <div class="image-container">
+                    <img src="https://cdn1.genspark.ai/user-upload-image/gpt_image_generated/4418131e-87b3-4dac-8401-6c83b2e7e6bb_wm" alt="Symmetric Matrix Visualization">
+                    <p class="image-caption">Fig 4: Visualization of a symmetric matrix showing how elements reflect across the main diagonal</p>
+                </div>
+                
+                <p>In a symmetric matrix, the element at position (i,j) is equal to the element at position (j,i). This means the matrix is symmetric about its main diagonal.</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example:</h4>
+                    <p>Consider the matrix A:</p>
+                    <p>A = [
+                        [3, 1, 7],
+                        [1, 5, 2],
+                        [7, 2, 6]
+                    ]</p>
+                    
+                    <p>This is a symmetric matrix because:</p>
+                    <ul class="list-disc ml-6">
+                        <li>A[0,1] = A[1,0] = 1</li>
+                        <li>A[0,2] = A[2,0] = 7</li>
+                        <li>A[1,2] = A[2,1] = 2</li>
+                    </ul>
+                    <p>And A = A<sup>T</sup></p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Symmetric matrix ek special type ka square matrix hota hai jisme A = A<sup>T</sup> hota hai. Iska matlab position (i,j) par jo element hai, wahi element position (j,i) par bhi hota hai. Matrix ka main diagonal ek mirror line ki tarah act karta hai, jiske through elements reflect karte hain. Example me humne dekha ki position (0,1) aur (1,0) dono par value 1 hai, position (0,2) aur (2,0) par 7 hai, aur position (1,2) aur (2,1) par 2 hai.</p>
+                </div>
+            </div>
+
+            <div id="everyday-examples-symmetric" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Everyday Examples of Symmetric Matrices</h3>
+                
+                <p>Symmetric matrices have many special properties that make them valuable in numerous real-world applications:</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 1: Image Processing</h4>
+                    <p>In image processing, covariance matrices, which are always symmetric, describe the relationships between image pixel values. These are used for operations like noise reduction and feature extraction.</p>
+                    
+                    <div class="image-container">
+                        <img src="https://www.researchgate.net/publication/325284493/figure/fig1/AS:644057680314368@1530566725601/Example-of-a-symmetric-square-matrix-showing-the-relations-between-21-characters-in-a.png" alt="Symmetric Matrix in Image Processing">
+                        <p class="image-caption">Fig 5: A symmetric matrix showing relationships between elements in image processing</p>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 2: Covariance Matrices in Statistics and Machine Learning</h4>
+                    <p>In statistics and machine learning, covariance matrices are used to describe the relationships between different variables in a dataset. They are fundamental in techniques like principal component analysis (PCA), which is used for dimensionality reduction.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 3: Kernel Methods</h4>
+                    <p>Kernel matrices, which are often symmetric, are used in support vector machines (SVMs) and other kernel-based learning algorithms. These matrices capture the similarity between data points in a high-dimensional space.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example 4: Network Analysis</h4>
+                    <p>Adjacency matrices representing undirected graphs are symmetric. These matrices are used to analyze social networks, web graphs, and other interconnected systems like transportation or communication networks.</p>
+                    
+                    <div class="image-container">
+                        <img src="https://www.researchgate.net/publication/376202111/figure/fig2/AS:11431281275910162@1725502023038/Left-visualization-of-the-example-graph-Right-symmetric-matrix-with-shortest-path.png" alt="Network Analysis with Symmetric Matrix">
+                        <p class="image-caption">Fig 6: An undirected graph and its corresponding symmetric adjacency matrix</p>
+                    </div>
+                </div>
+                
+                <div class="extra-content">
+                    <h4 class="font-bold mb-2">Professor mentioned in class:</h4>
+                    <p>Symmetric matrices have the special property that they always have real eigenvalues, which makes them particularly useful for stability analysis in various physical and engineering systems.</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Symmetric matrices real-world me bahut useful hain. Image processing me covariance matrices jo symmetric hote hain, pixel values ke relationship ko describe karte hain. Statistics aur machine learning me bhi covariance matrices variables ke beech ke relationship ko show karte hain aur PCA jaise techniques me use hote hain. Kernel methods me symmetric matrices data points ke similarity ko capture karte hain. Network analysis me undirected graphs ke adjacency matrices symmetric hote hain, jo social networks ya transport networks ko analyze karne me help karte hain. Professor ne bataya ki symmetric matrices ke eigenvalues hamesha real hote hain, isliye ye physical systems ke stability analysis me bahut important hain.</p>
+                </div>
+            </div>
+
+            <div id="creating-symmetric-matrices" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Creating Symmetric Matrices</h3>
+                
+                <p>We can create symmetric matrices even from non-symmetric matrices. Multiplying any matrix (even a non-square or non-symmetric one) by its transpose will produce a square symmetric matrix.</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Example:</h4>
+                    <p>If A is an m×n matrix, then:</p>
+                    <ul class="list-disc ml-6">
+                        <li>A<sup>T</sup>A is an n×n symmetric matrix</li>
+                        <li>AA<sup>T</sup> is an m×m symmetric matrix</li>
+                    </ul>
+                    
+                    <p>Let's verify with A = [[1, -2, 4], [3, 0, -5]]</p>
+                    <p>A is a 2×3 matrix.</p>
+                    
+                    <p>A<sup>T</sup> = [[1, 3], [-2, 0], [4, -5]]</p>
+                    
+                    <p>A<sup>T</sup>A = [[1, 3], [-2, 0], [4, -5]] × [[1, -2, 4], [3, 0, -5]]</p>
+                    <p>A<sup>T</sup>A = [
+                        [10, -2, -11],
+                        [-2, 4, -8],
+                        [-11, -8, 41]
+                    ]</p>
+                    
+                    <p>We can verify that (A<sup>T</sup>A)<sup>T</sup> = A<sup>T</sup>A, confirming it's symmetric.</p>
+                </div>
+                
+                <p>This property is particularly useful in many mathematical and computational applications, especially in areas like machine learning and optimization.</p>
+                
+                <div class="mb-4">
+                    <div class="code-header">Python - Creating a Symmetric Matrix</div>
+                    <div class="code-content">
+<pre>
+import numpy as np
+
+def create_symmetric_matrix(size):
+    """Generate a symmetric matrix of given size."""
+    # Initialize a square matrix with zeros
+    matrix = np.zeros((size, size))
+    
+    # Fill the upper triangle (including diagonal) with random values
+    for i in range(size):
+        for j in range(i, size):
+            matrix[i, j] = np.random.randint(1, 10)
+            # Mirror the value to ensure symmetry
+            matrix[j, i] = matrix[i, j]
+            
+    return matrix
+
+def is_symmetric(matrix):
+    """Check if a matrix is symmetric."""
+    return np.array_equal(matrix, matrix.T)
+
+# Create a symmetric matrix
+sym_matrix = create_symmetric_matrix(4)
+print("Generated matrix:")
+print(sym_matrix)
+print("\nIs the matrix symmetric?", is_symmetric(sym_matrix))
+
+# Create a symmetric matrix from a non-symmetric one
+A = np.array([[1, 2, 3], [4, 5, 6]])
+sym_matrix2 = A @ A.T  # AA^T
+print("\nOriginal non-symmetric matrix:")
+print(A)
+print("\nCreated symmetric matrix (AA^T):")
+print(sym_matrix2)
+print("\nIs the created matrix symmetric?", is_symmetric(sym_matrix2))
+</pre>
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Hum non-symmetric matrices se bhi symmetric matrices create kar sakte hain. Kisi bhi matrix A ko uske transpose se multiply karke symmetric matrix bana sakte hain. Agar A ek m×n matrix hai, to A<sup>T</sup>A ek n×n symmetric matrix hoga aur AA<sup>T</sup> ek m×m symmetric matrix hoga. Example me humne ek 2×3 matrix liya aur dikaya ki A<sup>T</sup>A ek 3×3 symmetric matrix banta hai. Python me hum custom symmetric matrix bana sakte hain ya kisi non-symmetric matrix se AA<sup>T</sup> karke symmetric matrix create kar sakte hain. <code>is_symmetric</code> function ka use karke hum check kar sakte hain ki koi matrix symmetric hai ya nahi.</p>
+                </div>
+            </div>
+
+            <div id="determinants" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Determinants</h3>
+                
+                <p>The determinant is a scalar value computed from a square matrix. It has many interpretations and uses in linear algebra.</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">Key Properties of Determinants:</h4>
+                    <ul class="list-disc ml-6">
+                        <li>Determinants are defined only for square matrices</li>
+                        <li>A matrix with a non-zero determinant is invertible (non-singular)</li>
+                        <li>A matrix with a zero determinant is non-invertible (singular)</li>
+                        <li>The determinant of a product is the product of determinants: det(AB) = det(A) × det(B)</li>
+                        <li>The determinant of a transpose equals the determinant of the original matrix: det(A<sup>T</sup>) = det(A)</li>
+                    </ul>
+                </div>
+                
+                <div class="image-container">
+                    <img src="https://study.com/cimages/videopreview/videopreview-full/kduwps36rs.jpg" alt="Determinant Visualization">
+                    <p class="image-caption">Fig 7: Geometric interpretation of determinants - area and volume scaling</p>
+                </div>
+                
+                <p>Geometrically, the determinant represents the scaling factor of the linear transformation represented by the matrix:</p>
+                <ul class="list-disc ml-6">
+                    <li>For a 2×2 matrix, the determinant gives the area scaling factor</li>
+                    <li>For a 3×3 matrix, the determinant gives the volume scaling factor</li>
+                    <li>A positive determinant preserves orientation, while a negative one reverses it</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Determinant ek square matrix se calculate kiya gaya ek scalar value hota hai. Iska linear algebra me bahut importance hai. Agar matrix ka determinant zero nahi hai, to wo matrix invertible hoti hai. Determinant ka geometric meaning bhi hai - 2×2 matrix ke liye ye area scaling factor represent karta hai, aur 3×3 matrix ke liye volume scaling factor. Determinant ki kuch important properties hain jaise det(AB) = det(A) × det(B) aur det(A<sup>T</sup>) = det(A). Positive determinant orientation preserve karta hai, jabki negative determinant orientation reverse kar deta hai.</p>
+                </div>
+            </div>
+
+            <div id="determinant-calculation" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Determinant Calculation</h3>
+                
+                <p>Calculating determinants becomes increasingly complex with larger matrices. Let's look at methods for 2×2 and 3×3 matrices:</p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">For a 2×2 Matrix:</h4>
+                    <p>If A = [[a, b], [c, d]], then:</p>
+                    <p>det(A) = ad - bc</p>
+                    
+                    <div class="image-container">
+                        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240702145334/Determinant-of-2-x-2-Matrix-Formula.webp" alt="2x2 Determinant Formula">
+                        <p class="image-caption">Fig 8: Formula for calculating the determinant of a 2×2 matrix</p>
+                    </div>
+                    
+                    <p><strong>Example:</strong></p>
+                    <p>For A = [[5, 3], [2, 4]], the determinant is:</p>
+                    <p>det(A) = 5 × 4 - 3 × 2 = 20 - 6 = 14</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold mb-2">For a 3×3 Matrix:</h4>
+                    <p>The determinant can be calculated using cofactor expansion:</p>
+                    
+                    <div class="image-container">
+                        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240521180522/Determinant-of-Square-Matrix.png" alt="3x3 Determinant Calculation">
+                        <p class="image-caption">Fig 9: Method for calculating the determinant of a 3×3 matrix</p>
+                    </div>
+                    
+                    <p><strong>Example:</strong></p>
+                    <p>For A = [[1, 2, 1], [0, 3, 4], [3, 1, 4]], the determinant is:</p>
+                    <p>1 × (3 × 4 - 4 × 1) - 2 × (0 × 4 - 4 × 3) + 1 × (0 × 1 - 3 × 3)</p>
+                    <p>= 1 × (12 - 4) - 2 × (0 - 12) + 1 × (0 - 9)</p>
+                    <p>= 1 × 8 - 2 × (-12) + 1 × (-9)</p>
+                    <p>= 8 + 24 - 9 = 23</p>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="code-header">Python - Calculating Determinants</div>
+                    <div class="code-content">
+<pre>
+import numpy as np
+
+# 2x2 matrix
+A = np.array([
+    [5, 3],
+    [2, 4]
+])
+
+# 3x3 matrix
+B = np.array([
+    [1, 2, 1],
+    [0, 3, 4],
+    [3, 1, 4]
+])
+
+# Calculate determinants
+det_A = np.linalg.det(A)
+det_B = np.linalg.det(B)
+
+print(f"Determinant of A: {det_A}")  # Should be 14.0
+print(f"Determinant of B: {det_B}")  # Should be 23.0
+
+# Verifying properties
+C = np.array([
+    [2, 1],
+    [3, 4]
+])
+
+det_AC = np.linalg.det(A @ C)
+det_A_times_det_C = np.linalg.det(A) * np.linalg.det(C)
+
+print(f"det(A×C): {det_AC}")
+print(f"det(A)×det(C): {det_A_times_det_C}")
+print(f"Are they equal? {np.isclose(det_AC, det_A_times_det_C)}")
+</pre>
+                    </div>
+                </div>
+                
+                <p>For larger matrices (4×4 and beyond), computing determinants by hand becomes tedious and error-prone. In practice, numerical libraries like NumPy's <code>linalg.det()</code> are used for efficient computation.</p>
+                
+                <div class="extra-content">
+                    <h4 class="font-bold mb-2">Professor mentioned in class:</h4>
+                    <p>For very large matrices, direct computation of determinants is often avoided in practical applications due to numerical instability and computational complexity. Instead, decomposition methods like LU decomposition are preferred.</p>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Determinant calculate karna matrix ke size ke saath complex hota jata hai. 2×2 matrix ke liye formula simple hai: det(A) = ad - bc, jahan A = [[a, b], [c, d]]. 3×3 matrix ke liye cofactor expansion use karte hain. Example me humne calculate kiya ki [[5, 3], [2, 4]] ka determinant 14 hai aur [[1, 2, 1], [0, 3, 4], [3, 1, 4]] ka determinant 23 hai. Practical applications me, bade matrices ke liye NumPy jaise libraries ka use karte hain. Professor ne bataya ki very large matrices ke liye direct determinant calculation avoid karte hain aur LU decomposition jaise methods prefer karte hain kyunki direct calculation numerically unstable ho sakta hai.</p>
+                </div>
+            </div>
+
+            <div id="practice-questions-determinants" class="mb-6">
+                <h3 class="text-xl font-bold mb-3">Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 1:</h4>
+                    <p>Find the determinant of the following 3×3 matrix:</p>
+                    <p>A = [[1, 2, 1], [0, 3, 4], [3, 1, 4]]</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>We can use the cofactor expansion along the first row:</p>
+                        <p>det(A) = 1 × det([[3, 4], [1, 4]]) - 2 × det([[0, 4], [3, 4]]) + 1 × det([[0, 3], [3, 1]])</p>
+                        <p>det(A) = 1 × (3 × 4 - 4 × 1) - 2 × (0 × 4 - 4 × 3) + 1 × (0 × 1 - 3 × 3)</p>
+                        <p>det(A) = 1 × 8 - 2 × (-12) + 1 × (-9)</p>
+                        <p>det(A) = 8 + 24 - 9 = 23</p>
+                    </div>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 2:</h4>
+                    <p>Show that the product of the following matrix and its transpose is symmetric:</p>
+                    <p>A = [[1, -2, 4], [3, 0, -5]]</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>First, we find A<sup>T</sup>:</p>
+                        <p>A<sup>T</sup> = [[1, 3], [-2, 0], [4, -5]]</p>
+                        
+                        <p>Now, we calculate A × A<sup>T</sup>:</p>
+                        <p>A × A<sup>T</sup> = [[1, -2, 4], [3, 0, -5]] × [[1, 3], [-2, 0], [4, -5]]</p>
+                        <p>= [[1×1 + (-2)×(-2) + 4×4, 1×3 + (-2)×0 + 4×(-5)], 
+                            [3×1 + 0×(-2) + (-5)×4, 3×3 + 0×0 + (-5)×(-5)]]</p>
+                        <p>= [[1 + 4 + 16, 3 + 0 + (-20)], 
+                            [3 + 0 + (-20), 9 + 0 + 25]]</p>
+                        <p>= [[21, -17], [-17, 34]]</p>
+                        
+                        <p>To verify this is symmetric, we check if (A × A<sup>T</sup>)<sup>T</sup> = A × A<sup>T</sup>:</p>
+                        <p>(A × A<sup>T</sup>)<sup>T</sup> = [[21, -17], [-17, 34]]<sup>T</sup> = [[21, -17], [-17, 34]] = A × A<sup>T</sup></p>
+                        
+                        <p>Therefore, A × A<sup>T</sup> is symmetric.</p>
+                    </div>
+                </div>
+                
+                <div class="practice-question">
+                    <h4 class="font-bold mb-2">Question 3:</h4>
+                    <p>If A is a 3×3 matrix with det(A) = 5, what is det(2A)?</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300">
+                        <h5 class="font-bold mb-2">Solution:</h5>
+                        <p>When we multiply a matrix by a scalar k, the determinant is multiplied by k<sup>n</sup>, where n is the dimension of the matrix.</p>
+                        <p>So for a 3×3 matrix A:</p>
+                        <p>det(kA) = k<sup>3</sup> × det(A)</p>
+                        <p>Therefore:</p>
+                        <p>det(2A) = 2<sup>3</sup> × det(A) = 8 × 5 = 40</p>
+                    </div>
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4 class="font-bold mb-2">Hinglish Summary:</h4>
+                    <p>Practice questions me humne determinant aur symmetric matrices ke concepts ko apply kiya hai. Pehle question me humne ek 3×3 matrix ka determinant calculate kiya cofactor expansion method se, jiska answer 23 hai. Dusre question me humne prove kiya ki ek matrix aur uske transpose ka product symmetric hota hai, jahan A × A<sup>T</sup> = [[21, -17], [-17, 34]] banta hai jo clearly symmetric hai. Teesre question me humne determinant ki property use ki - jab matrix ko scalar k se multiply karte hain, to determinant k<sup>n</sup> se multiply ho jata hai (jahan n matrix ka dimension hai). Is case me det(2A) = 2<sup>3</sup> × 5 = 40 hota hai. Ye questions determinants aur symmetric matrices ke important properties ko reinforce karte hain.</p>
+                </div>
+            </div>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Module 2.2 Key Takeaways:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>A symmetric matrix is a square matrix that is equal to its transpose (A = A<sup>T</sup>).</li>
+                    <li>Symmetric matrices are widely used in image processing, statistics, machine learning, and network analysis.</li>
+                    <li>You can create a symmetric matrix from any matrix A by computing A<sup>T</sup>A or AA<sup>T</sup>.</li>
+                    <li>The determinant is a scalar value calculated only for square matrices.</li>
+                    <li>A non-zero determinant indicates that a matrix is invertible (non-singular).</li>
+                    <li>Determinants have geometric interpretations: area scaling (2×2) and volume scaling (3×3).</li>
+                    <li>For practical applications with large matrices, numerical libraries are preferred for determinant calculation.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mind-map" class="mt-10">
+            <h2 class="text-2xl font-bold mb-4">Comprehensive Mind Map</h2>
+            
+            <div class="mindmap">
+                <h3 class="text-xl font-bold mb-3 text-center">Linear Algebra Concepts</h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="border p-4 rounded">
+                        <h4 class="font-bold mb-2 text-center">Matrix Transpose</h4>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>Definition: Interchange rows and columns</li>
+                            <li>Notation: A<sup>T</sup></li>
+                            <li>Properties:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>(A+B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup></li>
+                                    <li>(AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></li>
+                                    <li>(kA)<sup>T</sup> = kA<sup>T</sup></li>
+                                    <li>(A<sup>T</sup>)<sup>T</sup> = A</li>
+                                </ul>
+                            </li>
+                            <li>Applications:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>Data reshaping in ML</li>
+                                    <li>Image processing</li>
+                                    <li>Network analysis</li>
+                                </ul>
+                            </li>
+                            <li>Python Implementation:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>A.transpose()</li>
+                                    <li>A.T</li>
+                                    <li>np.transpose(A)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border p-4 rounded">
+                        <h4 class="font-bold mb-2 text-center">Symmetric Matrices</h4>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>Definition: A = A<sup>T</sup></li>
+                            <li>Properties:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>Always square matrices</li>
+                                    <li>Elements mirrored across diagonal</li>
+                                    <li>Real eigenvalues</li>
+                                    <li>A<sup>T</sup>A and AA<sup>T</sup> are symmetric</li>
+                                </ul>
+                            </li>
+                            <li>Applications:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>Covariance matrices</li>
+                                    <li>Kernel methods in ML</li>
+                                    <li>Adjacency matrices</li>
+                                    <li>PCA and dimensionality reduction</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border p-4 rounded">
+                        <h4 class="font-bold mb-2 text-center">Determinants</h4>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>Definition: Scalar value for square matrices</li>
+                            <li>Properties:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>det(AB) = det(A) × det(B)</li>
+                                    <li>det(A<sup>T</sup>) = det(A)</li>
+                                    <li>det(kA) = k<sup>n</sup>det(A)</li>
+                                </ul>
+                            </li>
+                            <li>Calculation:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>2×2: ad - bc</li>
+                                    <li>3×3: Cofactor expansion</li>
+                                    <li>Larger: NumPy's linalg.det()</li>
+                                </ul>
+                            </li>
+                            <li>Interpretation:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>Area/volume scaling factor</li>
+                                    <li>Zero: Matrix is singular</li>
+                                    <li>Non-zero: Matrix is invertible</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border p-4 rounded">
+                        <h4 class="font-bold mb-2 text-center">Relationships & Extensions</h4>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>A<sup>T</sup>A and AA<sup>T</sup> create symmetric matrices</li>
+                            <li>Determinant is needed to compute matrix inverse</li>
+                            <li>Rank relates to linear independence</li>
+                            <li>Future topics:
+                                <ul class="list-circle ml-4 mt-1">
+                                    <li>Matrix inverse</li>
+                                    <li>Eigenvalues and eigenvectors</li>
+                                    <li>Matrix decomposition</li>
+                                    <li>Linear systems</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-takeaways" class="mt-10 mb-10">
+            <h2 class="text-2xl font-bold mb-4">Key Takeaways from the Lecture</h2>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Matrix Transpose:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>The transpose of a matrix is created by interchanging its rows and columns.</li>
+                    <li>For any matrix A of dimension m×n, its transpose A<sup>T</sup> has dimension n×m.</li>
+                    <li>The transpose operation is fundamental in data reshaping for machine learning applications.</li>
+                    <li>Important properties include (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> and (A<sup>T</sup>)<sup>T</sup> = A.</li>
+                </ul>
+            </div>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Symmetric Matrices:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>A symmetric matrix equals its transpose: A = A<sup>T</sup>.</li>
+                    <li>All symmetric matrices are square matrices.</li>
+                    <li>Any matrix multiplied by its transpose (A<sup>T</sup>A or AA<sup>T</sup>) creates a symmetric matrix.</li>
+                    <li>Symmetric matrices appear in covariance calculations, kernel methods, and network analysis.</li>
+                </ul>
+            </div>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Determinants:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>The determinant is a scalar value calculated only for square matrices.</li>
+                    <li>A non-zero determinant indicates that a matrix is invertible (non-singular).</li>
+                    <li>Determinants have geometric interpretations relating to area and volume scaling.</li>
+                    <li>Calculating determinants becomes complex for larger matrices, so computational tools are preferred.</li>
+                </ul>
+            </div>
+            
+            <div class="key-takeaway">
+                <h4 class="font-bold mb-2">Upcoming Topics:</h4>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Matrix inverse and its applications</li>
+                    <li>Rank of a matrix and its relationship to linear dependence/independence</li>
+                    <li>Solving systems of linear equations using matrix operations</li>
+                    <li>Eigenvalues and eigenvectors and their applications</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer class="mt-10 pt-6 border-t border-gray-300 text-center text-gray-600">
+            <p>BS./BSc. in Applied AI and Data Science</p>
+            <p>Linear Algebra and Numerical Analysis</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

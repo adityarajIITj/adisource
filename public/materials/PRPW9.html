@@ -1,0 +1,3097 @@
+                        <!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition Principles - Lecture 9: KNN Advanced Topics</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #2c3e50;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin: -40px -40px 40px -40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .toc ul ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+        
+        .toc ul ul li:before {
+            content: "•";
+        }
+        
+        /* ==================== SECTION STYLES ==================== */
+        .section {
+            margin: 50px 0;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 10px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e9ecef;
+        }
+        
+        .section h3 {
+            color: #495057;
+            font-size: 1.5em;
+            margin: 30px 0 20px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h4 {
+            color: #6c757d;
+            font-size: 1.2em;
+            margin: 20px 0 15px 0;
+        }
+        
+        /* ==================== TEXT STYLES ==================== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .important {
+            background: #fff3cd;
+            padding: 20px;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .note {
+            background: #d1ecf1;
+            padding: 20px;
+            border-left: 5px solid #17a2b8;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            padding: 20px;
+            border-left: 5px solid #dc3545;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .professor-note {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        /* ==================== HIGHLIGHTING ==================== */
+        .highlight {
+            background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 80%;
+            padding: 2px 5px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        /* ==================== TABLE STYLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+            transition: background 0.3s;
+        }
+        
+        /* ==================== CODE BLOCKS ==================== */
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        /* ==================== LIST STYLES ==================== */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        ul li {
+            list-style-type: none;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "●";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+        
+        /* ==================== FORMULA BOX ==================== */
+        .formula-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .formula-box .formula-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        /* ==================== IMAGE PLACEHOLDER ==================== */
+        .image-placeholder {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            padding: 40px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            margin: 25px 0;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        /* ==================== HINGLISH SUMMARY ==================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 6px solid #e17055;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary h4:before {
+            content: "🎯 ";
+        }
+        
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: #d4edda;
+            padding: 25px;
+            border-left: 6px solid #28a745;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .key-takeaways h4 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .key-takeaways h4:before {
+            content: "✓ ";
+        }
+        
+        .key-takeaways ul {
+            margin-top: 15px;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-questions {
+            background: #e7f3ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 6px solid #2196F3;
+        }
+        
+        .practice-questions h4 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .practice-questions h4:before {
+            content: "📝 ";
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #2196F3;
+        }
+        
+        .question strong {
+            color: #0d47a1;
+        }
+        
+        .answer {
+            background: #f0f8ff;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .answer:before {
+            content: "💡 Answer: ";
+            font-weight: bold;
+            color: #4caf50;
+        }
+        
+        /* ==================== MIND MAP ==================== */
+        .mind-map {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2em;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #667eea;
+            transition: all 0.3s;
+        }
+        
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .branch-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .branch-content {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .branch-content li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .branch-content li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        
+        /* ==================== COMPARISON TABLE ==================== */
+        .comparison-table {
+            margin: 30px 0;
+        }
+        
+        .comparison-table th:first-child {
+            background: #495057;
+        }
+        
+        /* ==================== EXAMPLE BOX ==================== */
+        .example-box {
+            background: #fff9e6;
+            padding: 25px;
+            border-left: 6px solid #ff9800;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        
+        .example-box h4 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+        
+        .example-box h4:before {
+            content: "📚 ";
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+        }
+        
+        /* ==================== SCROLL TO TOP ==================== */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 1.5em;
+        }
+        
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ==================== HEADER SECTION ==================== -->
+        <div class="header">
+            <h1>Pattern Recognition Principles</h1>
+            <p class="subtitle">Lecture 9: K-Nearest Neighbors (KNN) - Advanced Topics</p>
+            <p class="subtitle">Created by Armaan Kachhawa</p>
+        </div>
+        
+        <!-- ==================== TABLE OF CONTENTS ==================== -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap: KNN Algorithm</a></li>
+                <li><a href="#implementation">2. KNN Implementation</a>
+                    <ul>
+                        <li><a href="#mnist">2.1 MNIST Handwritten Digit Classification</a></li>
+                        <li><a href="#coding-steps">2.2 Implementation Steps</a></li>
+                    </ul>
+                </li>
+                <li><a href="#weighted-knn">3. Weighted KNN</a>
+                    <ul>
+                        <li><a href="#weighting-schemes">3.1 Weighting Schemes</a></li>
+                        <li><a href="#weighted-example">3.2 Worked Example</a></li>
+                    </ul>
+                </li>
+                <li><a href="#tie-breaker">4. Tie-Breaking Strategies</a></li>
+                <li><a href="#normalization">5. Data Normalization</a>
+                    <ul>
+                        <li><a href="#why-normalize">5.1 Why Normalization Matters</a></li>
+                        <li><a href="#minmax">5.2 Min-Max Normalization</a></li>
+                        <li><a href="#zscore">5.3 Z-Score Normalization</a></li>
+                    </ul>
+                </li>
+                <li><a href="#training-accuracy">6. Training Accuracy in KNN</a></li>
+                <li><a href="#overfitting">7. Overfitting in KNN</a></li>
+                <li><a href="#drawbacks">8. KNN: Drawbacks and Limitations</a></li>
+                <li><a href="#curse-dimensionality">9. Curse of Dimensionality</a></li>
+                <li><a href="#takeaways">10. Key Takeaways</a></li>
+                <li><a href="#mindmap">11. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 1: RECAP ==================== -->
+        <div class="section" id="recap">
+            <h2>1. Recap: KNN Algorithm</h2>
+            
+            <p>In the previous lecture, we explored the fundamental concepts of the <span class="highlight">K-Nearest Neighbors (KNN) algorithm</span>. We began with understanding different <strong>distance metrics</strong> and then developed the complete KNN classification framework.</p>
+            
+            <h3>KNN Algorithm Overview</h3>
+            
+            <div class="important">
+                <strong>KNN is a lazy learning algorithm:</strong> It doesn't learn an explicit model during training. Instead, it stores all training data and makes predictions based on the similarity between test samples and stored training samples.
+            </div>
+            
+            <h4>Algorithm Steps:</h4>
+            <ol>
+                <li><strong>Given:</strong>
+                    <ul>
+                        <li>Training data: $\mathbf{X}_{train}$ (n samples, d-dimensional features)</li>
+                        <li>Class labels: $\mathbf{y}_{train}$</li>
+                        <li>Test point: $\mathbf{x}_{test}$ (d-dimensional)</li>
+                        <li>Parameter: $k$ (number of neighbors)</li>
+                    </ul>
+                </li>
+                <li><strong>Compute Distance:</strong> Calculate distance from $\mathbf{x}_{test}$ to each training sample using distance metrics like:
+                    <ul>
+                        <li><strong>Euclidean Distance:</strong> $d(\mathbf{x}, \mathbf{y}) = \sqrt{\sum_{i=1}^{d}(x_i - y_i)^2}$</li>
+                        <li><strong>Manhattan Distance:</strong> $d(\mathbf{x}, \mathbf{y}) = \sum_{i=1}^{d}|x_i - y_i|$</li>
+                        <li><strong>L-infinity Distance:</strong> $d(\mathbf{x}, \mathbf{y}) = \max_i|x_i - y_i|$</li>
+                    </ul>
+                </li>
+                <li><strong>Sort:</strong> Arrange all training points by increasing distance</li>
+                <li><strong>Select k-Nearest:</strong> Choose the top $k$ closest points</li>
+                <li><strong>Majority Voting:</strong> Assign the most frequent class label among the $k$ neighbors as the predicted class</li>
+            </ol>
+            
+            <div class="formula-box">
+                <span class="formula-label">Predicted Class</span>
+
+                $$\hat{y}_{test} = \text{mode}\{y_1, y_2, \ldots, y_k\}$$
+                <p style="font-size: 0.9em; margin-top: 10px;">where $y_1, \ldots, y_k$ are the class labels of the k-nearest neighbors</p>
+            </div>
+            
+            <div class="professor-note">
+                The algorithm works by taking each sample from the training data, finding the distance (which could be Euclidean, Manhattan, or any other metric), and once we compute these distances, we sort all training points by increasing distance. This way, we can identify the top k nearest neighbors to our test sample.
+            </div>
+            
+            <!-- Hinglish Summary for Recap -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>KNN ek lazy learning algorithm hai jo training ke time koi explicit model nahi banata. Bas saare training points ko store kar leta hai. Jab test point aata hai, tab distance calculate karta hai sabhi training points se, phir increasing order mein sort karta hai, aur top k nearest neighbors select karke unme se jo class sabse zyada frequent hai, wahi predict kar deta hai. Simple hai but powerful!</p>
+            </div>
+            
+            <!-- Key Takeaways for Recap -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>KNN stores all training data without building an explicit model</li>
+                    <li>Predictions depend on the k-nearest neighbors using distance metrics</li>
+                    <li>Choice of k and distance metric significantly impacts performance</li>
+                    <li>The algorithm uses majority voting for classification</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 2: IMPLEMENTATION ==================== -->
+        <div class="section" id="implementation">
+            <h2>2. KNN Implementation</h2>
+            
+            <p>Let's dive into practical implementation of KNN using <strong>scikit-learn (sklearn)</strong> library in Python. We'll demonstrate its application on the famous <span class="highlight">MNIST handwritten digit classification</span> problem.</p>
+            
+            <h3 id="mnist">2.1 MNIST Handwritten Digit Classification</h3>
+            
+            <div class="note">
+                <strong>About MNIST Dataset:</strong><br>
+                MNIST (Modified National Institute of Standards and Technology) is a large database of handwritten digits commonly used for training and testing in machine learning.
+                <ul style="margin-top: 10px;">
+                    <li><strong>Classes:</strong> 10 classes (digits 0-9)</li>
+                    <li><strong>Total Samples:</strong> 70,000 handwritten digit images</li>
+                    <li><strong>Image Size:</strong> 28×28 pixels (grayscale)</li>
+                    <li><strong>Feature Dimension:</strong> 784 (28×28 flattened into a vector)</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h4>How Images are Represented</h4>
+                <p>Each handwritten digit image is a 28×28 pixel matrix. To use it with KNN, we <strong>flatten</strong> this 2D matrix into a 1D vector:</p>
+                <ul>
+                    <li>Original: 28×28 matrix (2D)</li>
+                    <li>Flattened: 784-dimensional vector (1D)</li>
+                    <li>Each image becomes a point in 784-dimensional space</li>
+                    <li>Pixel values represent grayscale intensities (0-255)</li>
+                </ul>
+            </div>
+            
+            <div class="image-placeholder">
+                [Insert diagram: Visualization of MNIST digits - samples showing digits 0-9 in handwritten form]
+            </div>
+            
+            <h3 id="coding-steps">2.2 Implementation Steps</h3>
+            
+            <h4>Step 1: Import Required Libraries</h4>
+            
+            <pre><code class="language-python"># Import necessary libraries
+import numpy as np                              # For numerical operations
+import matplotlib.pyplot as plt                 # For visualization
+from sklearn.datasets import fetch_openml      # To download MNIST data
+from sklearn.model_selection import train_test_split  # Train-test splitting
+from sklearn.neighbors import KNeighborsClassifier    # KNN classifier
+from sklearn.metrics import accuracy_score, confusion_matrix  # Evaluation metrics
+</code></pre>
+            
+            <div class="professor-note">
+                These libraries are standard for machine learning. NumPy handles numerical operations, matplotlib helps with visualization, and sklearn provides the KNN implementation along with data loading and evaluation functions. The 'as' keyword gives nicknames to libraries for convenience (e.g., 'np' for numpy).
+            </div>
+            
+            <h4>Step 2: Load MNIST Dataset</h4>
+            
+            <pre><code class="language-python"># Fetch MNIST data from OpenML
+mnist = fetch_openml('mnist_784', version=1, parser='auto')
+
+# Extract features (X) and labels (y)
+X = mnist.data    # Shape: (70000, 784) - 70,000 samples, 784 features each
+y = mnist.target  # Shape: (70000,) - class labels (0-9)
+
+# Display dataset information
+print(f"Dataset shape: {X.shape}")
+print(f"Labels shape: {y.shape}")
+</code></pre>
+            
+            <p><strong>Understanding the Data Structure:</strong></p>
+            <ul>
+                <li><code>X</code>: Feature matrix of size (70,000 × 784) where each row is a flattened image</li>
+                <li><code>y</code>: Label vector containing class labels (0-9) for each sample</li>
+                <li>Each pixel value in X ranges from 0 (black) to 255 (white)</li>
+            </ul>
+            
+            <h4>Step 3: Visualize Sample Digits</h4>
+            
+            <pre><code class="language-python"># Visualize the first digit
+sample_index = 0
+sample_image = X.iloc[sample_index].values.reshape(28, 28)  # Reshape to 28x28
+sample_label = y.iloc[sample_index]
+
+plt.imshow(sample_image, cmap='gray')
+plt.title(f'Label: {sample_label}')
+plt.axis('off')
+plt.show()
+</code></pre>
+            
+            <div class="professor-note">
+                This visualization helps us understand what we're working with. We take the flattened 784-dimensional vector and reshape it back to 28×28 to display as an image. You can change the sample_index to view different digits from the dataset.
+            </div>
+            
+            <h4>Step 4: Train-Test Split</h4>
+            
+            <div class="important">
+                <strong>Why Train-Test Split is Critical:</strong><br>
+                Any machine learning algorithm requires dividing data into disjoint sets:
+                <ul style="margin-top: 10px;">
+                    <li><strong>Training Set:</strong> Used to train/fit the model</li>
+                    <li><strong>Testing Set:</strong> Used to evaluate model performance (never used during training)</li>
+                    <li><strong>Validation Set (optional):</strong> Used for hyperparameter tuning (like finding optimal k)</li>
+                </ul>
+            </div>
+            
+            <pre><code class="language-python"># Split data into 80% training and 20% testing
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, 
+    test_size=0.2,      # 20% for testing
+    random_state=42     # For reproducibility
+)
+
+print(f"Training samples: {X_train.shape[0]}")  # 56,000 samples
+print(f"Testing samples: {X_test.shape[0]}")    # 14,000 samples
+</code></pre>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>test_size</code></td>
+                        <td>0.2 (20%)</td>
+                        <td>Proportion of data reserved for testing</td>
+                    </tr>
+                    <tr>
+                        <td><code>random_state</code></td>
+                        <td>42</td>
+                        <td>Ensures reproducibility - same split every time</td>
+                    </tr>
+                    <tr>
+                        <td>Training samples</td>
+                        <td>56,000</td>
+                        <td>Used to store as reference for KNN</td>
+                    </tr>
+                    <tr>
+                        <td>Testing samples</td>
+                        <td>14,000</td>
+                        <td>Used to evaluate model performance</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The random_state=42 ensures that every time you run this code, you get the same 80-20 split. Without it, the split would be different each time, leading to slight variations in performance. The number 42 is arbitrary - you can use any number.
+            </div>
+            
+            <h4>Step 5: Train KNN Classifier</h4>
+            
+            <pre><code class="language-python"># Create KNN classifier with k=3
+knn = KNeighborsClassifier(n_neighbors=3)
+
+# "Train" the classifier (actually just stores the training data)
+knn.fit(X_train, y_train)
+
+print("KNN classifier is ready!")
+</code></pre>
+            
+            <div class="note">
+                <strong>Important Understanding:</strong> KNN doesn't actually "train" in the traditional sense. The <code>fit()</code> method simply stores all training data points. There's no model building, no weight optimization - it's a <span class="highlight">lazy learner</span>.
+            </div>
+            
+            <h4>Step 6: Make Predictions and Evaluate</h4>
+            
+            <pre><code class="language-python"># Predict on test set
+y_pred = knn.predict(X_test)
+
+# Calculate accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Test Accuracy: {accuracy * 100:.2f}%")
+
+# Generate confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+print("\nConfusion Matrix:")
+print(cm)
+</code></pre>
+            
+            <div class="example-box">
+                <h4>How Prediction Works for Each Test Sample</h4>
+                <ol>
+                    <li>Take a test sample (784-dimensional vector)</li>
+                    <li>Compute distance from this sample to all 56,000 training samples</li>
+                    <li>Sort these 56,000 distances in increasing order</li>
+                    <li>Select the top k=3 nearest neighbors</li>
+                    <li>Check the class labels of these 3 neighbors</li>
+                    <li>Assign the majority class as the prediction</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>This process repeats for all 14,000 test samples!</strong></p>
+            </div>
+            
+            <h4>Results Achieved</h4>
+            
+            <div class="important">
+                <p><strong>Accuracy Achieved: 97%</strong></p>
+                <p>This means the simple KNN algorithm correctly classifies 97 out of 100 handwritten digits! This is quite impressive for such a straightforward method.</p>
+            </div>
+            
+            <h4>Understanding Confusion Matrix</h4>
+            
+            <p>The <span class="highlight">confusion matrix</span> is a 10×10 matrix (since we have 10 classes: 0-9) that shows how well our classifier performs:</p>
+            
+            <ul>
+                <li><strong>Diagonal Elements:</strong> Correctly classified instances (e.g., digit 0 classified as 0)</li>
+                <li><strong>Off-Diagonal Elements:</strong> Misclassifications (e.g., digit 2 classified as 7)</li>
+                <li><strong>Ideal Matrix:</strong> All diagonal elements are large, all off-diagonal elements are zero</li>
+            </ul>
+            
+            <div class="professor-note">
+                In our confusion matrix, you'll notice that diagonal numbers are high, which is good. But wherever you see non-zero numbers off the diagonal, those represent mistakes. For example, sometimes digit 2 might be classified as 7, or digit 8 as 3. These confusions happen in the 3% of cases where our model makes errors.
+            </div>
+            
+            <h4>Step 7: Visualize Predictions</h4>
+            
+            <pre><code class="language-python"># Visualize first 10 test samples with predictions
+fig, axes = plt.subplots(2, 5, figsize=(12, 6))
+axes = axes.ravel()
+
+for i in range(10):
+    sample_image = X_test.iloc[i].values.reshape(28, 28)
+    axes[i].imshow(sample_image, cmap='gray')
+    axes[i].set_title(f'True: {y_test.iloc[i]}, Pred: {y_pred[i]}')
+    axes[i].axis('off')
+
+plt.tight_layout()
+plt.show()
+</code></pre>
+            
+            <div class="image-placeholder">
+                [Insert diagram: Grid showing 10 sample digits with their true labels and predicted labels]
+            </div>
+            
+            <h4>Experiments to Try</h4>
+            
+            <div class="practice-questions">
+                <h4>Hands-On Exercises</h4>
+                
+                <div class="question">
+                    <strong>Exercise 1:</strong> Vary the value of k (try k=1, 5, 7, 10) and observe how accuracy changes.
+                </div>
+                
+                <div class="question">
+                    <strong>Exercise 2:</strong> Scale pixel values from [0, 255] to [0, 1] by dividing by 255. Does this improve performance?
+                </div>
+                
+                <div class="question">
+                    <strong>Exercise 3:</strong> Find and visualize the misclassified samples. What patterns do you notice? Which digits are most commonly confused?
+                </div>
+                
+                <div class="question">
+                    <strong>Exercise 4:</strong> Implement k-nearest neighbor visualization: For the first test image, display its k=3 nearest neighbors from the training set.
+                </div>
+            </div>
+            
+            <!-- Hinglish Summary for Implementation -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Implementation mein humne sklearn library use ki KNN ko implement karne ke liye. MNIST dataset load kiya jismein 70,000 handwritten digits hain. Har image 28×28 pixels ki hai jo flatten karke 784-dimensional vector ban jata hai. Data ko 80-20 mein split kiya - 56,000 training aur 14,000 testing samples. KNN classifier banaya with k=3, phir sabhi test samples par predict kiya. Result bohot accha aaya - 97% accuracy! Confusion matrix se pata chala ki mostly diagonal elements high hain, matlab zyada tar predictions sahi hain. Simple algorithm but powerful results!</p>
+            </div>
+            
+            <!-- Key Takeaways for Implementation -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Sklearn provides easy-to-use KNN implementation via KNeighborsClassifier</li>
+                    <li>MNIST images are flattened from 28×28 matrices to 784-dimensional vectors</li>
+                    <li>Train-test split is essential: training for storage, testing for evaluation</li>
+                    <li>KNN achieved 97% accuracy on MNIST with k=3</li>
+                    <li>Confusion matrix helps identify which classes are commonly confused</li>
+                    <li>KNN.fit() doesn't train - it just stores data (lazy learning)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 3: WEIGHTED KNN ==================== -->
+        <div class="section" id="weighted-knn">
+            <h2>3. Weighted KNN</h2>
+            
+            <p>In standard KNN, all k-nearest neighbors have <strong>equal voting power</strong> regardless of their distance from the test point. However, intuitively, <span class="highlight">closer neighbors should have more influence</span> than farther ones. This is where <strong>Weighted KNN</strong> comes into play.</p>
+            
+            <div class="important">
+                <strong>Core Idea:</strong> Assign weights to neighbors based on their distance from the test point. Closer neighbors get higher weights, farther neighbors get lower weights.
+            </div>
+            
+            <h3 id="weighting-schemes">3.1 Weighting Schemes</h3>
+            
+            <p>There are several popular methods to assign weights to neighbors:</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Weighting Scheme</th>
+                        <th>Formula</th>
+                        <th>Characteristics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Inverse Distance</strong></td>
+                        <td>$w_i = \frac{1}{d_i}$</td>
+                        <td>Most popular; weight inversely proportional to distance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inverse Square Distance</strong></td>
+                        <td>$w_i = \frac{1}{d_i^2}$</td>
+                        <td>Penalizes farther neighbors more heavily</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gaussian Kernel</strong></td>
+                        <td>$w_i = e^{-\frac{d_i^2}{2\sigma^2}}$</td>
+                        <td>Smooth decay; requires choosing bandwidth σ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linear Decay</strong></td>
+                        <td>$w_i = 1 - \frac{d_i}{d_{max}}$</td>
+                        <td>Weight decreases linearly with distance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uniform (Standard KNN)</strong></td>
+                        <td>$w_i = 1$</td>
+                        <td>All neighbors have equal weight (baseline)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>where $d_i$ is the distance from the test point to the i-th neighbor.</p>
+            
+            <div class="note">
+                <strong>Note:</strong> The most commonly used weighting scheme is <strong>inverse distance</strong> due to its simplicity and effectiveness.
+            </div>
+            
+            <h3>Weighted Voting Formula</h3>
+            
+            <div class="formula-box">
+                <span class="formula-label">Weighted Class Score</span>
+
+                $$\text{Score}(c) = \sum_{i=1}^{k} w_i \cdot \mathbb{1}(y_i = c)$$
+                <p style="font-size: 0.9em; margin-top: 10px;">where $\mathbb{1}(y_i = c)$ is 1 if neighbor i belongs to class c, otherwise 0</p>
+                <br>
+                <span class="formula-label">Predicted Class</span>
+
+                $$\hat{y}_{test} = \arg\max_c \text{Score}(c)$$
+            </div>
+            
+            <h3 id="weighted-example">3.2 Worked Example: Weighted KNN</h3>
+            
+            <p>Let's walk through a detailed example to understand how weighted KNN works.</p>
+            
+            <div class="example-box">
+                <h4>Problem Setup</h4>
+                <p><strong>Given:</strong> Four training samples with one-dimensional features and two classes (🔴 Red and 🔵 Blue)</p>
+                
+                <table style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Sample</th>
+                            <th>Feature (x)</th>
+                            <th>Class</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>P1</td>
+                            <td>1</td>
+                            <td>🔴 Red</td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td>2</td>
+                            <td>🔵 Blue</td>
+                        </tr>
+                        <tr>
+                            <td>P3</td>
+                            <td>3</td>
+                            <td>🔴 Red</td>
+                        </tr>
+                        <tr>
+                            <td>P4</td>
+                            <td>6</td>
+                            <td>🔵 Blue</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Task:</strong> Classify test point $x_{test} = 2.5$ using k=3 with weighted KNN.</p>
+            </div>
+            
+            <h4>Step 1: Calculate Distances</h4>
+            
+            <p>Using Manhattan distance (absolute difference): $d = |x_{test} - x_i|$</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sample</th>
+                        <th>Feature</th>
+                        <th>Distance from 2.5</th>
+                        <th>Calculation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>P1</td>
+                        <td>1</td>
+                        <td>1.5</td>
+                        <td>|2.5 - 1| = 1.5</td>
+                    </tr>
+                    <tr>
+                        <td>P2</td>
+                        <td>2</td>
+                        <td>0.5</td>
+                        <td>|2.5 - 2| = 0.5</td>
+                    </tr>
+                    <tr>
+                        <td>P3</td>
+                        <td>3</td>
+                        <td>0.5</td>
+                        <td>|2.5 - 3| = 0.5</td>
+                    </tr>
+                    <tr>
+                        <td>P4</td>
+                        <td>6</td>
+                        <td>3.5</td>
+                        <td>|2.5 - 6| = 3.5</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Step 2: Select k=3 Nearest Neighbors</h4>
+            
+            <p>After sorting by distance, the three nearest neighbors are:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Neighbor</th>
+                        <th>Class</th>
+                        <th>Distance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1st (tied)</td>
+                        <td>P2</td>
+                        <td>🔵 Blue</td>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <td>1st (tied)</td>
+                        <td>P3</td>
+                        <td>🔴 Red</td>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <td>3rd</td>
+                        <td>P1</td>
+                        <td>🔴 Red</td>
+                        <td>1.5</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Step 3: Calculate Weights (Inverse Distance)</h4>
+            
+            <p>Using inverse distance weighting: $w = \frac{1}{d}$</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Neighbor</th>
+                        <th>Class</th>
+                        <th>Distance (d)</th>
+                        <th>Weight (1/d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>P2</td>
+                        <td>🔵 Blue</td>
+                        <td>0.5</td>
+                        <td>2.0</td>
+                    </tr>
+                    <tr>
+                        <td>P3</td>
+                        <td>🔴 Red</td>
+                        <td>0.5</td>
+                        <td>2.0</td>
+                    </tr>
+                    <tr>
+                        <td>P1</td>
+                        <td>🔴 Red</td>
+                        <td>1.5</td>
+                        <td>0.67</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Step 4: Compute Weighted Votes</h4>
+            
+            <p>Sum the weights for each class:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Contributing Neighbors</th>
+                        <th>Weighted Sum</th>
+                        <th>Calculation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔴 Red</td>
+                        <td>P3, P1</td>
+                        <td><strong>2.67</strong></td>
+                        <td>2.0 + 0.67 = 2.67</td>
+                    </tr>
+                    <tr>
+                        <td>🔵 Blue</td>
+                        <td>P2</td>
+                        <td>2.0</td>
+                        <td>2.0</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Step 5: Make Prediction</h4>
+            
+            <div class="important">
+                <strong>Predicted Class: 🔴 Red</strong><br>
+                Since Red has a weighted sum of 2.67 > Blue's 2.0, the test point is classified as Red.
+            </div>
+            
+            <h4>Comparison with Standard KNN</h4>
+            
+            <div class="note">
+                <strong>Standard KNN Result:</strong> Using unweighted voting with k=3:
+                <ul style="margin-top: 10px;">
+                    <li>Red votes: 2 (P3, P1)</li>
+                    <li>Blue votes: 1 (P2)</li>
+                    <li>Prediction: 🔴 Red (by majority)</li>
+                </ul>
+                <p style="margin-top: 10px;">In this example, both methods agree. However, weighted KNN gives us more confidence in the prediction because it accounts for the fact that P3 is closer than P1.</p>
+            </div>
+            
+            <div class="professor-note">
+                Even though the result is same in this particular example, weighted KNN provides better decision-making. P1 is farther away, so it gets less weight (0.67), while P2 and P3 which are much closer get higher weights (2.0 each). This makes the classification more robust to noisy outliers.
+            </div>
+            
+            <h3>Advantages of Weighted KNN</h3>
+            
+            <ul>
+                <li><strong>Reduces Impact of Outliers:</strong> Distant neighbors have minimal influence on the decision</li>
+                <li><strong>More Nuanced Decisions:</strong> Captures the gradient of class boundaries better</li>
+                <li><strong>Better with Noisy Data:</strong> Improves accuracy when training data contains noise or mislabeled samples</li>
+                <li><strong>Handles Imbalanced k:</strong> When choosing odd k values, weighting can break ties more intelligently</li>
+            </ul>
+            
+            <h3>Disadvantages of Weighted KNN</h3>
+            
+            <ul>
+                <li><strong>Sensitive to Distance Metric:</strong> Performance depends heavily on the choice of distance metric</li>
+                <li><strong>Computationally Expensive:</strong> Requires additional weight calculations for every prediction</li>
+                <li><strong>Hyperparameter Tuning:</strong> Need to choose weighting scheme (inverse, Gaussian, etc.)</li>
+                <li><strong>Edge Cases:</strong> When a neighbor is at exact same location as test point (d=0), weight becomes infinite</li>
+            </ul>
+            
+            <!-- Hinglish Summary for Weighted KNN -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Weighted KNN ek improvement hai standard KNN ka. Isme hum sabhi k neighbors ko equal vote nahi dete, balki jo neighbors test point ke zyada paas hain unko zyada weight dete hain. Sabse popular method hai inverse distance weighting jismein weight = 1/distance hota hai. Isse outliers ka impact kam ho jata hai aur noisy data pe bhi better performance milti hai. Example mein dekha ki test point 2.5 ke liye nearest neighbors P2 aur P3 (distance 0.5) ko weight 2.0 mila, jabki dur ka neighbor P1 (distance 1.5) ko sirf 0.67 weight mila. Result Red class aaya weighted sum 2.67 ke saath!</p>
+            </div>
+            
+            <!-- Key Takeaways for Weighted KNN -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Weighted KNN assigns higher influence to closer neighbors</li>
+                    <li>Inverse distance weighting (w = 1/d) is the most popular scheme</li>
+                    <li>Reduces impact of outliers and handles noisy data better</li>
+                    <li>Requires additional computation but often improves accuracy</li>
+                    <li>Helps break ties more intelligently than standard voting</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Weighted KNN -->
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Question 1:</strong> Given 5 neighbors with distances [0.5, 1.0, 1.5, 2.0, 2.5] and classes [A, B, A, A, B], using inverse distance weighting, which class will be predicted?
+                </div>
+                <div class="answer">
+                    Weights: [2.0, 1.0, 0.67, 0.5, 0.4]<br>
+                    Class A: 2.0 + 0.67 + 0.5 = 3.17<br>
+                    Class B: 1.0 + 0.4 = 1.4<br>
+                    <strong>Predicted: Class A</strong>
+                </div>
+                
+                <div class="question">
+                    <strong>Question 2:</strong> Why might weighted KNN perform better than standard KNN when k is large?
+                </div>
+                <div class="answer">
+                    When k is large, standard KNN includes many distant neighbors that may belong to different classes, diluting the decision. Weighted KNN reduces the influence of these distant neighbors, focusing more on nearby points, leading to better boundary decisions.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 3:</strong> What happens in weighted KNN if a training point is at the exact same location as the test point (distance = 0)?
+                </div>
+                <div class="answer">
+                    Weight becomes 1/0 = infinity (undefined). In practice, implementations handle this by: (a) assigning the class of that point directly, or (b) using a small epsilon value (distance = 0.0001) to avoid division by zero.
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 4: TIE-BREAKER ==================== -->
+        <div class="section" id="tie-breaker">
+            <h2>4. Tie-Breaking Strategies</h2>
+            
+            <p>When using KNN, we may encounter situations where <span class="highlight">multiple classes have equal votes</span> among the k-nearest neighbors. This is called a <strong>tie</strong>, and we need strategies to break it.</p>
+            
+            <div class="example-box">
+                <h4>Example Scenario: When Ties Happen</h4>
+                <p>Consider k=3 with three nearest neighbors belonging to classes: [Red, Blue, Yellow]</p>
+                <p>All three classes have 1 vote each - it's a three-way tie! How do we decide?</p>
+            </div>
+            
+            <h3>Common Tie-Breaking Strategies</h3>
+            
+            <h4>1. Weighted KNN Approach</h4>
+            <p>As discussed in the previous section, use distance-based weights. The class with the highest weighted sum wins.</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Tie-Breaker using Weights</span>
+
+                $$\text{Winner} = \arg\max_c \sum_{i: y_i=c} w_i$$
+            </div>
+            
+            <div class="professor-note">
+                This is one of the most practical approaches. If there's a tie in the majority voting, we give more weight to the sample which is nearer. So if the nearest sample is red, there will be more weight assigned to that, and red will win the tie.
+            </div>
+            
+            <h4>2. Prior Probability Approach</h4>
+            <p>Use the <strong>class distribution in the training data</strong> as a tiebreaker. Choose the class that appears more frequently overall in the dataset.</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Prior Probability</span>
+
+                $$P(c) = \frac{\text{Number of training samples in class } c}{\text{Total number of training samples}}$$
+            </div>
+            
+            <p><strong>Example:</strong> If training data has 60% Red samples, 30% Blue, and 10% Yellow, and there's a tie, choose Red.</p>
+            
+            <h4>3. Reduce k</h4>
+            <p>If k neighbors result in a tie, temporarily reduce k to k-1 and check if the tie breaks. Keep reducing until a winner emerges.</p>
+            
+            <div class="warning">
+                <strong>Caution:</strong> This approach can be unstable and may lead to high variance in predictions.
+            </div>
+            
+            <h4>4. Random Selection</h4>
+            <p>As a last resort, randomly pick one of the tied classes. This is typically used when no other strategy is applicable.</p>
+            
+            <h4>5. Nearest Single Neighbor</h4>
+            <p>Among the tied classes, choose the class of the single nearest neighbor (break tie using k=1).</p>
+            
+            <h3>Comparison of Tie-Breaking Strategies</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Pros</th>
+                        <th>Cons</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Weighted KNN</strong></td>
+                        <td>Uses distance information; most intelligent</td>
+                        <td>Requires extra computation</td>
+                        <td>Default choice; works well in most cases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prior Probability</strong></td>
+                        <td>Leverages global class distribution</td>
+                        <td>May bias toward majority class</td>
+                        <td>When classes are imbalanced</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reduce k</strong></td>
+                        <td>Simple to implement</td>
+                        <td>Unstable; high variance</td>
+                        <td>Quick-and-dirty solution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Random Selection</strong></td>
+                        <td>Unbiased; simple</td>
+                        <td>Non-deterministic; not reproducible</td>
+                        <td>Last resort only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nearest Neighbor</strong></td>
+                        <td>Uses most relevant information</td>
+                        <td>Ignores other k-1 neighbors</td>
+                        <td>When confidence in nearest point is high</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Hinglish Summary for Tie-Breaker -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Jab k neighbors mein equal votes aate hain different classes ke liye, to tie ho jata hai. Isse break karne ke liye kai strategies hain. Sabse popular hai weighted KNN jismein jo neighbor zyada paas hai use zyada preference dete hain. Dusra tarika hai prior probability use karna - training data mein jo class zyada frequent hai use choose karna. Tie breaking bahut practical problem hai implementation mein, isliye achi strategy choose karna important hai!</p>
+            </div>
+            
+            <!-- Key Takeaways for Tie-Breaker -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Ties occur when multiple classes have equal votes among k neighbors</li>
+                    <li>Weighted KNN is the most intelligent tie-breaking strategy</li>
+                    <li>Prior probability leverages global class distribution</li>
+                    <li>Random selection should be used only as a last resort</li>
+                    <li>Choice of strategy can impact model performance, especially with small k</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 5: DATA NORMALIZATION ==================== -->
+        <div class="section" id="normalization">
+            <h2>5. Data Normalization</h2>
+            
+            <p>One of the <span class="highlight">most critical preprocessing steps</span> for distance-based algorithms like KNN is <strong>data normalization</strong> (also called feature scaling). Without proper normalization, distance calculations can become meaningless.</p>
+            
+            <h3 id="why-normalize">5.1 Why Normalization Matters</h3>
+            
+            <div class="important">
+                <strong>The Problem:</strong> When features have vastly different scales, the feature with the largest scale dominates the distance calculation, making other features nearly irrelevant.
+            </div>
+            
+            <h4>Example 1: Comparable Scales (No Issue)</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Person</th>
+                        <th>Height (cm)</th>
+                        <th>Weight (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>180</td>
+                        <td>80</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>160</td>
+                        <td>50</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Euclidean Distance:</strong></p>
+
+            $$d(A, B) = \sqrt{(180-160)^2 + (80-50)^2} = \sqrt{400 + 900} = \sqrt{1300} \approx 36.06$$
+            
+            <p><strong>Analysis:</strong></p>
+            <ul>
+                <li>Height contributes: $(180-160)^2 = 400$</li>
+                <li>Weight contributes: $(80-50)^2 = 900$</li>
+                <li>Both features contribute meaningfully (comparable magnitudes)</li>
+            </ul>
+            
+            <div class="note">
+                ✓ This is fine! Both features contribute to the distance calculation in a balanced way.
+            </div>
+            
+            <h4>Example 2: Vastly Different Scales (PROBLEM!)</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Person</th>
+                        <th>Salary (₹)</th>
+                        <th>Age (years)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>50,000</td>
+                        <td>25</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>60,000</td>
+                        <td>35</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Euclidean Distance:</strong></p>
+
+            $$d(A, B) = \sqrt{(50000-60000)^2 + (25-35)^2} = \sqrt{100000000 + 100} \approx 10000.005$$
+            
+            <p><strong>Analysis:</strong></p>
+            <ul>
+                <li>Salary contributes: $(50000-60000)^2 = 100,000,000$</li>
+                <li>Age contributes: $(25-35)^2 = 100$</li>
+                <li>Salary completely dominates! Age has virtually no effect!</li>
+            </ul>
+            
+            <div class="warning">
+                ✗ <strong>This is BAD!</strong> The age feature is essentially ignored. Distance is determined almost entirely by salary. This makes KNN focus only on salary differences, ignoring potentially important age information.
+            </div>
+            
+            <div class="professor-note">
+                This becomes problematic because there is one dimension (salary) which is taking everything. The age component is very, very small compared to salary. So celery completely dominates the distance computation and has very low effect from age. This is not a good thing because ideally all dimensions should contribute to the distance calculation.
+            </div>
+            
+            <h3>Solution: Feature Normalization/Scaling</h3>
+            
+            <p>Normalization transforms all features to a <strong>common scale</strong>, ensuring each feature contributes proportionally to distance calculations.</p>
+            
+            <h3 id="minmax">5.2 Min-Max Normalization</h3>
+            
+            <p>Also known as <strong>Min-Max Scaling</strong>, this method scales features to a fixed range, typically [0, 1].</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Min-Max Normalization Formula</span>
+
+                $$x' = \frac{x - x_{min}}{x_{max} - x_{min}}$$
+                <p style="font-size: 0.9em; margin-top: 10px;">where:<br>
+                • $x$ = original value<br>
+                • $x'$ = normalized value<br>
+                • $x_{min}$ = minimum value in the feature<br>
+                • $x_{max}$ = maximum value in the feature</p>
+            </div>
+            
+            <h4>Step-by-Step Example: Normalizing Salary</h4>
+            
+            <p><strong>Original Salaries:</strong> A = ₹50,000, B = ₹60,000</p>
+            
+            <p><strong>Step 1:</strong> Find min and max</p>
+            <ul>
+                <li>$x_{min} = 50,000$</li>
+                <li>$x_{max} = 60,000$</li>
+            </ul>
+            
+            <p><strong>Step 2:</strong> Apply formula for A's salary</p>
+
+            $$\text{Salary}_A' = \frac{50000 - 50000}{60000 - 50000} = \frac{0}{10000} = 0$$
+            
+            <p><strong>Step 3:</strong> Apply formula for B's salary</p>
+
+            $$\text{Salary}_B' = \frac{60000 - 50000}{60000 - 50000} = \frac{10000}{10000} = 1$$
+            
+            <p><strong>Similarly for Age:</strong> A = 25, B = 35</p>
+
+            $$\text{Age}_A' = \frac{25 - 25}{35 - 25} = 0$$
+
+            $$\text{Age}_B' = \frac{35 - 25}{35 - 25} = 1$$
+            
+            <h4>After Normalization:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Person</th>
+                        <th>Salary (normalized)</th>
+                        <th>Age (normalized)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>1.0</td>
+                        <td>1.0</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p><strong>New Distance:</strong></p>
+
+            $$d(A, B) = \sqrt{(0-1)^2 + (0-1)^2} = \sqrt{1 + 1} = \sqrt{2} \approx 1.414$$
+            
+            <div class="note">
+                ✓ Now both features contribute equally! The data points are in the same [0, 1] range.
+            </div>
+            
+            <h4>Properties of Min-Max Normalization</h4>
+            
+            <ul>
+                <li><strong>Range:</strong> Transforms data to [0, 1] (or any specified [min, max])</li>
+                <li><strong>Preserves Relationships:</strong> Maintains the relative distances between data points</li>
+                <li><strong>Bounded:</strong> All values are within a known range</li>
+                <li><strong>Sensitive to Outliers:</strong> Extreme values can compress the majority of data</li>
+            </ul>
+            
+            <h3 id="zscore">5.3 Z-Score Normalization (Standardization)</h3>
+            
+            <p>Also known as <strong>Standardization</strong>, this method transforms data to have <span class="highlight">mean = 0 and standard deviation = 1</span>.</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Z-Score Normalization Formula</span>
+
+                $$z = \frac{x - \mu}{\sigma}$$
+                <p style="font-size: 0.9em; margin-top: 10px;">where:<br>
+                • $x$ = original value<br>
+                • $z$ = standardized value (z-score)<br>
+                • $\mu$ = mean of the feature<br>
+                • $\sigma$ = standard deviation of the feature</p>
+            </div>
+            
+            <h4>Step-by-Step Example: Standardizing Salary</h4>
+            
+            <p><strong>Original Salaries:</strong> A = ₹50,000, B = ₹60,000</p>
+            
+            <p><strong>Step 1:</strong> Calculate mean</p>
+
+            $$\mu = \frac{50000 + 60000}{2} = 55000$$
+            
+            <p><strong>Step 2:</strong> Calculate standard deviation</p>
+
+            $$\sigma = \sqrt{\frac{(50000-55000)^2 + (60000-55000)^2}{2}} = \sqrt{\frac{25000000 + 25000000}{2}} = 5000$$
+            
+            <p><strong>Step 3:</strong> Apply formula for A's salary</p>
+
+            $$z_A = \frac{50000 - 55000}{5000} = \frac{-5000}{5000} = -1.0$$
+            
+            <p><strong>Step 4:</strong> Apply formula for B's salary</p>
+
+            $$z_B = \frac{60000 - 55000}{5000} = \frac{5000}{5000} = 1.0$$
+            
+            <h4>After Standardization:</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Person</th>
+                        <th>Salary (standardized)</th>
+                        <th>Age (standardized)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>-1.0</td>
+                        <td>-1.0</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>1.0</td>
+                        <td>1.0</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note">
+                ✓ Data is now on the same scale with mean=0 and standard deviation=1 for each feature.
+            </div>
+            
+            <h4>Properties of Z-Score Normalization</h4>
+            
+            <ul>
+                <li><strong>Mean = 0:</strong> Centering the data around zero</li>
+                <li><strong>Std Dev = 1:</strong> All features have unit variance</li>
+                <li><strong>Unbounded:</strong> Values can be any real number (typically -3 to +3)</li>
+                <li><strong>Less Sensitive to Outliers:</strong> Compared to Min-Max (but still affected)</li>
+                <li><strong>Assumes Normal Distribution:</strong> Works best when data is approximately Gaussian</li>
+            </ul>
+            
+            <h3>Comparison: Min-Max vs Z-Score</h3>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Min-Max Normalization</th>
+                        <th>Z-Score Normalization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Range</strong></td>
+                        <td>[0, 1] (bounded)</td>
+                        <td>Unbounded (typically -3 to +3)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Formula</strong></td>
+                        <td>$\frac{x - x_{min}}{x_{max} - x_{min}}$</td>
+                        <td>$\frac{x - \mu}{\sigma}$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case</strong></td>
+                        <td>When you need bounded values (e.g., neural networks)</td>
+                        <td>When features follow normal distribution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outlier Sensitivity</strong></td>
+                        <td>High (outliers compress data)</td>
+                        <td>Moderate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpretation</strong></td>
+                        <td>% of range from minimum</td>
+                        <td># of std devs from mean</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Distribution</strong></td>
+                        <td>Preserves original distribution shape</td>
+                        <td>Transforms to standard normal-like</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Popularity for KNN</strong></td>
+                        <td>Moderate</td>
+                        <td>High (more commonly used)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Implementation in Python</h3>
+            
+            <h4>Using Google Sheets (Quick Demo)</h4>
+            
+            <div class="professor-note">
+                Let's quickly see how to do standardization in Google Sheets. Suppose you have salary data in column A (50,000 and 60,000). To standardize it: Mean is calculated using =AVERAGE(A2:A3), Standard deviation using =STDEV(A2:A3), then for each cell, the formula is =(A2-$mean_cell)/$std_cell. Similarly, you can standardize the age column. After standardization, both features will be in the same scale, typically in the range of -1 to +1, with mean of zero.
+            </div>
+            
+            <h4>Using Sklearn in Python</h4>
+            
+            <pre><code class="language-python">from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import numpy as np
+
+# Sample data: [Salary, Age]
+data = np.array([[50000, 25],
+                 [60000, 35],
+                 [55000, 30]])
+
+# Method 1: Z-Score Normalization (Standardization)
+scaler_z = StandardScaler()
+data_standardized = scaler_z.fit_transform(data)
+print("Standardized Data:")
+print(data_standardized)
+# Output: mean ≈ 0, std ≈ 1 for each column
+
+# Method 2: Min-Max Normalization
+scaler_mm = MinMaxScaler()
+data_normalized = scaler_mm.fit_transform(data)
+print("\nMin-Max Normalized Data:")
+print(data_normalized)
+# Output: values in [0, 1] range for each column
+</code></pre>
+            
+            <div class="important">
+                <strong>Critical Note for KNN:</strong> Always normalize/standardize your features BEFORE applying KNN! Distance-based methods are highly sensitive to feature scales.
+            </div>
+            
+            <!-- Hinglish Summary for Normalization -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Data normalization bahut important hai distance-based algorithms ke liye. Agar features ki scale bahut alag-alag hai (jaise salary lakhs mein aur age tens mein), to jo feature badi scale pe hai woh distance calculation pe dominate kar jata hai aur baaki features ka koi effect nahi rehta. Isse bachne ke liye hum normalization karte hain. Do popular methods hain: (1) Min-Max normalization jo data ko [0,1] range mein convert karta hai, aur (2) Z-score normalization (standardization) jo data ko mean=0 aur std dev=1 mein convert karta hai. Z-score zyada popular hai KNN ke liye. Normalization ke baad sabhi features equal importance ke saath contribute karte hain distance calculation mein!</p>
+            </div>
+            
+            <!-- Key Takeaways for Normalization -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Normalization is ESSENTIAL for KNN and all distance-based methods</li>
+                    <li>Without normalization, large-scale features dominate distance calculations</li>
+                    <li>Min-Max scales data to [0, 1] range: $x' = \frac{x - x_{min}}{x_{max} - x_{min}}$</li>
+                    <li>Z-Score standardizes to mean=0, std=1: $z = \frac{x - \mu}{\sigma}$</li>
+                    <li>Z-Score is more commonly used for KNN due to better outlier handling</li>
+                    <li>Always normalize BEFORE training/testing KNN models</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Normalization -->
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Question 1:</strong> Given features: Income = [30k, 40k, 50k] and Age = [20, 30, 40]. Apply Min-Max normalization to Income.
+                </div>
+                <div class="answer">
+                    $x_{min} = 30000$, $x_{max} = 50000$<br>
+                    Income 30k: $\frac{30000-30000}{50000-30000} = 0$<br>
+                    Income 40k: $\frac{40000-30000}{50000-30000} = 0.5$<br>
+                    Income 50k: $\frac{50000-30000}{50000-30000} = 1.0$<br>
+                    <strong>Result: [0, 0.5, 1.0]</strong>
+                </div>
+                
+                <div class="question">
+                    <strong>Question 2:</strong> Why is Z-Score normalization preferred over Min-Max for KNN when data contains outliers?
+                </div>
+                <div class="answer">
+                    Z-Score is less sensitive to outliers compared to Min-Max. In Min-Max, a single extreme outlier can compress all other values into a tiny range (e.g., values [1,2,3,100] become [0, 0.01, 0.02, 1.0]). Z-Score spreads data based on standard deviation, which is more robust to isolated extreme values.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 3:</strong> After standardization using Z-Score, what would be the mean and standard deviation of each feature?
+                </div>
+                <div class="answer">
+                    After Z-Score standardization:<br>
+                    <strong>Mean (μ) = 0</strong> (exactly)<br>
+                    <strong>Standard Deviation (σ) = 1</strong> (exactly)<br>
+                    This is guaranteed by the transformation formula.
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 6: TRAINING ACCURACY ==================== -->
+        <div class="section" id="training-accuracy">
+            <h2>6. Training Accuracy in KNN</h2>
+            
+            <p><strong>Training accuracy</strong> is the fraction of training points correctly classified by the KNN model when predicting on the <span class="highlight">same training data</span>.</p>
+            
+            <div class="note">
+                <strong>Important Distinction:</strong><br>
+                <ul style="margin-top: 10px;">
+                    <li><strong>Training Accuracy:</strong> Evaluating model on training data itself</li>
+                    <li><strong>Test Accuracy:</strong> Evaluating model on unseen test data (what we really care about)</li>
+                </ul>
+            </div>
+            
+            <h3>Training Accuracy with k=1</h3>
+            
+            <div class="important">
+                <strong>Key Insight:</strong> When k=1, training accuracy is ALWAYS 100%!
+            </div>
+            
+            <h4>Why is Training Accuracy 100% for k=1?</h4>
+            
+            <p>Consider what happens when we use a training point as a "test" point (without removing it from training data):</p>
+            
+            <ol>
+                <li>We pick a training sample A</li>
+                <li>We find its nearest neighbor in the training data</li>
+                <li>Since A is itself in the training data, the distance from A to A is 0 (minimum possible)</li>
+                <li>A is its own nearest neighbor!</li>
+                <li>The predicted class = A's actual class</li>
+                <li>Perfect match! No error.</li>
+            </ol>
+            
+            <div class="professor-note">
+                When K is 1, each point is its own nearest neighbor because the distance from the point to itself is 0, which is the minimum distance possible. So for sample A, the nearest sample will be A itself, for B it will be B, for C it will be C. Therefore, there will be no error - training accuracy will be 100%.
+            </div>
+            
+            <div class="example-box">
+                <h4>Visual Example</h4>
+                <p>Training data: {A(red), B(blue), C(red)}</p>
+                <p><strong>For k=1:</strong></p>
+                <ul>
+                    <li>Classify A: Nearest to A is A itself → Predicted: Red → ✓ Correct</li>
+                    <li>Classify B: Nearest to B is B itself → Predicted: Blue → ✓ Correct</li>
+                    <li>Classify C: Nearest to C is C itself → Predicted: Red → ✓ Correct</li>
+                </ul>
+                <p><strong>Training Accuracy = 3/3 = 100%</strong></p>
+            </div>
+            
+            <h3>Training Accuracy with Larger k</h3>
+            
+            <p>As k increases, training accuracy typically <strong>decreases</strong> because:</p>
+            
+            <ul>
+                <li>Decision boundaries become smoother (less flexible)</li>
+                <li>More neighbors participate in voting, diluting the influence of the point itself</li>
+                <li>Some training points may be misclassified if surrounded by points of other classes</li>
+            </ul>
+            
+            <div class="example-box">
+                <h4>Detailed Example: k=1 vs k=3</h4>
+                
+                <p><strong>Training Data:</strong> Two classes - ⭕ Circle and ➕ Plus</p>
+                
+                <div class="image-placeholder">
+                    [Insert diagram: Scatter plot showing ⭕ and ➕ points distributed in 2D space]
+                </div>
+                
+                <p><strong>Scenario 1: k=1</strong></p>
+                <ul>
+                    <li>For ⭕: Nearest neighbor is itself → Classified as ⭕ → ✓</li>
+                    <li>For ➕: Nearest neighbor is itself → Classified as ➕ → ✓</li>
+                    <li>Decision boundary hugs every single point</li>
+                    <li><strong>Training Accuracy = 100%</strong> (6/6 correct)</li>
+                </ul>
+                
+                <p><strong>Scenario 2: k=3</strong></p>
+                <p>Consider a ⭕ point surrounded by ➕ points:</p>
+                <ul>
+                    <li>1st nearest: The ⭕ itself (1 vote for ⭕)</li>
+                    <li>2nd nearest: A ➕ point (1 vote for ➕)</li>
+                    <li>3rd nearest: Another ➕ point (1 vote for ➕)</li>
+                    <li>Majority vote: 2 ➕ vs 1 ⭕ → Predicted: ➕ → ✗ Misclassified!</li>
+                </ul>
+                <p>Similarly, some ➕ points near ⭕ clusters may be misclassified.</p>
+                <p><strong>Training Accuracy = 33%</strong> (2/6 correct in the example)</p>
+            </div>
+            
+            <div class="professor-note">
+                For k=3, the decision boundary becomes smoother. Some training points that are on the "wrong side" of clusters get misclassified. Out of 6 training points in the example, only 2 were correctly classified, giving 33% training accuracy. But this doesn't mean k=3 is bad - in fact, it might generalize better to test data!
+            </div>
+            
+            <h3>The Paradox: High Training Accuracy ≠ Good Model</h3>
+            
+            <div class="warning">
+                <strong>Critical Understanding:</strong> High training accuracy does NOT guarantee good test performance!
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Value of k</th>
+                        <th>Training Accuracy</th>
+                        <th>Test Accuracy (typical)</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>k = 1</td>
+                        <td>100%</td>
+                        <td>Lower</td>
+                        <td>Memorizes training data; overfits; poor generalization</td>
+                    </tr>
+                    <tr>
+                        <td>k = 3-7</td>
+                        <td>~90-95%</td>
+                        <td>Higher</td>
+                        <td>Balanced; good generalization</td>
+                    </tr>
+                    <tr>
+                        <td>k = large</td>
+                        <td>~70-80%</td>
+                        <td>Moderate</td>
+                        <td>Oversmoothes; underfits; loses local patterns</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="important">
+                <strong>What We Really Care About:</strong> Test accuracy! Training accuracy is just a diagnostic tool, not our optimization goal.
+            </div>
+            
+            <!-- Hinglish Summary for Training Accuracy -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Training accuracy ka matlab hai jab hum training data ko hi test data ki tarah use karke model ko evaluate karte hain. Jab k=1 hota hai, tab training accuracy hamesha 100% hoti hai kyunki har point ka nearest neighbor woh khud hi hota hai (distance=0). Jab k badhate hain, tab training accuracy kam hoti jati hai kyunki decision boundary smooth ho jati hai aur kuch training points misclassify ho jate hain. Lekin yeh paradox hai - high training accuracy ka matlab yeh nahi ki model accha hai! Asli test mein (unseen data pe) performance important hai. K=1 pe training accuracy 100% hai but test accuracy kum hogi (overfitting). Optimal k pe training accuracy thodi kam hogi but test accuracy zyada hogi!</p>
+            </div>
+            
+            <!-- Key Takeaways for Training Accuracy -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Training accuracy = performance on training data itself</li>
+                    <li>For k=1, training accuracy is always 100% (each point is its own neighbor)</li>
+                    <li>As k increases, training accuracy typically decreases</li>
+                    <li>High training accuracy ≠ good model (can indicate overfitting)</li>
+                    <li>Test accuracy is what truly matters for model evaluation</li>
+                    <li>Optimal k balances training and test accuracy</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 7: OVERFITTING ==================== -->
+        <div class="section" id="overfitting">
+            <h2>7. Overfitting in KNN</h2>
+            
+            <p><span class="highlight">Overfitting</span> occurs when a model captures noise and random fluctuations in the training data, performing excellently on training data but poorly on new, unseen test data.</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Overfitting Definition</span>
+                <p style="text-align: left; padding: 10px;">
+                Model <strong>memorizes</strong> training data instead of learning generalizable patterns<br>
+                → High training accuracy, Low test accuracy<br>
+                → Poor generalization to new data
+                </p>
+            </div>
+            
+            <h3>The Student Analogy</h3>
+            
+            <div class="example-box">
+                <h4>Understanding Overfitting Through an Analogy</h4>
+                <p><strong>Overfitting Student:</strong> Memorizes all textbook problems and solutions word-by-word</p>
+                <ul>
+                    <li>✓ Performs perfectly if exam has exact same problems</li>
+                    <li>✗ Fails when given slightly modified or new problems</li>
+                    <li>✗ Doesn't understand underlying concepts</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Well-Generalized Student:</strong> Understands concepts and principles</p>
+                <ul>
+                    <li>✓ Can solve variations and new problems</li>
+                    <li>✓ Applies knowledge to unseen situations</li>
+                    <li>✓ True understanding of the subject</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                An analogous example for overfitting is: you memorize very well whatever is taught in class, and if exactly that is asked, you do very well. But if you are asked a new question or a new problem, then you do badly. That is an overfitting scenario - you've memorized specific examples but haven't learned the general patterns.
+            </div>
+            
+            <h3>Overfitting in KNN: The Role of k</h3>
+            
+            <h4>Small k (e.g., k=1) → High Risk of Overfitting</h4>
+            
+            <div class="warning">
+                <strong>Problem with k=1:</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Extremely flexible decision boundary</li>
+                    <li>Every training point creates its own "island" in the decision space</li>
+                    <li>Captures all noise and outliers</li>
+                    <li>No smoothing or averaging effect</li>
+                    <li>Memorizes training data perfectly</li>
+                </ul>
+            </div>
+            
+            <div class="image-placeholder">
+                [Insert diagram: Decision boundary for k=1 showing highly irregular, jagged boundaries that perfectly fit all training points including outliers]
+            </div>
+            
+            <h4>Large k → Reduces Overfitting (but risk of Underfitting)</h4>
+            
+            <div class="note">
+                <strong>Benefit of larger k:</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Smoother decision boundaries</li>
+                    <li>Averaging effect reduces noise sensitivity</li>
+                    <li>Better generalization to test data</li>
+                    <li>Outliers have less influence</li>
+                </ul>
+            </div>
+            
+            <div class="warning">
+                <strong>But if k is TOO large:</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Oversimplifies the decision boundary</li>
+                    <li>May ignore important local patterns</li>
+                <li>Leads to <strong>underfitting</strong> (high bias)</li>
+                    <li>Poor performance on both training and test data</li>
+                </ul>
+            </div>
+            
+            <h3>Bias-Variance Tradeoff</h3>
+            
+            <p>The choice of k in KNN directly relates to the fundamental <span class="highlight">bias-variance tradeoff</span> in machine learning:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Small k (High Variance)</th>
+                        <th>Optimal k (Balanced)</th>
+                        <th>Large k (High Bias)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Model Complexity</strong></td>
+                        <td>Very complex</td>
+                        <td>Moderate</td>
+                        <td>Very simple</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decision Boundary</strong></td>
+                        <td>Highly irregular, jagged</td>
+                        <td>Smooth but captures patterns</td>
+                        <td>Oversimplified, too smooth</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Accuracy</strong></td>
+                        <td>Very high (100% for k=1)</td>
+                        <td>Good</td>
+                        <td>Moderate to low</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Accuracy</strong></td>
+                        <td>Low (doesn't generalize)</td>
+                        <td>High</td>
+                        <td>Low (too simple)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Problem</strong></td>
+                        <td><strong>Overfitting</strong> (memorizes noise)</td>
+                        <td>Balanced</td>
+                        <td><strong>Underfitting</strong> (misses patterns)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sensitivity to Noise</strong></td>
+                        <td>Very high</td>
+                        <td>Moderate</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="formula-box">
+                <span class="formula-label">Bias-Variance Tradeoff</span>
+
+                $$\text{Total Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Error}$$
+                <p style="font-size: 0.9em; margin-top: 10px; text-align: left;">
+                • <strong>Bias:</strong> Error from oversimplification (underfitting)<br>
+                • <strong>Variance:</strong> Error from sensitivity to training data fluctuations (overfitting)<br>
+                • Goal: Choose k that minimizes total error
+                </p>
+            </div>
+            
+            <h3>Visual Comparison: k=1 vs k=3 vs k=large</h3>
+            
+            <div class="example-box">
+                <h4>Decision Boundary Evolution with k</h4>
+                
+                <p><strong>k=1 (Overfitting):</strong></p>
+                <ul>
+                    <li>Boundary creates complex islands around each point</li>
+                    <li>Even outliers/noise get their own regions</li>
+                    <li>Boundary doesn't reflect true underlying pattern</li>
+                </ul>
+                
+                <div class="image-placeholder">
+                    [Insert diagram: Highly complex, jagged decision boundary for k=1 showing overfitting]
+                </div>
+                
+                <p><strong>k=3 to k=7 (Balanced - Good Choice):</strong></p>
+                <ul>
+                    <li>Smoother boundaries that capture main patterns</li>
+                    <li>Outliers have reduced influence</li>
+                    <li>Good generalization to new data</li>
+                </ul>
+                
+                <div class="image-placeholder">
+                    [Insert diagram: Moderate complexity decision boundary for k=5 showing balanced fit]
+                </div>
+                
+                <p><strong>k=large (Underfitting):</strong></p>
+                <ul>
+                    <li>Oversimplified linear or nearly linear boundaries</li>
+                    <li>Misses important local patterns and clusters</li>
+                    <li>Too much smoothing</li>
+                </ul>
+                
+                <div class="image-placeholder">
+                    [Insert diagram: Oversimplified decision boundary for k=50 showing underfitting]
+                </div>
+            </div>
+            
+            <h3>How to Detect Overfitting in KNN?</h3>
+            
+            <ol>
+                <li><strong>Compare Training vs Test Accuracy:</strong>
+                    <ul>
+                        <li>Large gap? → Overfitting</li>
+                        <li>Both low? → Underfitting</li>
+                        <li>Both high and similar? → Good fit!</li>
+                    </ul>
+                </li>
+                <li><strong>Cross-Validation:</strong> Use k-fold cross-validation to get robust estimates</li>
+                <li><strong>Learning Curves:</strong> Plot accuracy vs k to find optimal value</li>
+                <li><strong>Validation Set Performance:</strong> Monitor performance on separate validation data</li>
+            </ol>
+            
+            <h3>Strategies to Reduce Overfitting in KNN</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>How it Helps</th>
+                        <th>Implementation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Increase k</strong></td>
+                        <td>Smooths decision boundary; reduces noise sensitivity</td>
+                        <td>Try k=3, 5, 7, ...; use cross-validation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Feature Selection</strong></td>
+                        <td>Remove irrelevant/noisy features</td>
+                        <td>Use correlation analysis, feature importance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dimensionality Reduction</strong></td>
+                        <td>Reduces curse of dimensionality</td>
+                        <td>Apply PCA, LDA (covered in next lectures)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Weighted KNN</strong></td>
+                        <td>Reduces influence of distant neighbors</td>
+                        <td>Use inverse distance weighting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Augmentation</strong></td>
+                        <td>Increases training data diversity</td>
+                        <td>Add more training samples if possible</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outlier Removal</strong></td>
+                        <td>Eliminates noisy training points</td>
+                        <td>Use statistical methods to detect outliers</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Hinglish Summary for Overfitting -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>Overfitting tab hota hai jab model training data ko memorize kar leta hai noise ke saath, lekin naye test data pe achha perform nahi karta. KNN mein choti k value (jaise k=1) overfitting ka risk zyada hota hai kyunki model har training point ko perfectly fit kar leta hai, including noise aur outliers. Training accuracy 100% aa jayega but test accuracy bahut kam hogi. Badi k value se decision boundary smooth ho jati hai aur overfitting kam hota hai, lekin agar k bahut zyada bada ho to underfitting ho sakta hai. Optimal k choose karna zaroori hai jo bias aur variance ko balance kare. Isko fix karne ke liye hum k badhate hain, weighted KNN use karte hain, aur dimensionality reduction techniques apply karte hain!</p>
+            </div>
+            
+            <!-- Key Takeaways for Overfitting -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>Overfitting = memorizing training data (including noise) → poor generalization</li>
+                    <li>Small k (especially k=1) has high risk of overfitting</li>
+                    <li>Large k reduces overfitting but may cause underfitting</li>
+                    <li>Optimal k balances bias (underfitting) vs variance (overfitting)</li>
+                    <li>Strategies to reduce overfitting: increase k, use weighted KNN, reduce dimensions</li>
+                    <li>Always evaluate on separate test data to detect overfitting</li>
+                </ul>
+            </div>
+            
+            <!-- Practice Questions for Overfitting -->
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Question 1:</strong> A KNN model has 98% training accuracy and 65% test accuracy. What problem does this indicate and how would you fix it?
+                </div>
+                <div class="answer">
+                    This indicates <strong>overfitting</strong> (large gap between training and test accuracy). The model is memorizing training data but not generalizing well.<br>
+                    <strong>Solutions:</strong><br>
+                    • Increase k value (try k=5, 7, 10)<br>
+                    • Use weighted KNN<br>
+                    • Apply dimensionality reduction (PCA)<br>
+                    • Remove noisy features<br>
+                    • Use cross-validation to find optimal k
+                </div>
+                
+                <div class="question">
+                    <strong>Question 2:</strong> Why does k=1 always give 100% training accuracy but often poor test accuracy?
+                </div>
+                <div class="answer">
+                    For k=1, each training point is its own nearest neighbor (distance=0), so it always predicts its own class correctly → 100% training accuracy. However, this creates highly irregular decision boundaries that fit every point including outliers and noise. These boundaries don't represent the true underlying pattern, so they fail to generalize to new test data → poor test accuracy.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 3:</strong> What is the difference between overfitting and underfitting in KNN?
+                </div>
+                <div class="answer">
+                    <strong>Overfitting (small k):</strong><br>
+                    • Model too complex; memorizes training data<br>
+                    • High training accuracy, low test accuracy<br>
+                    • Decision boundary too flexible/irregular<br><br>
+                    <strong>Underfitting (large k):</strong><br>
+                    • Model too simple; misses patterns<br>
+                    • Low training accuracy, low test accuracy<br>
+                    • Decision boundary too smooth/oversimplified<br><br>
+                    <strong>Goal:</strong> Find optimal k that balances both (good training AND test accuracy)
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 8: DRAWBACKS ==================== -->
+        <div class="section" id="drawbacks">
+            <h2>8. KNN: Drawbacks and Limitations</h2>
+            
+            <p>While KNN is simple and effective, it has several significant <span class="highlight">limitations</span> that make it impractical for certain scenarios:</p>
+            
+            <h3>1. Computationally Expensive</h3>
+            
+            <p>KNN requires substantial computation for each prediction:</p>
+            
+            <div class="important">
+                <strong>Computational Cost Components:</strong>
+                <ol style="margin-top: 10px;">
+                    <li><strong>Distance Calculation:</strong> Compute distance from test point to ALL training points
+                        <ul>
+                            <li>For n training samples with d dimensions: O(n×d) operations per prediction</li>
+                            <li>Example: 50,000 samples × 784 dimensions = 39.2 million operations!</li>
+                        </ul>
+                    </li>
+                    <li><strong>Sorting:</strong> Sort all distances to find k-nearest
+                        <ul>
+                            <li>Sorting n distances: O(n log n) complexity</li>
+                            <li>Alternative: Partial sort for top k: O(n + k log k)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="formula-box">
+                <span class="formula-label">Time Complexity per Prediction</span>
+
+                $$T = O(n \times d) + O(n \log n)$$
+                <p style="font-size: 0.9em; margin-top: 10px;">
+                where n = # training samples, d = # dimensions/features
+                </p>
+            </div>
+            
+            <div class="professor-note">
+                The expensiveness comes from two things: First, you have to compute distance for every single training sample. Second, you have to sort that distance array to find the nearest neighbors. Both operations are computationally expensive, especially when n (number of training samples) is very large.
+            </div>
+            
+            <h3>2. Memory Intensive</h3>
+            
+            <p>KNN is a <strong>lazy learner</strong> - it doesn't build a model but stores all training data:</p>
+            
+            <ul>
+                <li><strong>Storage Requirement:</strong> Must keep entire training dataset in memory</li>
+                <li><strong>Space Complexity:</strong> O(n×d) where n = samples, d = dimensions</li>
+                <li><strong>Real-world Impact:</strong> With millions of samples, memory becomes a bottleneck</li>
+                <li><strong>Mobile/Embedded Devices:</strong> Limited memory makes KNN impractical</li>
+            </ul>
+            
+            <div class="example-box">
+                <h4>Memory Calculation Example</h4>
+                <p><strong>MNIST Dataset:</strong></p>
+                <ul>
+                    <li>Training samples: 60,000</li>
+                    <li>Dimensions: 784</li>
+                    <li>Data type: float32 (4 bytes)</li>
+                </ul>
+                <p><strong>Memory Required:</strong></p>
+
+                $$\text{Memory} = 60000 \times 784 \times 4 \text{ bytes} = 188.16 \text{ MB}$$
+                <p style="margin-top: 10px;">For larger datasets (millions of samples, thousands of dimensions), this can easily exceed several GB!</p>
+            </div>
+            
+            <h3>3. Sensitive to Irrelevant Features</h3>
+            
+            <p>KNN uses <strong>all features</strong> when computing distance. If many features are irrelevant or noisy, they pollute distance calculations:</p>
+            
+            <div class="warning">
+                <strong>Problem:</strong> Irrelevant features add noise to distance metric
+                <ul style="margin-top: 10px;">
+                    <li>Example: Predicting disease from medical records</li>
+                    <li>Relevant features: blood pressure, cholesterol</li>
+                    <li>Irrelevant features: patient ID, phone number</li>
+                    <li>If included, irrelevant features contaminate distance calculations</li>
+                </ul>
+            </div>
+            
+            <p><strong>Solution:</strong> Feature selection/engineering to remove irrelevant features before applying KNN</p>
+            
+            <h3>4. Curse of Dimensionality</h3>
+            
+            <p>This is covered in detail in the next section, but in summary:</p>
+            
+            <div class="important">
+                Distance metrics become less meaningful in high-dimensional spaces. Points that appear close may actually be far apart when considering all dimensions.
+            </div>
+            
+            <h3>5. Sensitive to Feature Scaling</h3>
+            
+            <p>We've already discussed this extensively in the normalization section:</p>
+            
+            <ul>
+                <li>Features with larger scales dominate distance calculations</li>
+                <li><strong>Solution:</strong> Always normalize/standardize features before KNN</li>
+            </ul>
+            
+            <h3>6. Choice of k Matters Significantly</h3>
+            
+            <div class="note">
+                <strong>k is a hyperparameter</strong> that dramatically affects performance:
+                <ul style="margin-top: 10px;">
+                    <li>Too small k → sensitive to noise (overfitting)</li>
+                    <li>Too large k → oversmoothed boundaries (underfitting)</li>
+                    <li>No universal optimal k - must tune for each dataset</li>
+                    <li>Requires cross-validation, which is computationally expensive</li>
+                </ul>
+            </div>
+            
+            <h3>7. Imbalanced Data Issues</h3>
+            
+            <p>When classes have very different frequencies, KNN tends to favor the majority class:</p>
+            
+            <div class="example-box">
+                <h4>Imbalance Example</h4>
+                <p><strong>Dataset:</strong> 95% Class A, 5% Class B</p>
+                <p><strong>For k=10:</strong> If test point is near class boundary, likely 9-10 neighbors will be Class A simply due to abundance</p>
+                <p><strong>Result:</strong> Minority class (B) rarely gets predicted</p>
+                <p><strong>Solution:</strong> Weighted KNN, resampling techniques, or choosing smaller k</p>
+            </div>
+            
+            <h3>8. No Model Interpretability</h3>
+            
+            <p>KNN doesn't produce interpretable rules or coefficients:</p>
+            
+            <ul>
+                <li>Cannot explain <em>why</em> a prediction was made beyond "similar neighbors had this class"</li>
+                <li>No feature importance scores</li>
+                <li>Difficult to gain domain insights</li>
+            </ul>
+            
+            <h3>Summary Table: KNN Limitations</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Limitation</th>
+                        <th>Impact</th>
+                        <th>Potential Solutions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Computationally Expensive</strong></td>
+                        <td>Slow predictions, especially with large n</td>
+                        <td>Approximate nearest neighbors, KD-trees, Ball trees</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Intensive</strong></td>
+                        <td>Cannot deploy on memory-limited devices</td>
+                        <td>Data reduction, prototype selection, use other algorithms</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sensitive to Irrelevant Features</strong></td>
+                        <td>Poor performance with noisy features</td>
+                        <td>Feature selection, feature engineering</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Curse of Dimensionality</strong></td>
+                        <td>Distances become meaningless in high dimensions</td>
+                        <td>Dimensionality reduction (PCA, LDA)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sensitive to Scaling</strong></td>
+                        <td>Large-scale features dominate</td>
+                        <td>Normalization/standardization (mandatory!)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Choice of k</strong></td>
+                        <td>Performance varies significantly</td>
+                        <td>Cross-validation for hyperparameter tuning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Imbalanced Classes</strong></td>
+                        <td>Bias toward majority class</td>
+                        <td>Weighted KNN, SMOTE, stratified sampling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Interpretability</strong></td>
+                        <td>Cannot explain predictions clearly</td>
+                        <td>Use interpretable models if explainability is critical</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Hinglish Summary for Drawbacks -->
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary (सारांश)</h4>
+                <p>KNN simple aur powerful hai lekin iske kafi limitations bhi hain. Pehla, yeh computationally bahut expensive hai - har prediction ke liye sabhi training samples se distance calculate karna padta hai aur phir sort karna padta hai. Dusra, yeh memory intensive hai kyunki saara training data store karna padta hai, mobile devices pe problem ho sakti hai. Teesra, irrelevant features se sensitive hai jo distance calculation ko pollute kar dete hain. High dimensional data mein curse of dimensionality ki problem aati hai jahan distances meaningless ho jate hain. Feature scaling ke bina bhi theek se kaam nahi karta. K ka choice bhi bahut impact karta hai performance pe. Overall, KNN simple cases ke liye great hai but large-scale real-world applications mein limitations dhyan mein rakhni zaroori hai!</p>
+            </div>
+            
+            <!-- Key Takeaways for Drawbacks -->
+            <div class="key-takeaways">
+                <h4>Key Takeaways</h4>
+                <ul>
+                    <li>KNN is computationally expensive: O(n×d) distance calculations + O(n log n) sorting</li>
+                    <li>Memory intensive: must store entire training dataset</li>
+                    <li>Sensitive to irrelevant features and noise</li>
+                    <li>Suffers from curse of dimensionality in high dimensions</li>
+                    <li>Requires feature scaling (normalization/standardization)</li>
+                    <li>Hyperparameter k needs careful tuning via cross-validation</li>
+                    <li>Despite limitations, KNN is useful for small-to-medium datasets with proper preprocessing</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ==================== SECTION 9: CURSE OF DIMENSIONALITY ==================== -->
+        <div class="section" id="curse-dimensionality">
+            <h2>9. Curse of Dimensionality</h2>
+            
+            <p>The <span class="highlight">curse of dimensionality</span> is one of the most fundamental challenges in machine learning, particularly affecting distance-based methods like KNN.</p>
+            
+            <div class="important">
+                <strong>Core Problem:</strong> As the number of dimensions (features) increases, distance metrics become less meaningful. Points that appear nearby may actually be far apart, and all points tend to become equidistant.
+            </div>
+            
+            <h3>Understanding the Curse: A Concrete Example</h3>
+            
+            <div class="example-box">
+                <h4>The Distance Explosion Problem</h4>
+                
+                <p><strong>Setup:</strong> Consider two points in d-dimensional space</p>
+                <ul>
+                    <li>Point A: at origin $(0, 0, 0, \ldots, 0)$ (all coordinates = 0)</li>
+                    <li>Point B: $(0.1, 0.1, 0.1, \ldots, 0.1)$ (all coordinates = 0.1)</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>Visual Intuition:</strong> Points A and B seem very close (only 0.1 difference per dimension)</p>
+                
+                <p style="margin-top: 15px;"><strong>Manhattan Distance Calculation:</strong></p>
+
+                $$d_{Manhattan}(A, B) = \sum_{i=1}^{d}|A_i - B_i| = \sum_{i=1}^{d}|0 - 0.1| = d \times 0.1$$
+            </div>
+            
+            <h4>What Happens as d Increases?</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dimensions (d)</th>
+                        <th>Distance</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>d = 2</td>
+                        <td>0.2</td>
+                        <td>Very close</td>
+                    </tr>
+                    <tr>
+                        <td>d = 10</td>
+                        <td>1.0</td>
+                        <td>Moderate distance</td>
+                    </tr>
+                    <tr>
+                        <td>d = 100</td>
+                        <td>10.0</td>
+                        <td>Far apart</td>
+                    </tr>
+                    <tr>
+                        <td>d = 1000</td>
+                        <td>100.0</td>
+                        <td>Very far apart</td>
+                    </tr>
+                    <tr>
+                        <td>d = 10,000</td>
+                        <td>1,000.0</td>
+                        <td>Extremely distant!</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                If you just compute Manhattan distance, it will be like 0.1 + 0.1 + 0.1... d times, right? So this will be 0.1 × d. Let's say d is very large - if d is 10,000, this becomes 0.1 × 10,000 = 1,000! As you can see, the distance is very large, though these two points look like they are nearby points. When d is high, the distance becomes much higher because of d dimensions.
+            </div>
+            
+            <div class="warning">
+                <strong>The Paradox:</strong> Points that intuitively seem "neighbors" (differ by only 0.1 in each dimension) become extremely distant in high-dimensional space. This makes the concept of "nearest neighbor" questionable.
+            </div>
+            
+            <h3>Mathematical Explanation</h3>
+            
+            <p>For Euclidean distance between similar points:</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Distance Growth in High Dimensions</span>
+
+                $$d_{Euclidean} = \sqrt{\sum_{i=1}^{d}(x_i - y_i)^2} \propto \sqrt{d}$$
+                <p style="font-size: 0.9em; margin-top: 10px;">
+                Distance grows proportionally to $\sqrt{d}$ (for Euclidean)<br>
+                or proportionally to $d$ (for Manhattan)
+                </p>
+            </div>
+            
+            <h3>Consequences of the Curse</h3>
+            
+            <h4>1. All Points Become Equidistant</h4>
+            
+            <p>In high dimensions, the distance between any two random points converges to a similar value:</p>
+            
+            <ul>
+                <li>The difference between "nearest" and "farthest" neighbor becomes negligible</li>
+                <li>Nearest neighbor becomes a meaningless concept</li>
+                <li>KNN loses its discriminative power</li>
+            </ul>
+            
+            <div class="formula-box">
+                <span class="formula-label">Distance Concentration</span>
+
+                $$\lim_{d \to \infty} \frac{d_{max} - d_{min}}{d_{min}} \to 0$$
+                <p style="font-size: 0.9em; margin-top: 10px;">
+                As dimensions increase, the ratio between max and min distances approaches zero
+                </p>
+            </div>
+            
+            <h4>2. Sparse Data Space</h4>
+            
+            <p>As dimensions increase, data becomes increasingly sparse:</p>
+            
+            <div class="example-box">
+                <h4>Sparsity Illustration</h4>
+                        <p>As dimensions increase, data becomes increasingly sparse:</p>
+                        
+                        <ul>
+                            <li>In 1D: 10 points cover a line segment densely</li>
+                            <li>In 2D: 100 points (10×10) cover a square reasonably</li>
+                            <li>In 3D: 1,000 points (10×10×10) fill a cube sparsely</li>
+                            <li>In 100D: You'd need 10¹⁰⁰ points to maintain same density!</li>
+                        </ul>
+                        
+                        <p><strong>Result:</strong> With fixed number of points, high-dimensional space is mostly empty</p>
+                    </div>
+
+                    <h4>3. Empty Space Phenomenon</h4>
+                    
+                    <p>Most of the high-dimensional space is "empty" - far from any data point:</p>
+                    
+                    <div class="formula-box">
+                        <span class="formula-label">Volume Concentration</span>
+                        
+                        <p style="text-align: left;">In high dimensions, most of the volume of a hypercube is concentrated in its corners, not in the center.</p>
+                        
+                        <p style="margin-top: 15px;">For a unit hypercube [0,1]ᵈ:</p>
+                        <ul style="text-align: left;">
+                            <li>d=2: Volume is uniformly distributed</li>
+                            <li>d=10: 99.9% of volume is within 0.5 of a corner</li>
+                            <li>d=100: Volume is essentially all in corners!</li>
+                        </ul>
+                    </div>
+
+                    <h3>Visualizing the Curse</h3>
+
+                    <div class="image-placeholder">
+                        [Insert diagram: 3D visualization showing how distance between two nearby points increases exponentially with added dimensions. Show progression from 2D to 3D to 10D with distance values]
+                    </div>
+
+                    <h3>Impact on KNN</h3>
+
+                    <div class="warning">
+                        <strong>Why KNN Struggles in High Dimensions:</strong>
+                        <ol style="margin-top: 10px;">
+                            <li>Nearest neighbors are not actually "near" → loses locality</li>
+                            <li>Distance differences become negligible → voting becomes random</li>
+                            <li>Most training points are equally (un)helpful</li>
+                            <li>Requires exponentially more data to maintain performance</li>
+                            <li>Computational cost explodes (n × d operations)</li>
+                        </ol>
+                    </div>
+
+                    <h3>Solutions to the Curse of Dimensionality</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Solution</th>
+                                <th>Description</th>
+                                <th>When to Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dimensionality Reduction</strong></td>
+                                <td>Reduce d while preserving important information</td>
+                                <td>Most common approach for KNN</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;&nbsp;• PCA</td>
+                                <td>Principal Component Analysis (unsupervised)</td>
+                                <td>No class labels available</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;&nbsp;• LDA</td>
+                                <td>Linear Discriminant Analysis (supervised)</td>
+                                <td>Class labels available</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;&nbsp;• t-SNE/UMAP</td>
+                                <td>Non-linear dimensionality reduction</td>
+                                <td>Visualization and clustering</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Feature Selection</strong></td>
+                                <td>Select most relevant subset of features</td>
+                                <td>When many features are redundant</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Manifold Learning</strong></td>
+                                <td>Assume data lies on lower-dimensional manifold</td>
+                                <td>Complex non-linear relationships</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Distance Metric Learning</strong></td>
+                                <td>Learn distance metric that respects data structure</td>
+                                <td>Advanced applications</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="professor-note">
+                        Usually what people do is try to reduce the dimension and try to make it something manageable. This has advantage in compactness of features and throwing away irrelevant features. In distance-based techniques, we usually don't work directly in high dimensional space. For high dimensional data, we use techniques like principal component analysis. That will be covered in upcoming lectures, where we'll reduce dimensions because large dimensions are not good for distance-based methods.
+                    </div>
+
+                    <!-- Hinglish Summary for Curse of Dimensionality -->
+                    <div class="hinglish-summary">
+                        <h4>Hinglish Summary (सारांश)</h4>
+                        <p>Curse of dimensionality ek major problem hai high-dimensional data mein. Jab dimensions (features) zyada badh jaate hain, tab distance metrics ka meaning khatam ho jata hai. Example mein dekha ki do points jo har dimension mein sirf 0.1 distance pe hain, unki total distance 0.1 × d ho jati hai. Agar d = 10,000 hai, to distance 1,000 ho jati hai! Isse yeh hota hai ki "nearest neighbor" concept hi fail ho jata hai. Saare points almost equidistant ho jaate hain. Isliye KNN high dimensions mein properly kaam nahi karta. Solution hai dimensionality reduction techniques jaise PCA, LDA, etc. Use karke dimensions kam karna padta hai taaki meaningful distances calculate ho sakein!</p>
+                    </div>
+
+                    <!-- Key Takeaways for Curse of Dimensionality -->
+                    <div class="key-takeaways">
+                        <h4>Key Takeaways</h4>
+                        <ul>
+                            <li>Curse of dimensionality makes distance metrics meaningless in high dimensions</li>
+                            <li>Distance grows with √d (Euclidean) or d (Manhattan)</li>
+                            <li>All points become approximately equidistant in high dimensions</li>
+                            <li>Data becomes extremely sparse (need exponentially more samples)</li>
+                            <li>KNN performance degrades significantly in high dimensions</li>
+                            <li>Solutions: Dimensionality reduction (PCA, LDA), feature selection</li>
+                        </ul>
+                    </div>
+
+                    <!-- Practice Questions for Curse of Dimensionality -->
+                    <div class="practice-questions">
+                        <h4>Practice Questions</h4>
+                        
+                        <div class="question">
+                            <strong>Question 1:</strong> Two points differ by 0.5 in each dimension. What is their Manhattan distance in 1000 dimensions?
+                        </div>
+                        <div class="answer">
+                            Manhattan distance = Σ|difference| = 0.5 × 1000 = 500<br>
+                            <strong>Answer: 500</strong>
+                        </div>
+
+                        <div class="question">
+                            <strong>Question 2:</strong> Why does KNN struggle with high-dimensional data even after normalization?
+                        </div>
+                        <div class="answer">
+                            Normalization scales features but doesn't reduce the number of dimensions. In high dimensions:<br>
+                            • Distances between all pairs of points become similar → meaningless<br>
+                            • Concept of "nearest" neighbor becomes unreliable<br>
+                            • Need exponentially more data to maintain same density<br>
+                            • Computational cost becomes prohibitive (O(n×d))<br>
+                            Therefore, dimensionality reduction is necessary, not just normalization.
+                        </div>
+
+                        <div class="question">
+                            <strong>Question 3:</strong> What is the difference between normalization and dimensionality reduction?
+                        </div>
+                        <div class="answer">
+                            <strong>Normalization:</strong> Scales features to same range (e.g., [0,1] or mean=0, std=1). Number of features remains same.<br><br>
+                            <strong>Dimensionality Reduction:</strong> Reduces the number of features (d) by combining or selecting features. Creates new representation with fewer dimensions.<br><br>
+                            <strong>Example:</strong> 100 features → Normalization still has 100 features but scaled. PCA might reduce to 10 features that capture most variance.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 10: FINAL TAKEAWAYS ==================== -->
+                <div class="section" id="takeaways">
+                    <h2>10. Key Takeaways from KNN Lectures</h2>
+                    
+                    <p>Let's summarize the most important points from our comprehensive study of K-Nearest Neighbors algorithm:</p>
+                    
+                    <div class="important">
+                        <strong>Core Principle:</strong> KNN makes predictions using nearest neighbors; it doesn't learn an explicit model - it's a lazy learner that stores all training data.
+                    </div>
+                    
+                    <h3>Critical Implementation Points</h3>
+                    
+                    <div class="key-takeaways" style="border-left-color: #e74c3c;">
+                        <h4>1. Feature Scaling is MANDATORY</h4>
+                        <ul>
+                            <li>Distance-based methods are extremely sensitive to feature scales</li>
+                            <li>Always normalize (Min-Max) or standardize (Z-Score) before applying KNN</li>
+                            <li>Z-Score is more popular: $z = \frac{x - \mu}{\sigma}$</li>
+                            <li>Without scaling, large-scale features dominate and model fails</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="key-takeaways" style="border-left-color: #3498db;">
+                        <h4>2. Choice of k and Distance Metric is Critical</h4>
+                        <ul>
+                            <li>Small k (e.g., 1) → overfitting, sensitive to noise</li>
+                            <li>Large k → oversmoothing, may underfit</li>
+                            <li>Optimal k: typically 3-7 for many problems, but must tune via cross-validation</li>
+                            <li>Euclidean distance: $d = \sqrt{\sum(x_i - y_i)^2}$ (most common)</li>
+                            <li>Manhattan distance: $d = \sum|x_i - y_i|$ (for high dimensions)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="key-takeaways" style="border-left-color: #2ecc71;">
+                        <h4>3. Weighted Voting Improves Performance</h4>
+                        <ul>
+                            <li>Standard KNN: all k neighbors have equal vote</li>
+                            <li>Weighted KNN: closer neighbors have higher influence ($w_i = \frac{1}{d_i}$)</li>
+                            <li>Reduces impact of outliers and noise</li>
+                            <li>Breaks ties more intelligently than majority voting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="key-takeaways" style="border-left-color: #9b59b6;">
+                        <h4>4. Practical Considerations</h4>
+                        <ul>
+                            <li><strong>Memory Intensive:</strong> Stores all training data (O(n×d) space)</li>
+                            <li><strong>Computationally Expensive:</strong> O(n×d + n log n) per prediction</li>
+                            <li><strong>Curse of Dimensionality:</strong> Struggles with high-dimensional data (d > 50)</li>
+                            <li><strong>Sensitive to Outliers:</strong> Can be mitigated with weighted voting</li>
+                            <li><strong>Imbalanced Data:</strong> May bias toward majority class</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>When to Use KNN</h3>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Good For</th>
+                                <th>Not Good For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>✓ Small to medium datasets (n < 100k)</td>
+                                <td>✗ Very large datasets (computational nightmare)</td>
+                            </tr>
+                            <tr>
+                                <td>✓ Low dimensional data (d < 20-30)</td>
+                                <td>✗ High dimensional data without dimensionality reduction</td>
+                            </tr>
+                            <tr>
+                                <td>✓ Problems where interpretability is not critical</td>
+                                <td>✗ Applications requiring explainable predictions</td>
+                            </tr>
+                            <tr>
+                                <td>✓ Baseline model for classification tasks</td>
+                                <td>✗ Real-time applications requiring fast predictions</td>
+                            </tr>
+                            <tr>
+                                <td>✓ Multi-modal decision boundaries</td>
+                                <td>✗ Memory-constrained environments (mobile/embedded)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>Best Practices Summary</h3>
+                    
+                    <div class="note">
+                        <strong>Before Applying KNN:</strong>
+                        <ol style="margin-top: 10px;">
+                            <li>✓ <strong>Normalize/Standardize:</strong> All features must be on same scale</li>
+                            <li>✓ <strong>Handle Missing Values:</strong> Impute or remove before distance calculation</li>
+                            <li>✓ <strong>Remove Irrelevant Features:</strong> Use feature selection techniques</li>
+                            <li>✓ <strong>Reduce Dimensions if needed:</strong> Apply PCA for d > 30-50</li>
+                            <li>✓ <strong>Handle Class Imbalance:</strong> Use weighted voting or SMOTE</li>
+                            <li>✓ <strong>Tune k:</strong> Use cross-validation to find optimal k (3-11 is good start)</li>
+                            <li>✓ <strong>Choose Distance Metric:</strong> Euclidean for dense, Manhattan for sparse/high-dim</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="professor-note">
+                        In short, KNN is a simple algorithm but it's memory intensive, sensitive to outliers, and can really struggle with high dimensional data unless dimensionality reduction is used. We usually don't work in high dimensional space directly. We try to reduce dimensions to get something manageable, which has advantages in compactness of features and throwing away irrelevant features.
+                    </div>
+                    
+                    <!-- Hinglish Summary for Final Takeaways -->
+                    <div class="hinglish-summary">
+                        <h4>Hinglish Summary (Final सारांश)</h4>
+                        <p>Bhai log, KNN ka poora chapter complete ho gaya! Samjho ki KNN simple algorithm hai jo nearest neighbors se predict karta hai, lekin isme explicit model learning nahi hoti. Sabse important baat: <strong>feature scaling MANDATORY hai</strong> bina iske KNN fail ho jayega. k aur distance metric ka choice critical hai - k=3 to 7 generally achha hota hai. Weighted voting se performance improve hoti hai kyunki paas ke neighbors ko zyada importance milti hai. Practical mein KNN memory intensive hai (saara data store karna padta hai) aur high dimensions mein curse of dimensionality se struggle karta hai. Isliye dimensionality reduction techniques jaise PCA use karna zaroori hai. Small-medium, low-dimensional problems ke liye KNN great hai, lekin large-scale real-time applications ke liye dusre algorithms sochna padta hai!</p>
+                    </div>
+                    
+                    <!-- Key Takeaways for Final Section -->
+                    <div class="key-takeaways">
+                        <h4>Final Key Takeaways</h4>
+                        <ul>
+                            <li>KNN is a lazy learner - no explicit model, stores all training data</li>
+                            <li>Feature scaling (normalization/standardization) is MANDATORY for KNN</li>
+                            <li>Choice of k (3-7 typically) and distance metric critically affects performance</li>
+                            <li>Weighted KNN (inverse distance) improves accuracy and reduces noise sensitivity</li>
+                            <li>KNN is computationally expensive (O(n×d)) and memory intensive</li>
+                            <li>Suffers from curse of dimensionality - use PCA/LDA for d > 30-50</li>
+                            <li>Best for small-medium, low-dimensional datasets; not for large-scale real-time apps</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 11: MIND MAP ==================== -->
+                <div class="section" id="mindmap">
+                    <h2>11. Comprehensive Mind Map: KNN Concepts</h2>
+                    
+                    <div class="mind-map">
+                        <h3 style="text-align: center; margin-bottom: 30px;">🧠 KNN Knowledge Map</h3>
+                        
+                        <div class="mind-map-container">
+                            <!-- Central Topic -->
+                            <div class="central-topic">
+                                K-Nearest Neighbors (KNN)
+                            </div>
+                            
+                            <!-- Main Branches -->
+                            <div class="branches">
+                                <!-- Branch 1: Core Concepts -->
+                                <div class="branch">
+                                    <div class="branch-title">🎯 Core Concepts</div>
+                                    <ul class="branch-content">
+                                        <li>Lazy Learning Algorithm</li>
+                                        <li>Distance-Based Classification</li>
+                                        <li>No Explicit Model Training</li>
+                                        <li>Majority Voting (<em>k</em> neighbors)</li>
+                                        <li>Stores All Training Data</li>
+                                        <li>Non-Parametric Method</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 2: Distance Metrics -->
+                                <div class="branch">
+                                    <div class="branch-title">📏 Distance Metrics</div>
+                                    <ul class="branch-content">
+                                        <li>Euclidean: $\sqrt{\sum(x_i-y_i)^2}$</li>
+                                        <li>Manhattan: $\sum|x_i-y_i|$</li>
+                                        <li>L-infinity: $\max|x_i-y_i|$</li>
+                                        <li>Minkowski (generalized)</li>
+                                        <li>Choose based on data type</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 3: Algorithm Steps -->
+                                <div class="branch">
+                                    <div class="branch-title">⚙️ Algorithm Steps</div>
+                                    <ul class="branch-content">
+                                        <li>1. Compute Distances</li>
+                                        <li>2. Sort by Distance</li>
+                                        <li>3. Select k-Nearest</li>
+                                        <li>4. Majority Voting</li>
+                                        <li>5. Weighted Voting (optional)</li>
+                                        <li>6. Predict Class</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 4: Hyperparameters -->
+                                <div class="branch">
+                                    <div class="branch-title">🎚️ Hyperparameters</div>
+                                    <ul class="branch-content">
+                                        <li><strong>k:</strong> # neighbors (critical!)</li>
+                                        <li>Small k → overfitting</li>
+                                        <li>Large k → underfitting</li>
+                                        <li>Optimal: 3-7 (tune via CV)</li>
+                                        <li>Distance Metric Selection</li>
+                                        <li>Weighting Scheme</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 5: Weighted KNN -->
+                                <div class="branch">
+                                    <div class="branch-title">⚖️ Weighted KNN</div>
+                                    <ul class="branch-content">
+                                        <li>Inverse Distance: $w_i = 1/d_i$</li>
+                                        <li>Gaussian Kernel</li>
+                                        <li>Linear Decay</li>
+                                        <li>Reduces Outlier Impact</li>
+                                        <li>Handles Ties Better</li>
+                                        <li>Improves Accuracy</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 6: Preprocessing -->
+                                <div class="branch">
+                                    <div class="branch-title">🔧 Preprocessing</div>
+                                    <ul class="branch-content">
+                                        <li><strong>Normalization CRITICAL</strong></li>
+                                        <li>Min-Max: [0,1] range</li>
+                                        <li>Z-Score: μ=0, σ=1</li>
+                                        <li>Handle Missing Values</li>
+                                        <li>Remove Irrelevant Features</li>
+                                        <li>Feature Selection</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 7: Performance Issues -->
+                                <div class="branch">
+                                    <div class="branch-title">⚠️ Limitations</div>
+                                    <ul class="branch-content">
+                                        <li>Computationally Expensive O(n×d)</li>
+                                        <li>Memory Intensive O(n×d)</li>
+                                        <li>Curse of Dimensionality</li>
+                                        <li>Sensitive to Outliers</li>
+                                        <li>Imbalanced Data Bias</li>
+                                        <li>No Interpretability</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 8: Overfitting & Underfitting -->
+                                <div class="branch">
+                                    <div class="branch-title">📊 Model Fit</div>
+                                    <ul class="branch-content">
+                                        <li>k=1: Always 100% training acc</li>
+                                        <li>Small k: Overfitting (high variance)</li>
+                                        <li>Large k: Underfitting (high bias)</li>
+                                        <li>Training ≠ Test Accuracy</li>
+                                        <li>Bias-Variance Tradeoff</li>
+                                        <li>Cross-Validation</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 9: Curse of Dimensionality -->
+                                <div class="branch">
+                                    <div class="branch-title">🔮 Curse of Dimensionality</div>
+                                    <ul class="branch-content">
+                                        <li>Distances become meaningless</li>
+                                        <li>Points become equidistant</li>
+                                        <li>Data becomes sparse</li>
+                                        <li>Volume in corners</li>
+                                        <li><strong>Solution:</strong> PCA, LDA</li>
+                                        <li>Reduce d < 30-50</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Branch 10: Applications -->
+                                <div class="branch">
+                                    <div class="branch-title">💡 Applications</div>
+                                    <ul class="branch-content">
+                                        <li>Handwritten Digit Recognition</li>
+                                        <li>Image Classification</li>
+                                        <li>Recommendation Systems</li>
+                                        <li>Anomaly Detection</li>
+                                        <li>Small-Medium Datasets</li>
+                                        <li>Baseline Model</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Connecting Lines Visualization -->
+                            <div style="margin-top: 40px; text-align: center;">
+                                <p style="color: #667eea; font-style: italic;">
+                                    💡 <strong>Connections:</strong> Preprocessing → Algorithm Steps → Performance<br>
+                                    Hyperparameters ↔ Overfitting ↔ Curse of Dimensionality
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Practice Questions -->
+                    <div class="practice-questions">
+                        <h4>Comprehensive Practice Questions</h4>
+                        
+                        <div class="question">
+                            <strong>Question 1:</strong> Design a complete KNN pipeline for a new dataset. List all steps in order.
+                        </div>
+                        <div class="answer">
+                            <strong>Complete KNN Pipeline:</strong><br>
+                            1. <strong>Data Collection:</strong> Gather features and labels<br>
+                            2. <strong>Data Cleaning:</strong> Handle missing values, outliers<br>
+                            3. <strong>Feature Scaling:</strong> Normalize/standardize (MANDATORY)<br>
+                            4. <strong>Dimensionality Reduction:</strong> PCA if d > 30-50<br>
+                            5. <strong>Train-Test Split:</strong> 80-20 split with random_state<br>
+                            6. <strong>Hyperparameter Tuning:</strong> Use validation set to find best k<br>
+                            7. <strong>Model Training:</strong> knn.fit(X_train, y_train)<br>
+                            8. <strong>Prediction:</strong> knn.predict(X_test)<br>
+                            9. <strong>Evaluation:</strong> Accuracy, confusion matrix, classification report<br>
+                            10. <strong>Deployment:</strong> Save model (though KNN just stores data!)
+                        </div>
+
+                        <div class="question">
+                            <strong>Question 2:</strong> Compare KNN with Logistic Regression. When would you choose each?
+                        </div>
+                        <div class="answer">
+                            <strong>KNN:</strong><br>
+                            • Non-parametric, no assumptions about data distribution<br>
+                            • Decision boundaries can be complex/non-linear<br>
+                            • Lazy learner - no training, slow prediction<br>
+                            • Good for: Small datasets, irregular patterns, multi-modal data<br><br>
+                            <strong>Logistic Regression:</strong><br>
+                            • Parametric, assumes linear decision boundary<br>
+                            • Fast prediction, interpretable coefficients<br>
+                            • Eager learner - trains model, discards data<br>
+                            • Good for: Large datasets, linear patterns, interpretability needed<br><br>
+                            <strong>Choose KNN when:</strong> Dataset small, pattern complex, speed not critical<br>
+                            <strong>Choose LR when:</strong> Dataset large, need speed/interpretability, linear separation likely
+                        </div>
+
+                        <div class="question">
+                            <strong>Question 3:</strong> Your KNN model shows 95% training accuracy but 68% test accuracy. Diagnose and provide 3 specific solutions.
+                        </div>
+                        <div class="answer">
+                            <strong>Diagnosis:</strong> <span style="color: #e74c3c;">Overfitting</span> - large gap indicates model memorized training data but fails to generalize.<br><br>
+                            <strong>Solutions:</strong><br>
+                            1. <strong>Increase k:</strong> Try k=5, 7, or 9 instead of current k (likely k=1 or 3)<br>
+                            2. <strong>Add Weighted Voting:</strong> Implement inverse distance weighting to reduce outlier impact<br>
+                            3. <strong>Reduce Dimensions:</strong> Apply PCA to remove noise and redundant features<br>
+                            4. <strong>Feature Selection:</strong> Remove irrelevant features that cause overfitting<br>
+                            5. <strong>Cross-Validation:</strong> Use k-fold CV to find optimal k that balances bias-variance
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ========== HTML END ========== -->
+                  <div class="footer">
+           <p >
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p >~ Armaan Kachhawa</p>
+        </div>
+            </div> <!-- .container -->
+        
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+        </html>

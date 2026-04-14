@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics of Data Analytics - Lecture 2.5: Types of Data Storage and Relational Databases</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #fcfcfc 0%, #e3e3e3 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #007bff;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 1.5em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .toc a:hover {
+            color: #007bff;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            font-size: 1.4em;
+            border-left: 4px solid #e74c3c;
+            padding-left: 15px;
+        }
+        
+        .key-term {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left: 5px solid #fdcb6e;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note strong {
+            color: #856404;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-style: italic;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary h4 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 1.2em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .practice-questions {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .practice-questions h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+        
+        .answer {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .key-takeaways {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-left: 5px solid #e53e3e;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways h4 {
+            color: #c53030;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .key-takeaways li {
+            margin: 8px 0;
+            color: #2d3748;
+        }
+        
+        .example-box {
+            background: #f0f8ff;
+            border: 1px solid #b6d7ff;
+            border-left: 5px solid #0066cc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .diagram-placeholder {
+            background: #f1f3f4;
+            border: 2px dashed #5f6368;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #5f6368;
+            font-style: italic;
+        }
+        
+        .mind-map {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .mind-map h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            border: none;
+            padding: 0;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .mind-map-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 25px;
+            min-width: 150px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map-subnode {
+            background: #e9ecef;
+            color: #495057;
+            padding: 8px 15px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .mind-map-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Basics of Data Analytics</h1>
+            <p>Week 5 Lecture 2</p>
+            <p>~ Armaan Kachhawa </p>
+        </div>
+        
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#data-repository">1. Data Repository</a></li>
+                <li><a href="#databases">2. Databases</a></li>
+                <li><a href="#relational-databases">3. Relational Databases</a></li>
+                <li><a href="#advantages">4. Advantages of Relational Databases</a></li>
+                <li><a href="#examples">5. Examples of Relational Databases</a></li>
+                <li><a href="#disadvantages">6. Disadvantages of Relational Databases</a></li>
+                <li><a href="#non-relational">7. Non-Relational Databases</a></li>
+                <li><a href="#dbms">8. Database Management Systems</a></li>
+                <li><a href="#mind-map">9. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <h2 id="data-repository">1. Data Repository</h2>
+        
+        <p>A <span class="key-term">data repository</span> is a broad, general term that refers to data collected, organized, categorized and stored for processing and analysis. Long term preservation and storage of data is an essential part of data analytics, and data must be stored in a way that is easy to access when required.</p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Think of a data repository as a large storage area where you have put all of your data. After collecting it from different sources, you have organized it, categorized it, and sorted it - meaning you've put data belonging to a particular type together with other data belonging to that same type. It's like gathering all ingredients before cooking a snack - you need everything in one place so it's easy to access as and when you need them in each step.
+        </div>
+        
+        <h3>Benefits of Data Repository</h3>
+        <ul>
+            <li>Having a data repository can help organizations <span class="key-term">streamline their business decision-making</span></li>
+            <li>Provides a <span class="key-term">consolidated space</span> to store data critical to your operations</li>
+            <li>Enables easier <span class="key-term">data-access and troubleshooting</span></li>
+            <li>Facilitates <span class="key-term">efficient reporting and analytics</span></li>
+        </ul>
+
+        <div class="example-box">
+            <h4>🏪 Real-World Example: Retail Organization</h4>
+            <p>Suppose you work for a retail organization with multiple storefronts. The organization wants to know which storefront has the highest cost of operations. To answer this question, you would need:</p>
+            <ul>
+                <li><strong>Rent information</strong> for each storefront unit</li>
+                <li><strong>Utility bills</strong> for each storefront</li>
+                <li><strong>Security costs</strong> for running these storefronts</li>
+            </ul>
+            <p>Having all this data in one place enables you to quickly find the answer without hunting down different variables every time.</p>
+        </div>
+
+        <h3>Types of Data Repository</h3>
+        <p>Data Repository includes:</p>
+        <ol>
+            <li><span class="key-term">Databases</span></li>
+            <li><span class="key-term">Data warehouses</span></li>
+            <li><span class="key-term">Data Lakes</span></li>
+            <li><span class="key-term">Data Marts</span></li>
+        </ol>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Data Repository</h4>
+            <p>Data repository matlab ek bada storage area hai jahan hum apna saara data collect karke organize karte hain. Yeh bilkul cooking ke ingredients ki tarah hai - sabko ek jagah rakhna padta hai taaki jab zarurat ho to easily access kar sakein. Iska main fayda yeh hai ki business decisions lene mein time save hota hai aur troubleshooting bhi easy ho jaati hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What is a data repository and why is it important for data analytics?
+                <div class="answer">
+                    <strong>Answer:</strong> A data repository is a storage system where data from various sources is collected, organized, categorized and stored for processing and analysis. It's important because it provides a consolidated space for data storage, enables easier access and troubleshooting, and makes reporting and analytics more efficient.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> List the four main types of data repositories.
+                <div class="answer">
+                    <strong>Answer:</strong> The four main types are: 1) Databases, 2) Data warehouses, 3) Data lakes, and 4) Data marts.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Data Repository</h4>
+            <ul>
+                <li>Data repositories centralize data storage for easy access and analysis</li>
+                <li>They help organizations streamline decision-making processes</li>
+                <li>Proper organization reduces time spent on data collection and troubleshooting</li>
+                <li>Multiple types exist to handle different data storage needs</li>
+            </ul>
+        </div>
+
+        <h2 id="databases">2. Databases</h2>
+        
+        <p>A <span class="key-term">database</span> is a data storage system that stores data from various sources for analysis and reporting. It's a collection of data created for input, storage, search and retrieval of data. Databases store data in an organized format, typically on a server.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> A database is essentially a storage area where data from various sources can come and be stored. It's used for specific types of data management tasks, and data is usually stored in a particular structured format. The characteristic of databases is that they store data in an organized format, more often than not on a server.
+        </div>
+
+        <h3>Key Characteristics of Databases</h3>
+        <ul>
+            <li>Stores data in an <span class="key-term">organized format</span></li>
+            <li>Can include data from <span class="key-term">applications and other sources</span></li>
+            <li>Typically stored on a <span class="key-term">server</span></li>
+            <li>Used for specific data management tasks</li>
+        </ul>
+
+        <h3>Common Database Uses</h3>
+        <p>Databases are commonly used for data management tasks such as:</p>
+        <ul>
+            <li><span class="key-term">Data validation</span> - checking data format compliance</li>
+            <li><span class="key-term">Data manipulation</span> - modifying data formats (e.g., date formatting)</li>
+            <li><span class="key-term">Data retrieval</span> - pulling out data for analysis or visualization</li>
+        </ul>
+
+        <div class="example-box">
+            <h4>💳 OLTP Systems Example</h4>
+            <p><span class="key-term">Online Transaction Processing Systems (OLTP)</span> are popular types of databases that you interact with regularly. Examples include:</p>
+            <ul>
+                <li><strong>Banking transactions</strong> - ATM withdrawals, online transfers</li>
+                <li><strong>E-commerce</strong> - Online shopping, payment processing</li>
+                <li><strong>Customer data</strong> - User profiles, purchase history</li>
+                <li><strong>Sales data</strong> - Transaction records, inventory updates</li>
+            </ul>
+        </div>
+
+        <h3>Factors Determining Database Choice</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Factor</th>
+                    <th>Description</th>
+                    <th>Impact on Choice</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Data Type</strong></td>
+                    <td>Nature of data (structured, semi-structured, unstructured)</td>
+                    <td>Determines storage format requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Structure</strong></td>
+                    <td>How data is organized and related</td>
+                    <td>Influences database architecture</td>
+                </tr>
+                <tr>
+                    <td><strong>Querying Mechanism</strong></td>
+                    <td>How data will be retrieved and searched</td>
+                    <td>Affects query language and optimization</td>
+                </tr>
+                <tr>
+                    <td><strong>Latency Requirements</strong></td>
+                    <td>Time between data retrieval and readiness</td>
+                    <td>Determines performance specifications</td>
+                </tr>
+                <tr>
+                    <td><strong>Transaction Speeds</strong></td>
+                    <td>Rate of data processing required</td>
+                    <td>Influences system capacity needs</td>
+                </tr>
+                <tr>
+                    <td><strong>Final Intended Use</strong></td>
+                    <td>Purpose of data (dashboards, models, reports)</td>
+                    <td>Shapes overall database design</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Querying means pulling or retrieving the data in a particular fashion following certain rules. The choice of database depends on factors like how fast the data is being collected, how fast it's being processed, how fast you need it at your disposal, and what you plan to do with it - whether it feeds into a statistical model, dashboard, or other applications.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Databases</h4>
+            <p>Database ek organized storage system hai jo data ko collect, store aur retrieve karne ke liye use hota hai. Yeh server pe organized format mein data rakhta hai. OLTP systems ka example hai banking aur e-commerce - jab bhi aap online shopping karte hain ya ATM use karte hain, aap database ke saath interact kar rahe hote hain. Database choice data type, structure, aur intended use pe depend karti hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What are the three main data management tasks that databases are used for?
+                <div class="answer">
+                    <strong>Answer:</strong> The three main tasks are: 1) Data validation (checking format compliance), 2) Data manipulation (modifying formats), and 3) Data retrieval (pulling data for analysis).
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Give two examples of OLTP systems that you might interact with daily.
+                <div class="answer">
+                    <strong>Answer:</strong> Examples include: Banking transactions (ATM withdrawals, online transfers) and E-commerce platforms (online shopping, payment processing).
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Databases</h4>
+            <ul>
+                <li>Databases are organized storage systems for data from various sources</li>
+                <li>They support data validation, manipulation, and retrieval operations</li>
+                <li>OLTP systems are common examples we interact with daily</li>
+                <li>Database choice depends on multiple factors including data type and intended use</li>
+            </ul>
+        </div>
+
+        <h2 id="relational-databases">3. Relational Databases</h2>
+        
+        <p><span class="key-term">Relational databases</span> have data organized in a tabular form in rows and columns. Tables can be linked or related based on data common to both. They typically have data with a well-defined structure and are optimized for data operations and querying using <span class="key-term">SQL</span> as the standard querying language.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> In relational databases, data is organized in similar tabular structures where you have rows and columns - just like the structured data we talked about in another lecture. These tables can be linked and related based on information that is common across both tables. You could have two or more sets of tables where data is organized in neat rows and columns, and they're related based on data common to these tables - hence the name "relational databases."
+        </div>
+
+        <h3>Key Features of Relational Databases</h3>
+        <ul>
+            <li>Data organized across <span class="key-term">two or more linked tables</span></li>
+            <li>Each table has a <span class="key-term">unique set of rows and columns</span></li>
+            <li><span class="key-term">Relationships can be defined</span> between tables</li>
+            <li>Allows retrieval of <span class="key-term">entirely new tables</span> from data in one or more tables with a single query</li>
+            <li>Helps understand <span class="key-term">relationships among all available data</span></li>
+        </ul>
+
+        <div class="example-box">
+            <h4>🛒 Relational Database Example: Retail Store</h4>
+            <p>Consider a retail store with the following three related tables:</p>
+            
+            <h5>Table 1: Purchase Records</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Product ID</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>453</td>
+                        <td>2024-01-15</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>454</td>
+                        <td>2024-01-16</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5>Table 2: Product Information</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Price per Kg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>453</td>
+                        <td>Banana</td>
+                        <td>₹14</td>
+                    </tr>
+                    <tr>
+                        <td>454</td>
+                        <td>Apple</td>
+                        <td>₹25</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5>Table 3: Customer Information</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Customer Name</th>
+                        <th>Payment Mode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>Raj Kumar</td>
+                        <td>Credit Card</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>Priya Sharma</td>
+                        <td>Cash</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Relationships:</strong></p>
+            <ul>
+                <li>Tables 1 & 2 are linked by <span class="key-term">Product ID</span></li>
+                <li>Tables 1 & 3 are linked by <span class="key-term">Customer ID</span></li>
+                <li>This structure allows easy joining of tables to get complete transaction information</li>
+            </ul>
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Relational Database Table Relationships showing three tables connected by common fields]
+        </div>
+
+        <h3>Advantages of Relational Database Structure</h3>
+        <ul>
+            <li><span class="key-term">Minimizes data redundancy</span> - don't store same data multiple times</li>
+            <li>Allows <span class="key-term">restrictions on field types</span> and values (e.g., date fields only accept dates)</li>
+            <li><span class="key-term">Minimizes data inconsistency</span> and irregularity</li>
+            <li><span class="key-term">Reduces time for data cleaning</span> by enforcing consistency during storage</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The beauty of relational databases is that using the data that is common across two or more tables, you can create another table using standard querying language that pulls data from each of these different tables. This allows us to quickly understand relationships among all available data, and it really reduces the amount of time and effort we have to spend cleaning data further down the line.
+        </div>
+
+        <h3>Comparison with Spreadsheets</h3>
+        <p>Relational databases are built on organizational principles of <span class="key-term">structured data</span> found in flat files like spreadsheets, but they go beyond spreadsheet limitations:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Spreadsheets</th>
+                    <th>Relational Databases</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Row/Column Limits</strong></td>
+                    <td>Limited numbers</td>
+                    <td>Can handle large volumes</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Volume</strong></td>
+                    <td>Small to medium</td>
+                    <td>Large volumes of structured data</td>
+                </tr>
+                <tr>
+                    <td><strong>Optimization</strong></td>
+                    <td>Basic operations</td>
+                    <td>Optimized storage, retrieval, and processing</td>
+                </tr>
+                <tr>
+                    <td><strong>Relationships</strong></td>
+                    <td>Manual linking</td>
+                    <td>Built-in table relationships</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Relational Databases</h4>
+            <p>Relational database mein data tables mein rows aur columns ke form mein organize hota hai, bilkul Excel sheet ki tarah. Lekin yahan multiple tables ko link kar sakte hain common data ke through. Jaise retail store mein customer table, product table aur purchase table alag-alag hain lekin customer ID aur product ID se link hote hain. Iska fayda yeh hai ki data redundancy kam hoti hai aur relationships samajhna easy ho jaata hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What makes a database "relational"?
+                <div class="answer">
+                    <strong>Answer:</strong> A database is called "relational" because it stores data in tables that can be linked or related based on common data fields between tables, allowing relationships to be defined and maintained between different data sets.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> In the retail store example, how are the three tables connected?
+                <div class="answer">
+                    <strong>Answer:</strong> The Purchase Records table connects to Product Information via Product ID, and to Customer Information via Customer ID, creating a network of related data that can be queried together.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Relational Databases</h4>
+            <ul>
+                <li>Data is organized in linked tables with rows and columns</li>
+                <li>Tables are connected through common data fields</li>
+                <li>SQL is the standard querying language used</li>
+                <li>They minimize redundancy and improve data consistency</li>
+                <li>Ideal for large volumes of structured data</li>
+            </ul>
+        </div>
+
+        <h2 id="advantages">4. Advantages of Relational Databases</h2>
+
+        <h3>Primary Advantages</h3>
+        <ul>
+            <li><span class="key-term">Getting insights from joining tables</span> - Quick data analysis by combining related tables</li>
+            <li><span class="key-term">Flexibility to make changes</span> while database is in use</li>
+            <li><span class="key-term">Minimize data redundancy</span> - Avoid storing duplicate information</li>
+            <li><span class="key-term">Ease of data protection and recovery</span> - Centralized security measures</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> By storing data in multiple tables and in a way where you can quickly retrieve information by just joining tables, we minimize the need to store the same kind of data multiple times. And relational databases have another advantage - it's easy for data protection and data recovery purposes. If you're going to enforce some kind of security measure, you can put that measure on your entire relational database, and it will apply to all tables within that database.
+        </div>
+
+        <h3>Detailed Benefits</h3>
+
+        <div class="example-box">
+            <h4>🔍 Quick Insights Example</h4>
+            <p>Using the retail database tables, you can quickly answer questions like:</p>
+            <ul>
+                <li>"Which customers bought bananas?" - Join Purchase and Product tables</li>
+                <li>"What payment methods are most popular?" - Join Purchase and Customer tables</li>
+                <li>"What's the total revenue from credit card purchases?" - Join all three tables</li>
+            </ul>
+        </div>
+
+        <h3>Data Protection Advantages</h3>
+        <ul>
+            <li><strong>Centralized Security:</strong> Apply security measures to entire database</li>
+            <li><strong>Access Control:</strong> Manage who can view/modify specific tables</li>
+            <li><strong>Backup and Recovery:</strong> Consistent backup strategies across all tables</li>
+            <li><strong>Data Integrity:</strong> Maintain relationships even after updates</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Advantages</h4>
+            <p>Relational database ke main fayde yeh hain - tables ko join karke quick insights mil jaate hain, data redundancy kam hoti hai kyunki same data baar-baar store nahi karna padta, aur security implement karna easy hai kyunki poore database pe ek saath rules apply kar sakte hain. Plus, database use karte time bhi changes kar sakte hain without any problem.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> How do relational databases minimize data redundancy?
+                <div class="answer">
+                    <strong>Answer:</strong> By storing data in multiple linked tables, relational databases avoid storing the same information repeatedly. Common data is stored once and referenced through relationships, reducing duplication.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Why is data protection easier in relational databases?
+                <div class="answer">
+                    <strong>Answer:</strong> Security measures can be applied to the entire database at once, automatically covering all tables within it. This centralized approach makes access control, backup, and recovery more manageable.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Advantages</h4>
+            <ul>
+                <li>Table joins enable quick data insights and analysis</li>
+                <li>Flexible architecture allows changes during operation</li>
+                <li>Reduced redundancy saves storage space and improves consistency</li>
+                <li>Centralized security simplifies data protection</li>
+            </ul>
+        </div>
+
+        <h2 id="examples">5. Examples of Relational Databases</h2>
+
+        <h3>Online Transaction Processing Applications (OLTP)</h3>
+        <p><span class="key-term">OLTP systems</span> are a type of database system that manages and processes business transactions in real-time. These are transaction-oriented tasks that support large numbers of users.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> OLTP is a term you might come across many times in your data analytics journey, and I guarantee you all of you have interacted with an OLTP system at some point or the other. Every time you make a purchase online, you are actually interacting with an OLTP application.
+        </div>
+
+        <h3>OLTP Characteristics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Characteristic</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Large User Support</strong></td>
+                    <td>Can handle many simultaneous users</td>
+                    <td>Thousands of customers shopping online simultaneously</td>
+                </tr>
+                <tr>
+                    <td><strong>High Transaction Rates</strong></td>
+                    <td>Process transactions quickly</td>
+                    <td>Credit card payments processed in seconds</td>
+                </tr>
+                <tr>
+                    <td><strong>Small Data Amounts</strong></td>
+                    <td>Each transaction involves small data sets</td>
+                    <td>Single purchase record with few fields</td>
+                </tr>
+                <tr>
+                    <td><strong>Real-time Processing</strong></td>
+                    <td>Immediate transaction processing</td>
+                    <td>ATM withdrawal reflected instantly</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Common OLTP Examples</h3>
+
+        <div class="example-box">
+            <h4>🏧 Banking Transactions</h4>
+            <ul>
+                <li><strong>ATM Withdrawals:</strong> Real-time balance updates</li>
+                <li><strong>Online Banking:</strong> Fund transfers, bill payments</li>
+                <li><strong>Credit Card Processing:</strong> Purchase authorizations</li>
+                <li><strong>Account Management:</strong> Opening/closing accounts</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>🛍️ E-commerce Platforms</h4>
+            <ul>
+                <li><strong>Online Shopping:</strong> Product purchases, cart management</li>
+                <li><strong>Payment Processing:</strong> Order completion, payment verification</li>
+                <li><strong>Inventory Updates:</strong> Stock level adjustments</li>
+                <li><strong>Customer Management:</strong> Account creation, profile updates</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>🎫 Other OLTP Applications</h4>
+            <ul>
+                <li><strong>Airline Reservations:</strong> Ticket booking, seat selection</li>
+                <li><strong>Hotel Management:</strong> Room bookings, check-in/out</li>
+                <li><strong>Healthcare Systems:</strong> Patient registration, appointment scheduling</li>
+                <li><strong>Point of Sale (POS):</strong> Retail checkout systems</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> OLTP systems are usually used to store data such as customer data or sales data for any business. They can run at high rates, manage small amounts of data running at high rates, and support large numbers of users simultaneously.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - OLTP Examples</h4>
+            <p>OLTP systems wohi hain jo hum daily use karte hain - jab bank se paise nikalte hain, online shopping karte hain, ya koi payment karte hain. Yeh real-time mein transactions process karte hain aur bahut saare users ko simultaneously support kar sakte hain. Banking, e-commerce, aur reservation systems mein commonly use hote hain. Inki specialty yeh hai ki small amount ka data quickly process karte hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What does OLTP stand for and what is its primary function?
+                <div class="answer">
+                    <strong>Answer:</strong> OLTP stands for Online Transaction Processing. Its primary function is to manage and process business transactions in real-time, supporting large numbers of users with high transaction rates.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Give three examples of OLTP systems you might use in daily life.
+                <div class="answer">
+                    <strong>Answer:</strong> Examples include: 1) ATM systems for cash withdrawals, 2) Online shopping platforms for purchases, 3) Mobile banking apps for fund transfers.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - OLTP Examples</h4>
+            <ul>
+                <li>OLTP systems process business transactions in real-time</li>
+                <li>They support large numbers of simultaneous users</li>
+                <li>Common in banking, e-commerce, and reservation systems</li>
+                <li>Designed for high transaction rates with small data amounts</li>
+            </ul>
+        </div>
+
+        <h2 id="disadvantages">6. Disadvantages of Relational Databases</h2>
+
+        <p>While relational databases are very popular and versatile, they also have some limitations that make them unsuitable for certain types of data and use cases.</p>
+
+        <h3>Main Disadvantages</h3>
+
+        <div class="example-box">
+            <h4>❌ Data Structure Limitations</h4>
+            <p><span class="key-term">Does not work well with semi-structured or unstructured data</span></p>
+            <ul>
+                <li><strong>Semi-structured data:</strong> JSON files, XML documents</li>
+                <li><strong>Unstructured data:</strong> Images, videos, text documents, social media posts</li>
+                <li><strong>Problem:</strong> These data types don't fit into rigid row-column structure</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> If you can connect at this point to the types of data structures that we've talked about in another lecture, it should start becoming evident to you. Relational databases do not work well if our data is semi-structured or unstructured. Data needs to follow a particular structure to be able to be stored in relational databases.
+        </div>
+
+        <div class="example-box">
+            <h4>🔄 Migration Challenges</h4>
+            <p><span class="key-term">Migration between databases is only possible if they have the same structure or schema and types</span></p>
+            <ul>
+                <li><strong>Schema matching:</strong> Field types must be identical</li>
+                <li><strong>Data type restrictions:</strong> Cannot easily convert between different formats</li>
+                <li><strong>Structural requirements:</strong> Table relationships must align</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>📏 Field Restrictions</h4>
+            <p><span class="key-term">Some fields have pre-specified value formats and lengths</span></p>
+            <ul>
+                <li><strong>Advantage:</strong> Minimizes data errors and inconsistencies</li>
+                <li><strong>Disadvantage:</strong> May lose information that doesn't fit specified format/length</li>
+                <li><strong>Example:</strong> Name field limited to 50 characters might truncate longer names</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Because we're putting these restrictions on the structure and type of data that can be populated in certain fields, if you are migrating data from one database to another, it needs to follow those restrictions. This is an advantage because it allows us to minimize data errors, but it can also be a disadvantage because if your data doesn't fit into that format or length, you could lose out on some information.
+        </div>
+
+        <h3>Detailed Limitation Analysis</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Limitation</th>
+                    <th>Impact</th>
+                    <th>Example Scenario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Rigid Structure</strong></td>
+                    <td>Cannot handle varying data formats</td>
+                    <td>Social media posts with mixed content types</td>
+                </tr>
+                <tr>
+                    <td><strong>Schema Dependencies</strong></td>
+                    <td>Difficult to change structure once implemented</td>
+                    <td>Adding new field types requires database redesign</td>
+                </tr>
+                <tr>
+                    <td><strong>Size Limitations</strong></td>
+                    <td>Fixed field lengths may truncate data</td>
+                    <td>Long addresses or descriptions being cut off</td>
+                </tr>
+                <tr>
+                    <td><strong>Type Restrictions</strong></td>
+                    <td>Cannot store data that doesn't match predefined types</td>
+                    <td>Trying to store an image in a text field</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>When Relational Databases Aren't Suitable</h3>
+        <ul>
+            <li><strong>Big Data Applications:</strong> Massive volumes of diverse data</li>
+            <li><strong>Real-time Analytics:</strong> Need for immediate processing of varied data types</li>
+            <li><strong>IoT Systems:</strong> Sensor data in multiple formats</li>
+            <li><strong>Content Management:</strong> Mixed media and document types</li>
+            <li><strong>Social Media Platforms:</strong> User-generated content in various formats</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Disadvantages</h4>
+            <p>Relational database ki main limitations yeh hain - yeh sirf structured data ke saath achha kaam karta hai, semi-structured ya unstructured data handle nahi kar sakta. Migration bhi difficult hai agar dono databases ka structure same nahi hai. Field restrictions ka fayda bhi hai aur nuksaan bhi - data consistency maintain hoti hai lekin kabhi kabhi important information cut ho jaati hai agar length limit exceed ho jaaye.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> Why can't relational databases handle unstructured data effectively?
+                <div class="answer">
+                    <strong>Answer:</strong> Relational databases require data to fit into predefined rows and columns with specific data types. Unstructured data like images, videos, or free-form text doesn't conform to this rigid tabular structure.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> How can field restrictions be both an advantage and disadvantage?
+                <div class="answer">
+                    <strong>Answer:</strong> Field restrictions are an advantage because they ensure data consistency and minimize errors. However, they're a disadvantage because they can cause data loss when information doesn't fit the predefined format or length limits.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Disadvantages</h4>
+            <ul>
+                <li>Limited to structured data - cannot handle semi-structured or unstructured data</li>
+                <li>Database migration requires matching schemas and data types</li>
+                <li>Field restrictions can lead to data loss if information exceeds limits</li>
+                <li>Not suitable for big data or highly diverse data applications</li>
+            </ul>
+        </div>
+
+        <h2 id="non-relational">7. Non-Relational Databases</h2>
+
+        <p><span class="key-term">Non-relational databases</span> involve data storage where data does not need to be stored in a structured format. These databases can store semi-structured and unstructured data in a non-tabular, schemaless manner.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Non-relational databases can handle a wide variety of types of data - wide diversity in types of data. They can also handle large volumes and speed of data that we actually see mostly around us today. Non-relational databases are built for speed, flexibility, and scale - all of which is becoming the need in the world we're living in right now with the data revolution.
+        </div>
+
+        <h3>Key Characteristics</h3>
+        <ul>
+            <li><span class="key-term">Schema-less storage</span> - No predefined structure required</li>
+            <li><span class="key-term">Wide variety of data types</span> - Handles diverse data formats</li>
+            <li><span class="key-term">Large volumes and high speed</span> - Designed for big data</li>
+            <li><span class="key-term">Built for speed, flexibility, and scale</span></li>
+        </ul>
+
+        <h3>Design Principles</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Principle</th>
+                    <th>Description</th>
+                    <th>Benefit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Speed</strong></td>
+                    <td>Optimized for fast data processing</td>
+                    <td>Real-time analytics and responses</td>
+                </tr>
+                <tr>
+                    <td><strong>Flexibility</strong></td>
+                    <td>Adapts to various data formats</td>
+                    <td>Handles changing data requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Scale</strong></td>
+                    <td>Manages massive data volumes</td>
+                    <td>Supports growing data needs</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Big Data Processing</h3>
+        <p>Non-relational databases are popularly used to process <span class="key-term">big data</span>, which includes:</p>
+        <ul>
+            <li><strong>Large size:</strong> Terabytes to petabytes of data</li>
+            <li><strong>Variety:</strong> Different types and formats of data</li>
+            <li><strong>Volume:</strong> Massive amounts of information</li>
+            <li><strong>High frequency:</strong> Real-time, constantly updated data</li>
+        </ul>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> We have touched upon the idea of big data in another lecture, where we talk about data that is not only large in size, but also large in terms of variety - different types of data, in terms of volume, and in terms of high frequency, real-time updated data. Non-relational databases are needed to process and store these types of diverse, large volumes of data.
+        </div>
+
+        <h3>Use Cases for Non-Relational Databases</h3>
+        <div class="example-box">
+            <h4>🌐 Modern Applications</h4>
+            <ul>
+                <li><strong>Social Media Platforms:</strong> Posts, images, videos, comments</li>
+                <li><strong>IoT Systems:</strong> Sensor data from multiple devices</li>
+                <li><strong>Content Management:</strong> Mixed media files and documents</li>
+                <li><strong>Real-time Analytics:</strong> Streaming data processing</li>
+                <li><strong>Mobile Applications:</strong> User preferences and behavior data</li>
+            </ul>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - Non-Relational Databases</h4>
+            <p>Non-relational databases modern zamane ke data revolution ke liye bane hain. Yeh structured format ki zarurat nahi hai - koi bhi type ka data store kar sakte hain. Speed, flexibility aur scale ke liye design kiye gaye hain. Big data processing mein commonly use hote hain jahan variety, volume aur velocity sabhi high hoti hai. Social media, IoT, aur real-time analytics mein perfect hain.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What are the three main design principles of non-relational databases?
+                <div class="answer">
+                    <strong>Answer:</strong> The three main design principles are: 1) Speed - optimized for fast processing, 2) Flexibility - adapts to various data formats, and 3) Scale - manages massive data volumes.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> Why are non-relational databases better suited for big data than relational databases?
+                <div class="answer">
+                    <strong>Answer:</strong> Non-relational databases can handle the variety (different data types), volume (massive amounts), and velocity (high-frequency updates) that characterize big data, while relational databases are limited to structured data in predefined schemas.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - Non-Relational Databases</h4>
+            <ul>
+                <li>Designed for unstructured and semi-structured data storage</li>
+                <li>Built for speed, flexibility, and scale</li>
+                <li>Ideal for big data processing with high variety, volume, and velocity</li>
+                <li>Essential for modern applications like social media and IoT systems</li>
+            </ul>
+        </div>
+
+        <h2 id="dbms">8. Database Management Systems (DBMS)</h2>
+
+        <p>While processing data in databases, you will often encounter the term <span class="key-term">Database Management Systems (DBMS)</span>. Although "database" and "database management systems" are often used interchangeably, they refer to different components.</p>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> A database management system is actually a set of programmes that are used to create and maintain databases. So it's a programme that you use to build this database, input data into this database, store, modify and extract information from the database. The database refers to the storage area, and the database management system refers to a set of programmes and instructions used for creating and maintaining databases.
+        </div>
+
+        <h3>Key Distinctions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Definition</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Database</strong></td>
+                    <td>The actual storage area for data</td>
+                    <td>Stores organized data in tables/structures</td>
+                </tr>
+                <tr>
+                    <td><strong>DBMS</strong></td>
+                    <td>Set of programs and tools</td>
+                    <td>Creates, maintains, and manages databases</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>DBMS Functions</h3>
+        <p>Database Management Systems are used for:</p>
+        <ul>
+            <li><span class="key-term">Creating databases</span> - Building the initial database structure</li>
+            <li><span class="key-term">Maintaining databases</span> - Ongoing management and updates</li>
+            <li><span class="key-term">Storing data</span> - Inputting and organizing information</li>
+            <li><span class="key-term">Modifying data</span> - Updating, editing, and deleting records</li>
+            <li><span class="key-term">Extracting information</span> - Retrieving data for analysis</li>
+        </ul>
+
+        <h3>The Role of Querying</h3>
+        <p>All DBMS operations are performed through the process of <span class="key-term">querying</span>, and very often we use <span class="key-term">Standard Query Language (SQL)</span> to do this.</p>
+
+        <div class="example-box">
+            <h4>🔍 Common DBMS Operations via Querying</h4>
+            <ul>
+                <li><strong>CREATE:</strong> Build new tables and databases</li>
+                <li><strong>INSERT:</strong> Add new data records</li>
+                <li><strong>SELECT:</strong> Retrieve specific data</li>
+                <li><strong>UPDATE:</strong> Modify existing records</li>
+                <li><strong>DELETE:</strong> Remove unwanted data</li>
+                <li><strong>JOIN:</strong> Combine data from multiple tables</li>
+            </ul>
+        </div>
+
+        <h3>Popular DBMS Examples</h3>
+        <div class="example-box">
+            <h4>💻 Common Database Management Systems</h4>
+            <ul>
+                <li><strong>Relational DBMS:</strong> MySQL, PostgreSQL, Oracle, SQL Server</li>
+                <li><strong>Non-Relational DBMS:</strong> MongoDB, Cassandra, Redis</li>
+                <li><strong>Cloud-based DBMS:</strong> Amazon RDS, Google Cloud SQL, Azure SQL</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> This is done through the process of query, and very often we use standard querying language or SQL to do this. Querying allows us to interact with the database - whether we want to put data in, take data out, or modify what's already there.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>📝 Hinglish Summary - DBMS</h4>
+            <p>DBMS matlab Database Management System - yeh ek set of programs hai jo database create, maintain aur manage karte hain. Database sirf storage area hai, lekin DBMS wohi tools hain jo uss storage ko control karte hain. Querying ke through saare operations karte hain - data insert karna, retrieve karna, update karna. SQL is the most popular querying language hai jo iske liye use hoti hai.</p>
+        </div>
+
+        <div class="practice-questions">
+            <h4>🤔 Practice Questions</h4>
+            <div class="question">
+                <strong>Q1:</strong> What is the difference between a database and a DBMS?
+                <div class="answer">
+                    <strong>Answer:</strong> A database is the actual storage area where data is kept, while a DBMS (Database Management System) is the set of programs and tools used to create, maintain, and manage that database.
+                </div>
+            </div>
+            <div class="question">
+                <strong>Q2:</strong> What are the five main functions of a DBMS?
+                <div class="answer">
+                    <strong>Answer:</strong> The five main functions are: 1) Creating databases, 2) Maintaining databases, 3) Storing data, 4) Modifying data, and 5) Extracting information.
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways - DBMS</h4>
+            <ul>
+                <li>DBMS is the software that manages databases, not the database itself</li>
+                <li>All operations are performed through querying, often using SQL</li>
+                <li>Essential for creating, maintaining, and extracting data from databases</li>
+                <li>Available in various forms for different database types and use cases</li>
+            </ul>
+        </div>
+
+        <div id="mind-map" class="mind-map">
+            <h3>🧠 Comprehensive Mind Map: Data Storage and Relational Databases</h3>
+            <div class="mind-map-content">
+                <div class="mind-map-node">
+                    <strong>Data Repository</strong>
+                    <div class="mind-map-subnode">Organized Storage</div>
+                    <div class="mind-map-subnode">Easy Access</div>
+                    <div class="mind-map-subnode">Multiple Sources</div>
+                    <div class="mind-map-subnode">4 Types: DB, DW, DL, DM</div>
+                </div>
+                
+                <div class="mind-map-node">
+                    <strong>Databases</strong>
+                    <div class="mind-map-subnode">Organized Format</div>
+                    <div class="mind-map-subnode">Data Validation</div>
+                    <div class="mind-map-subnode">Data Manipulation</div>
+                    <div class="mind-map-subnode">Data Retrieval</div>
+                </div>
+                
+                <div class="mind-map-node">
+                    <strong>Relational Databases</strong>
+                    <div class="mind-map-subnode">Tables (Rows & Columns)</div>
+                    <div class="mind-map-subnode">Linked by Common Data</div>
+                    <div class="mind-map-subnode">SQL Querying</div>
+                    <div class="mind-map-subnode">Structured Data</div>
+                </div>
+                
+                <div class="mind-map-node">
+                    <strong>OLTP Systems</strong>
+                    <div class="mind-map-subnode">Real-time Processing</div>
+                    <div class="mind-map-subnode">High Transaction Rates</div>
+                    <div class="mind-map-subnode">Banking & E-commerce</div>
+                    <div class="mind-map-subnode">Large User Support</div>
+                </div>
+                
+                <div class="mind-map-node">
+                    <strong>Non-Relational DB</strong>
+                    <div class="mind-map-subnode">Schema-less</div>
+                    <div class="mind-map-subnode">Big Data Processing</div>
+                    <div class="mind-map-subnode">Speed, Flexibility, Scale</div>
+                    <div class="mind-map-subnode">Unstructured Data</div>
+                </div>
+                
+                <div class="mind-map-node">
+                    <strong>DBMS</strong>
+                    <div class="mind-map-subnode">Create & Maintain</div>
+                    <div class="mind-map-subnode">Store & Modify</div>
+                    <div class="mind-map-subnode">Extract Information</div>
+                    <div class="mind-map-subnode">SQL Querying</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; margin-top: 40px;">
+            <h2 style="margin: 0; color: white; border: none; padding: 0;"> ~ Armaan Kachhawa</h2>
+            <p style="margin: 10px 0 0 0; font-size: 1.1em;">   I created this knowledge during my first semester of BSc in Applied
+            AI and Data Science.</p>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

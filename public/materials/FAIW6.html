@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logical Agents - Lecture Notes | IIT Jodhpur AI Course</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #3498db;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .toc ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .toc a:hover {
+            background: #3498db;
+            color: white;
+            padding-left: 20px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #9b59b6;
+        }
+        
+        h4 {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e3f2fd;
+            transition: background 0.3s ease;
+        }
+        
+        .diagram-placeholder {
+            background: #e8f4f8;
+            border: 2px dashed #3498db;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #3498db;
+            font-style: italic;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .hinglish-summary h4 {
+            color: #d35400;
+            margin-bottom: 10px;
+        }
+        
+        .practice-questions {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .practice-questions h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f8e9;
+            border-left: 3px solid #8bc34a;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways {
+            background: #f3e5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 5px solid #9c27b0;
+        }
+        
+        .key-takeaways h4 {
+            color: #7b1fa2;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .math-example {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .mindmap {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .mindmap-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .mindmap-branch {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .mindmap-subbranch {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        
+        .mindmap-leaf {
+            background: #95a5a6;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .example-box {
+            background: #fff8e1;
+            border: 2px solid #ffd54f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .example-box h5 {
+            color: #f57f17;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Logical Agents</h1>
+            <h1>~ Created by Armaan Kachhawa </h1>
+            <h1>FAI Week 6 Lecture 1 & 2</h1>
+        </header>
+        
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction to Logical Agents</a></li>
+                <li><a href="#knowledge-based-agents">2. Knowledge-Based Agents</a></li>
+                <li><a href="#logic-fundamentals">3. Logic Fundamentals</a>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><a href="#syntax-semantics">3.1 Syntax and Semantics</a></li>
+                        <li><a href="#models">3.2 Models and Truth Values</a></li>
+                    </ul>
+                </li>
+                <li><a href="#inference">4. Inference and Reasoning</a>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><a href="#entailment">4.1 Entailment</a></li>
+                        <li><a href="#soundness">4.2 Soundness</a></li>
+                        <li><a href="#completeness">4.3 Completeness</a></li>
+                    </ul>
+                </li>
+                <li><a href="#representation-world">5. Represented World vs Real World</a></li>
+                <li><a href="#propositional-logic">6. Propositional Logic</a>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><a href="#atomic-sentences">6.1 Atomic Sentences</a></li>
+                        <li><a href="#logical-connectives">6.2 Logical Connectives</a></li>
+                        <li><a href="#operator-precedence">6.3 Operator Precedence</a></li>
+                        <li><a href="#truth-values">6.4 Truth Values and Semantics</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mindmap">7. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Main Content -->
+        <main>
+            <section id="introduction">
+                <h2>1. Introduction to Logical Agents</h2>
+                
+                <p>Welcome to the fascinating world of <span class="key-term">Logical Agents</span>! In previous lectures, we explored knowledge representation and symbolic AI. Now, we're diving deeper into how intelligent agents use logic to reason about the world.</p>
+                
+                <h3>Course Context</h3>
+                <p>This lecture builds upon our previous discussions on:</p>
+                <ul>
+                    <li><span class="key-term">Knowledge Representation</span> - How we store information about the world</li>
+                    <li><span class="key-term">Symbolic AI</span> - Using symbols to represent real-world concepts</li>
+                    <li><span class="key-term">Knowledge-Based Agents</span> - Agents that use stored knowledge to make decisions</li>
+                </ul>
+                
+                <h3>Today's Agenda</h3>
+                <p>In this lecture, we will cover:</p>
+                <ol>
+                    <li>Knowledge-Based Agents and their structure</li>
+                    <li>Logic fundamentals (syntax and semantics)</li>
+                    <li>Inference and reasoning properties</li>
+                    <li>Propositional Logic (if time permits)</li>
+                </ol>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "We have already discussed logical agents a bit, but let's talk about it one more time for clarity. Understanding how logical agents work is crucial for building intelligent systems that can reason like humans do."
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Logical agents wo agents hote hain jo knowledge use karke reasoning karte hain. Basically, humne pehle knowledge representation aur symbolic AI ke baare mein padha tha, ab hum dekhenge ki kaise ek agent apne stored knowledge ko use karke logical decisions le sakta hai. Aaj hum knowledge-based agents, logic ki fundamentals, inference properties aur propositional logic ke baare mein padhenge.</p>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Logical agents use knowledge and reasoning to make intelligent decisions</li>
+                        <li>This lecture connects knowledge representation with practical reasoning</li>
+                        <li>We'll learn how machines can "think" using logic</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="knowledge-based-agents">
+                <h2>2. Knowledge-Based Agents</h2>
+                
+                <h3>What is a Logical Agent?</h3>
+                <p>A <span class="key-term">logical agent</span> is an intelligent system that:</p>
+                <ul>
+                    <li>Perceives the <span class="key-term">real environment</span></li>
+                    <li>Creates a <span class="key-term">representation</span> of that world</li>
+                    <li>Performs <span class="key-term">reasoning</span> and calculations on this representation</li>
+                    <li>Makes decisions and takes actions based on logical inference</li>
+                </ul>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Logical Agent Architecture - Real Environment → Representation → Knowledge Base → Reasoning → Action]
+                </div>
+                
+                <h3>The Knowledge Base (KB)</h3>
+                <p>At the heart of every knowledge-based agent is the <span class="key-term">Knowledge Base (KB)</span>:</p>
+                
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Knowledge Base (KB)</strong></td>
+                        <td>A collection of sentences representing prior knowledge</td>
+                        <td>Facts about mathematics, physics, or domain-specific information</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sentences</strong></td>
+                        <td>Individual statements or facts in the KB</td>
+                        <td>"All humans are mortal", "$x + y = 4$"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Language</strong></td>
+                        <td>The formal system used to express sentences</td>
+                        <td>Natural language, mathematical notation, programming languages</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "In a knowledge-based agent, what is this representation? This representation is done by some knowledge - a knowledge base. This is the prior knowledge that the agent has. For example, it can be knowledge from this AI course, or any knowledge base, and generally we denote it by KB."
+                </div>
+                
+                <h3>How Does a Knowledge-Based Agent Work?</h3>
+                
+                <div class="example-box">
+                    <h5>🔄 Agent Operation Cycle</h5>
+                    <ol>
+                        <li><strong>Represent the Real World:</strong> The complex real world is abstracted into symbols and sentences</li>
+                        <li><strong>Store Prior Knowledge:</strong> The agent has a knowledge base with existing facts</li>
+                        <li><strong>Receive Questions:</strong> When asked a question, the agent queries its KB</li>
+                        <li><strong>Reason and Infer:</strong> The agent uses logical reasoning to derive new knowledge</li>
+                        <li><strong>Provide Answers:</strong> Conclusions are reached through step-by-step logical steps</li>
+                    </ol>
+                </div>
+                
+                <h3>The Tell-Ask Interface</h3>
+                <p>Knowledge-based agents interact through two primary operations:</p>
+                <ul>
+                    <li><span class="key-term">TELL</span>: Adding new sentences/knowledge to the KB</li>
+                    <li><span class="key-term">ASK</span>: Querying the KB for information or answers</li>
+                </ul>
+                
+                <div class="math-example">
+                    <h5>Example: Mathematical Reasoning</h5>
+                    <p><strong>Question:</strong> Solve $x + y = 4$ where $x, y$ are natural numbers.</p>
+                    <p><strong>Knowledge Base:</strong> Contains knowledge about addition of natural numbers.</p>
+                    <p><strong>ASK Operation:</strong> Query the KB for solutions.</p>
+                    <p><strong>Inference Engine:</strong> Reasons through possibilities.</p>
+                    <p><strong>Answer:</strong> $(x=1, y=3)$, $(x=2, y=2)$, $(x=3, y=1)$</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Not all questions will be directly answered in our AI course lectures. But with the knowledge you have from the lectures, you can reason logically to arrive at answers. The reasoning capability is one of the most important aspects of an intelligent agent. This is similar to theorem proving - you follow step-by-step logical steps."
+                </div>
+                
+                <h3>Reasoning Capability</h3>
+                <p>The <span class="key-term">reasoning capability</span> is what distinguishes intelligent agents:</p>
+                <ul>
+                    <li>Using prior knowledge to derive new knowledge</li>
+                    <li>Following logical steps systematically</li>
+                    <li>Similar to mathematical theorem proving</li>
+                    <li>Making conclusions even when answers aren't explicitly stored</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Knowledge-based agent ka main component hota hai Knowledge Base (KB), jo ki sentences ka collection hai. Jab koi question pucha jata hai, toh agent apne KB se ASK operation karta hai aur reasoning ke through new knowledge derive karta hai. Yeh bilkul theorem proving ki tarah hai - step by step logical reasoning. Agent ka reasoning capability uska sabse important aspect hai jo use intelligent banata hai.</p>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>🎓 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What are the two main operations that a knowledge-based agent performs on its knowledge base?
+                        <div class="answer">
+                            <strong>Answer:</strong> The two main operations are:
+                            <ul>
+                                <li><strong>TELL:</strong> Adding new sentences or knowledge to the KB</li>
+                                <li><strong>ASK:</strong> Querying the KB to retrieve information or derive answers</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why is reasoning capability important for an intelligent agent?
+                        <div class="answer">
+                            <strong>Answer:</strong> Reasoning capability is crucial because:
+                            <ul>
+                                <li>It allows agents to derive new knowledge from existing knowledge</li>
+                                <li>Enables solving problems that aren't explicitly stored in the KB</li>
+                                <li>Provides logical justification for conclusions</li>
+                                <li>Makes agents truly "intelligent" rather than just information retrievers</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> Give an example of how a knowledge-based agent would solve a problem not explicitly in its KB.
+                        <div class="answer">
+                            <strong>Answer:</strong> If KB contains:
+                            <ul>
+                                <li>Knowledge: "All mammals are warm-blooded"</li>
+                                <li>Knowledge: "Dogs are mammals"</li>
+                                <li>Question: "Are dogs warm-blooded?"</li>
+                            </ul>
+                            The agent can infer: Since dogs are mammals, and all mammals are warm-blooded, therefore dogs must be warm-blooded. This conclusion isn't explicitly stored but derived through reasoning.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Knowledge-based agents have a Knowledge Base (KB) consisting of sentences</li>
+                        <li>They operate through TELL (add knowledge) and ASK (query) operations</li>
+                        <li>Reasoning capability enables deriving new knowledge from existing knowledge</li>
+                        <li>The process is similar to theorem proving with step-by-step logical steps</li>
+                        <li>Agents represent the real world symbolically and reason on this representation</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="logic-fundamentals">
+                <h2>3. Logic Fundamentals</h2>
+                
+                <h3>What are Sentences?</h3>
+                <p>A <span class="key-term">sentence</span> in the context of logical agents is more general than everyday language sentences:</p>
+                
+                <div class="example-box">
+                    <h5>🔤 Types of Sentences</h5>
+                    <ul>
+                        <li><strong>Natural Language:</strong> "I eat rice"</li>
+                        <li><strong>Mathematical:</strong> "$x + y = 4$"</li>
+                        <li><strong>Programming:</strong> <code>if (x > 0) then print("positive")</code></li>
+                    </ul>
+                </div>
+                
+                <p>Sentences are <span class="key-term">expressed through languages</span>, which can be:</p>
+                <ul>
+                    <li>Natural languages (English, Hindi, etc.)</li>
+                    <li>Programming languages (C++, Python, Java, etc.)</li>
+                    <li>Mathematical languages (algebra, calculus, logic)</li>
+                    <li>And many more formal systems</li>
+                </ul>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Don't just take it as your English language sentence or any other language sentences. Sentences are more general. They are expressed through languages - it can be English, our mother tongue, programming languages like C++, Python, mathematical expressions, and many more. Everything is a language, and wherever you have a language, you can create sentences."
+                </div>
+                
+                <h3 id="syntax-semantics">3.1 Syntax and Semantics</h3>
+                <p>Every formal language has two critical components:</p>
+                
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Definition</th>
+                        <th>Focus</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Syntax</strong></td>
+                        <td>Rules for forming valid sentences</td>
+                        <td>Structure and form</td>
+                        <td>"I eat rice" ✓ vs "Rice eat I" ✗</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Semantics</strong></td>
+                        <td>The meaning of sentences</td>
+                        <td>Interpretation and truth</td>
+                        <td>Whether "I eat rice" is true or false in a given situation</td>
+                    </tr>
+                </table>
+                
+                <h4>Syntax: The Rules of Formation</h4>
+                <p><span class="key-term">Syntax</span> defines the <strong>positions</strong> or <strong>structure</strong> of elements in a sentence:</p>
+                
+                <div class="example-box">
+                    <h5>Natural Language Example</h5>
+                    <p>✅ <strong>Correct:</strong> "I eat rice" - Subject → Verb → Object</p>
+                    <p>❌ <strong>Incorrect:</strong> "Rice eat I" - Wrong word order</p>
+                </div>
+                
+                <div class="example-box">
+                    <h5>Mathematical Language Example</h5>
+                    <p>✅ <strong>Correct:</strong> $x + y = 4$</p>
+                    <p>❌ <strong>Incorrect:</strong> $x \, y + 4$ - Malformed expression</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "For natural languages, it's the position of the words. We don't write 'rice eat I' because that will be syntax-wise incorrect. Similarly, in mathematical language, we write $x + y = 4$, not $x \, y + 4$. These positions matter!"
+                </div>
+                
+                <h4>Semantics: The Meaning</h4>
+                <p><span class="key-term">Semantics</span> concerns what a sentence <strong>means</strong> - whether it's true or false in a particular context:</p>
+                
+                <ul>
+                    <li>Every sentence must have meaning</li>
+                    <li>Meaning determines truth or falsity</li>
+                    <li>Context (the "world" or "model") matters</li>
+                </ul>
+                
+                <div class="math-example">
+                    <h5>Semantic Analysis Example</h5>
+                    <p><strong>Sentence:</strong> $x + y = 4$ (where $x, y \in \mathbb{N}$)</p>
+                    <p><strong>Question:</strong> In which "worlds" or environments is this sentence true?</p>
+                    <p><strong>Answer:</strong> This sentence has meaning - it's asking about natural number pairs that sum to 4.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "How are you deciding these positions are correct? That depends on the meaning of the sentence. 'I eat rice' is meaningful to us. $x + y = 4$ means something to us in mathematical concept, but $x \, y + 4$ doesn't have meaning. Semantically, every sentence has to mean something."
+                </div>
+                
+                <h3 id="models">3.2 Models and Truth Values</h3>
+                
+                <h4>What is a Model?</h4>
+                <p>A <span class="key-term">model</span> is a "world" or "environment" where sentences can be evaluated as true or false.</p>
+                
+                <div class="math-example">
+                    <h5>Understanding Models with Examples</h5>
+                    <p><strong>Sentence α:</strong> $x + y = 4$ (where $x, y \in \mathbb{N}$)</p>
+                    
+                    <p><strong>Model m₁:</strong> $x = 2, y = 2$</p>
+                    <p>→ Does m₁ satisfy α? $2 + 2 = 4$ ✅ <strong>YES!</strong> So m₁ is a model of α.</p>
+                    
+                    <p><strong>Model m₂:</strong> $x = 1, y = 3$</p>
+                    <p>→ Does m₂ satisfy α? $1 + 3 = 4$ ✅ <strong>YES!</strong> So m₂ is a model of α.</p>
+                    
+                    <p><strong>Model m₃:</strong> $x = 3, y = 1$</p>
+                    <p>→ Does m₃ satisfy α? $3 + 1 = 4$ ✅ <strong>YES!</strong> So m₃ is a model of α.</p>
+                    
+                    <p><strong>Non-model m₄:</strong> $x = 1, y = 1$</p>
+                    <p>→ Does m₄ satisfy α? $1 + 1 = 2 \neq 4$ ❌ <strong>NO!</strong> So m₄ is NOT a model of α.</p>
+                </div>
+                
+                <h4>Set of All Models</h4>
+                <p>We denote <span class="key-term">M(α)</span> as the <strong>set of all models</strong> of sentence α:</p>
+                
+                <div class="math-example">
+                    <p>$$M(\alpha) = \{m_1, m_2, m_3, \ldots\}$$</p>
+                    <p>For $\alpha: x + y = 4$ where $x, y \in \mathbb{N}$:</p>
+                    <p>$$M(\alpha) = \{(1,3), (2,2), (3,1)\}$$</p>
+                </div>
+                
+                <p><strong>Key Definition:</strong> A model is any "world" or assignment of values where the sentence α is <strong>true</strong>.</p>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "All those worlds where the sentence α is true are called the models of α. Let's denote it by M(α) - the set of all or collection of all models of α. What is a model? A model is all the worlds where this sentence α is true, or this model will satisfy sentence α."
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Logic ke do main parts hain - Syntax aur Semantics. Syntax matlab sentence banana ke rules (jaise word order), aur Semantics matlab sentence ka meaning. Model ek aisi duniya hai jahan sentence true hota hai. Jaise $x + y = 4$ ke liye, $(2,2)$, $(1,3)$, $(3,1)$ sab models hain kyunki in values par yeh sentence true hai. M(α) se hum denote karte hain α ke sabhi models ka set.</p>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>🎓 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What is the difference between syntax and semantics?
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <ul>
+                                <li><strong>Syntax:</strong> Rules for forming valid sentences (structure, word/symbol order)</li>
+                                <li><strong>Semantics:</strong> The meaning of sentences and their truth values in different contexts</li>
+                                <li><strong>Example:</strong> "I eat rice" is syntactically correct and semantically can be true or false depending on reality</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Find all models for the sentence: $x + y = 5$ where $x, y \in \{1, 2, 3, 4\}$
+                        <div class="answer">
+                            <strong>Answer:</strong> M(α) = {(1,4), (2,3), (3,2), (4,1)}
+                            <p>These are all the pairs from the given set that satisfy the equation.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> Why is "$x \, y + 4$" syntactically incorrect as a mathematical sentence?
+                        <div class="answer">
+                            <strong>Answer:</strong> It's syntactically incorrect because:
+                            <ul>
+                                <li>The symbols are not properly connected with operators</li>
+                                <li>It doesn't follow the rules of mathematical expression formation</li>
+                                <li>The position/ordering doesn't form a valid mathematical statement</li>
+                                <li>It lacks proper structure (no = sign, unclear operations)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Sentences can be in natural languages, programming languages, or mathematical notation</li>
+                        <li>Syntax defines the structural rules for forming valid sentences</li>
+                        <li>Semantics defines the meaning and truth value of sentences</li>
+                        <li>A model is a "world" or environment where a sentence is true</li>
+                        <li>M(α) represents the set of all models that satisfy sentence α</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="inference">
+                <h2>4. Inference and Reasoning</h2>
+                
+                <p>Now that we understand sentences, models, and meaning, let's explore how we create <strong>new sentences</strong> from existing knowledge through <span class="key-term">inference</span>.</p>
+                
+                <h3 id="entailment">4.1 Entailment</h3>
+                
+                <p><span class="key-term">Entailment</span> is the fundamental concept that allows us to derive new knowledge from existing knowledge.</p>
+                
+                <h4>Formal Definition</h4>
+                <p>We say that sentence α <span class="key-term">entails</span> sentence β (written as <strong>α ⊨ β</strong>) if and only if:</p>
+                
+                <div class="math-example">
+                    <p>$$\alpha \models \beta \iff M(\alpha) \subseteq M(\beta)$$</p>
+                    <p><strong>In words:</strong> Every world where α is true, β is also true.</p>
+                </div>
+                
+                <h4>Understanding Through Example</h4>
+                
+                <div class="example-box">
+                    <h5>Entailment Example</h5>
+                    <p><strong>Sentence α:</strong> "It is raining and it is cold"</p>
+                    <p><strong>Sentence β:</strong> "It is raining"</p>
+                    
+                    <p><strong>Question:</strong> Does α entail β?</p>
+                    
+                    <p><strong>Analysis:</strong></p>
+                    <ul>
+                        <li>In every world where "it is raining AND it is cold" is true, "it is raining" must also be true</li>
+                        <li>Therefore, M(α) ⊆ M(β)</li>
+                        <li><strong>Conclusion:</strong> Yes! α ⊨ β</li>
+                    </ul>
+                </div>
+                
+                <div class="math-example">
+                    <h5>Mathematical Entailment Example</h5>
+                    <p><strong>Sentence α:</strong> $x = 2$ and $y = 2$</p>
+                    <p><strong>Sentence β:</strong> $x + y = 4$</p>
+                    
+                    <p><strong>Analysis:</strong></p>
+                    <ul>
+                        <li>M(α) = {(2, 2)} - only one world where both conditions are true</li>
+                        <li>M(β) = {(1,3), (2,2), (3,1)} - multiple worlds where sum equals 4</li>
+                        <li>Is M(α) ⊆ M(β)? Yes! (2,2) ∈ M(β)</li>
+                        <li><strong>Conclusion:</strong> α ⊨ β</li>
+                    </ul>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Entailment is very necessary for inference. It means in every world where α is true, β is also true. This is represented as M(α) should be contained in M(β). This concept is crucial for creating new sentences from old knowledge."
+                </div>
+                
+                <h3>Inference Process</h3>
+                
+                <p>The <span class="key-term">inference process</span> is how we actually create new sentences:</p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: KB (Knowledge Base) → Inference Engine (i) → New Sentence (α)]
+                </div>
+                
+                <p>We denote this as: <strong>KB ⊢<sub>i</sub> α</strong></p>
+                <p>Reading: "From KB, using inference mechanism i, we derive sentence α"</p>
+                
+                <div class="example-box">
+                    <h5>Inference in Action</h5>
+                    <p><strong>Knowledge Base:</strong> Knowledge about addition on natural numbers</p>
+                    <p><strong>Question:</strong> Solve $x + y = 4$</p>
+                    <p><strong>Inference Engine:</strong> Our brain/reasoning mechanism</p>
+                    <p><strong>Derived Sentence:</strong> $x = 2, y = 2$ (one solution)</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "From using this knowledge base, we are creating new sentences. From old knowledge, you can think about it as creating new sentences. This is what the reasoning part or inference part is all about - through logical reasoning, creating another sentence."
+                </div>
+                
+                <h3 id="soundness">4.2 Soundness</h3>
+                
+                <p>An inference mechanism must be <span class="key-term">reliable</span> - this is where <strong>soundness</strong> comes in.</p>
+                
+                <h4>Formal Definition</h4>
+                <p>An inference mechanism <strong>i</strong> is <span class="key-term">sound</span> if:</p>
+                
+                <div class="math-example">
+                    <p><strong>If KB ⊢<sub>i</sub> α, then KB ⊨ α</strong></p>
+                    <p><strong>In words:</strong> Every sentence that i produces (infers) is actually true - it's logically entailed by the KB.</p>
+                </div>
+                
+                <h4>Why Soundness Matters</h4>
+                <p>Soundness ensures that our inference engine only creates <strong>true sentences</strong>:</p>
+                
+                <ul>
+                    <li>✅ No false conclusions</li>
+                    <li>✅ Trustworthy reasoning</li>
+                    <li>✅ Logical consistency</li>
+                    <li>❌ Prevents producing incorrect answers</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>🎯 Sound Inference Example</h5>
+                    <p><strong>Knowledge Base:</strong> Addition rules for natural numbers</p>
+                    <p><strong>Question:</strong> $x + y = 4$ where $x, y \in \mathbb{N}$</p>
+                    <p><strong>Sound Inference produces:</strong> $x = 2, y = 2$ ✅ TRUE!</p>
+                    <p><strong>Unsound Inference might produce:</strong> $x = 1, y = 1$ ❌ FALSE!</p>
+                    
+                    <p>Since $1 + 1 = 2 \neq 4$, producing $(1,1)$ as an answer would mean the inference is <strong>NOT sound</strong>.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "This inference i is said to be sound if whatever it produces, if sentences created by this inference i, are all true sentences. It should not give us as an answer something like $x = 1$ and $y = 1$, because that's not a sound inference. This is very important!"
+                </div>
+                
+                <h3 id="completeness">4.3 Completeness</h3>
+                
+                <p>While soundness ensures we only produce true sentences, <span class="key-term">completeness</span> ensures we can produce <strong>all</strong> true sentences.</p>
+                
+                <h4>Formal Definition</h4>
+                <p>An inference mechanism <strong>i</strong> is <span class="key-term">complete</span> if:</p>
+                
+                <div class="math-example">
+                    <p><strong>If KB ⊨ α, then KB ⊢<sub>i</sub> α</strong></p>
+                    <p><strong>In words:</strong> If a sentence is logically entailed by KB, then i can produce/deduce it.</p>
+                </div>
+                
+                <h4>Understanding Completeness</h4>
+                <p>A complete inference mechanism can find <strong>all possible true conclusions</strong>:</p>
+                
+                <div class="example-box">
+                    <h5>🎯 Complete Inference Example</h5>
+                    <p><strong>Sentence:</strong> $x + y = 4$ where $x, y \in \mathbb{N}$</p>
+                    
+                    <p><strong>A COMPLETE inference engine would produce ALL solutions:</strong></p>
+                    <ul>
+                        <li>$x = 1, y = 3$ ✅</li>
+                        <li>$x = 2, y = 2$ ✅</li>
+                        <li>$x = 3, y = 1$ ✅</li>
+                    </ul>
+                    
+                    <p>This is the <strong>exhaustive list</strong> of all models where the sentence is true (given natural numbers).</p>
+                    
+                    <p><strong>An INCOMPLETE inference engine might only produce:</strong></p>
+                    <ul>
+                        <li>$x = 2, y = 2$ ✅</li>
+                    </ul>
+                    <p>This is sound (correct) but incomplete (missing other solutions).</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Inference i is complete if it can produce or deduce all true sentences. For $x + y = 4$, if it can create all solutions - $(1,3)$, $(2,2)$, $(3,1)$ - this is the exhaustive collection. If we are generating all this, then this i will be called complete."
+                </div>
+                
+                <h4>Soundness vs Completeness</h4>
+                
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Soundness</th>
+                        <th>Completeness</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Question</strong></td>
+                        <td>Are all produced sentences true?</td>
+                        <td>Can all true sentences be produced?</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concern</strong></td>
+                        <td>No false positives</td>
+                        <td>No false negatives</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Guarantee</strong></td>
+                        <td>Everything inferred is correct</td>
+                        <td>Everything correct can be inferred</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ideal System</strong></td>
+                        <td colspan="2" style="text-align: center;">Both Sound AND Complete</td>
+                    </tr>
+                </table>
+                
+                <h4>The Ideal: Sound + Complete</h4>
+                <p>The best inference systems are <strong>both sound and complete</strong>:</p>
+                <ul>
+                    <li>✅ <strong>Sound:</strong> Never produces false conclusions</li>
+                    <li>✅ <strong>Complete:</strong> Can find all true conclusions</li>
+                    <li>🎯 <strong>Perfect reasoning system!</strong></li>
+                </ul>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "We require the inference to be sound and complete - these are the two most important characteristics that we talked about. This is very, very important for building reliable intelligent systems."
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Entailment ka matlab hai ki agar α true hai toh β bhi true hoga - yaani M(α) ⊆ M(β). Inference se hum KB se naye sentences banate hain. Do important properties hain: <strong>Soundness</strong> - jo bhi sentence produce ho wo TRUE hona chahiye (galat answer nahi), aur <strong>Completeness</strong> - sare possible TRUE sentences produce hone chahiye (koi miss nahi hona chahiye). Best inference system dono sound AUR complete hota hai!</p>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>🎓 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> Does the sentence "x > 5 and y > 3" entail "x > 3"? Explain why.
+                        <div class="answer">
+                            <strong>Answer:</strong> Yes! If x > 5, then x > 3 must also be true (since 5 > 3). In every world where "x > 5 and y > 3" is true, "x > 3" is also true. Therefore, M(α) ⊆ M(β), so α ⊨ β.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> An inference engine solves "x + y = 6" and produces only the solution (3, 3). Is this inference sound? Is it complete?
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <ul>
+                                <li><strong>Sound?</strong> YES - because (3,3) is indeed a correct solution (3+3=6)</li>
+                                <li><strong>Complete?</strong> NO - because it missed other solutions: (1,5), (2,4), (4,2), (5,1)</li>
+                            </ul>
+                            This inference is sound but incomplete.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> Why do we need both soundness and completeness? Can't we just have one?
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <ul>
+                                <li><strong>Soundness alone:</strong> Prevents false conclusions but might miss true ones</li>
+                                <li><strong>Completeness alone:</strong> Finds all truths but might include falsehoods</li>
+                                <li><strong>Both together:</strong> Ensures we find ALL true conclusions and ONLY true conclusions</li>
+                                <li>For reliable AI systems, we need both properties</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Entailment (α ⊨ β) means every model of α is also a model of β</li>
+                        <li>Inference creates new sentences from existing knowledge in the KB</li>
+                        <li>Soundness ensures all inferred sentences are true (no false positives)</li>
+                        <li>Completeness ensures all true sentences can be inferred (no false negatives)</li>
+                        <li>Ideal inference systems are both sound and complete</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="representation-world">
+                <h2>5. Represented World vs Real World</h2>
+                
+                <p>A crucial aspect of logical agents is understanding the relationship between the <span class="key-term">real world</span> and the <span class="key-term">represented world</span>.</p>
+                
+                <h3>The Two Worlds</h3>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Real World ⟷ Representation ⟷ Knowledge Base ⟷ Inference ⟷ New Knowledge → Back to Real World]
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Real World</th>
+                        <th>Represented World</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Nature</strong></td>
+                        <td>Physical environment, actual objects and events</td>
+                        <td>Symbolic representation using sentences</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Components</strong></td>
+                        <td>Red balls, blue balls, physical quantities</td>
+                        <td>Symbols like x, y, mathematical expressions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Operations</strong></td>
+                        <td>Physical actions, manipulations</td>
+                        <td>Logical reasoning, inference</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agent Activity</strong></td>
+                        <td>Perception and action</td>
+                        <td>Reasoning and computation</td>
+                    </tr>
+                </table>
+                
+                <h3>The Complete Agent Cycle</h3>
+                
+                <p>Here's how a logical agent bridges these two worlds:</p>
+                
+                <ol>
+                    <li><strong>Real World:</strong> Complex environment with objects and events</li>
+                    <li><strong>Representation:</strong> Agent creates symbolic representation using sentences</li>
+                    <li><strong>Knowledge Base:</strong> Sentences stored as prior knowledge</li>
+                    <li><strong>Reasoning:</strong> Inference engine derives new sentences</li>
+                    <li><strong>Translation Back:</strong> New knowledge applied to real world actions</li>
+                </ol>
+                
+                <div class="example-box">
+                    <h5>🎯 Complete Example: Red and Blue Balls</h5>
+                    
+                    <h4>Real World Problem:</h4>
+                    <p>You have red balls and blue balls. The total number of balls should be 4. What combinations are possible?</p>
+                    
+                    <h4>Step 1: Representation (Real → Symbolic)</h4>
+                    <ul>
+                        <li>Red balls → variable $x$</li>
+                        <li>Blue balls → variable $y$</li>
+                        <li>Total = 4 → equation $x + y = 4$</li>
+                    </ul>
+                    
+                    <h4>Step 2: Knowledge Base</h4>
+                    <ul>
+                        <li>KB contains: Knowledge of addition on natural numbers</li>
+                        <li>Constraint: $x, y \in \mathbb{N}$ (both are natural numbers)</li>
+                    </ul>
+                    
+                    <h4>Step 3: Reasoning (In Represented World)</h4>
+                    <p>Inference engine solves: $x + y = 4$</p>
+                    <p>Solutions derived:</p>
+                    <ul>
+                        <li>$x = 1, y = 3$</li>
+                        <li>$x = 2, y = 2$</li>
+                        <li>$x = 3, y = 1$</li>
+                    </ul>
+                    
+                    <h4>Step 4: Translation Back (Symbolic → Real)</h4>
+                    <ul>
+                        <li>$(1, 3)$ → 1 red ball + 3 blue balls = 4 balls total ✅</li>
+                        <li>$(2, 2)$ → 2 red balls + 2 blue balls = 4 balls total ✅</li>
+                        <li>$(3, 1)$ → 3 red balls + 1 blue ball = 4 balls total ✅</li>
+                    </ul>
+                    
+                    <h4>Step 5: Real World Action</h4>
+                    <p>Agent can now physically select, for example, 2 red balls and 2 blue balls to make a collection of 4 balls!</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "In the real world, maybe you are saying we have red balls and blue balls, and when you take them together they add up to 4. How are you expressing this? In your represented world as $x + y = 4$. Then you ask your KB with knowledge of addition - what can you deduce? You get $x = 2, y = 2$. Then you translate back to real world: I need 2 red balls and 2 blue balls. That's how the agent interacts through logic!"
+                </div>
+                
+                <h3>Why This Matters</h3>
+                
+                <p>Understanding this distinction is crucial because:</p>
+                
+                <ul>
+                    <li>🧠 <strong>Reasoning happens symbolically</strong> - Computers can't directly manipulate physical objects, they work with representations</li>
+                    <li>🔄 <strong>Abstraction enables generalization</strong> - The same logical rules apply to many real-world scenarios</li>
+                    <li>✅ <strong>Verification is possible</strong> - We can check if symbolic conclusions match real-world outcomes</li>
+                    <li>🎯 <strong>Efficiency</strong> - Symbolic reasoning is faster than physical trial-and-error</li>
+                </ul>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "This is where we are executing - in the real world. From this, when we ask that we need red balls plus blue balls is 4, then we are saying that this follows: you can take 2 red balls and 2 blue balls and make it 4 balls. That is how the agent is interacting through this logic."
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Real world aur represented world mein farak samajhna zaroori hai. Real world mein physical objects hote hain (jaise red balls, blue balls), lekin agent apne dimag mein unhe symbols se represent karta hai ($x + y = 4$). Agent represented world mein reasoning karta hai aur phir results ko wapas real world mein translate karke action leta hai. Jaise agar inference ne bataya $(2,2)$, toh agent 2 red aur 2 blue balls lega. Yeh process logic ke through hota hai!</p>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>🎓 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> Why can't agents reason directly on real-world objects? Why do they need representation?
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <ul>
+                                <li>Computers work with symbols and data, not physical objects</li>
+                                <li>Symbolic representation enables abstract reasoning</li>
+                                <li>Representations are manipulable through logical operations</li>
+                                <li>The same representation can apply to multiple similar real-world scenarios</li>
+                                <li>Symbolic reasoning is faster and more efficient than physical trial-and-error</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Design a similar example with books and pens where the total should be 5 items. Show the complete cycle from real world to represented world and back.
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <p><strong>Real World:</strong> Books and pens, total = 5 items</p>
+                            <p><strong>Representation:</strong> Let b = number of books, p = number of pens. Equation: $b + p = 5$</p>
+                            <p><strong>KB:</strong> Addition rules, $b, p \in \mathbb{N}$</p>
+                            <p><strong>Inference:</strong> Solutions: (1,4), (2,3), (3,2), (4,1)</p>
+                            <p><strong>Real World Translation:</strong></p>
+                            <ul>
+                                <li>(1,4) → 1 book + 4 pens</li>
+                                <li>(2,3) → 2 books + 3 pens</li>
+                                <li>(3,2) → 3 books + 2 pens</li>
+                                <li>(4,1) → 4 books + 1 pen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Logical agents operate in a represented world using symbolic sentences</li>
+                        <li>Real-world objects and situations are abstracted into symbols and expressions</li>
+                        <li>Reasoning happens on the representation, not directly on physical objects</li>
+                        <li>Conclusions from symbolic reasoning are translated back to real-world actions</li>
+                        <li>This abstraction enables efficient and generalizable problem-solving</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="propositional-logic">
+                <h2>6. Propositional Logic</h2>
+                
+                <p>Now we dive into <span class="key-term">Propositional Logic</span> - a simple but powerful logical system for reasoning!</p>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Now we will start with propositional logic. It is a very simple logic - simple logic. We will first talk about its syntax and semantics."
+                </div>
+                
+                <h3>What is Propositional Logic?</h3>
+                <p>Propositional logic is a formal system where:</p>
+                <ul>
+                    <li>Statements (propositions) can be either <strong>true</strong> or <strong>false</strong></li>
+                    <li>We use logical connectives to build complex statements</li>
+                    <li>Reasoning is done through well-defined rules</li>
+                    <li>It's the foundation for more advanced logical systems</li>
+                </ul>
+                
+                <h3 id="atomic-sentences">6.1 Atomic Sentences</h3>
+                
+                <p><span class="key-term">Atomic sentences</span> are the simplest building blocks of propositional logic.</p>
+                
+                <h4>Definition</h4>
+                <p>An atomic sentence consists of a <strong>single symbol</strong>:</p>
+                
+                <div class="example-box">
+                    <h5>Examples of Atomic Sentences</h5>
+                    <ul>
+                        <li><strong>P</strong> - might represent "It is raining"</li>
+                        <li><strong>Q</strong> - might represent "I am happy"</li>
+                        <li><strong>R</strong> - might represent "The sun is shining"</li>
+                        <li><strong>x, y, p, q</strong> - any single symbol can be an atomic sentence</li>
+                    </ul>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Atomic sentences - as the name suggests, it is the simple sentence that we have. These atomic sentences consist of single symbols. Single symbol means it can be something like x, y, p, q. Instead of x, y we will have something like P, Q, or any kind of symbol that you can think of - it is a single symbol."
+                </div>
+                
+                <h4>Special Symbols</h4>
+                <p>Propositional logic has two special atomic sentences:</p>
+                
+                <table>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Meaning</th>
+                        <th>Truth Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>⊤</strong> or <strong>TRUE</strong></td>
+                        <td>Tautology</td>
+                        <td>Always true proposition</td>
+                        <td>True in every world/model</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⊥</strong> or <strong>FALSE</strong></td>
+                        <td>Contradiction</td>
+                        <td>Always false proposition</td>
+                        <td>False in every world/model</td>
+                    </tr>
+                </table>
+                
+                <h4>Truth Values</h4>
+                <p>Each atomic sentence (proposition) has <strong>two possible values</strong>:</p>
+                <ul>
+                    <li>✅ <strong>True (T or 1):</strong> The proposition holds in a given model</li>
+                    <li>❌ <strong>False (F or 0):</strong> The proposition doesn't hold in a given model</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>Truth Values in Context</h5>
+                    <p><strong>Sentence α:</strong> "I eat rice"</p>
+                    
+                    <p><strong>Model m₁:</strong> In a world where I am actually eating rice</p>
+                    <p>→ α is <strong>TRUE</strong> in m₁</p>
+                    
+                    <p><strong>Model m₂:</strong> In a world where I am eating roti (not rice)</p>
+                    <p>→ α is <strong>FALSE</strong> in m₂</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "We can assign either T or false, true or false - these are the two values we can have. Sometimes we can denote it by numerics also - 1 and 0. If I am eating rice in that environment, it is true. If I am not eating rice, in that environment it will be false."
+                </div>
+                
+                <h3 id="logical-connectives">6.2 Logical Connectives</h3>
+                
+                <p>To form <span class="key-term">complex sentences</span>, we use <strong>logical connectives</strong> to join atomic sentences.</p>
+                
+                <h4>The Five Main Connectives</h4>
+                
+                <table>
+                    <tr>
+                        <th>Connective</th>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Example</th>
+                        <th>Reading</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Negation</strong></td>
+                        <td>¬ or ~</td>
+                        <td>NOT</td>
+                        <td>¬α</td>
+                        <td>"not α"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conjunction</strong></td>
+                        <td>∧</td>
+                        <td>AND</td>
+                        <td>α ∧ β</td>
+                        <td>"α and β"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Disjunction</strong></td>
+                        <td>∨</td>
+                        <td>OR</td>
+                        <td>α ∨ β</td>
+                        <td>"α or β"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implication</strong></td>
+                        <td>→ or ⇒</td>
+                        <td>IMPLIES</td>
+                        <td>α → β</td>
+                        <td>"α implies β" or "if α then β"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bi-implication</strong></td>
+                        <td>↔ or ⇔</td>
+                        <td>IFF (if and only if)</td>
+                        <td>α ↔ β</td>
+                        <td>"α if and only if β"</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "These are usually the 5 connectives that we use. We have negation - NOT, conjunction - AND, disjunction - OR, implication - and this is where the inference comes in, the conclusion from α that we are creating β. Then we have bi-implication - both ways, meaning that β follows from α and α also follows from β."
+                </div>
+                
+                <h4>Detailed Explanation of Each Connective</h4>
+                
+                <h5>1. Negation (¬)</h5>
+                <p><span class="key-term">Negation</span> reverses the truth value:</p>
+                
+                <div class="example-box">
+                    <p><strong>α:</strong> "I eat rice"</p>
+                    <p><strong>¬α:</strong> "I do NOT eat rice" or "Not eating rice"</p>
+                    
+                    <table style="width: 50%; margin-top: 15px;">
+                        <tr>
+                            <th>α</th>
+                            <th>¬α</th>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "If I am saying not α, what does it mean? It means not eating rice - the negated version of that α. When it is true, this is false; when it is false, this is true."
+                </div>
+                
+                <h5>2. Conjunction (∧)</h5>
+                <p><span class="key-term">Conjunction</span> is true only when BOTH parts are true:</p>
+                
+                <div class="example-box">
+                    <p><strong>α ∧ β:</strong> "It is raining AND it is cold"</p>
+                    <p>True only when both conditions hold simultaneously.</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>α</th>
+                            <th>β</th>
+                            <th>α ∧ β</th>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td><strong>T</strong></td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>F</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>F</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>F</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h5>3. Disjunction (∨)</h5>
+                <p><span class="key-term">Disjunction</span> is true when AT LEAST ONE part is true:</p>
+                
+                <div class="example-box">
+                    <p><strong>α ∨ β:</strong> "I will study OR I will play"</p>
+                    <p>True when at least one activity happens (can be both).</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>α</th>
+                            <th>β</th>
+                            <th>α ∨ β</th>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>T</td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>T</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>T</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td><strong>F</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h5>4. Implication (→)</h5>
+                <p><span class="key-term">Implication</span> represents "if-then" relationships:</p>
+                
+                <div class="example-box">
+                    <p><strong>α → β:</strong> "If it rains, then the ground is wet"</p>
+                    <p>Only false when premise is true but conclusion is false.</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>α</th>
+                            <th>β</th>
+                            <th>α → β</th>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td>T</td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td><strong>F</strong></td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>T</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td>T</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h5>5. Bi-implication (↔)</h5>
+                <p><span class="key-term">Bi-implication</span> means both directions are true:</p>
+                
+                <div class="example-box">
+                    <p><strong>α ↔ β:</strong> "The light is on if and only if the switch is on"</p>
+                    <p>True when both have the same truth value.</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>α</th>
+                            <th>β</th>
+                            <th>α ↔ β</th>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>T</td>
+                            <td><strong>T</strong></td>
+                        </tr>
+                        <tr>
+                            <td>T</td>
+                            <td>F</td>
+                            <td>F</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>T</td>
+                            <td>F</td>
+                        </tr>
+                        <tr>
+                            <td>F</td>
+                            <td>F</td>
+                            <td><strong>T</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h4>Literals</h4>
+                <p>A <span class="key-term">literal</span> is defined as:</p>
+                <ul>
+                    <li>Either an atomic sentence (positive literal), OR</li>
+                    <li>A negated atomic sentence (negative literal)</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>Examples of Literals</h5>
+                    <ul>
+                        <li><strong>P</strong> - positive literal</li>
+                        <li><strong>¬Q</strong> - negative literal</li>
+                        <li><strong>R</strong> - positive literal</li>
+                        <li><strong>¬S</strong> - negative literal</li>
+                    </ul>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "The literal when you are talking about a literal is either an atomic sentence - that means either a positive literal - or a negated atomic sentence. Better to call it negated atomic sentence."
+                </div>
+                
+                <h3 id="operator-precedence">6.3 Operator Precedence</h3>
+                
+                <p><span class="key-term">Operator precedence</span> determines the order in which operations are evaluated in complex sentences.</p>
+                
+                <h4>Precedence Order (Highest to Lowest)</h4>
+                
+                <table>
+                    <tr>
+                        <th>Priority</th>
+                        <th>Operator</th>
+                        <th>Symbol</th>
+                        <th>Note</th>
+                    </tr>
+                    <tr>
+                        <td>1 (Highest)</td>
+                        <td>Negation</td>
+                        <td>¬</td>
+                        <td>Evaluated first</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Conjunction</td>
+                        <td>∧</td>
+                        <td>Evaluated second</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Disjunction</td>
+                        <td>∨</td>
+                        <td>Evaluated third</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Implication</td>
+                        <td>→</td>
+                        <td>Evaluated fourth</td>
+                    </tr>
+                    <tr>
+                        <td>5 (Lowest)</td>
+                        <td>Bi-implication</td>
+                        <td>↔</td>
+                        <td>Evaluated last</td>
+                    </tr>
+                </table>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "This is very, very important - the precedence of operations. It means in what order I should take operations into account. First, if there is any complex sentence and these symbols are involved, the negation (NOT) will come first, then conjunction (AND), then disjunction (OR), then implication, then bi-implication."
+                </div>
+                
+                <h4>Why Precedence Matters</h4>
+                
+                <div class="example-box">
+                    <h5>🎯 Precedence Example 1: Propositional Logic</h5>
+                    <p><strong>Expression:</strong> ¬A ∧ B</p>
+                    
+                    <p><strong>❌ WRONG interpretation:</strong> ¬(A ∧ B) - "NOT (A AND B)"</p>
+                    <p><strong>✅ CORRECT interpretation:</strong> (¬A) ∧ B - "(NOT A) AND B"</p>
+                    
+                    <p><strong>Why?</strong> Negation (¬) has higher precedence than conjunction (∧), so it's evaluated first!</p>
+                </div>
+                
+                <div class="example-box">
+                    <h5>🎯 Precedence Example 2: Arithmetic Analogy</h5>
+                    <p><strong>Expression:</strong> -2 + 4</p>
+                    
+                    <p><strong>Question:</strong> What's the answer?</p>
+                    <p><strong>Answer:</strong> 2</p>
+                    
+                    <p><strong>Process:</strong></p>
+                    <ol>
+                        <li>First, evaluate negation: -2 (negative two)</li>
+                        <li>Then, add 4: (-2) + 4 = 2</li>
+                    </ol>
+                    
+                    <p><strong>NOT:</strong> -(2 + 4) = -6 ❌</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "For example, when we are evaluating -2 + 4, the answer is 2, not -6. Which operation we should evaluate first and then which evaluation we should do second? Operations have some precedence. This is very important when we will be simplifying any kind of complex sentences or deriving from complex sentences another sentence."
+                </div>
+                
+                <h4>Using Parentheses</h4>
+                <p>When in doubt or when you want to override precedence, use <strong>parentheses</strong>:</p>
+                
+                <ul>
+                    <li>(¬A) ∧ B - explicitly shows negation first</li>
+                    <li>¬(A ∧ B) - forces conjunction before negation</li>
+                    <li>P ∨ (Q ∧ R) - forces conjunction before disjunction</li>
+                    <li>(P ∨ Q) ∧ R - forces disjunction before conjunction</li>
+                </ul>
+                
+                <h3 id="truth-values">6.4 Truth Values and Semantics</h3>
+                
+                <p>Now that we understand syntax, let's explore the <span class="key-term">semantics</span> - the meaning and truth values.</p>
+                
+                <h4>What Do Truth Values Tell Us?</h4>
+                <p>Semantics decides:</p>
+                <ul>
+                    <li>In a particular model/world, what value should we assign to a sentence?</li>
+                    <li>Is the sentence TRUE or FALSE in that model?</li>
+                </ul>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Semantics decide that in a particular model or that world, what value we should give to that sentence - meaning is that: is that sentence true or is the sentence false in that particular model?"
+                </div>
+                
+                <h4>Assigning Truth Values</h4>
+                
+                <div class="example-box">
+                    <h5>Truth Value Assignment Process</h5>
+                    
+                    <p><strong>Step 1: Atomic Sentences</strong></p>
+                    <p>Each atomic sentence can be assigned either T (true) or F (false) based on the model.</p>
+                    
+                    <p><strong>Example:</strong> Sentence α: "Eat rice"</p>
+                    <ul>
+                        <li><strong>Model m₁:</strong> Actually eating rice → α = TRUE</li>
+                        <li><strong>Model m₂:</strong> Eating roti instead → α = FALSE</li>
+                    </ul>
+                    
+                    <p><strong>Step 2: Complex Sentences</strong></p>
+                    <p>Use truth tables and connectives to determine complex sentence truth values.</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "These are called the truth values that we are providing. Either it is true or it is false - these are the two values it will take. We are providing the value to that sentence - the meaning means that in that particular environment. If we are eating rice, alpha is true in that model. If we are not eating rice, alpha is false."
+                </div>
+                
+                <div class="hinglish-summary">
+                    <h4>📝 Hinglish Summary</h4>
+                    <p>Propositional logic ek simple logic system hai jahan sentences true ya false hote hain. Atomic sentences single symbols hote hain (P, Q, R). Complex sentences banane ke liye hum 5 connectives use karte hain: NOT (¬), AND (∧), OR (∨), IMPLIES (→), aur IFF (↔). Operator precedence bahut important hai - NOT sabse pehle evaluate hota hai, phir AND, phir OR, phir IMPLIES, aur last mein IFF. Truth values batate hain ki kisi model mein sentence true hai ya false. Yeh sab syntax aur semantics ke rules follow karta hai!</p>
+                </div>
+                
+                <div class="practice-questions">
+                    <h4>🎓 Practice Questions</h4>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> Evaluate the expression: ¬P ∨ Q where P = TRUE and Q = FALSE. Show the step-by-step process using operator precedence.
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <p><strong>Step 1:</strong> Evaluate ¬P (negation has highest precedence)</p>
+                            <p>¬TRUE = FALSE</p>
+                            
+                            <p><strong>Step 2:</strong> Evaluate FALSE ∨ FALSE (disjunction)</p>
+                            <p>FALSE ∨ FALSE = FALSE</p>
+                            
+                            <p><strong>Final Answer:</strong> FALSE</p>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Create a truth table for the expression: (P ∧ Q) → R
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <table style="margin-top: 10px;">
+                                <tr>
+                                    <th>P</th>
+                                    <th>Q</th>
+                                    <th>R</th>
+                                    <th>P ∧ Q</th>
+                                    <th>(P ∧ Q) → R</th>
+                                </tr>
+                                <tr><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+                                <tr><td>T</td><td>T</td><td>F</td><td>T</td><td>F</td></tr>
+                                <tr><td>T</td><td>F</td><td>T</td><td>F</td><td>T</td></tr>
+                                <tr><td>T</td><td>F</td><td>F</td><td>F</td><td>T</td></tr>
+                                <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td></tr>
+                                <tr><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td></tr>
+                                <tr><td>F</td><td>F</td><td>T</td><td>F</td><td>T</td></tr>
+                                <tr><td>F</td><td>F</td><td>F</td><td>F</td><td>T</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is the difference between ¬(P ∧ Q) and (¬P) ∧ Q? Are they equivalent?
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <p>They are NOT equivalent!</p>
+                            
+                            <p><strong>¬(P ∧ Q):</strong> "NOT (P AND Q)" - negation of the entire conjunction</p>
+                            <p><strong>(¬P) ∧ Q:</strong> "(NOT P) AND Q" - conjunction of negated P with Q</p>
+                            
+                            <p><strong>Example with P=T, Q=T:</strong></p>
+                            <ul>
+                                <li>¬(T ∧ T) = ¬T = F</li>
+                                <li>(¬T) ∧ T = F ∧ T = F</li>
+                            </ul>
+                            
+                            <p><strong>Example with P=T, Q=F:</strong></p>
+                            <ul>
+                                <li>¬(T ∧ F) = ¬F = T</li>
+                                <li>(¬T) ∧ F = F ∧ F = F</li>
+                            </ul>
+                            
+                            <p>Different truth values → NOT equivalent!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q4:</strong> Identify all literals in the expression: (P ∨ ¬Q) ∧ (¬R ∨ S)
+                        <div class="answer">
+                            <strong>Answer:</strong>
+                            <p>The literals are:</p>
+                            <ul>
+                                <li><strong>P</strong> - positive literal</li>
+                                <li><strong>¬Q</strong> - negative literal</li>
+                                <li><strong>¬R</strong> - negative literal</li>
+                                <li><strong>S</strong> - positive literal</li>
+                            </ul>
+                            <p>Total: 4 literals (2 positive, 2 negative)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Propositional logic uses atomic sentences (single symbols) as building blocks</li>
+                        <li>Five main logical connectives: ¬ (NOT), ∧ (AND), ∨ (OR), → (IMPLIES), ↔ (IFF)</li>
+                        <li>Literals are atomic sentences or their negations</li>
+                        <li>Operator precedence (highest to lowest): ¬, ∧, ∨, →, ↔</li>
+                        <li>Truth values (T/F) determine the meaning of sentences in specific models</li>
+                        <li>Semantics assigns truth values based on the current world/model</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Comprehensive Mind Map -->
+            <section id="mindmap" class="mindmap">
+                <h2>7. Comprehensive Mind Map</h2>
+                
+                <div class="mindmap-container">
+                    <div class="mindmap-node">LOGICAL AGENTS</div>
+                    
+                    <div class="mindmap-branch">
+                        <div class="mindmap-subbranch">
+                            <strong>Knowledge-Based Agents</strong>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                                <div class="mindmap-leaf">Knowledge Base (KB)</div>
+                                <div class="mindmap-leaf">Sentences</div>
+                                <div class="mindmap-leaf">TELL Operation</div>
+                                <div class="mindmap-leaf">ASK Operation</div>
+                                <div class="mindmap-leaf">Reasoning Capability</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mindmap-subbranch">
+                            <strong>Logic Fundamentals</strong>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                                <div class="mindmap-leaf">Syntax (Structure)</div>
+                                <div class="mindmap-leaf">Semantics (Meaning)</div>
+                                <div class="mindmap-leaf">Models</div>
+                                <div class="mindmap-leaf">M(α) - Set of Models</div>
+                                <div class="mindmap-leaf">Truth Values (T/F)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mindmap-subbranch">
+                            <strong>Inference & Reasoning</strong>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                                <div class="mindmap-leaf">Entailment (α ⊨ β)</div>
+                                <div class="mindmap-leaf">Soundness (No false conclusions)</div>
+                                <div class="mindmap-leaf">Completeness (All true conclusions)</div>
+                                <div class="mindmap-leaf">KB ⊢ᵢ α</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mindmap-branch">
+                        <div class="mindmap-subbranch">
+                            <strong>Real vs Represented World</strong>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                                <div class="mindmap-leaf">Physical Environment</div>
+                                <div class="mindmap-leaf">Symbolic Representation</div>
+                                <div class="mindmap-leaf">Reasoning on Symbols</div>
+                                <div class="mindmap-leaf">Translation Back</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mindmap-subbranch">
+                            <strong>Propositional Logic</strong>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                                <div class="mindmap-leaf">Atomic Sentences</div>
+                                <div class="mindmap-leaf">Literals (P, ¬Q)</div>
+                                <div class="mindmap-leaf">¬ (NOT)</div>
+                                <div class="mindmap-leaf">∧ (AND)</div>
+                                <div class="mindmap-leaf">∨ (OR)</div>
+                                <div class="mindmap-leaf">→ (IMPLIES)</div>
+                                <div class="mindmap-leaf">↔ (IFF)</div>
+                                <div class="mindmap-leaf">Operator Precedence</div>
+                                <div class="mindmap-leaf">Truth Tables</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <div class="mindmap-node" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            GOAL: Intelligent Reasoning & Decision Making
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+        
+        <footer>
+<div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+    </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

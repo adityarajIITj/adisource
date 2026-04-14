@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics of Data Analytics - Hierarchical Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .note-box {
+            border-left: 4px solid #4f46e5;
+            background-color: #f3f4f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .hinglish-note {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .example-box {
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background-color: #f9fafb;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f4f6;
+        }
+        .highlight {
+            background-color: #fef3c7;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="content">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold mb-2">Basics of Data Analytics</h1>
+            <h2 class="text-2xl font-semibold text-indigo-700">Hierarchical Data and Data Formats</h2>
+            <p class="text-gray-600 mt-2">BS/BSc in Applied AI and Data Science</p>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Introduction</h2>
+            <p>In this lecture, we will explore two important concepts in data analytics:</p>
+            <ol class="list-decimal ml-6 mt-3 mb-3">
+                <li class="font-semibold">Hierarchical Data</li>
+                <li class="font-semibold">Long Data and Wide Data formats</li>
+            </ol>
+            <p>Understanding these concepts is crucial when working with relational databases and complex data structures.</p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Hierarchical Data</h2>
+            
+            <div class="mb-4">
+                <p>So far in our course, we have primarily discussed data that exists in a somewhat simple manner. However, most data in relational databases that you will encounter has a <span class="font-semibold">hierarchical structure</span>.</p>
+                
+                <ul class="list-disc ml-6 mt-3">
+                    <li>Hierarchical data is data that has several hierarchies or layers in it</li>
+                    <li>It has a tree-like structure</li>
+                    <li>It is very common in relational databases</li>
+                    <li>It forms the fundamental building block for understanding relationships between databases (one-to-one, one-to-many, many-to-one)</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-xl font-semibold mb-2">Example 1: Geographic Hierarchy</h3>
+                <ul class="list-disc ml-6">
+                    <li><strong>Continents</strong> (Asia)</li>
+                    <li><strong>Countries</strong> (India)</li>
+                    <li><strong>Cities</strong> (Delhi)</li>
+                    <li><strong>Localities</strong> (Vasant Kunj, Chanakyapuri)</li>
+                </ul>
+                <p class="mt-2"><em>Here, localities are present inside cities, cities are inside countries, and countries are inside continents. This forms a clear hierarchical structure.</em></p>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-xl font-semibold mb-2">Example 2: Educational Hierarchy</h3>
+                <ul class="list-disc ml-6">
+                    <li><strong>Degree</strong> (BS)</li>
+                    <li><strong>Semester</strong> (1st)</li>
+                    <li><strong>Courses</strong> (Basics of Data Analytics)</li>
+                    <li><strong>Lecture</strong> (4th)</li>
+                </ul>
+                <p class="mt-2"><em>Lectures are part of courses, courses are part of semesters, and semesters are part of degree programs, creating a hierarchical structure.</em></p>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-xl font-semibold mb-2">Example 3: Supermarket Purchases Hierarchy</h3>
+                <ul class="list-disc ml-6">
+                    <li><strong>Purchase Date</strong> (highest level)</li>
+                    <li><strong>Transaction</strong> (multiple transactions can occur on a single date)</li>
+                    <li><strong>Product</strong> (multiple products can be part of a single transaction)</li>
+                </ul>
+                <p class="mt-2"><em>This example represents a typical hierarchy in retail data where multiple products can be part of one transaction, and multiple transactions can happen on a given date.</em></p>
+            </div>
+            
+            <div class="hinglish-note">
+                <h4 class="font-semibold">सारांश (Summary):</h4>
+                <p>Hierarchical data ke baare mein samajhna bahut zaroori hai. Ye data ka ek aisa structure hai jisme multiple layers hoti hain - jaise ki ek tree ki branches. Real life mein ye structure bahut common hai, jaise ki geography mein (continent > country > city) ya education mein (degree > semester > course). Relational databases mein aapko ye structure bahut milega, aur isse relationships ko samajhne mein madad milti hai.</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Data Formats: Long vs Wide</h2>
+            
+            <p>Hierarchical data can be arranged in different ways depending on what analysis we want to perform:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-2 text-blue-700">Long Format</h3>
+                    <ul class="list-disc ml-6">
+                        <li>Multiple records for a given level</li>
+                        <li>Records are stacked one below the other</li>
+                        <li>Creates a "longer" dataset with more rows</li>
+                        <li>Each row represents a single observation</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-2 text-green-700">Wide Format</h3>
+                    <ul class="list-disc ml-6">
+                        <li>Repeated records for a given level appear in a single row</li>
+                        <li>Creates a "wider" dataset with more columns</li>
+                        <li>Each row typically represents a higher-level entity</li>
+                        <li>Related information is spread across columns</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="note-box mt-4">
+                <p><strong>Important Note:</strong> Which format to use depends on the task at hand. You will often need to convert data between these two formats to perform different analyses.</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Hierarchical Data - Long Format Example</h2>
+            
+            <p>Let's examine the supermarket purchase example in the long format:</p>
+            
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="bg-yellow-100">Purchase Date</th>
+                            <th class="bg-blue-100">Transaction ID</th>
+                            <th class="bg-green-100">Product ID</th>
+                            <th class="bg-green-100">Product Name</th>
+                            <th class="bg-green-100">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-01</td>
+                            <td class="bg-blue-50">53006</td>
+                            <td>1001</td>
+                            <td>Bananas</td>
+                            <td>2.50</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-01</td>
+                            <td class="bg-blue-50">53006</td>
+                            <td>1002</td>
+                            <td>Grapes</td>
+                            <td>4.75</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-01</td>
+                            <td class="bg-blue-50">53007</td>
+                            <td>1003</td>
+                            <td>Potatoes</td>
+                            <td>3.25</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-02</td>
+                            <td class="bg-blue-50">53008</td>
+                            <td>1001</td>
+                            <td>Bananas</td>
+                            <td>2.50</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-02</td>
+                            <td class="bg-blue-50">53008</td>
+                            <td>1004</td>
+                            <td>Apples</td>
+                            <td>3.75</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-02</td>
+                            <td class="bg-blue-50">53008</td>
+                            <td>1005</td>
+                            <td>Oranges</td>
+                            <td>4.25</td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-02</td>
+                            <td class="bg-blue-50">53008</td>
+                            <td>1006</td>
+                            <td>Milk</td>
+                            <td>2.99</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <p><strong>Characteristics of the Long Format:</strong></p>
+                <ul class="list-disc ml-6">
+                    <li>Every product purchase is a separate row</li>
+                    <li>Transaction ID 53006 appears in multiple rows because it includes multiple products</li>
+                    <li>The hierarchy is visible: Purchase Date > Transaction ID > Products</li>
+                    <li>This format makes it easy to see all products purchased across all transactions</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Hierarchical Data - Wide Format Example</h2>
+            
+            <p>Now, let's transform the same data into a wide format, focusing on the transaction level:</p>
+            
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="bg-yellow-100">Purchase Date</th>
+                            <th class="bg-blue-100">Transaction ID</th>
+                            <th>Product ID 1</th>
+                            <th>Product Name 1</th>
+                            <th>Amount 1</th>
+                            <th>Product ID 2</th>
+                            <th>Product Name 2</th>
+                            <th>Amount 2</th>
+                            <th>Product ID 3</th>
+                            <th>Product Name 3</th>
+                            <th>Amount 3</th>
+                            <th>Product ID 4</th>
+                            <th>Product Name 4</th>
+                            <th>Amount 4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-01</td>
+                            <td class="bg-blue-50">53006</td>
+                            <td>1001</td>
+                            <td>Bananas</td>
+                            <td>2.50</td>
+                            <td>1002</td>
+                            <td>Grapes</td>
+                            <td>4.75</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-01</td>
+                            <td class="bg-blue-50">53007</td>
+                            <td>1003</td>
+                            <td>Potatoes</td>
+                            <td>3.25</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="bg-yellow-50">2022-05-02</td>
+                            <td class="bg-blue-50">53008</td>
+                            <td>1001</td>
+                            <td>Bananas</td>
+                            <td>2.50</td>
+                            <td>1004</td>
+                            <td>Apples</td>
+                            <td>3.75</td>
+                            <td>1005</td>
+                            <td>Oranges</td>
+                            <td>4.25</td>
+                            <td>1006</td>
+                            <td>Milk</td>
+                            <td>2.99</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <p><strong>Characteristics of the Wide Format:</strong></p>
+                <ul class="list-disc ml-6">
+                    <li>Each transaction ID appears in only one row</li>
+                    <li>Products within a transaction are spread across multiple columns</li>
+                    <li>Column names indicate which product in the sequence (Product 1, Product 2, etc.)</li>
+                    <li>Empty cells appear when a transaction has fewer products than the maximum</li>
+                    <li>The table is "wider" with more columns but fewer rows</li>
+                </ul>
+            </div>
+            
+            <div class="note-box mt-4">
+                <p><strong>When to use Wide Format:</strong></p>
+                <ul class="list-disc ml-6">
+                    <li>When analyzing data at the transaction level</li>
+                    <li>When counting the number of transactions in a time period</li>
+                    <li>When creating features for machine learning models where each row needs to represent one higher-level entity</li>
+                    <li>When performing certain statistical analyses that require observations in a single row</li>
+                </ul>
+            </div>
+            
+            <div class="hinglish-note">
+                <h4 class="font-semibold">सारांश (Summary):</h4>
+                <p>Data ko present karne ke do main tarike hote hain - Long Format aur Wide Format. Long format mein data rows mein stack hota hai, jahan har observation ek alag row mein hoti hai. Wide format mein, related observations ek hi row mein different columns mein hoti hain. Kaunsa format use karna hai, ye aapke analysis ke goal par depend karta hai. Long format data visualization ke liye achha hota hai, jabki wide format statistical analysis ke liye suitable ho sakta hai. Aksar aapko data ko ek format se dusre format mein convert karna pad sakta hai apne analysis ke hisab se.</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Comparing Long and Wide Formats</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-2 text-blue-700">Long Format Advantages</h3>
+                    <ul class="list-disc ml-6">
+                        <li>Better for most data visualizations</li>
+                        <li>Easier to filter by specific variables</li>
+                        <li>No empty cells (more storage efficient)</li>
+                        <li>Better for aggregating by different categories</li>
+                        <li>Preferred format for many statistical tools</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-2 text-green-700">Wide Format Advantages</h3>
+                    <ul class="list-disc ml-6">
+                        <li>Better for analyzing relationships between variables</li>
+                        <li>Easier to see all information about one entity at once</li>
+                        <li>Often more human-readable</li>
+                        <li>Required for certain types of analyses</li>
+                        <li>Easier for calculating new variables across measurements</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="note-box mt-4">
+                <p><strong>Conversion Between Formats:</strong></p>
+                <p>Most data analysis tools provide functions to convert between these formats:</p>
+                <ul class="list-disc ml-6">
+                    <li>In Python: <code>pandas.melt()</code> (long to wide) and <code>pandas.pivot()</code> (wide to long)</li>
+                    <li>In R: <code>pivot_longer()</code> and <code>pivot_wider()</code> functions from the tidyr package</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-800">Recap</h2>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-3">Key Concepts Covered:</h3>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold text-lg">1. Hierarchical Data</h4>
+                    <ul class="list-disc ml-6">
+                        <li>Data with multiple levels of organization</li>
+                        <li>Tree-like structure common in relational databases</li>
+                        <li>Examples include geographic hierarchies, educational structures, and retail purchase data</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold text-lg">2. Long Format</h4>
+                    <ul class="list-disc ml-6">
+                        <li>Multiple records for a given level stacked vertically</li>
+                        <li>Each row represents a single observation</li>
+                        <li>More rows, fewer columns</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg">3. Wide Format</h4>
+                    <ul class="list-disc ml-6">
+                        <li>Related records for a given entity appear in a single row</li>
+                        <li>Each row represents a higher-level entity</li>
+                        <li>Fewer rows, more columns</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="hinglish-note mt-6">
+                <h4 class="font-semibold">पूरा सारांश (Complete Summary):</h4>
+                <p>Aaj humne hierarchical data aur uske formats ke baare mein seekha. Hierarchical data ek aisa data structure hai jisme multiple levels hote hain, jaise ki geography mein (continent > country > city) ya retail purchases mein (date > transaction > product). Is data ko present karne ke do main tarike hain - Long Format, jisme har observation ek alag row mein hoti hai, aur Wide Format, jisme related observations ek hi row mein different columns mein hoti hain. Kaunsa format use karna hai, ye aapke analysis ke goal par depend karta hai. Data analysis ke liye bahut baar aapko dono formats ke beech convert karna padta hai. Ye concepts database management aur data analysis mein bahut important hain, kyunki real-world data aksar hierarchical structure mein hota hai.</p>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-600 mt-10 pt-6 border-t border-gray-200">
+            <p>Basics of Data Analytics - Hierarchical Data</p>
+            <p class="text-sm">BS/BSc in Applied AI and Data Science</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

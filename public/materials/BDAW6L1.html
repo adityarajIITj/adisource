@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoSQL Databases - Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #2c3e50;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .toc ul ul {
+            padding-left: 30px;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+        
+        /* ==================== HEADING STYLES ==================== */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        h3 {
+            color: #555;
+            font-size: 1.4em;
+            margin: 20px 0 10px 0;
+        }
+        
+        /* ==================== TEXT STYLES ==================== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong, .key-term {
+            color: #667eea;
+            font-weight: 600;
+            background: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* ==================== LIST STYLES ==================== */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== TABLE STYLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tbody tr:hover {
+            background: #f5f7ff;
+            transition: all 0.3s ease;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        /* ==================== SPECIAL BOXES ==================== */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            font-weight: bold;
+            color: #9c27b0;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            border-left: 6px solid #e17055;
+        }
+        
+        .hinglish-summary::before {
+            content: "📝 Hinglish Summary / सरल हिंदी में:";
+            font-weight: bold;
+            color: #d63031;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .diagram-placeholder {
+            background: #ecf0f1;
+            border: 2px dashed #95a5a6;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-section {
+            background: #e8f5e9;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 6px solid #4caf50;
+        }
+        
+        .practice-section h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .question strong {
+            color: #2e7d32;
+        }
+        
+        .answer {
+            background: #f1f8e9;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #8bc34a;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #558b2f;
+        }
+        
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: #fff9c4;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 6px solid #fbc02d;
+        }
+        
+        .key-takeaways h3 {
+            color: #f57f17;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul li {
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .key-takeaways ul li::marker {
+            content: "⭐ ";
+        }
+        
+        /* ==================== MIND MAP STYLES ==================== */
+        .mind-map {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            position: relative;
+        }
+        
+        .branch h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .sub-branches {
+            padding-left: 20px;
+        }
+        
+        .sub-branch {
+            background: white;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #764ba2;
+            font-size: 0.95em;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ==================== HEADER SECTION ==================== -->
+        <div class="header">
+            <h1>NoSQL Databases</h1>
+            <p class="subtitle">BS/BSc in Applied AI and Data Science</p>
+            <p class="subtitle">Basics of Data Analytics - Lecture 2.6</p>
+        </div>
+        
+        <!-- ==================== TABLE OF CONTENTS ==================== -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction to Non-Relational Databases</a></li>
+                <li><a href="#nosql-overview">2. What is NoSQL?</a>
+                    <ul>
+                        <li><a href="#nosql-characteristics">2.1 Characteristics of NoSQL</a></li>
+                    </ul>
+                </li>
+                <li><a href="#nosql-types">3. Types of NoSQL Databases</a>
+                    <ul>
+                        <li><a href="#key-value">3.1 Key-Value Store</a></li>
+                        <li><a href="#document-based">3.2 Document-Based Store</a></li>
+                        <li><a href="#column-based">3.3 Column-Based Store</a></li>
+                        <li><a href="#graph-based">3.4 Graph-Based Store</a></li>
+                    </ul>
+                </li>
+                <li><a href="#advantages">4. Advantages of NoSQL</a></li>
+                <li><a href="#recap">5. Summary and Recap</a></li>
+            </ul>
+        </div>
+        
+        <!-- ==================== SECTION 1: INTRODUCTION ==================== -->
+        <section id="introduction">
+            <h1>1. Introduction to Non-Relational Databases</h1>
+            
+            <p>Welcome to our exploration of <strong>NoSQL databases</strong>, a revolutionary approach to data storage that has transformed how we handle modern data. This week, we're diving deep into <strong>data repositories</strong> — the various places where we store different kinds of data.</p>
+            
+            <div class="professor-note">
+                In our previous lecture, we discussed <strong>relational databases</strong> where data is linked to each other and stored in a structured format using tables with rows and columns. Today, we're moving beyond that traditional approach to understand databases designed for the modern data revolution we're experiencing.
+            </div>
+            
+            <h2>The Data Revolution Context</h2>
+            
+            <p><strong>Non-relational databases</strong> emerged as a response to three critical challenges in modern data management:</p>
+            
+            <ul>
+                <li><strong>Volume</strong>: The massive amount of data being generated every day</li>
+                <li><strong>Variety</strong>: Different types and formats of data (text, images, streams, videos, etc.)</li>
+                <li><strong>Velocity</strong>: The high speed at which data is being generated and needs to be processed</li>
+            </ul>
+            
+            <div class="professor-note">
+                We are living through a data revolution where different kinds of data are being generated every day. Our tools and accompanying programs have to keep up with this new variety of data. NoSQL is one way to do it — it stores non-relational data which has emerged to account for this wide variety of data we see today.
+            </div>
+            
+            <h2>Why Non-Relational Databases?</h2>
+            
+            <p>Non-relational databases are <strong>built for speed, flexibility, and scale</strong>. Let's understand what each of these means:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th>Meaning</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Speed</strong></td>
+                        <td>Designed to capture and store data that is being generated at high velocity</td>
+                        <td>Real-time applications like social media feeds, IoT sensors, and stock trading require instant data storage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Can accommodate different types and formats of data without rigid structure</td>
+                        <td>Modern data comes in various formats (text, images, videos, streams) that don't fit traditional table structures</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>Highly scalable to hold large amounts of data that can be scaled up easily</td>
+                        <td>As your application grows, you need databases that can grow with it without performance degradation</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2>Schema-Less Data Storage</h2>
+            
+            <p>One of the most revolutionary aspects of non-relational databases is their ability to store data in a <strong>schema-less</strong> or <strong>free-form fashion</strong>. This means:</p>
+            
+            <ul>
+                <li>We <strong>do not have to enforce</strong> our datasets to follow a structured format unlike relational databases</li>
+                <li>Data can be stored without predefined schemas or strict table structures</li>
+                <li>Different records can have different fields and structures</li>
+                <li>This flexibility allows for rapid development and adaptation to changing data requirements</li>
+            </ul>
+            
+            <div class="info-box">
+                <strong>Key Difference from Relational Databases:</strong> In relational databases, you must define your table structure (columns, data types, relationships) before storing any data. In non-relational databases, you can store data immediately without defining a rigid structure first.
+            </div>
+            
+            <div class="hinglish-summary">
+                <strong>Non-relational databases</strong> basically aaj ke zamane ke data ke liye bane hain jahan bahut zyada data hai, alag-alag types ka data hai, aur bahut fast generate ho raha hai. Yeh databases flexible hain — matlab strict rows aur columns ki zarurat nahi hai. Data ko <strong>schema-less format</strong> mein store kar sakte hain, jo ki relational databases se bilkul different hai. Speed, flexibility, aur scale — yeh teen cheezein NoSQL databases ki speciality hain!
+            </div>
+            
+            <div class="practice-section">
+                <h3>🎯 Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What are the three main challenges that led to the emergence of non-relational databases?
+                    <div class="answer">
+                        The three main challenges are: <strong>Volume</strong> (massive amounts of data), <strong>Variety</strong> (different types and formats of data), and <strong>Velocity</strong> (high speed of data generation).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> What does "schema-less" storage mean in the context of NoSQL databases?
+                    <div class="answer">
+                        Schema-less storage means that data can be stored without predefined structures or rigid table formats. Different records can have different fields, and you don't need to define the database structure before storing data, unlike relational databases.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Why are non-relational databases built for "scale"?
+                    <div class="answer">
+                        Non-relational databases are built for scale because they need to handle large and growing amounts of data. They can be scaled up easily as the application grows, maintaining performance even with massive data volumes.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways</h3>
+                <ul>
+                    <li>Non-relational databases emerged to handle modern data's <strong>volume, variety, and velocity</strong></li>
+                    <li>They are built for <strong>speed, flexibility, and scale</strong></li>
+                    <li><strong>Schema-less storage</strong> allows data to be stored without rigid predefined structures</li>
+                    <li>NoSQL enables storage of diverse data types that don't fit traditional table formats</li>
+                    <li>These databases are designed to keep up with today's data revolution</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 2: NOSQL OVERVIEW ==================== -->
+        <section id="nosql-overview">
+            <h1>2. What is NoSQL?</h1>
+            
+            <p><strong>NoSQL</strong> stands for <strong>"Not Only SQL"</strong> — emphasizing that it goes beyond traditional SQL-based relational databases. NoSQL is a non-relational database design that provides flexible schemas for the storage and retrieval of data.</p>
+            
+            <div class="professor-note">
+                It's important to understand that NoSQL doesn't mean "No SQL" — it means "Not Only SQL". This reflects the fact that while we're moving beyond traditional SQL databases, SQL still has its place. NoSQL databases have recently become popular in the era of dynamic, diverse, high-volume, and high-frequency data.
+            </div>
+            
+            <h2>Why NoSQL is Popular</h2>
+            
+            <p>NoSQL databases have gained tremendous popularity among data analysts and developers for several compelling reasons:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Explanation</th>
+                        <th>Practical Benefit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>Can easily be scaled up to handle growing data</td>
+                        <td>Your database grows with your business without major restructuring</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>Really good at handling flexible data sets efficiently</td>
+                        <td>Faster query responses and better user experience</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ease of Use</strong></td>
+                        <td>Actually very easy to use and implement</td>
+                        <td>Shorter development time and lower learning curve</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Can handle various data formats and structures</td>
+                        <td>Adapt quickly to changing business requirements</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="info-box">
+                <strong>Real-World Impact:</strong> Many modern applications you use daily — social media platforms, e-commerce websites, streaming services, and IoT applications — rely heavily on NoSQL databases because of their ability to handle diverse, high-volume data efficiently.
+            </div>
+            
+            <section id="nosql-characteristics">
+                <h2>2.1 Characteristics of NoSQL Databases</h2>
+                
+                <p>NoSQL databases have several distinctive characteristics that set them apart from traditional relational databases:</p>
+                
+                <h3>1. Data-Specific Models</h3>
+                <p>NoSQL databases are <strong>usually built for data-specific models</strong>. This means:</p>
+                <ul>
+                    <li>Unlike relational databases that force all data into a table format, NoSQL databases can hold data in multiple different formats</li>
+                    <li>You can build a non-relational database specifically tailored to the format your data comes in</li>
+                    <li>Different applications can use different NoSQL database types based on their specific data needs</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Remember when we talked about relational databases having to follow a rigid format with tables, rows, and columns? Non-relational databases break free from that limitation. The specific format in which data comes, you can use NoSQL to build a non-relational database for that specific data format.
+                </div>
+                
+                <h3>2. Flexible Schemas</h3>
+                <p>NoSQL databases have <strong>flexible schemas</strong> that:</p>
+                <ul>
+                    <li>Allow support for various types of databases</li>
+                    <li>Enable the creation and support of many different applications</li>
+                    <li>Let you modify data structures without major database redesigns</li>
+                    <li>Accommodate evolving application requirements</li>
+                </ul>
+                
+                <h3>3. No Rigid Row-Column Structure</h3>
+                <p>NoSQL databases <strong>don't use the neat row and column structure</strong> that relational databases require. This fundamental difference means:</p>
+                <ul>
+                    <li>Data isn't forced into tabular formats</li>
+                    <li>Each record can have different fields and structures</li>
+                    <li>More natural representation of complex, hierarchical, or networked data</li>
+                </ul>
+                
+                <h3>4. Different Query Methods</h3>
+                <p>Typically, NoSQL databases <strong>don't use SQL to query data</strong>. This is a critical distinction:</p>
+                
+                <div class="professor-note">
+                    It's important to understand that the whole structure of how we think about data — those nice tables we've been working with, and the way we could pull information from two related tables — that doesn't apply to these schema-free formats. We query and look for data in a different way in NoSQL databases.
+                </div>
+                
+                <ul>
+                    <li>Each NoSQL database type has its own query language or API</li>
+                    <li>Query methods are optimized for the specific data model</li>
+                    <li>Some use JavaScript-like syntax, others use proprietary query languages</li>
+                </ul>
+                
+                <h3>5. Schema-Less Format Storage</h3>
+                <p>NoSQL allows data to be stored in <strong>very specific formats which conform to that type of data</strong>:</p>
+                <ul>
+                    <li>JSON documents for document databases</li>
+                    <li>Key-value pairs for key-value stores</li>
+                    <li>Graph structures for graph databases</li>
+                    <li>Column families for column-oriented databases</li>
+                </ul>
+                
+                <div class="info-box">
+                    <strong>Paradigm Shift:</strong> Moving from relational to NoSQL databases requires a fundamental shift in how you think about data organization. Instead of normalizing data into related tables, you might denormalize data and store it in formats that match your application's access patterns.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <strong>NoSQL</strong> ka matlab hai "<strong>Not Only SQL</strong>" — yeh traditional SQL databases se aage jaata hai. NoSQL databases ke kuch khaas features hain: (1) Yeh <strong>data-specific models</strong> ke liye bante hain, (2) Inke schemas <strong>flexible</strong> hote hain, (3) Strict row-column structure follow nahi karte, (4) SQL se query nahi karte, alag tareeke use karte hain, aur (5) Data ko <strong>schema-less format</strong> mein store karte hain. In databases ko use karna easy hai aur yeh performance aur scale ke liye bahut popular hain! Basically, aapka data jis format mein aata hai, uske liye specific database bana sakte hain.
+                </div>
+                
+                <div class="practice-section">
+                    <h3>🎯 Practice Questions</h3>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What does NoSQL stand for and what does it mean?
+                        <div class="answer">
+                            NoSQL stands for "<strong>Not Only SQL</strong>". It means that these databases go beyond traditional SQL-based systems, offering flexible, non-relational approaches to data storage while acknowledging that SQL still has its place.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why are NoSQL databases described as having "flexible schemas"?
+                        <div class="answer">
+                            NoSQL databases have flexible schemas because they don't require predefined structures. They can support various types of databases, allow creation of different applications, and can be modified without major redesigns. Different records can have different fields and structures within the same database.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> How does querying differ between SQL and NoSQL databases?
+                        <div class="answer">
+                            NoSQL databases typically don't use SQL for queries. Instead, each NoSQL database type has its own query language or API optimized for its specific data model. The query methods are designed to work with the particular data structure (documents, key-value pairs, graphs, etc.) rather than tabular data.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>🔑 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>NoSQL = "Not Only SQL"</strong> — it's not a rejection of SQL, but an expansion beyond it</li>
+                        <li>NoSQL databases are built for <strong>data-specific models</strong> rather than one-size-fits-all tables</li>
+                        <li><strong>Flexible schemas</strong> allow for rapid development and adaptation</li>
+                        <li>No rigid row-column structure enables <strong>natural data representation</strong></li>
+                        <li>Different query methods optimized for each database type</li>
+                        <li>Popular for their <strong>scale, performance, and ease of use</strong></li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+        
+        <!-- ==================== SECTION 3: TYPES OF NOSQL ==================== -->
+        <section id="nosql-types">
+            <h1>3. Types of NoSQL Databases</h1>
+            
+            <p>NoSQL databases come in several different types, each optimized for specific data structures and use cases. Understanding these types will help you choose the right database for your application needs.</p>
+            
+            <div class="info-box">
+                <strong>Four Main Types:</strong> NoSQL databases can be categorized into four primary types: (1) Key-Value Store, (2) Document-Based Store, (3) Column-Based Store, and (4) Graph-Based Store. Each has its own strengths, weaknesses, and ideal use cases.
+            </div>
+            
+            <!-- ========== KEY-VALUE STORE ========== -->
+            <section id="key-value">
+                <h2>3.1 Key-Value Store</h2>
+                
+                <p>A <strong>Key-Value Store</strong> is one of the simplest yet most powerful types of NoSQL databases. As the name suggests, data is stored as a collection of key-value pairs.</p>
+                
+                <h3>How It Works</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Definition</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Key</strong></td>
+                            <td>A characteristic or attribute of the data</td>
+                            <td>Acts as a <strong>unique identifier</strong> to locate a specific record</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Value</strong></td>
+                            <td>All the information associated with that key</td>
+                            <td>Stores <strong>all data</strong> related to that unique identifier</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    Think of it like a pair — a key-value pair. The key is used to uniquely identify a record, and values refer to all of the information about that record. For example, every time a user uses an application, the user has a unique ID which can be thought of as the key, and then all your data related to how you're using that application can be all the value associated with that user.
+                </div>
+                
+                <h3>Key Features</h3>
+                
+                <ul>
+                    <li><strong>Unique Identification:</strong> Each key uniquely identifies one record in the database</li>
+                    <li><strong>Format Flexibility:</strong> Supports a wide variety of formats for both keys and values</li>
+                    <li><strong>Simple Structure:</strong> Easy to understand and implement</li>
+                    <li><strong>Fast Retrieval:</strong> Extremely fast lookups when you know the key</li>
+                </ul>
+                
+                <h3>Common Use Cases</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Why It Works Well</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>User Session Data</strong></td>
+                            <td>Each user session has a unique ID (key) with all session information (value)</td>
+                            <td>Tracking user activity across a website</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User Preferences</strong></td>
+                            <td>User ID as key, all preferences as value</td>
+                            <td>Storing theme settings, language preferences</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Real-time Recommendations</strong></td>
+                            <td>Fast lookups enable instant personalization</td>
+                            <td>Netflix showing you personalized content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Targeted Advertising</strong></td>
+                            <td>User profile as key, ad preferences as value</td>
+                            <td>Showing relevant ads based on user behavior</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Disadvantages of Key-Value Store</h3>
+                
+                <div class="warning-box">
+                    <strong>Important Limitations:</strong> While key-value stores are simple and fast, they have significant limitations that make them unsuitable for certain applications.
+                </div>
+                
+                <ul>
+                    <li><strong>Value-Based Querying Challenges:</strong> Not appropriate for querying data based on a specific value
+                        <ul>
+                            <li>You can only efficiently search by key, not by the content of values</li>
+                            <li>If you need to find "all users who prefer dark mode", this becomes difficult</li>
+                        </ul>
+                    </li>
+                    <li><strong>No Relationship Support:</strong> Not appropriate if you need to understand relationships between data values
+                        <ul>
+                            <li>Unlike relational databases, can't easily join or relate different records</li>
+                            <li>Data is isolated by its key</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="professor-note">
+                    Remember our previous lecture on relational databases where we talked about how different databases have an underlying relation and we can query data in a way that we understand that underlying relation? It can be hard to do similar things in a key-value store based database. If you're interested in querying data based on the specific value of that information, it can be hard to do that.
+                </div>
+                
+                <h3>Popular Examples</h3>
+                
+                <ul>
+                    <li><strong>Redis</strong> — In-memory key-value store, extremely fast, often used for caching</li>
+                    <li><strong>Memcached</strong> — High-performance distributed memory caching system</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <strong>Key-Value Store</strong> sabse simple NoSQL database hai. Isme data <strong>key-value pairs</strong> ke form mein store hota hai — jaise dictionary mein word aur uska meaning. <strong>Key</strong> ek unique identifier hai (jaise user ID), aur <strong>value</strong> mein us key se related saari information hoti hai (jaise user ki saari activity). Yeh user sessions, preferences, aur recommendations ke liye bahut useful hai. Lekin iska problem yeh hai ki aap sirf key se hi search kar sakte ho, value ke basis par search karna mushkil hai. Aur relationships bhi nahi dekh sakte easily. Examples: Redis aur Memcached.
+                </div>
+                
+                <div class="practice-section">
+                    <h3>🎯 Practice Questions</h3>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> In a key-value store, what is the role of the "key"?
+                        <div class="answer">
+                            The key acts as a <strong>unique identifier</strong> for a record. It is a characteristic or attribute of the data that uniquely identifies one entry, allowing fast retrieval of all associated information (the value).
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why are key-value stores particularly useful for storing user session data?
+                        <div class="answer">
+                            Key-value stores are ideal for user session data because each user session has a unique ID (the key), and all session-related information (user activity, preferences, etc.) can be stored as the value. This allows for extremely fast lookups and updates of session data using the session ID.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is a major disadvantage of key-value stores?
+                        <div class="answer">
+                            A major disadvantage is that key-value stores are <strong>not appropriate for querying data based on specific values</strong>. You can only efficiently search by the key, not by the content within the values. Additionally, they don't support relationships between different data values.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>🔑 Key Takeaways</h3>
+                    <ul>
+                        <li>Key-value stores use <strong>unique keys</strong> to identify records and <strong>values</strong> to store associated data</li>
+                        <li>Ideal for <strong>user sessions, preferences, real-time recommendations, and caching</strong></li>
+                        <li><strong>Extremely fast</strong> when you know the key you're looking for</li>
+                        <li><strong>Limited querying</strong> — can't easily search by value content or relationships</li>
+                        <li>Examples: <strong>Redis, Memcached</strong></li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- ========== DOCUMENT-BASED STORE ========== -->
+            <section id="document-based">
+                <h2>3.2 Document-Based Store</h2>
+                
+                <p>A <strong>Document-Based Store</strong> (also called Document Database) stores data in documents, similar to JSON or XML files. Each document contains all the information for a single entity.</p>
+                
+                <h3>How It Works</h3>
+                
+                <p>In document-based stores:</p>
+                <ul>
+                    <li><strong>Each entry of data is stored within a single document</strong></li>
+                    <li>Documents are typically in JSON, BSON, or XML format</li>
+                    <li>Each document is self-contained with all relevant information</li>
+                    <li>Documents can have different structures within the same database</li>
+                </ul>
+                
+                <div class="professor-note">
+                    As the name suggests, document databases will store each entry of data within a single document, much like any document that you might have seen around you. Think of it like a folder containing different documents, where each document has all the information about one thing — like a customer profile document containing name, address, orders, preferences, all in one place.
+                </div>
+                
+                <div class="info-box">
+                    <strong>Document Structure Example:</strong> A customer document might look like this:<br>
+                    <code style="display: block; background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    {<br>
+                    &nbsp;&nbsp;"customer_id": "12345",<br>
+                    &nbsp;&nbsp;"name": "John Doe",<br>
+                    &nbsp;&nbsp;"email": "john@example.com",<br>
+                    &nbsp;&nbsp;"orders": [<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{"item": "Laptop", "price": 999},<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{"item": "Mouse", "price": 25}<br>
+                    &nbsp;&nbsp;],<br>
+                    &nbsp;&nbsp;"preferences": {"theme": "dark", "language": "en"}<br>
+                    }
+                    </code>
+                </div>
+                
+                <h3>Key Features</h3>
+                
+                <ul>
+                    <li><strong>Ad-Hoc Queries:</strong> Can perform queries and analytics over a set of documents</li>
+                    <li><strong>Flexible Structure:</strong> Each document can have a different structure</li>
+                    <li><strong>Self-Contained:</strong> All information about an entity is in one document</li>
+                    <li><strong>Nested Data:</strong> Can store complex, hierarchical data structures</li>
+                </ul>
+                
+                <h3>Common Use Cases</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Why It Works Well</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E-commerce Platforms</strong></td>
+                            <td>Product information naturally fits into document structure</td>
+                            <td>Product catalogs with varying attributes (electronics vs. clothing)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Invoices</strong></td>
+                            <td>Each invoice is self-contained with all line items and details</td>
+                            <td>Billing systems storing complete invoice data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Medical Records</strong></td>
+                            <td>Patient records with various types of medical information</td>
+                            <td>Electronic health records (EHR) systems</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Content Management</strong></td>
+                            <td>Articles, blog posts with flexible content structures</td>
+                            <td>CMS platforms like WordPress alternatives</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Disadvantages of Document-Based Store</h3>
+                
+                <div class="warning-box">
+                    <strong>Search and Query Limitations:</strong> While document stores are flexible, they face challenges with complex searches and specific queries.
+                </div>
+                
+                <ul>
+                    <li><strong>Hard to Run Search Queries:</strong> Complex search operations can be challenging
+                        <ul>
+                            <li>Searching across multiple fields in different document structures is difficult</li>
+                            <li>Full-text search may require additional indexing</li>
+                        </ul>
+                    </li>
+                    <li><strong>Difficult to Retrieve Based on Specific Queries:</strong> May be challenging to get data based on particular conditions
+                        <ul>
+                            <li>Finding all documents where a nested field meets certain criteria can be complex</li>
+                            <li>Joining information from multiple documents is not straightforward</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h3>Popular Example</h3>
+                
+                <div class="info-box">
+                    <strong>MongoDB</strong> — The most popular document-based NoSQL database. It stores data in BSON format (Binary JSON) and is widely used in modern web applications, offering powerful querying capabilities and horizontal scalability.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <strong>Document-Based Store</strong> mein har ek data entry ko ek <strong>single document</strong> ke form mein store karte hain — jaise JSON ya XML files. Har document self-contained hota hai with all information. Yeh <strong>e-commerce platforms</strong> (jahan products ka data store karna hai), <strong>invoices</strong>, aur <strong>medical records</strong> ke liye perfect hai. Ad-hoc queries run kar sakte hain aur documents mein flexible structure ho sakta hai. Lekin problem yeh hai ki <strong>complex search queries</strong> run karna mushkil hai, aur specific values ke basis par data retrieve karna challenging ho sakta hai. Sabse famous example hai <strong>MongoDB</strong>!
+                </div>
+                
+                <div class="practice-section">
+                    <h3>🎯 Practice Questions</h3>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What does "self-contained" mean in the context of document-based stores?
+                        <div class="answer">
+                            "Self-contained" means that each document contains <strong>all the information about a single entity</strong> in one place. For example, a customer document would have the customer's name, address, order history, and preferences all stored together in one document, rather than spread across multiple tables.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why are document-based stores suitable for e-commerce platforms?
+                        <div class="answer">
+                            Document-based stores are ideal for e-commerce because <strong>product information naturally fits into document structures</strong>. Different products can have different attributes (electronics have different specs than clothing), and each product's complete information can be stored in one flexible document without requiring a rigid table structure.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is a key advantage of document stores over key-value stores?
+                        <div class="answer">
+                            A key advantage is that document stores <strong>can perform ad-hoc queries and analytics over a set of documents</strong>. While key-value stores only allow efficient lookups by key, document stores enable more flexible querying capabilities on the content within documents.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>🔑 Key Takeaways</h3>
+                    <ul>
+                        <li>Document stores save each data entry as a <strong>complete, self-contained document</strong></li>
+                        <li>Documents are typically in <strong>JSON, BSON, or XML format</strong></li>
+                        <li>Perfect for <strong>e-commerce, invoices, medical records, and content management</strong></li>
+                        <li>Supports <strong>ad-hoc queries and flexible structures</strong></li>
+                        <li><strong>Challenges with complex searches</strong> and specific value-based retrieval</li>
+                        <li>Most popular example: <strong>MongoDB</strong></li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- ========== COLUMN-BASED STORE ========== -->
+            <section id="column-based">
+                <h2>3.3 Column-Based Store</h2>
+                
+                <p>A <strong>Column-Based Store</strong> (also called Column-Oriented Database) organizes data in columns rather than rows, grouping related columns together for efficient storage and retrieval.</p>
+                
+                <h3>How It Works</h3>
+                
+                <p>In column-based stores:</p>
+                <ul>
+                    <li><strong>Data is stored in cells grouped as columns of data</strong> (rather than rows)</li>
+                    <li><strong>Columns are grouped into "column families"</strong> based on logical relationships</li>
+                    <li><strong>Cells corresponding to a column are stored as a continuous entry</strong>, making access faster</li>
+                    <li>Each column family contains related data that is often accessed together</li>
+                </ul>
+                
+                <div class="professor-note">
+                    Think of it like traditional row-column structure, but with a twist. Here, data is stored in cells which are grouped as columns rather than rows. The important part is that columns are grouped together into what is called a "column family" based on some logical condition. This really depends on what kind of data you're storing.
+                </div>
+                
+                <h3>Column Families: A Key Concept</h3>
+                
+                <div class="info-box">
+                    <strong>What is a Column Family?</strong> A column family is a group of related columns that are logically connected and often accessed together. This grouping makes data retrieval much faster.
+                </div>
+                
+                <p><strong>Example:</strong> In an e-commerce system:</p>
+                <ul>
+                    <li><strong>Column Family 1 — "Purchases":</strong> order_id, product_name, quantity, price, date</li>
+                    <li><strong>Column Family 2 — "Payment Modes":</strong> payment_id, payment_type (UPI/Cash/Credit), transaction_status</li>
+                </ul>
+                
+                <div class="professor-note">
+                    For example, we usually look at the purchases made by our customers and the payment modes that they use — UPI, cash, or credit card — together. So purchases and the payment modes can be thought of as one column family. Information would be stored in a column-based store in groups based on this logical understanding of the data.
+                </div>
+                
+                <h3>Why Faster Access?</h3>
+                
+                <p>Cells corresponding to a column are <strong>stored as a continuous entry</strong>, which means:</p>
+                <ul>
+                    <li>When you query a specific column family, the data is physically stored together</li>
+                    <li>Reduces disk I/O operations</li>
+                    <li>Makes access and search significantly faster</li>
+                    <li>Particularly efficient for analytical queries on specific columns</li>
+                </ul>
+                
+                <h3>Common Use Cases</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Why It Works Well</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Time-Series Data</strong></td>
+                            <td>Timestamps and related measurements stored together for fast retrieval</td>
+                            <td>Stock market data with timestamps, prices, volumes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weather Data</strong></td>
+                            <td>Temperature, humidity, pressure for specific locations stored in column families</td>
+                            <td>Meteorological databases tracking climate patterns</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IoT Data</strong></td>
+                            <td>Sensor readings grouped by device or location</td>
+                            <td>Smart home systems tracking temperature, motion, energy usage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Analytics Applications</strong></td>
+                            <td>Fast aggregation of specific columns without reading entire rows</td>
+                            <td>Business intelligence dashboards</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    This is very useful when we're trying to store time-series data or even weather data or IoT data. For example, data of the weather for a particular area or for a particular day can easily be stored in a column-based store, and you can quickly retrieve a column family which can correspond to weather in a particular city.
+                </div>
+                
+                <h3>Disadvantages of Column-Based Store</h3>
+                
+                <div class="warning-box">
+                    <strong>Flexibility Trade-offs:</strong> The efficiency of column-based storage comes with certain limitations on query flexibility.
+                </div>
+                
+                <ul>
+                    <li><strong>Hard to Run Complex Queries:</strong> Complex queries that span multiple column families can be challenging
+                        <ul>
+                            <li>Joining data from different column families is not efficient</li>
+                            <li>Multi-dimensional analysis can be difficult</li>
+                        </ul>
+                    </li>
+                    <li><strong>Difficult to Change Querying Patterns:</strong> Once data is organized into column families, changing how you query becomes challenging
+                        <ul>
+                            <li>Optimized for specific access patterns</li>
+                            <li>Reorganizing column families can be resource-intensive</li>
+                        </ul>
+                    </li>
+                    <li><strong>Not Flexible Querying:</strong> Limited flexibility in how you can retrieve and analyze data
+                        <ul>
+                            <li>Works best when you know your query patterns in advance</li>
+                            <li>Ad-hoc queries may not perform well</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="professor-note">
+                    Because in a column-based store your data is being stored in the form of column families, it can be hard to query the data in any other way. It's also sometimes hard to change the querying pattern.
+                </div>
+                
+                <h3>Popular Example</h3>
+                
+                <div class="info-box">
+                    <strong>Cassandra</strong> — A highly scalable, distributed column-based database designed to handle large amounts of data across many commodity servers. It's used by companies like Netflix, Apple, and Instagram for handling massive datasets.
+                </div>
+                
+                <div class="hinglish-summary">
+                    <strong>Column-Based Store</strong> mein data <strong>columns ke form</strong> mein store hota hai (rows mein nahi). Related columns ko ek saath group karke <strong>"column family"</strong> banate hain based on logical connection. For example, "purchases" aur "payment modes" ek column family ho sakte hain kyunki yeh data usually saath mein access karte hain. Column families continuously stored hote hain, isliye <strong>access aur search bahut fast</strong> hota hai. Yeh <strong>time-series data, weather data, aur IoT data</strong> ke liye perfect hai. Lekin <strong>complex queries</strong> run karna mushkil hai, aur querying pattern change karna bhi difficult ho sakta hai. Example: <strong>Cassandra</strong>.
+                </div>
+                
+                <div class="practice-section">
+                    <h3>🎯 Practice Questions</h3>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What is a "column family" in column-based stores?
+                        <div class="answer">
+                            A column family is a <strong>group of related columns that are logically connected</strong> and often accessed together. For example, in an e-commerce system, "purchases" and "payment modes" might form one column family because they are typically queried together.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why are column-based stores particularly good for time-series data?
+                        <div class="answer">
+                            Column-based stores are ideal for time-series data because <strong>related measurements are stored together as continuous entries</strong> within column families. This makes retrieving data for specific time periods or accessing particular metrics extremely fast, as the data is physically stored together on disk.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is a major limitation of column-based stores?
+                        <div class="answer">
+                            A major limitation is that they are <strong>not flexible in querying</strong>. It's hard to run complex queries that span multiple column families, and it's difficult to change querying patterns once the data structure is established. They work best when you know your access patterns in advance.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>🔑 Key Takeaways</h3>
+                    <ul>
+                        <li>Data stored in <strong>columns grouped into column families</strong> based on logical relationships</li>
+                        <li><strong>Continuous storage</strong> of column data makes access and search very fast</li>
+                        <li>Excellent for <strong>time-series data, weather data, IoT data, and analytics</strong></li>
+                        <li><strong>Optimized for specific query patterns</strong> — fast for those patterns, slow for others</li>
+                        <li><strong>Limited flexibility</strong> — hard to run complex queries or change query patterns</li>
+                        <li>Popular example: <strong>Apache Cassandra</strong></li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- ========== GRAPH-BASED STORE ========== -->
+            <section id="graph-based">
+                <h2>3.4 Graph-Based Store</h2>
+                
+                <p>A <strong>Graph-Based Store</strong> uses a graphical model to represent and store data, making it ideal for data where relationships between entities are as important as the entities themselves.</p>
+                
+                <h3>How It Works</h3>
+                
+                <p>Graph databases are built on graph theory and consist of two fundamental elements:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Representation</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nodes</strong></td>
+                            <td>Circles in the graph</td>
+                            <td>Contain the actual data (entities like users, products, locations)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Edges/Relationships</strong></td>
+                            <td>Lines connecting nodes</td>
+                            <td>Represent connections and relationships between entities</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    Each circle is a node and it contains the data. The lines between them are connections, and they represent the relationships between each of these data points. For example, if we're looking at social media data, each of these nodes could be users. And each of these lines could be how they are related to each other — it could signify that this user and this user are friends, or it could signify that this user has liked a post by this user, and so on.
+                </div>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Graph structure showing nodes (circles) connected by edges (lines) representing a social network where Node A is friends with Node B, Node B has liked Node C's post, and Node C follows Node A]
+                </div>
+                
+                <h3>Key Features</h3>
+                
+                <ul>
+                    <li><strong>Great for Connected Data:</strong> Perfect when data points are connected to each other in meaningful ways</li>
+                    <li><strong>Visualization Capabilities:</strong> Can visualize relationships and patterns in the data</li>
+                    <li><strong>Analysis Ready:</strong> Can perform analysis on relationships, not just on data points</li>
+                    <li><strong>Flexible Relationships:</strong> Easy to add new types of relationships without restructuring</li>
+                </ul>
+                
+                <div class="info-box">
+                    <strong>Why Graphs are Powerful:</strong> In traditional databases, finding "friends of friends" requires multiple complex joins. In graph databases, you simply traverse the relationships — following edges from one node to connected nodes. This makes relationship queries exponentially faster.
+                </div>
+                
+                <h3>Common Use Cases</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Why It Works Well</th>
+                            <th>Example Query</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Social Networks</strong></td>
+                            <td>Users (nodes) and their relationships (edges) form natural graphs</td>
+                            <td>"Find all friends of friends", "Suggest mutual connections"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Real-time Product Recommendations</strong></td>
+                            <td>Products and user interactions form relationship networks</td>
+                            <td>"Users who bought this also bought...", "Related products"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network Diagrams</strong></td>
+                            <td>Infrastructure or organizational connections naturally form graphs</td>
+                            <td>"Find shortest path", "Identify network bottlenecks"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fraud Detection</strong></td>
+                            <td>Can identify suspicious patterns in transaction relationships</td>
+                            <td>"Find circular money transfers", "Identify connected fraudulent accounts"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Knowledge Graphs</strong></td>
+                            <td>Concepts and their relationships form semantic networks</td>
+                            <td>"How are these topics related?", "Find connecting concepts"</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="professor-note">
+                    Graph-based stores are great for storing data that comes in the form of social networks. They're also used for product recommendations where you can give recommendations of different products to your users or buyers. Any data set where there is an underlying relationship between entities can be stored in a graph-based store.
+                </div>
+                
+                <h3>Advantages of Graph Stores</h3>
+                
+                <ul>
+                    <li><strong>Versatile:</strong> Can represent almost any kind of connected data</li>
+                    <li><strong>Relationship-Focused:</strong> Queries on relationships are extremely efficient</li>
+                    <li><strong>Visual Analysis:</strong> Easy to visualize and understand data patterns</li>
+                    <li><strong>Intuitive Modeling:</strong> Data model matches how we naturally think about connected entities</li>
+                </ul>
+                
+                <h3>Disadvantages of Graph-Based Store</h3>
+                
+                <div class="warning-box">
+                    <strong>Scale Limitations:</strong> While excellent for relationship queries, graph databases face challenges with massive datasets and certain types of analytics.
+                </div>
+                
+                <ul>
+                    <li><strong>Difficult to Run Large Volumes of Data:</strong> Performance can degrade with extremely large graphs
+                        <ul>
+                            <li>Traversing billions of nodes and edges can be slow</li>
+                            <li>Memory requirements can be substantial</li>
+                        </ul>
+                    </li>
+                    <li><strong>Not Optimized for Large Volume Analytics Queries:</strong> Bulk analytical operations are not the strength
+                        <ul>
+                            <li>Aggregating data across the entire graph can be inefficient</li>
+                            <li>Better for targeted relationship queries than broad analytics</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h3>Popular Examples</h3>
+                
+                <ul>
+                    <li><strong>Neo4J</strong> — The most popular graph database, uses Cypher query language, excellent for social networks and recommendation engines</li>
+                    <li><strong>CosmosDB</strong> — Microsoft's globally distributed database service with graph database capabilities (Gremlin API)</li>
+                </ul>
+                
+                <div class="hinglish-summary">
+                    <strong>Graph-Based Store</strong> mein data ko <strong>graph ke form</strong> mein store karte hain — jaise circles (nodes) aur unko connect karne wali lines (edges/relationships). Har <strong>node</strong> mein data hota hai (jaise users), aur har <strong>edge</strong> relationship represent karta hai (jaise "friends", "liked", "follows"). Yeh un situations ke liye <strong>perfect</strong> hai jahan data points ek dusre se connected hain — jaise <strong>social networks, product recommendations, network diagrams</strong>. Graph stores <strong>versatile</strong> hain aur relationships par queries bahut fast hain. Plus, <strong>visualize</strong> bhi kar sakte ho data ko! Lekin <strong>large volumes</strong> of data ke liye acha nahi hai, aur bulk analytics queries optimize nahi hain. Examples: <strong>Neo4J, CosmosDB</strong>.
+                </div>
+                
+                <div class="practice-section">
+                    <h3>🎯 Practice Questions</h3>
+                    
+                    <div class="question">
+                        <strong>Q1:</strong> What are the two fundamental elements of a graph database?
+                        <div class="answer">
+                            The two fundamental elements are: (1) <strong>Nodes</strong> (represented as circles) which contain the actual data/entities, and (2) <strong>Edges/Relationships</strong> (represented as lines) which connect nodes and represent the relationships between entities.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q2:</strong> Why are graph databases particularly suitable for social networks?
+                        <div class="answer">
+                            Graph databases are ideal for social networks because <strong>users (nodes) and their relationships (edges) naturally form a graph structure</strong>. Queries like "find friends of friends" or "suggest mutual connections" are extremely efficient in graph databases, as you simply traverse the relationship edges rather than performing complex joins.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q3:</strong> What is a key advantage of graph stores over other NoSQL types?
+                        <div class="answer">
+                            A key advantage is that graph stores can <strong>visualize and analyze relationships</strong>, not just data points. They make relationship queries extremely efficient and provide an intuitive way to model connected data. Any dataset where underlying relationships matter can benefit from graph storage.
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <strong>Q4:</strong> What are the main limitations of graph databases?
+                        <div class="answer">
+                            The main limitations are: (1) <strong>Difficult to run large volumes of data</strong> — performance degrades with extremely large graphs, and (2) <strong>Not optimized for large volume analytics queries</strong> — bulk analytical operations across the entire graph can be inefficient. They're better for targeted relationship queries than broad analytics.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>🔑 Key Takeaways</h3>
+                    <ul>
+                        <li>Graph stores use <strong>nodes (data) and edges (relationships)</strong> to represent connected data</li>
+                        <li>Perfect for <strong>social networks, recommendations, network diagrams, and fraud detection</strong></li>
+                        <li><strong>Relationship queries are extremely efficient</strong> — much faster than joins in relational databases</li>
+                        <li>Can <strong>visualize and analyze</strong> data patterns and connections</li>
+                        <li><strong>Versatile</strong> — can represent any kind of connected data intuitively</li>
+                        <li><strong>Not ideal for large-scale bulk analytics</strong> or extremely large datasets</li>
+                        <li>Popular examples: <strong>Neo4J, CosmosDB</strong></li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+        
+        <!-- ==================== SECTION 4: ADVANTAGES ==================== -->
+        <section id="advantages">
+            <h1>4. Advantages of NoSQL Databases</h1>
+            
+            <p>Having explored the different types of NoSQL databases, let's now consolidate our understanding of why NoSQL databases have become so important in modern data management.</p>
+            
+            <h2>Core Advantages</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Advantage</th>
+                        <th>Description</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Handle Multiple Data Formats</strong></td>
+                        <td>Ability to store and handle large volumes of structured, semi-structured, and unstructured data</td>
+                        <td>Modern applications deal with diverse data — from structured transactions to unstructured social media posts, images, and videos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema Agnostic</strong></td>
+                        <td>Not strictly tied down to one particular schema of the dataset</td>
+                        <td>Allows rapid development and easy adaptation to changing requirements without database migrations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Horizontal Scalability</strong></td>
+                        <td>Can scale out by adding more servers rather than scaling up (buying bigger servers)</td>
+                        <td>More cost-effective and flexible scaling as your application grows</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High Performance</strong></td>
+                        <td>Optimized for specific data models and access patterns</td>
+                        <td>Faster query responses for the use cases they're designed for</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Developer Friendly</strong></td>
+                        <td>Easy to use with intuitive data models</td>
+                        <td>Faster development cycles and lower learning curve</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2>Structured vs Semi-structured vs Unstructured Data</h2>
+            
+            <p>One of the most significant advantages is NoSQL's ability to handle all three types of data:</p>
+            
+            <div class="info-box">
+                <strong>Structured Data:</strong> Data with predefined schema (e.g., traditional database tables)<br>
+                <strong>Semi-structured Data:</strong> Data with some organizational properties but not rigid schema (e.g., JSON, XML)<br>
+                <strong>Unstructured Data:</strong> Data without predefined structure (e.g., text documents, images, videos, social media posts)
+            </div>
+            
+            <div class="professor-note">
+                The advantages of these NoSQL databases is that they have the ability to store large volumes of different formats of data. They could be structured, semi-structured, or even unstructured data. Which is a big advantage over SQL databases or relational databases which can only handle structured data.
+            </div>
+            
+            <h2>Schema Agnostic: A Game Changer</h2>
+            
+            <p>Being <strong>schema agnostic</strong> means NoSQL databases are not locked into a fixed structure. This provides several benefits:</p>
+            
+            <ul>
+                <li><strong>Flexibility in Development:</strong> Developers can change data structures without downtime</li>
+                <li><strong>Rapid Prototyping:</strong> Can start storing data immediately without extensive planning</li>
+                <li><strong>Adaptability:</strong> Easy to accommodate new data fields or types as requirements evolve</li>
+                <li><strong>No Expensive Migrations:</strong> Adding new attributes doesn't require altering entire database schemas</li>
+            </ul>
+            
+            <h2>When to Choose NoSQL Over SQL</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Choose NoSQL When...</th>
+                        <th>Choose SQL When...</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Data Structure</strong></td>
+                        <td>Data is unstructured, semi-structured, or rapidly changing</td>
+                        <td>Data is highly structured and relationships are well-defined</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>Need to handle massive volumes or high-velocity data</td>
+                        <td>Data volume is manageable and stable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Development Speed</strong></td>
+                        <td>Need rapid development and frequent schema changes</td>
+                        <td>Schema is stable and well-understood upfront</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Can tolerate eventual consistency for better performance</td>
+                        <td>Need strict ACID transactions and immediate consistency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Query Patterns</strong></td>
+                        <td>Specific, predictable access patterns</td>
+                        <td>Complex queries with multiple joins and relationships</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="hinglish-summary">
+                <strong>NoSQL databases ke main advantages</strong> yeh hain: (1) Yeh <strong>structured, semi-structured, aur unstructured</strong> — teeno types ka data handle kar sakte hain, jabki SQL sirf structured data ke liye hai. (2) Yeh <strong>schema agnostic</strong> hain, matlab strict schema follow karne ki zarurat nahi hai — data structure easily change kar sakte hain bina database migration ke. (3) <strong>Horizontal scalability</strong> hai — zyada servers add karke scale kar sakte hain. (4) <strong>High performance</strong> hai specific use cases ke liye. (5) Developer-friendly hain aur rapid development allow karte hain. Basically, NoSQL databases modern applications ke liye perfect hain jahan data diversity, volume, aur velocity important hai!
+            </div>
+            
+            <div class="practice-section">
+                <h3>🎯 Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> What does "schema agnostic" mean and why is it important?
+                    <div class="answer">
+                        "Schema agnostic" means the database is <strong>not strictly tied to one particular schema</strong>. It's important because it allows rapid development, easy adaptation to changing requirements, and the ability to add new data fields without expensive database migrations. Developers can modify data structures without downtime.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> What is a key advantage of NoSQL over relational databases regarding data types?
+                    <div class="answer">
+                        NoSQL databases can handle <strong>structured, semi-structured, AND unstructured data</strong>, while relational databases can only handle structured data. This makes NoSQL much more suitable for modern applications that deal with diverse data types like text, images, videos, and social media content.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> When should you choose NoSQL over SQL databases?
+                    <div class="answer">
+                        Choose NoSQL when: (1) Data is unstructured or rapidly changing, (2) You need to handle massive volumes or high-velocity data, (3) You need rapid development with frequent schema changes, (4) You have specific, predictable access patterns, and (5) You can tolerate eventual consistency for better performance.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways</h3>
+                <ul>
+                    <li>NoSQL can handle <strong>structured, semi-structured, and unstructured data</strong> — major advantage over SQL</li>
+                    <li><strong>Schema agnostic</strong> nature enables flexibility and rapid development</li>
+                    <li><strong>Horizontal scalability</strong> makes growth easier and more cost-effective</li>
+                    <li><strong>High performance</strong> for specific use cases and access patterns</li>
+                    <li><strong>Developer-friendly</strong> with easier learning curves</li>
+                    <li>Choice between NoSQL and SQL depends on <strong>data structure, scale, consistency needs, and query patterns</strong></li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== SECTION 5: RECAP ==================== -->
+        <section id="recap">
+            <h1>5. Summary and Recap</h1>
+            
+            <p>Let's consolidate everything we've learned about NoSQL databases in this lecture.</p>
+            
+            <h2>Complete Overview</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>NoSQL Type</th>
+                        <th>Data Model</th>
+                        <th>Best For</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Key-Value Store</strong></td>
+                        <td>Key uniquely identifies value containing all related data</td>
+                        <td>User sessions, preferences, caching, real-time recommendations</td>
+                        <td>Redis, Memcached</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Document-Based Store</strong></td>
+                        <td>Self-contained documents (JSON/XML) with flexible structure</td>
+                        <td>E-commerce platforms, invoices, medical records, CMS</td>
+                        <td>MongoDB</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Column-Based Store</strong></td>
+                        <td>Columns grouped into column families based on logical relationships</td>
+                        <td>Time-series data, weather data, IoT data, analytics</td>
+                        <td>Cassandra</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Graph-Based Store</strong></td>
+                        <td>Nodes (data) connected by edges (relationships)</td>
+                        <td>Social networks, recommendations, network diagrams, fraud detection</td>
+                        <td>Neo4J, CosmosDB</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                To summarize what we've learned in this course today, we actually talked about 4 different types of NoSQL databases. We've talked about relational databases in the earlier video. Today we talked about non-relational databases and particularly NoSQL databases — also called "Not Only SQL" — where we go beyond looking at SQL to look at and query and retrieve data.
+            </div>
+            
+            <h2>Key Concepts Comparison</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Relational Databases (SQL)</th>
+                        <th>NoSQL Databases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Data Structure</strong></td>
+                        <td>Tables with rows and columns</td>
+                        <td>Various formats (documents, key-value, columns, graphs)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema</strong></td>
+                        <td>Fixed, predefined schema required</td>
+                        <td>Flexible, schema-less or dynamic schema</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Types</strong></td>
+                        <td>Structured data only</td>
+                        <td>Structured, semi-structured, unstructured</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relationships</strong></td>
+                        <td>Strong support with joins</td>
+                        <td>Varies by type (graph stores excel, others limited)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>Vertical (scale up)</td>
+                        <td>Horizontal (scale out)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Query Language</strong></td>
+                        <td>SQL (standardized)</td>
+                        <td>Varies by database type</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Complex queries, transactions, consistent relationships</td>
+                        <td>High volume, high velocity, diverse data types</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2>Decision Framework: Choosing the Right Database</h2>
+            
+            <div class="info-box">
+                <strong>Step-by-Step Decision Process:</strong>
+                <ol style="margin: 10px 0; padding-left: 20px;">
+                    <li><strong>Analyze your data:</strong> Is it structured, semi-structured, or unstructured?</li>
+                    <li><strong>Understand relationships:</strong> Are relationships between data points critical?</li>
+                    <li><strong>Identify access patterns:</strong> How will you query and retrieve data?</li>
+                    <li><strong>Consider scale:</strong> How much data will you have and how fast will it grow?</li>
+                    <li><strong>Evaluate consistency needs:</strong> Do you need immediate consistency or can you accept eventual consistency?</li>
+                    <li><strong>Choose database type:</strong> Match your requirements to the strengths of each NoSQL type</li>
+                </ol>
+            </div>
+            
+            <h2>Final Thoughts</h2>
+            
+            <p>NoSQL databases represent a fundamental shift in how we think about data storage. They emerged from real-world needs — the need to handle the data revolution we're experiencing. As data professionals, understanding when and how to use each type of database is crucial for building effective, scalable systems.</p>
+            
+            <div class="professor-note">
+                Remember, NoSQL doesn't mean SQL is obsolete. Both relational and non-relational databases have their place. The key is understanding which tool to use for which job. As you continue your journey in data analytics, you'll likely use multiple types of databases, often in the same project, each serving its specific purpose.
+            </div>
+            
+            <div class="hinglish-summary">
+                <strong>Summary:</strong> Aaj humne seekha ki NoSQL databases char main types mein aate hain — <strong>Key-Value Store</strong> (Redis), <strong>Document-Based Store</strong> (MongoDB), <strong>Column-Based Store</strong> (Cassandra), aur <strong>Graph-Based Store</strong> (Neo4J). Har type ki apni speciality hai: Key-Value caching ke liye, Document e-commerce ke liye, Column time-series data ke liye, aur Graph social networks ke liye. NoSQL ka sabse bada advantage hai ki yeh structured, semi-structured, aur unstructured — sabhi types ka data handle kar sakta hai, aur schema agnostic hai. Relational databases (SQL) structured data aur complex relationships ke liye best hain, jabki NoSQL high volume, high velocity, aur diverse data ke liye perfect hai. Database choose karte waqt apne data type, relationships, access patterns, scale, aur consistency needs ko consider karna zaroori hai!
+            </div>
+            
+            <div class="practice-section">
+                <h3>🎯 Comprehensive Practice Questions</h3>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Compare and contrast the four types of NoSQL databases.
+                    <div class="answer">
+                        <strong>Key-Value Store:</strong> Simplest model, uses unique keys to identify values, best for caching and sessions. <strong>Document-Based Store:</strong> Stores self-contained documents, flexible structure, ideal for e-commerce and content management. <strong>Column-Based Store:</strong> Organizes data in column families, fast for time-series and analytics. <strong>Graph-Based Store:</strong> Uses nodes and edges to represent relationships, perfect for social networks and recommendations. Each type is optimized for specific use cases and access patterns.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> A company wants to build a social media platform with user profiles, friend connections, and recommendation features. Which NoSQL database type would you recommend and why?
+                    <div class="answer">
+                        I would recommend a <strong>Graph-Based Store (like Neo4J)</strong>. Reason: Social media platforms are inherently about relationships — users connect to other users (friendships), interact with content (likes, comments), and need recommendations based on network patterns (friends of friends, similar interests). Graph databases excel at relationship queries like "find mutual friends" or "recommend connections", which would be complex and slow in other database types. The ability to visualize and analyze social networks is also a key advantage.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> What are the main trade-offs between NoSQL and relational databases?
+                    <div class="answer">
+                        <strong>NoSQL Advantages:</strong> Handles unstructured/semi-structured data, flexible schemas, horizontal scalability, high performance for specific patterns, rapid development. <strong>NoSQL Disadvantages:</strong> Limited support for complex queries and joins, eventual consistency in many cases, less mature than SQL, different query languages. <strong>SQL Advantages:</strong> Strong relationship support, ACID transactions, complex query capabilities, mature ecosystem, standardized query language. <strong>SQL Disadvantages:</strong> Only structured data, rigid schemas, vertical scaling limitations, slower with massive datasets. The choice depends on specific application requirements.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q4:</strong> Explain why column-based stores are particularly efficient for time-series data.
+                    <div class="answer">
+                        Column-based stores are efficient for time-series data because: (1) Related measurements are <strong>stored together as continuous entries</strong> within column families, making sequential access very fast. (2) When querying specific metrics over time, only relevant columns need to be read, not entire rows. (3) Column families can be optimized for time ranges, enabling quick retrieval of data for specific periods. (4) Compression is more effective when similar data types are stored together. However, they're less flexible for complex queries spanning multiple column families.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q5:</strong> A startup is building an IoT platform that will collect sensor data from millions of devices. The data includes timestamps, device IDs, temperature, humidity, and location. Which NoSQL database type would be most appropriate and why?
+                    <div class="answer">
+                        I would recommend a <strong>Column-Based Store (like Cassandra)</strong>. Reasons: (1) IoT generates massive volumes of time-series data that needs to be stored efficiently. (2) Column families can group related sensor readings (temperature/humidity together), enabling fast retrieval. (3) Columns stored continuously make time-range queries very efficient. (4) Excellent horizontal scalability to handle millions of devices. (5) High write throughput for constant sensor updates. (6) Typical access patterns (query by device and time range) match column store strengths. While key-value stores could work, column stores offer better analytics capabilities for this use case.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="key-takeaways">
+                <h3>🔑 Key Takeaways from the Entire Lecture</h3>
+                <ul>
+                    <li><strong>NoSQL emerged</strong> to handle modern data's volume, variety, and velocity</li>
+                    <li><strong>Four main types:</strong> Key-Value, Document, Column, and Graph databases</li>
+                    <li>Each type has <strong>specific strengths and ideal use cases</strong></li>
+                    <li>NoSQL enables <strong>schema-less, flexible data storage</strong></li>
+                    <li>Can handle <strong>structured, semi-structured, and unstructured data</strong></li>
+                    <li><strong>Horizontal scalability</strong> makes NoSQL suitable for massive datasets</li>
+                    <li><strong>Not a replacement for SQL</strong> — choose based on specific requirements</li>
+                    <li>Understanding <strong>data structure, relationships, access patterns, and scale</strong> guides database choice</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ==================== MIND MAP ==================== -->
+        <section class="mind-map">
+            <h2>🧠 Comprehensive Mind Map</h2>
+            
+            <div class="mind-map-container">
+                <div class="central-topic">
+                    NoSQL Databases<br>(Not Only SQL)
+                </div>
+                
+                <div class="branches">
+                    <!-- Branch 1: Characteristics -->
+                    <div class="branch">
+                        <h4>📋 Core Characteristics</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch">Schema-less / Flexible Schema</div>
+                            <div class="sub-branch">No Rigid Row-Column Structure</div>
+                            <div class="sub-branch">Data-Specific Models</div>
+                            <div class="sub-branch">Different Query Methods (Not SQL)</div>
+                            <div class="sub-branch">Built for Speed, Flexibility, Scale</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 2: Key-Value Store -->
+                    <div class="branch">
+                        <h4>🔑 Key-Value Store</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch"><strong>Structure:</strong> Key (unique ID) ↔ Value (all data)</div>
+                            <div class="sub-branch"><strong>Use Cases:</strong> User sessions, preferences, caching</div>
+                            <div class="sub-branch"><strong>Pros:</strong> Fast lookups, simple structure</div>
+                            <div class="sub-branch"><strong>Cons:</strong> Can't query by value, no relationships</div>
+                            <div class="sub-branch"><strong>Examples:</strong> Redis, Memcached</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 3: Document-Based Store -->
+                    <div class="branch">
+                        <h4>📄 Document-Based Store</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch"><strong>Structure:</strong> Self-contained documents (JSON/XML)</div>
+                            <div class="sub-branch"><strong>Use Cases:</strong> E-commerce, invoices, medical records</div>
+                            <div class="sub-branch"><strong>Pros:</strong> Flexible, ad-hoc queries, nested data</div>
+                            <div class="sub-branch"><strong>Cons:</strong> Complex searches difficult</div>
+                            <div class="sub-branch"><strong>Examples:</strong> MongoDB</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 4: Column-Based Store -->
+                    <div class="branch">
+                        <h4>📊 Column-Based Store</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch"><strong>Structure:</strong> Columns → Column Families</div>
+                            <div class="sub-branch"><strong>Use Cases:</strong> Time-series, weather, IoT data</div>
+                            <div class="sub-branch"><strong>Pros:</strong> Fast access for specific columns</div>
+                            <div class="sub-branch"><strong>Cons:</strong> Inflexible querying, complex queries hard</div>
+                            <div class="sub-branch"><strong>Examples:</strong> Cassandra</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 5: Graph-Based Store -->
+                    <div class="branch">
+                        <h4>🕸️ Graph-Based Store</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch"><strong>Structure:</strong> Nodes (data) + Edges (relationships)</div>
+                            <div class="sub-branch"><strong>Use Cases:</strong> Social networks, recommendations</div>
+                            <div class="sub-branch"><strong>Pros:</strong> Relationship queries, visualization</div>
+                            <div class="sub-branch"><strong>Cons:</strong> Not for large-scale analytics</div>
+                            <div class="sub-branch"><strong>Examples:</strong> Neo4J, CosmosDB</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 6: Advantages -->
+                    <div class="branch">
+                        <h4>✅ Key Advantages</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch">Handle Structured, Semi-structured, Unstructured Data</div>
+                            <div class="sub-branch">Schema Agnostic (Flexible)</div>
+                            <div class="sub-branch">Horizontal Scalability</div>
+                            <div class="sub-branch">High Performance for Specific Patterns</div>
+                            <div class="sub-branch">Developer Friendly, Easy to Use</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 7: When to Use -->
+                    <div class="branch">
+                        <h4>🎯 Use NoSQL When...</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch">Data is unstructured or rapidly changing</div>
+                            <div class="sub-branch">Need massive scale / high velocity</div>
+                            <div class="sub-branch">Rapid development required</div>
+                            <div class="sub-branch">Specific, predictable access patterns</div>
+                            <div class="sub-branch">Can tolerate eventual consistency</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 8: Use SQL When... -->
+                    <div class="branch">
+                        <h4>🎯 Use SQL When...</h4>
+                        <div class="sub-branches">
+                            <div class="sub-branch">Data is highly structured</div>
+                            <div class="sub-branch">Complex relationships and joins needed</div>
+                            <div class="sub-branch">ACID transactions required</div>
+                            <div class="sub-branch">Stable, well-defined schema</div>
+                            <div class="sub-branch">Need immediate consistency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ==================== FOOTER ==================== -->
+        <div style="text-align: center; padding: 30px 0; border-top: 2px solid #667eea; margin-top: 40px;">
+            <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">End of Lecture Notes</p>
+            <p style="color: #666; margin-top: 10px;">BS/BSc in Applied AI and Data Science - Basics of Data Analytics</p>
+            <p style="color: #999; margin-top: 5px; font-size: 0.9em;">Lecture 2.6: NoSQL Databases</p>
+        </div>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

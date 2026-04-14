@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Notes: Random Variables and Probability Distribution Functions</title>
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #1a5490;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .course-info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        h2 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        
+        h4 {
+            color: #5d6d7b;
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .definition-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box {
+            background: #f0f8e8;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #ffe8e8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary {
+            background: #f4e8ff;
+            border: 2px solid #9b59b6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .hinglish-summary h4 {
+            color: #8e44ad;
+            margin-top: 0;
+        }
+        
+        .hinglish-summary p {
+            font-style: italic;
+            color: #6c3483;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background: #ecf0f1;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .practice-questions {
+            background: #fff9e6;
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .practice-questions h4 {
+            color: #d68910;
+            margin-top: 0;
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            background: #fffacd;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .question-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .question-btn:hover {
+            background: #d68910;
+        }
+        
+        .key-takeaways {
+            background: #e8f8f5;
+            border: 2px solid #16a085;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .key-takeaways h4 {
+            color: #0e6251;
+            margin-top: 0;
+        }
+        
+        .key-takeaways li {
+            color: #117864;
+        }
+        
+        .formula {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .toc {
+            background: #ecf0f1;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+        }
+        
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+            color: #3498db;
+        }
+        
+        .toc-level-2 {
+            margin-left: 20px;
+        }
+        
+        .mindmap-container {
+            background: #f0f9ff;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-top: 3px solid #3498db;
+        }
+        
+        .footer-text {
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .footer-author {
+            font-weight: bold;
+            color: #2980b9;
+            font-size: 1.1em;
+        }
+        
+        .diagram-placeholder {
+            background: #e0e0e0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Variables and Probability Distribution Functions</h1>
+        
+        <div class="course-info">
+            <strong>Course:</strong> Foundations of Statistics & Probability (Module 03)<br>
+            <strong>Topic:</strong> Random Variables and Probability Distribution Functions<br>
+            <strong>Difficulty Level:</strong> Intermediate
+        </div>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <a href="#random-variables">1. Random Variables</a>
+            <div class="toc-level-2">
+                <a href="#types-random-variables">1.1 Types of Random Variables</a>
+                <a href="#discrete-example">1.2 Discrete Example: Coin Toss</a>
+            </div>
+            <a href="#pdf-cdf">2. Probability Density Function & Cumulative Distribution Function</a>
+            <div class="toc-level-2">
+                <a href="#pdf-definition">2.1 PDF Definition and Properties</a>
+                <a href="#cdf-definition">2.2 CDF Definition</a>
+                <a href="#pdf-problem">2.3 Example Problem</a>
+            </div>
+            <a href="#expected-value">3. Expectation (Expected Value)</a>
+            <div class="toc-level-2">
+                <a href="#ev-discrete">3.1 Expected Value for Discrete Variables</a>
+                <a href="#ev-continuous">3.2 Expected Value for Continuous Variables</a>
+                <a href="#law-large-numbers">3.3 Law of Large Numbers</a>
+            </div>
+            <a href="#discrete-distributions">4. Discrete Probability Distributions</a>
+            <div class="toc-level-2">
+                <a href="#bernoulli">4.1 Bernoulli Distribution</a>
+                <a href="#binomial">4.2 Binomial Distribution</a>
+                <a href="#poisson">4.3 Poisson Distribution</a>
+            </div>
+            <a href="#continuous-distributions">5. Continuous Probability Distributions</a>
+            <div class="toc-level-2">
+                <a href="#uniform">5.1 Uniform Distribution</a>
+                <a href="#normal">5.2 Normal Distribution</a>
+                <a href="#exponential">5.3 Exponential Distribution</a>
+            </div>
+            <a href="#pdf-vs-cdf">6. PDF vs CDF: Comprehensive Comparison</a>
+        </div>
+        
+        <!-- Section 1: Random Variables -->
+        <h2 id="random-variables">1. Random Variables</h2>
+        
+        <p>A <span class="key-term">random variable</span> is a function that maps outcomes of a random experiment to numerical values. Though the term contains the word "variable," it is important to understand that a random variable is not a variable in the programming sense. Rather, it is a function that assigns numerical values to outcomes of a random experiment. This distinction is crucial for properly understanding probability theory and its applications.</p>
+        
+        <p>The concept of random variables provides us with a mathematical framework to describe uncertain events. When we conduct a random experiment, such as rolling a die or flipping a coin, the outcomes are not inherently numerical. A random variable serves as a bridge between these outcomes and numerical values, allowing us to apply mathematical techniques to analyze uncertainty. This transformation from abstract outcomes to numbers is what makes probability theory such a powerful tool in data science and statistics.</p>
+        
+        <div class="example-box">
+            <strong>Example:</strong> Consider rolling a die. The event is "rolling a 4 on the die." The random variable X associated with this process would assign the numerical value 4 to this outcome. If another die roll results in a 2, then X would assign the value 2 to that outcome. In this way, X transforms the physical outcome into a numerical representation that we can analyze mathematically.
+        </div>
+        
+        <h3 id="types-random-variables">1.1 Types of Random Variables</h3>
+        
+        <p>Random variables come in two fundamental types: <span class="key-term">discrete</span> and <span class="key-term">continuous</span>. Understanding this distinction is essential because the mathematical tools and techniques we use differ significantly depending on the type of random variable we're dealing with.</p>
+        
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Values</th>
+                <th>Examples</th>
+            </tr>
+            <tr>
+                <td><strong>Discrete</strong></td>
+                <td>Takes specific, countable values</td>
+                <td>Integers or specific set of values</td>
+                <td>Number of students absent, number of heads in coin tosses, number of defective items</td>
+            </tr>
+            <tr>
+                <td><strong>Continuous</strong></td>
+                <td>Takes any value in a range</td>
+                <td>Any real number in an interval</td>
+                <td>Time to complete a task, temperature, weight, height, speed</td>
+            </tr>
+        </table>
+        
+        <p><strong>Discrete random variables</strong> are used when outcomes can only take on specific, countable values. For example, if we count the number of students absent in a class, we can only get values like 0, 1, 2, 3, etc. We cannot have 2.5 students absent. Similarly, when we flip a coin multiple times and count heads, we can only get whole numbers.</p>
+        
+        <p><strong>Continuous random variables</strong> are used when outcomes can take any value within a range. For instance, the time taken to complete a task could be 45.3 seconds, or 45.31 seconds, or 45.312 seconds—there are infinitely many possible values. This distinction matters because continuous random variables require different mathematical treatment, specifically using integration rather than summation.</p>
+        
+        <h3 id="discrete-example">1.2 Discrete Example: Coin Toss</h3>
+        
+        <p>Let's work through a concrete example to solidify our understanding. Consider the scenario where a coin is tossed three times. We define the random variable X to represent the number of heads that occur in these three tosses.</p>
+        
+        <div class="example-box">
+            <strong>Scenario:</strong> Three coin tosses
+            
+            <p><strong>All possible outcomes (8 total):</strong></p>
+            <ul>
+                <li>HHH → 3 heads</li>
+                <li>HHT → 2 heads</li>
+                <li>HTH → 2 heads</li>
+                <li>HTT → 1 head</li>
+                <li>THH → 2 heads</li>
+                <li>THT → 1 head</li>
+                <li>TTH → 1 head</li>
+                <li>TTT → 0 heads</li>
+            </ul>
+            
+            <p><strong>Assignment of values:</strong></p>
+            <ul>
+                <li>No heads: X = 0 (outcome: TTT)</li>
+                <li>One head: X = 1 (outcomes: HTT, THT, TTH)</li>
+                <li>Two heads: X = 2 (outcomes: HHT, HTH, THH)</li>
+                <li>Three heads: X = 3 (outcome: HHH)</li>
+            </ul>
+            
+            <p><strong>The random variable:</strong> X ∈ {0, 1, 2, 3}</p>
+        </div>
+        
+        <p>Professor mentioned in class: The power of this representation is that we've converted an abstract experiment (coin tosses) into a numerical framework where we can apply probability theory. Now we can ask questions like "What is the probability that X equals 2?" and have a well-defined mathematical answer.</p>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>Random variable basically एक function है जो random experiment के outcomes को numbers में convert करता है। इसे सोचो एक ऐसे function के रूप में जो experiment के results को mathematical values देता है। Discrete random variables countable values लेते हैं (जैसे coin tosses में heads की संख्या), जबकि continuous random variables किसी भी value को range के अंदर ले सकते हैं (जैसे समय या temperature)। यह distinction important है क्योंकि इन दोनों के लिए अलग mathematical techniques use होते हैं।</p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Is a random variable truly a "variable"?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> No, despite its name, a random variable is not a variable in the programming sense. It is a function that maps outcomes of a random experiment to numerical values. The terminology is historical, but the function nature is what matters for mathematical analysis.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2: Give two examples of discrete random variables.</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> Two examples of discrete random variables are: (1) The number of heads when flipping a coin 10 times, which can be 0, 1, 2, ..., 10, and (2) The number of students present in a class, which is a countable integer value.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3: Why do continuous random variables require different mathematical treatment than discrete ones?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> Discrete random variables can be analyzed using summation (Σ) because there are countable outcomes. Continuous random variables have infinitely many possible values in an interval, so we use integration (∫) to calculate probabilities and other measures.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>A random variable is a function, not a variable—it maps experiment outcomes to numbers</li>
+                <li>Discrete random variables take countable values; continuous ones take any value in a range</li>
+                <li>The choice between discrete and continuous determines which mathematical tools we use</li>
+            </ul>
+        </div>
+        
+        <!-- Section 2: PDF and CDF -->
+        <h2 id="pdf-cdf">2. Probability Density Function & Cumulative Distribution Function</h2>
+        
+        <p>The <span class="key-term">Probability Density Function (PDF)</span> and <span class="key-term">Cumulative Distribution Function (CDF)</span> are fundamental concepts in probability theory. These functions describe how probability is distributed across possible values of a random variable. While a PDF describes the density of probability at specific points, a CDF accumulates probability up to a given point. Understanding both concepts is essential for working with continuous random variables and analyzing real-world data.</p>
+        
+        <h3 id="pdf-definition">2.1 PDF Definition and Properties</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> A Probability Density Function (PDF) is a function that describes the likelihood of a continuous random variable taking on a particular value. For a continuous random variable X, the PDF, denoted as \(f(x)\), must satisfy three critical properties.
+        </div>
+        
+        <p>The three essential properties of a valid PDF are:</p>
+        
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Mathematical Form</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><strong>Non-negativity</strong></td>
+                <td>\(f(x) \geq 0\) for all \(x\)</td>
+                <td>The PDF cannot be negative because probability densities must be non-negative</td>
+            </tr>
+            <tr>
+                <td><strong>Total Area = 1</strong></td>
+                <td>\(\int_{-\infty}^{\infty} f(x)dx = 1\)</td>
+                <td>The total probability across all possible values must equal 1 (certainty)</td>
+            </tr>
+            <tr>
+                <td><strong>Probability in Interval</strong></td>
+                <td>\(P(a \leq X \leq b) = \int_a^b f(x)dx\)</td>
+                <td>The probability that X lies in an interval is the area under the curve in that interval</td>
+            </tr>
+        </table>
+        
+        <p>The second property is particularly important. Since the PDF must integrate to 1 over all possible values, this ensures that when we consider all possibilities, the total probability is 1 (which represents certainty). This is analogous to how probabilities in any probability distribution must sum to 1. The key difference is that for continuous variables, we integrate rather than sum.</p>
+        
+        <p>The third property reveals the geometric interpretation of probability. Rather than thinking of probability as a single number at a point, we think of it as an area under a curve. This is a fundamental shift in thinking when moving from discrete to continuous probability.</p>
+        
+        <h3 id="cdf-definition">2.2 CDF Definition</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Cumulative Distribution Function (CDF), denoted as \(F(x)\), represents the probability that a continuous random variable X is less than or equal to a specific value x:
+            
+            \[F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t) dt\]
+        </div>
+        
+        <p>The CDF is the integral of the PDF—it accumulates probability as we move from left to right along the x-axis. At any point x, the CDF gives us the total probability of the random variable being at or below that value.</p>
+        
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>PDF (Probability Density Function)</th>
+                <th>CDF (Cumulative Distribution Function)</th>
+            </tr>
+            <tr>
+                <td><strong>What it shows</strong></td>
+                <td>Instantaneous density at a point (height of curve)</td>
+                <td>Accumulated probability up to a point (area under curve)</td>
+            </tr>
+            <tr>
+                <td><strong>Range of values</strong></td>
+                <td>Can be any non-negative value (no upper limit)</td>
+                <td>Always between 0 and 1</td>
+            </tr>
+            <tr>
+                <td><strong>At left extreme</strong></td>
+                <td>Can be any non-negative value</td>
+                <td>Equals 0 (no probability accumulated yet)</td>
+            </tr>
+            <tr>
+                <td><strong>At right extreme</strong></td>
+                <td>Can be any non-negative value</td>
+                <td>Equals 1 (all probability accumulated)</td>
+            </tr>
+            <tr>
+                <td><strong>Shape</strong></td>
+                <td>Can be any shape: bell-shaped, skewed, exponential, etc.</td>
+                <td>Always increasing or flat (never decreasing)</td>
+            </tr>
+            <tr>
+                <td><strong>Relationship</strong></td>
+                <td>PDF = derivative of CDF</td>
+                <td>CDF = integral of PDF</td>
+            </tr>
+        </table>
+        
+        <h3 id="pdf-problem">2.3 Example Problem</h3>
+        
+        <div class="example-box">
+            <strong>Problem:</strong> Let X have a PDF defined as:
+            
+            \[f(x) = \begin{cases} 2x, & 0 \leq x \leq 1 \\ 0, & \text{otherwise} \end{cases}\]
+            
+            Find:
+            <ol>
+                <li>The probability that X lies between 0.2 and 0.6</li>
+                <li>Verify that this is a valid PDF</li>
+            </ol>
+        </div>
+        
+        <h4>Solution - Part 1: Finding P(0.2 ≤ X ≤ 0.6)</h4>
+        
+        <div class="formula">
+            \[P(0.2 \leq X \leq 0.6) = \int_{0.2}^{0.6} 2x \, dx\]
+        </div>
+        
+        <p>To solve this integral, we apply the power rule:</p>
+        
+        <div class="formula">
+            \[P(0.2 \leq X \leq 0.6) = \left[x^2\right]_{0.2}^{0.6} = (0.6)^2 - (0.2)^2 = 0.36 - 0.04 = 0.32\]
+        </div>
+        
+        <p>Therefore, the probability that X lies between 0.2 and 0.6 is <strong>0.32 or 32%</strong>. This means if we were to repeatedly sample from this distribution, approximately 32% of the values would fall in the interval [0.2, 0.6].</p>
+        
+        <h4>Solution - Part 2: Verifying it's a valid PDF</h4>
+        
+        <p>To verify this is a valid PDF, we must check that the total area under the curve equals 1:</p>
+        
+        <div class="formula">
+            \[\int_{-\infty}^{\infty} f(x) dx = \int_0^1 2x \, dx = \left[x^2\right]_0^1 = 1^2 - 0^2 = 1 \, \checkmark\]
+        </div>
+        
+        <p>Since the total area under the curve equals 1, and we know \(f(x) \geq 0\) for all x in its domain, this is indeed a valid PDF.</p>
+        
+        <p>Professor mentioned in class: The beauty of this verification is that it uses the fundamental theorem of calculus. The PDF \(f(x) = 2x\) represents a linear increase in probability density as x increases from 0 to 1, creating a triangular shape under the curve.</p>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>PDF एक function है जो बताता है कि probability किस तरह से distributed है। तीन important properties हैं: यह हमेशा non-negative होना चाहिए, total area 1 के बराबर होना चाहिए, और किसी interval में probability को हम area के through calculate कर सकते हैं। CDF इसका accumulated version है—यह बताता है कि किसी point तक कितनी कुल probability है। अगर हम PDF को integrate करें तो CDF मिलता है, और अगर CDF को differentiate करें तो PDF मिलता है।</p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: Can a PDF have a maximum value greater than 1?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> Yes, absolutely. A PDF describes density, not probability directly. The constraint is that the total area under the PDF (integral from -∞ to ∞) must equal 1, not that the height at any point must be ≤ 1. For example, if a PDF is concentrated in a small interval, its height can be very large.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2: What does it mean if the CDF at point x equals 0.7?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> If F(x) = 0.7, it means that the probability of the random variable being less than or equal to x is 0.7 or 70%. In other words, 70% of the probability mass is to the left of x, and 30% is to the right.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3: Why must CDF always be between 0 and 1, but PDF can exceed 1?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> CDF represents a cumulative probability (the area under the PDF), which must be between 0 and 1. PDF represents probability density, not probability itself. Density can exceed 1 if probability is concentrated in a small region.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>PDF must be non-negative, integrate to 1, and probability in an interval is the area under the curve</li>
+                <li>CDF is the cumulative distribution: F(x) = P(X ≤ x), always between 0 and 1</li>
+                <li>PDF shows instantaneous density; CDF shows accumulated probability</li>
+                <li>CDF = integral of PDF; PDF = derivative of CDF</li>
+            </ul>
+        </div>
+        
+        <!-- Section 3: Expected Value -->
+        <h2 id="expected-value">3. Expectation (Expected Value)</h2>
+        
+        <p>The <span class="key-term">expected value</span> (also called the mean) of a random variable represents its long-run average outcome if the experiment is repeated many times. It serves as a single number that summarizes the center of the probability distribution. The expected value is defined as a weighted average of all possible outcomes, where each outcome is weighted by its probability of occurring. This concept is fundamental to probability theory and has countless applications in fields ranging from finance to engineering.</p>
+        
+        <h3 id="ev-discrete">3.1 Expected Value for Discrete Variables</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> For a discrete random variable X that takes values \(x_1, x_2, \ldots, x_n\) with probabilities \(p_1, p_2, \ldots, p_n\), the expected value is:
+            
+            \[E[X] = \sum_{i=1}^{n} x_i \cdot p_i = x_1 p_1 + x_2 p_2 + \cdots + x_n p_n\]
+        </div>
+        
+        <p>The expected value is a weighted average because each outcome is multiplied by its probability. Outcomes that are more likely (higher probability) have more influence on the expected value than outcomes that are unlikely.</p>
+        
+        <div class="example-box">
+            <strong>Why Weighted Average? - A Real-World Example:</strong>
+            
+            <p>Suppose you buy items with the following quantities and prices:</p>
+            <ul>
+                <li>3 pens at ₹10 each</li>
+                <li>2 notebooks at ₹50 each</li>
+            </ul>
+            
+            <p>Total cost = 3(10) + 2(50) = 30 + 100 = ₹130</p>
+            
+            <p>The average price per item is not simply (10 + 50)/2 = ₹30. Instead, we weight by quantity:</p>
+            
+            \[\text{Average price} = \frac{3 \times 10 + 2 \times 50}{3 + 2} = \frac{130}{5} = ₹26\]
+            
+            <p>The pens have more influence because you bought more of them. Similarly, in probability, outcomes with higher probability have more influence on the expected value.</p>
+        </div>
+        
+        <h4>Discrete Expected Value Example</h4>
+        
+        <div class="example-box">
+            <strong>Game with Probabilities:</strong>
+            
+            <p>Imagine a game where:</p>
+            <ul>
+                <li>You win ₹1 with 80% probability</li>
+                <li>You win ₹10 with 20% probability</li>
+            </ul>
+            
+            <p>What should you expect to win on average?</p>
+            
+            \[E[X] = 1 \times 0.8 + 10 \times 0.2 = 0.8 + 2 = ₹2.80\]
+            
+            <p>If you play this game 100 times:</p>
+            <ul>
+                <li>You'd win ₹1 about 80 times = ₹80</li>
+                <li>You'd win ₹10 about 20 times = ₹200</li>
+                <li>Total = ₹280, which is ₹2.80 per game on average</li>
+            </ul>
+        </div>
+        
+        <h3 id="ev-continuous">3.2 Expected Value for Continuous Variables</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> For a continuous random variable X with PDF \(f(x)\), the expected value is:
+            
+            \[E[X] = \int_{-\infty}^{\infty} x \cdot f(x) \, dx\]
+        </div>
+        
+        <p>The continuous case is the natural extension of the discrete case, where integration replaces summation. Instead of adding weighted discrete values, we integrate the product of each value x and its probability density f(x).</p>
+        
+        <p>To compute the expected value in the continuous case, you evaluate the integral. If the PDF is complex, this may require numerical integration techniques. However, for many common distributions (normal, uniform, exponential), the expected value can be computed analytically.</p>
+        
+        <h3 id="law-large-numbers">3.3 Law of Large Numbers</h3>
+        
+        <div class="definition-box">
+            <strong>Law of Large Numbers:</strong> As the number of trials of a random experiment increases, the average (sample mean) of the observed outcomes gets closer and closer to the expected value (theoretical mean).
+        </div>
+        
+        <p>This fundamental theorem connects the theoretical expected value to practical observations. When you run an experiment just a few times, the observed average may differ from the expected value. However, as you repeat the experiment many times, the observed average converges to the theoretical expected value.</p>
+        
+        <div class="example-box">
+            <strong>Practical Illustration:</strong>
+            
+            <p>Consider flipping a fair coin and recording heads as 1 and tails as 0:</p>
+            <ul>
+                <li>Theoretically, E[X] = 0.5</li>
+                <li>If you flip 3 times and get HHT, the sample mean = 2/3 ≈ 0.67 (quite far from 0.5)</li>
+                <li>If you flip 100 times and get 52 heads, the sample mean = 0.52 (closer to 0.5)</li>
+                <li>If you flip 10,000 times and get 5,012 heads, the sample mean = 0.5012 (very close to 0.5)</li>
+            </ul>
+            
+            <p>This convergence is what the Law of Large Numbers predicts. The more data we collect, the more reliable our estimates become.</p>
+        </div>
+        
+        <h4>Why Expected Value Matters: Three Key Insights</h4>
+        
+        <table>
+            <tr>
+                <th>Insight</th>
+                <th>Explanation</th>
+                <th>Application</th>
+            </tr>
+            <tr>
+                <td><strong>Average Outcome</strong></td>
+                <td>E[X] tells us the average result if we repeat a process many times</td>
+                <td>Business forecasting, game theory, financial planning</td>
+            </tr>
+            <tr>
+                <td><strong>vs. Most Likely Outcome</strong></td>
+                <td>In a game with 99% chance of ₹0 and 1% of ₹1000, the mode is ₹0 but E[X] = ₹10</td>
+                <td>Risk assessment—sometimes rare events significantly impact the average</td>
+            </tr>
+            <tr>
+                <td><strong>Skewed Distributions</strong></td>
+                <td>E[X] helps plan for true average outcome, not just the most common one</td>
+                <td>Income analysis, medical costs—rare expensive cases pull up the average</td>
+            </tr>
+        </table>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>Expected value मतलब average value है जो हम long run में expect करते हैं अगर experiment कई बार repeat करें। यह एक weighted average है जहाँ हर outcome को उसकी probability से multiply करते हैं। Discrete case में हम sum करते हैं, continuous case में integrate करते हैं। Law of Large Numbers बताता है कि जैसे-जैसे हम ज्यादा बार experiment करते हैं, हमारा observed average theoretical expected value के करीब आता है।</p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: In a game where you have 80% chance of losing ₹10 and 20% chance of winning ₹30, what is your expected value?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> E[X] = (-10)(0.8) + (30)(0.2) = -8 + 6 = -₹2. You should expect to lose ₹2 per game on average, so it's not a favorable game to play repeatedly.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2: Why is the expected value different from the most likely value?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> The most likely value (mode) is simply the outcome with the highest probability. The expected value is a weighted average considering all possible outcomes and their probabilities. A rare but extreme value can significantly impact the expected value without being the mode.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3: What does the Law of Large Numbers tell us about the relationship between sample mean and expected value?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> As we increase the number of trials, the sample mean (average of observed outcomes) converges to the theoretical expected value. With very large sample sizes, the sample mean becomes a reliable estimate of the expected value.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Expected value is a weighted average of all possible outcomes weighted by their probabilities</li>
+                <li>For discrete variables: \(E[X] = \sum x_i p_i\); for continuous: \(E[X] = \int x f(x) dx\)</li>
+                <li>Expected value often differs from the most likely outcome (mode), especially in skewed distributions</li>
+                <li>Law of Large Numbers guarantees that sample averages converge to the expected value with large samples</li>
+            </ul>
+        </div>
+        
+        <!-- Section 4: Discrete Distributions -->
+        <h2 id="discrete-distributions">4. Discrete Probability Distributions</h2>
+        
+        <p>Discrete probability distributions are used to model random phenomena where outcomes are countable (like 0, 1, 2, 3, ...). These distributions arise naturally in many real-world situations and form the foundation of statistical inference. We'll examine three fundamental discrete distributions: Bernoulli, Binomial, and Poisson. Each has specific use cases and parameters that define its behavior.</p>
+        
+        <h3 id="bernoulli">4.1 Bernoulli Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Bernoulli distribution models a single trial with exactly two outcomes: success (represented by 1) or failure (represented by 0).
+        </div>
+        
+        <p>The Bernoulli distribution is the simplest discrete probability distribution. It describes any situation where there are exactly two mutually exclusive outcomes—you either succeed or you don't, an event either happens or it doesn't. The distribution is completely defined by a single parameter, p, which represents the probability of success.</p>
+        
+        <div class="formula">
+            <strong>Probability Mass Function (PMF):</strong>
+            
+            \[P(X = x) = \begin{cases} p, & \text{if } x = 1 \\ 1-p, & \text{if } x = 0 \\ 0, & \text{otherwise} \end{cases}\]
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Range</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td><strong>Probability of success</strong></td>
+                <td>p</td>
+                <td>0 ≤ p ≤ 1</td>
+                <td>The probability that the outcome is success (X = 1)</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Value</strong></td>
+                <td>E[X] = p</td>
+                <td>0 ≤ E[X] ≤ 1</td>
+                <td>The long-run average if trial repeated many times</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>Var(X) = p(1-p)</td>
+                <td>0 ≤ Var(X) ≤ 0.25</td>
+                <td>Measures uncertainty; maximized when p = 0.5</td>
+            </tr>
+        </table>
+        
+        <div class="example-box">
+            <strong>Real-World Examples:</strong>
+            <ul>
+                <li>Coin toss: Head = 1, Tail = 0, with p = 0.5 for a fair coin</li>
+                <li>Medical test: Positive = 1, Negative = 0, with p = sensitivity of the test</li>
+                <li>Product quality: Defective = 1, Non-defective = 0, with p = defect rate</li>
+                <li>Email spam filter: Spam = 1, Not spam = 0, with p = false positive rate</li>
+            </ul>
+        </div>
+        
+        <h3 id="binomial">4.2 Binomial Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Binomial distribution models the number of successes in a fixed number of independent Bernoulli trials.
+        </div>
+        
+        <p>If a Bernoulli distribution models a single trial, a Binomial distribution models repeating that trial multiple times. For example, if flipping a coin once is Bernoulli, flipping it 10 times and counting heads is Binomial. The key requirements for Binomial are: a fixed number of trials (n), each trial is independent, and the probability of success (p) is constant across trials.</p>
+        
+        <div class="formula">
+            <strong>Probability Mass Function (PMF):</strong>
+            
+            \[P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, 2, \ldots, n\]
+            
+            where \(\binom{n}{k} = \frac{n!}{k!(n-k)!}\) is the binomial coefficient
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Range</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td><strong>Number of trials</strong></td>
+                <td>n</td>
+                <td>n ≥ 1</td>
+                <td>Fixed number of independent trials</td>
+            </tr>
+            <tr>
+                <td><strong>Probability of success</strong></td>
+                <td>p</td>
+                <td>0 ≤ p ≤ 1</td>
+                <td>Probability of success in each trial</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Value</strong></td>
+                <td>E[X] = np</td>
+                <td>0 ≤ E[X] ≤ n</td>
+                <td>Expected number of successes</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>Var(X) = np(1-p)</td>
+                <td>Depends on n and p</td>
+                <td>Uncertainty in number of successes</td>
+            </tr>
+        </table>
+        
+        <div class="example-box">
+            <strong>Problem: Coin Toss Example</strong>
+            
+            <p>Suppose you toss a fair coin 5 times. What is the probability of getting exactly 3 heads?</p>
+            
+            <p><strong>Given:</strong> n = 5, k = 3, p = 0.5</p>
+            
+            \[P(X = 3) = \binom{5}{3} (0.5)^3 (0.5)^{5-3}\]
+            
+            \[= \binom{5}{3} (0.5)^3 (0.5)^2\]
+            
+            \[= 10 \times 0.125 \times 0.25 = 0.3125\]
+            
+            <p>The probability of getting exactly 3 heads in 5 tosses is <strong>0.3125 or 31.25%</strong>.</p>
+        </div>
+        
+        <h3 id="poisson">4.3 Poisson Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Poisson distribution models the number of rare events occurring in a fixed interval of time or space, when events occur at a constant average rate and are independent of the time since the last event.
+        </div>
+        
+        <p>The Poisson distribution is particularly useful for modeling rare events. Unlike Binomial which requires a fixed number of trials, Poisson counts events in a continuous interval (time or space). The distribution is determined by a single parameter, λ (lambda), which represents the average rate of events in the interval.</p>
+        
+        <div class="formula">
+            <strong>Probability Mass Function (PMF):</strong>
+            
+            \[P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}, \quad k = 0, 1, 2, \ldots\]
+            
+            where λ is the average number of events in the interval, and e ≈ 2.71828
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Range</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td><strong>Average rate</strong></td>
+                <td>λ</td>
+                <td>λ > 0</td>
+                <td>Average number of events in the interval</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Value</strong></td>
+                <td>E[X] = λ</td>
+                <td>E[X] > 0</td>
+                <td>Expected number of events in interval</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>Var(X) = λ</td>
+                <td>Var(X) > 0</td>
+                <td>Uncertainty equals the mean (unique property!)</td>
+            </tr>
+        </table>
+        
+        <div class="example-box">
+            <strong>Problem: Server Crashes</strong>
+            
+            <p>Suppose a server crashes on average 2 times per day. If we assume the number of crashes follows a Poisson distribution, what is the probability of exactly 3 crashes in a day?</p>
+            
+            <p><strong>Given:</strong> λ = 2, k = 3</p>
+            
+            \[P(X = 3) = \frac{2^3 e^{-2}}{3!} = \frac{8 \times e^{-2}}{6}\]
+            
+            \[= \frac{8 \times 0.1353}{6} \approx 0.180\]
+            
+            <p>The probability of exactly 3 crashes in a day is approximately <strong>0.180 or 18%</strong>.</p>
+        </div>
+        
+        <h4>When to Use Each Distribution</h4>
+        
+        <table>
+            <tr>
+                <th>Distribution</th>
+                <th>Situation</th>
+                <th>Parameters</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><strong>Bernoulli</strong></td>
+                <td>Single trial, two outcomes</td>
+                <td>p</td>
+                <td>One coin flip</td>
+            </tr>
+            <tr>
+                <td><strong>Binomial</strong></td>
+                <td>Fixed number of independent trials</td>
+                <td>n, p</td>
+                <td>10 coin flips, count heads</td>
+            </tr>
+            <tr>
+                <td><strong>Poisson</strong></td>
+                <td>Rare events in fixed interval</td>
+                <td>λ</td>
+                <td>Customer arrivals per hour, defects per batch</td>
+            </tr>
+        </table>
+        
+        <p>Professor mentioned in class: A key relationship to remember is that the Binomial distribution approaches the Poisson distribution when n is very large, p is very small, and np = λ is moderate. This is why Poisson is often called the "distribution of rare events"—it's what happens when you have many trials, each with tiny success probability.</p>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>Bernoulli distribution एक single trial के लिए है—success या failure। Binomial यह है कि अगर same trial को n बार repeat करो और successes count करो। Poisson rare events के लिए use होता है जो constant rate पर होते हैं, जैसे phone calls या server crashes। हर distribution का अपना parameter है जो इसे define करता है—Bernoulli के लिए p, Binomial के लिए n और p, Poisson के लिए λ।</p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: If you roll a die 10 times, what is the expected number of 6's you'll get?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> This follows a Binomial distribution with n = 10 and p = 1/6. E[X] = np = 10 × (1/6) ≈ 1.67. You expect to get about 1.67 sixes on average.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2: What is the key difference between Binomial and Poisson distributions?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> Binomial counts successes in a fixed number of trials (n is predetermined). Poisson counts events in a fixed interval without a predetermined limit on the number of trials—it models when events occur continuously at a constant rate.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3: Why is Variance = λ a unique property of the Poisson distribution?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> In most distributions, variance and mean are different parameters. For Poisson, the variance equals the mean (λ). This means that for Poisson data, if you observe a large mean, you also expect large variability. This property helps identify whether data might follow a Poisson distribution.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Bernoulli: single trial with two outcomes, parameter p</li>
+                <li>Binomial: n independent Bernoulli trials, count successes, E[X] = np</li>
+                <li>Poisson: rare events at constant rate, parameter λ, E[X] = Var(X) = λ</li>
+                <li>Choose the distribution based on your data structure and problem context</li>
+            </ul>
+        </div>
+        
+        <!-- Section 5: Continuous Distributions -->
+        <h2 id="continuous-distributions">5. Continuous Probability Distributions</h2>
+        
+        <p>Continuous probability distributions describe random variables that can take any value within a range (or ranges). Unlike discrete distributions which are defined by probability mass functions, continuous distributions are defined by probability density functions. We'll examine three fundamental continuous distributions: Uniform, Normal (Gaussian), and Exponential. Each models different real-world phenomena and has distinct characteristics.</p>
+        
+        <h3 id="uniform">5.1 Uniform Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Uniform distribution models scenarios where all outcomes in an interval [A, B] are equally likely. The probability density is constant throughout the interval.
+        </div>
+        
+        <p>The Uniform distribution is perhaps the simplest continuous distribution. It's characterized by a flat, rectangular shape—all values in the interval have the same probability density. This distribution naturally arises in situations where there is no reason to believe any particular value is more likely than another.</p>
+        
+        <div class="formula">
+            <strong>Probability Density Function (PDF):</strong>
+            
+            \[f(x) = \begin{cases} \frac{1}{B-A}, & A \leq x \leq B \\ 0, & \text{otherwise} \end{cases}\]
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td><strong>Lower bound</strong></td>
+                <td>A</td>
+                <td>Minimum value in the interval</td>
+            </tr>
+            <tr>
+                <td><strong>Upper bound</strong></td>
+                <td>B</td>
+                <td>Maximum value in the interval</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Value</strong></td>
+                <td>E[X] = (A + B)/2</td>
+                <td>Midpoint of the interval</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>Var(X) = (B - A)²/12</td>
+                <td>Measures spread; larger interval means more variance</td>
+            </tr>
+        </table>
+        
+        <div class="example-box">
+            <strong>Real-World Example: Arrival Times</strong>
+            
+            <p>Suppose a bus arrives randomly between 10:00 a.m. and 11:00 a.m., with all arrival times equally likely. The time of arrival follows a Uniform distribution with A = 10:00 and B = 11:00 (or numerically, A = 10 and B = 11).</p>
+            
+            <p><strong>Question:</strong> What is the probability that the bus arrives between 10:15 a.m. and 10:45 a.m.?</p>
+            
+            <p><strong>Solution:</strong> Convert times to decimal: 10:15 = 10.25 and 10:45 = 10.75</p>
+            
+            \[f(x) = \frac{1}{11-10} = 1 \text{ for } 10 \leq x \leq 11\]
+            
+            \[P(10.25 \leq X \leq 10.75) = \int_{10.25}^{10.75} 1 \, dx = 10.75 - 10.25 = 0.5\]
+            
+            <p>The probability is <strong>0.5 or 50%</strong>. The bus has a 50% chance of arriving in that 30-minute window, which makes sense since that's half of the 60-minute total interval.</p>
+        </div>
+        
+        <h3 id="normal">5.2 Normal Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Normal (or Gaussian) distribution is the most important continuous distribution in statistics. It describes many natural phenomena and is defined by its characteristic bell curve shape.
+        </div>
+        
+        <p>The Normal distribution is ubiquitous in statistics and nature. Heights, weights, test scores, measurement errors, and countless other natural phenomena approximately follow a Normal distribution. Its importance stems from the Central Limit Theorem, which states that the average of many independent random variables tends toward a Normal distribution, regardless of the original distribution.</p>
+        
+        <div class="formula">
+            <strong>Probability Density Function (PDF):</strong>
+            
+            \[f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}\]
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Impact on Distribution</th>
+            </tr>
+            <tr>
+                <td><strong>Mean</strong></td>
+                <td>μ</td>
+                <td>Center of distribution</td>
+                <td>Shifts curve left/right</td>
+            </tr>
+            <tr>
+                <td><strong>Standard Deviation</strong></td>
+                <td>σ</td>
+                <td>Spread around the mean</td>
+                <td>Larger σ = flatter, wider curve</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>σ²</td>
+                <td>Square of standard deviation</td>
+                <td>Measure of dispersion</td>
+            </tr>
+        </table>
+        
+        <h4>Key Properties of Normal Distribution</h4>
+        
+        <ul>
+            <li><strong>Symmetry:</strong> The distribution is perfectly symmetric about the mean μ</li>
+            <li><strong>Bell-shaped:</strong> The characteristic bell curve with peak at the mean</li>
+            <li><strong>68-95-99.7 Rule:</strong> Approximately 68% of data within 1σ of μ, 95% within 2σ, 99.7% within 3σ</li>
+            <li><strong>Determined by two parameters:</strong> Completely defined by mean (μ) and standard deviation (σ)</li>
+            <li><strong>Standardization:</strong> Any Normal can be transformed to Standard Normal (μ = 0, σ = 1) using z-score</li>
+        </ul>
+        
+        <div class="example-box">
+            <strong>The 68-95-99.7 Rule Illustrated:</strong>
+            
+            <p>If test scores follow Normal distribution with μ = 70 and σ = 10:</p>
+            <ul>
+                <li><strong>68%</strong> of students score between 60 and 80 (within 1 std dev)</li>
+                <li><strong>95%</strong> of students score between 50 and 90 (within 2 std devs)</li>
+                <li><strong>99.7%</strong> of students score between 40 and 100 (within 3 std devs)</li>
+            </ul>
+            
+            <p>This rule helps us quickly estimate probabilities without calculating integrals!</p>
+        </div>
+        
+        <h3 id="exponential">5.3 Exponential Distribution</h3>
+        
+        <div class="definition-box">
+            <strong>Definition:</strong> The Exponential distribution models the time between independent events occurring at a constant average rate. It's closely related to the Poisson distribution.
+        </div>
+        
+        <p>While Poisson counts the number of events in a fixed interval, Exponential measures the time until the next event occurs. If events follow a Poisson process (independent events at constant rate), then the time between events follows an Exponential distribution. This makes Exponential crucial for modeling waiting times, equipment lifetime, and other time-until-event scenarios.</p>
+        
+        <div class="formula">
+            <strong>Probability Density Function (PDF):</strong>
+            
+            \[f(x) = \lambda e^{-\lambda x}, \quad x \geq 0\]
+        </div>
+        
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Notation</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td><strong>Rate parameter</strong></td>
+                <td>λ</td>
+                <td>Average number of events per unit time</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Value</strong></td>
+                <td>E[X] = 1/λ</td>
+                <td>Average time between events</td>
+            </tr>
+            <tr>
+                <td><strong>Variance</strong></td>
+                <td>Var(X) = 1/λ²</td>
+                <td>Measure of uncertainty in wait time</td>
+            </tr>
+        </table>
+        
+        <div class="example-box">
+            <strong>Real-World Example: Phone Call Waiting Time</strong>
+            
+            <p>Phone calls arrive at a booth at a rate of 3 per minute (λ = 3). Assuming calls follow a Poisson process, what is the probability that the next call arrives within 1 minute?</p>
+            
+            <p><strong>Solution:</strong> We need to find P(X ≤ 1) where X is the wait time. This requires the CDF of the Exponential distribution:</p>
+            
+            \[F(x) = P(X \leq x) = 1 - e^{-\lambda x}\]
+            
+            \[P(X \leq 1) = 1 - e^{-3 \times 1} = 1 - e^{-3}\]
+            
+            \[= 1 - 0.0498 \approx 0.9502\]
+            
+            <p>The probability that the next call arrives within 1 minute is approximately <strong>95.02%</strong>. This makes sense—with 3 calls expected per minute, getting the next call within 1 minute is very likely.</p>
+        </div>
+        
+        <h4>Comparison of Continuous Distributions</h4>
+        
+        <table>
+            <tr>
+                <th>Distribution</th>
+                <th>Use Case</th>
+                <th>Parameters</th>
+                <th>Shape</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><strong>Uniform</strong></td>
+                <td>All values equally likely</td>
+                <td>A, B</td>
+                <td>Rectangular (flat)</td>
+                <td>Random arrival time</td>
+            </tr>
+            <tr>
+                <td><strong>Normal</strong></td>
+                <td>Natural measurements, averages</td>
+                <td>μ, σ</td>
+                <td>Bell-shaped, symmetric</td>
+                <td>Height, test scores</td>
+            </tr>
+            <tr>
+                <td><strong>Exponential</strong></td>
+                <td>Time between rare events</td>
+                <td>λ</td>
+                <td>Decreasing exponential curve</td>
+                <td>Waiting time, equipment lifetime</td>
+            </tr>
+        </table>
+        
+        <p>Professor mentioned in class: The relationship between Poisson and Exponential is fundamental. If the number of events in time interval t follows Poisson(λt), then the time to the first event follows Exponential(λ). This connection is crucial for understanding time-series data and queuing theory.</p>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>Continuous distributions के लिए three important हैं: Uniform बराबर (equal) probability देता है सारे interval में, Normal वह bell curve है जो हर जगह देखते हो natural measurements में, और Exponential waiting time model करता है जब events constant rate पर happen हों। Normal सबसे important है क्योंकि average का distribution Normal बन जाता है भले ही original data कुछ भी हो। Exponential Poisson के साथ related है—Poisson events count करता है, Exponential time between events देता है।</p>
+        </div>
+        
+        <div class="practice-questions">
+            <h4>📝 Practice Questions</h4>
+            
+            <div class="question">
+                <strong>Q1: In a Uniform distribution between 0 and 10, what is P(3 ≤ X ≤ 7)?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> f(x) = 1/(10-0) = 0.1. P(3 ≤ X ≤ 7) = ∫₃⁷ 0.1 dx = 0.1(7-3) = 0.4 or 40%.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q2: What percentage of data falls within 2 standard deviations in a Normal distribution?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> According to the 68-95-99.7 rule, approximately 95% of data falls within 2 standard deviations of the mean.
+                </div>
+            </div>
+            
+            <div class="question">
+                <strong>Q3: If the mean time between customer arrivals is 5 minutes, what is the rate parameter λ in the Exponential distribution?</strong>
+                <button class="question-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                <div class="answer">
+                    <strong>A:</strong> Since E[X] = 1/λ = 5, we have λ = 1/5 = 0.2. On average, 0.2 customers arrive per minute, or 12 per hour.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li>Uniform: all values equally likely in [A,B], rectangular shape, E[X] = (A+B)/2</li>
+                <li>Normal: bell-shaped, symmetric, 68-95-99.7 rule, most common in practice</li>
+                <li>Exponential: models time between events, E[X] = 1/λ, related to Poisson</li>
+                <li>Each distribution has specific parameters and real-world applications</li>
+            </ul>
+        </div>
+        
+        <!-- Section 6: PDF vs CDF Comprehensive -->
+        <h2 id="pdf-vs-cdf">6. PDF vs CDF: Comprehensive Comparison</h2>
+        
+        <p>Understanding the relationship between Probability Density Functions and Cumulative Distribution Functions is essential for working with probability distributions. While both describe probability, they represent different aspects of the distribution. Let's provide a comprehensive comparison and understand when to use each.</p>
+        
+        <h4>Mathematical Relationship</h4>
+        
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>PDF: f(x)</th>
+                <th>CDF: F(x)</th>
+            </tr>
+            <tr>
+                <td><strong>Definition</strong></td>
+                <td>Probability density at a point x</td>
+                <td>Cumulative probability up to point x</td>
+            </tr>
+            <tr>
+                <td><strong>Formula</strong></td>
+                <td>f(x)</td>
+                <td>F(x) = P(X ≤ x) = ∫_{-∞}^x f(t) dt</td>
+            </tr>
+            <tr>
+                <td><strong>Inverse</strong></td>
+                <td>f(x) = d/dx F(x) (derivative)</td>
+                <td>F(x) = ∫_{-∞}^x f(t) dt (integral)</td>
+            </tr>
+            <tr>
+                <td><strong>Range</strong></td>
+                <td>f(x) ≥ 0, can exceed 1</td>
+                <td>0 ≤ F(x) ≤ 1</td>
+            </tr>
+            <tr>
+                <td><strong>At extreme left</strong></td>
+                <td>Depends on distribution</td>
+                <td>F(-∞) = 0</td>
+            </tr>
+            <tr>
+                <td><strong>At extreme right</strong></td>
+                <td>Depends on distribution</td>
+                <td>F(+∞) = 1</td>
+            </tr>
+            <tr>
+                <td><strong>Monotonicity</strong></td>
+                <td>No constraint; any shape possible</td>
+                <td>Always non-decreasing</td>
+            </tr>
+        </table>
+        
+        <h4>When to Use PDF</h4>
+        
+        <p>Use the PDF when:</p>
+        <ul>
+            <li>You want to know the probability density at a specific point</li>
+            <li>You need to find the probability that X lies in an interval [a, b] by integrating</li>
+            <li>You want to visualize the distribution shape</li>
+            <li>You're working with probability models defined by a density function</li>
+            <li><strong>Question type:</strong> "What is the probability density at x = 5?" or "What's P(2 ≤ X ≤ 8)?"</li>
+        </ul>
+        
+        <h4>When to Use CDF</h4>
+        
+        <p>Use the CDF when:</p>
+        <ul>
+            <li>You want to find cumulative probability up to a point: P(X ≤ x)</li>
+            <li>You want to find the probability of being above a value: P(X > x) = 1 - F(x)</li>
+            <li>You need to find percentiles or quantiles</li>
+            <li>You're working with ordered statistics or hypothesis testing</li>
+            <li><strong>Question type:</strong> "What percentage of values are below 10?" or "What is the 90th percentile?"</li>
+        </ul>
+        
+        <div class="example-box">
+            <strong>Practical Comparison:</strong>
+            
+            <p>For a Normal distribution with μ = 100, σ = 15 (like IQ scores):</p>
+            
+            <p><strong>PDF Question:</strong> "What is the probability density at IQ = 115?"</p>
+            <ul>
+                <li>This asks for the height of the bell curve at x = 115</li>
+                <li>Answer: f(115) ≈ 0.0266</li>
+                <li>This is not a probability but a density</li>
+            </ul>
+            
+            <p><strong>CDF Question:</strong> "What percentage of people have IQ ≤ 115?"</p>
+            <ul>
+                <li>This asks for cumulative probability up to 115</li>
+                <li>Answer: F(115) ≈ 0.8413 or 84.13%</li>
+                <li>This is a probability (between 0 and 1)</li>
+            </ul>
+        </div>
+        
+        <h4>Key Insight: PDF and CDF Summary</h4>
+        
+        <p>In summary, if you were to see a graph:</p>
+        <ul>
+            <li><strong>PDF graph:</strong> Height = density at that point; area under curve between a and b = P(a ≤ X ≤ b)</li>
+            <li><strong>CDF graph:</strong> Height = cumulative probability up to that point; always starts at 0, ends at 1, never decreases</li>
+        </ul>
+        
+        <p>The choice between PDF and CDF depends on what question you're trying to answer. Both contain the same information—one is just the integral of the other—but they present it in different forms suited to different types of questions.</p>
+        
+        <div class="hinglish-summary">
+            <h4>हिंग्लिश सारांश (Hinglish Summary)</h4>
+            <p>PDF और CDF दोनों probability बताते हैं पर अलग तरीकों से। PDF एक point पर density बताता है और interval में probability area के through; यह कोई भी shape हो सकता है। CDF accumulated probability है एक point तक—यह हमेशा 0 से शुरू होता है, 1 पर खत्म होता है, और कभी नीचे नहीं जाता (non-decreasing)। PDF को integrate करो तो CDF मिलता है; CDF को differentiate करो तो PDF मिलता है। यह दोनों एक ही information के अलग-अलग versions हैं।</p>
+        </div>
+        
+        <!-- Visual Mind Map -->
+        <h2>Concept Mind Map</h2>
+        
+        <div class="mindmap-container">
+            <h4>Visual Representation of Key Concepts</h4>
+            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- Center -->
+                <circle cx="400" cy="300" r="50" fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+                <text x="400" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Probability</text>
+                
+                <!-- Main branches -->
+                <!-- Branch 1: Random Variables -->
+                <line x1="400" y1="250" x2="200" y2="100" stroke="#3498db" stroke-width="2"/>
+                <circle cx="200" cy="100" r="40" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                <text x="200" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Random</text>
+                <text x="200" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Variables</text>
+                
+                <!-- Branch 1a: Discrete -->
+                <line x1="200" y1="140" x2="100" y2="200" stroke="#2ecc71" stroke-width="2"/>
+                <circle cx="100" cy="200" r="35" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                <text x="100" y="205" text-anchor="middle" font-size="11" fill="white">Discrete</text>
+                
+                <!-- Branch 1b: Continuous -->
+                <line x1="200" y1="140" x2="300" y2="200" stroke="#2ecc71" stroke-width="2"/>
+                <circle cx="300" cy="200" r="35" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                <text x="300" y="205" text-anchor="middle" font-size="11" fill="white">Continuous</text>
+                
+                <!-- Branch 2: Distributions -->
+                <line x1="400" y1="350" x2="600" y2="450" stroke="#3498db" stroke-width="2"/>
+                <circle cx="600" cy="450" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                <text x="600" y="455" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Probability</text>
+                <text x="600" y="470" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Distributions</text>
+                
+                <!-- Branch 2a: Discrete Dist -->
+                <line x1="600" y1="490" x2="500" y2="530" stroke="#e74c3c" stroke-width="2"/>
+                <circle cx="500" cy="530" r="30" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+                <text x="500" y="535" text-anchor="middle" font-size="10" fill="white">Discrete:</text>
+                <text x="500" y="545" text-anchor="middle" font-size="9" fill="white">Bernoulli</text>
+                
+                <!-- Branch 2b: Continuous Dist -->
+                <line x1="600" y1="490" x2="700" y2="530" stroke="#e74c3c" stroke-width="2"/>
+                <circle cx="700" cy="530" r="30" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+                <text x="700" y="535" text-anchor="middle" font-size="10" fill="white">Continuous:</text>
+                <text x="700" y="545" text-anchor="middle" font-size="9" fill="white">Normal</text>
+                
+                <!-- Branch 3: Functions -->
+                <line x1="450" y1="330" x2="550" y2="200" stroke="#3498db" stroke-width="2"/>
+                <circle cx="550" cy="200" r="40" fill="#16a085" stroke="#1abc9c" stroke-width="2"/>
+                <text x="550" y="200" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Functions</text>
+                <text x="550" y="215" text-anchor="middle" font-size="11" font-weight="bold" fill="white">PDF & CDF</text>
+                
+                <!-- Branch 3a: PDF -->
+                <line x1="510" y1="170" x2="470" y2="120" stroke="#16a085" stroke-width="2"/>
+                <circle cx="470" cy="120" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                <text x="470" y="125" text-anchor="middle" font-size="10" fill="white">PDF</text>
+                
+                <!-- Branch 3b: CDF -->
+                <line x1="590" y1="170" x2="630" y2="120" stroke="#16a085" stroke-width="2"/>
+                <circle cx="630" cy="120" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                <text x="630" y="125" text-anchor="middle" font-size="10" fill="white">CDF</text>
+                
+                <!-- Branch 4: Expected Value -->
+                <line x1="350" y1="330" x2="250" y2="450" stroke="#3498db" stroke-width="2"/>
+                <circle cx="250" cy="450" r="40" fill="#d35400" stroke="#ba4a00" stroke-width="2"/>
+                <text x="250" y="455" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Expected</text>
+                <text x="250" y="470" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Value (μ)</text>
+            </svg>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Comprehensive visualization showing the hierarchy of probability concepts with Random Variables at the base, splitting into Discrete and Continuous types, connecting to various distributions (Bernoulli, Binomial, Poisson, Uniform, Normal, Exponential) and mathematical functions (PDF, CDF, Expected Value)]
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="footer-inner">
+                <p class="footer-text">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</p>
+                <p class="footer-author">~ Armaan Kachhawa</p>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        function toggleAnswer(button) {
+            const answer = button.nextElementSibling;
+            if (answer.style.display === 'none' || answer.style.display === '') {
+                answer.style.display = 'block';
+                button.textContent = 'Hide Answer';
+                button.style.background = '#16a085';
+            } else {
+                answer.style.display = 'none';
+                button.textContent = 'Show Answer';
+                button.style.background = '#f39c12';
+            }
+        }
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

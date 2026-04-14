@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/vsd/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Plots - Part 2: Advanced Visualizations</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #fcfcfc 0%, #c8c8c8 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+        }
+        
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 4px solid #667eea;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #764ba2;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .toc ul li::before {
+            content: "▶";
+            color: #764ba2;
+            margin-right: 10px;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        
+        /* Section Styles */
+        section {
+            margin-bottom: 50px;
+            padding: 25px;
+            background: #fafafa;
+            border-radius: 10px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #764ba2;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* Paragraph and Text Styles */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #764ba2;
+            font-style: italic;
+        }
+        
+        /* Code Blocks */
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+            font-size: 0.9em;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Special Boxes */
+        .note-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .hinglish-summary {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary::before {
+            content: "📝 Hinglish Summary: ";
+            font-weight: bold;
+            color: #155724;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .key-takeaways {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .key-takeaways h4 {
+            color: #721c24;
+            margin-top: 0;
+        }
+        
+        /* Practice Questions */
+        .practice-questions {
+            background: #e7e7ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+        
+        .practice-questions h4 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .answer::before {
+            content: "✅ Answer: ";
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Diagram Placeholder */
+        .diagram-placeholder {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        /* Mind Map */
+        .mindmap {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .mindmap-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .mindmap-branch {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .mindmap-subbranch {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px;
+            border: 2px solid #1976d2;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            pre {
+                font-size: 0.85em;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>📊 Interactive Plots - Part 2</h1>
+            <p class="subtitle">Advanced Visualizations with Plotly</p>
+            <p style="color: #666; margin-top: 10px;"> Creating Interactive Charts, Maps, and Dashboards</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#pie-donut">1. Interactive Pie and Donut Charts</a></li>
+                <li><a href="#geomap">2. Interactive Geographical Maps (GeoMap)</a></li>
+                <li><a href="#3d-scatter">3. Interactive 3D Scatter Plot</a></li>
+                <li><a href="#animated-scatter">4. Animated Scatter Plot (Time-series Motion)</a></li>
+                <li><a href="#heatmap">5. Interactive Heatmap</a></li>
+                <li><a href="#dashboard">6. Dashboard-style Subplots</a></li>
+                <li><a href="#export">7. Export and Share Interactive Plots</a></li>
+                <li><a href="#mindmap">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <!-- Section 1: Pie and Donut Charts -->
+        <section id="pie-donut">
+            <h2>1. Interactive Pie and Donut Charts</h2>
+            
+            <p>Pie charts and donut charts are circular statistical graphics used to illustrate numerical proportions. They are particularly effective when you want to show how different categories contribute to a whole, such as budget allocations, market shares, or survey results. The key difference between a pie chart and a donut chart is that <strong>donut charts have a hole in the center</strong>, making them visually distinct and often easier to read when displaying percentages.</p>
+
+            <h3>Understanding Pie vs Donut Charts</h3>
+            <p>A <strong>pie chart</strong> is a complete circle divided into slices, where each slice represents a category's proportion of the whole. A <strong>donut chart</strong> is essentially a pie chart with the center removed, creating a ring shape. This center hole can be used to display additional information or simply to improve visual appeal.</p>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Required Libraries</h4>
+            <p>We begin by importing the necessary Python libraries. <code>plotly.express</code> provides high-level functions for creating interactive visualizations, while <code>pandas</code> helps us structure our data in DataFrame format.</p>
+
+            <pre>
+import plotly.express as px
+import pandas as pd
+            </pre>
+
+            <div class="professor-note">
+                The professor emphasized that Plotly Express (px) is the easiest way to create interactive visualizations. It provides simple, high-level functions that handle most of the complexity for you.
+            </div>
+
+            <h4>Step 2: Create the Dataset</h4>
+            <p>We create a Python dictionary containing two components: <strong>categories</strong> and their corresponding <strong>budget values</strong>. This data structure represents different sectors and their budget allocations.</p>
+
+            <pre>
+data = {
+    'Category': ['Education', 'Healthcare', 'Infrastructure', 'Defense', 'Others'],
+    'Budget': [400, 300, 200, 150, 100]
+}
+            </pre>
+
+            <p>In this example:</p>
+            <ul>
+                <li><strong>Education</strong> has a budget of 400 crores</li>
+                <li><strong>Healthcare</strong> receives 300 crores</li>
+                <li><strong>Infrastructure</strong> gets 200 crores</li>
+                <li><strong>Defense</strong> is allocated 150 crores</li>
+                <li><strong>Others</strong> category receives 100 crores</li>
+            </ul>
+
+            <h4>Step 3: Convert to DataFrame</h4>
+            <p>DataFrames are tabular data structures that make it easy to manipulate and visualize data. We convert our dictionary into a pandas DataFrame:</p>
+
+            <pre>
+df = pd.DataFrame(data)
+            </pre>
+
+            <h4>Step 4: Create the Donut Chart</h4>
+            <p>Now we use the <code>px.pie()</code> function to create our interactive visualization. The key parameters are:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Purpose</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>df</code></td>
+                        <td>Data Source</td>
+                        <td>The DataFrame containing our data</td>
+                    </tr>
+                    <tr>
+                        <td><code>names</code></td>
+                        <td>Labels</td>
+                        <td>Column name for category labels</td>
+                    </tr>
+                    <tr>
+                        <td><code>values</code></td>
+                        <td>Numerical Data</td>
+                        <td>Column name for numerical values</td>
+                    </tr>
+                    <tr>
+                        <td><code>hole</code></td>
+                        <td>Donut Effect</td>
+                        <td>Size of center hole (0 = pie chart, 0.4 = donut)</td>
+                    </tr>
+                    <tr>
+                        <td><code>title</code></td>
+                        <td>Chart Title</td>
+                        <td>Descriptive title for the visualization</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre>
+# Create Donut Chart
+fig = px.pie(df, 
+             names='Category', 
+             values='Budget', 
+             hole=0.4,  # This creates the donut hole
+             title='Budget Allocation by Category')
+
+# Display the chart
+fig.show()
+            </pre>
+
+            <h3>Understanding the 'hole' Parameter</h3>
+            <p>The <code>hole</code> parameter controls the appearance of your chart:</p>
+            <ul>
+                <li><strong>hole = 0</strong>: Creates a complete pie chart (no hole)</li>
+                <li><strong>hole = 0.4</strong>: Creates a donut chart with a moderate-sized hole (recommended)</li>
+                <li><strong>hole = 0.7</strong>: Creates a thin ring with a large center hole</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor demonstrated that when you run this code, Plotly automatically calculates the percentage share of each category. For example, if Education has a budget of 400 out of a total of 1150 (400+300+200+150+100), it will show approximately 34.8% on the chart.
+            </div>
+
+            <h3>Interactive Features</h3>
+            <p>The generated donut chart is <strong>fully interactive</strong>. Users can:</p>
+            <ul>
+                <li>Hover over any slice to see exact values and percentages</li>
+                <li>Click on legend items to hide/show specific categories</li>
+                <li>Export the chart as a static image (PNG)</li>
+                <li>Zoom and pan (if enabled in settings)</li>
+            </ul>
+
+            <div class="hinglish-summary">
+                Pie aur Donut charts circular graphs hote hain jo different categories ke proportions dikhate hain. Hum pehle <code>plotly.express</code> aur <code>pandas</code> import karte hain, phir data dictionary banate hain jisme categories aur unke values hote hain. Isko DataFrame mein convert karke <code>px.pie()</code> function use karte hain. <strong>hole parameter</strong> se hum decide karte hain ki chart pie banega (hole=0) ya donut (hole=0.4). Chart automatically percentages calculate kar leta hai aur interactive features provide karta hai jaise hover effects aur click to hide/show.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Pie charts show proportions as slices of a circle</li>
+                    <li>Donut charts are pie charts with a center hole (controlled by <code>hole</code> parameter)</li>
+                    <li><code>px.pie()</code> automatically calculates percentages from values</li>
+                    <li>Interactive features include hover information and legend toggling</li>
+                    <li>Data must be in DataFrame format before plotting</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What is the main difference between a pie chart and a donut chart in Plotly?</p>
+                    <div class="answer">
+                        The main difference is the <code>hole</code> parameter. A pie chart has hole=0 (complete circle), while a donut chart has hole > 0 (creates a center hole). A hole value of 0.4 creates a moderate donut effect.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a pie chart (without hole) showing the sales distribution of 5 products: A(50), B(30), C(20), D(15), E(10).</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+import pandas as pd
+
+data = {'Product': ['A', 'B', 'C', 'D', 'E'],
+        'Sales': [50, 30, 20, 15, 10]}
+df = pd.DataFrame(data)
+fig = px.pie(df, names='Product', values='Sales', 
+             title='Sales Distribution')
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. How does Plotly calculate the percentage for each slice in a pie chart?</p>
+                    <div class="answer">
+                        Plotly automatically calculates percentages by dividing each value by the sum of all values and multiplying by 100. For example: (Individual Value / Total Sum) × 100.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. What are two interactive features available in Plotly pie charts?</p>
+                    <div class="answer">
+                        (1) Hover over slices to see exact values and percentages, (2) Click legend items to hide/show specific categories in the chart.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive GeoMap -->
+        <section id="geomap">
+            <h2>2. Interactive Geographical Maps (GeoMap)</h2>
+            
+            <p>Geographical maps are powerful visualization tools that display data in the context of physical locations on Earth. Interactive geomaps allow users to explore global or regional data by country, region, or coordinate. They are particularly useful for visualizing economic indicators, population statistics, environmental data, or any information that has a geographical component.</p>
+
+            <h3>Introduction to GeoMaps</h3>
+            <p>A <strong>GeoMap</strong> (geographical map) combines location data with statistical information to create meaningful visualizations. In this example, we'll create an interactive world map showing GDP per capita for different countries, with features like:</p>
+            <ul>
+                <li>Color-coded continents</li>
+                <li>Bubble sizes representing GDP values</li>
+                <li>Hover information showing country details</li>
+                <li>Rotation and zoom capabilities</li>
+            </ul>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Libraries and Load Dataset</h4>
+            <p>Plotly comes with several built-in datasets for practice and demonstration. The <strong>Gapminder dataset</strong> contains historical data about countries including life expectancy, population, and GDP.</p>
+
+            <pre>
+import plotly.express as px
+
+# Load the Gapminder built-in dataset
+df = px.data.gapminder().query("year == 2007")
+            </pre>
+
+            <p>The <code>.query("year == 2007")</code> method filters the dataset to show only data from the year 2007. This gives us a snapshot of global conditions in that specific year.</p>
+
+            <div class="professor-note">
+                The professor explained that Gapminder is a famous dataset used in Hans Rosling's TED talks. It contains comprehensive data about countries from 1952 to 2007. We're filtering for 2007 to get the most recent data in the dataset.
+            </div>
+
+            <h4>Step 2: Understanding the Dataset Structure</h4>
+            <p>When we examine the filtered dataset, we see 142 rows (countries) and 8 columns:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column Name</th>
+                        <th>Description</th>
+                        <th>Example Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>country</code></td>
+                        <td>Country name</td>
+                        <td>India, United States</td>
+                    </tr>
+                    <tr>
+                        <td><code>continent</code></td>
+                        <td>Continent name</td>
+                        <td>Asia, Europe, Africa</td>
+                    </tr>
+                    <tr>
+                        <td><code>year</code></td>
+                        <td>Year of data</td>
+                        <td>2007 (filtered)</td>
+                    </tr>
+                    <tr>
+                        <td><code>lifeExp</code></td>
+                        <td>Life expectancy in years</td>
+                        <td>65.5, 78.2</td>
+                    </tr>
+                    <tr>
+                        <td><code>pop</code></td>
+                        <td>Total population</td>
+                        <td>1,210,193,422</td>
+                    </tr>
+                    <tr>
+                        <td><code>gdpPercap</code></td>
+                        <td>GDP per capita (USD)</td>
+                        <td>42,951.65</td>
+                    </tr>
+                    <tr>
+                        <td><code>iso_alpha</code></td>
+                        <td>3-letter country code</td>
+                        <td>IND, USA, GBR</td>
+                    </tr>
+                    <tr>
+                        <td><code>iso_num</code></td>
+                        <td>Numerical country code</td>
+                        <td>356, 840</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Step 3: Create the Interactive GeoMap</h4>
+            <p>The <code>px.scatter_geo()</code> function creates a scatter plot overlaid on a geographical map. Each country becomes a point on the map, and we can customize various visual attributes:</p>
+
+            <pre>
+fig = px.scatter_geo(df, 
+                     locations="iso_alpha",      # Country codes
+                     color="continent",          # Color by continent
+                     hover_name="country",       # Show country name on hover
+                     size="gdpPercap",          # Bubble size based on GDP
+                     projection="natural earth", # Map projection type
+                     title="World GDP per Capita (2007)")
+
+fig.show()
+            </pre>
+
+            <h3>Understanding Key Parameters</h3>
+
+            <h4>1. locations Parameter</h4>
+            <p>The <code>locations</code> parameter specifies how to identify countries on the map. We use <code>"iso_alpha"</code> (ISO 3166-1 alpha-3 codes) which are standardized 3-letter country codes like:</p>
+            <ul>
+                <li><strong>IND</strong> = India</li>
+                <li><strong>USA</strong> = United States</li>
+                <li><strong>GBR</strong> = United Kingdom</li>
+                <li><strong>CHN</strong> = China</li>
+            </ul>
+
+            <h4>2. color Parameter</h4>
+            <p>Setting <code>color="continent"</code> assigns different colors to each continent, making it easy to identify geographical regions at a glance. Plotly automatically generates a color scheme and legend.</p>
+
+            <h4>3. hover_name Parameter</h4>
+            <p>This defines what text appears when you hover over a data point. By setting it to <code>"country"</code>, the country name will be prominently displayed in the hover tooltip.</p>
+
+            <h4>4. size Parameter</h4>
+            <p>The <code>size="gdpPercap"</code> parameter makes bubble sizes proportional to GDP per capita. Countries with higher GDP per capita appear as larger circles on the map.</p>
+
+            <h4>5. projection Parameter</h4>
+            <p>The <code>projection</code> parameter determines how the 3D sphere of Earth is represented on a 2D surface. <strong>"natural earth"</strong> is a visually appealing projection that balances size and shape distortions. Other options include:</p>
+            <ul>
+                <li><strong>orthographic</strong>: Globe view</li>
+                <li><strong>mercator</strong>: Traditional flat map</li>
+                <li><strong>robinson</strong>: Compromise projection</li>
+                <li><strong>equirectangular</strong>: Simple latitude-longitude grid</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor demonstrated that you can rotate the map by clicking and dragging, zoom in on specific regions using the scroll wheel, and double-click to reset the view. The interactive features make it much more engaging than static maps.
+            </div>
+
+            <h3>Interactive Features of GeoMaps</h3>
+            <p>The generated geographical map provides several interactive capabilities:</p>
+            <ul>
+                <li><strong>Rotation</strong>: Click and drag to rotate the Earth/map</li>
+                <li><strong>Zoom</strong>: Scroll wheel or pinch to zoom in/out</li>
+                <li><strong>Hover Information</strong>: Move mouse over countries to see detailed data</li>
+                <li><strong>Legend Filtering</strong>: Click continent names in legend to show/hide them</li>
+                <li><strong>Reset View</strong>: Double-click to return to original view</li>
+            </ul>
+
+            <div class="hinglish-summary">
+                GeoMap ek interactive geographical visualization hai jo world map par data display karta hai. Hum Plotly ki built-in <strong>Gapminder dataset</strong> use karte hain aur <code>query()</code> se sirf 2007 ka data filter karte hain. Dataset mein 142 countries ki information hoti hai jaise population, GDP, life expectancy. <code>px.scatter_geo()</code> function se map banate hain jisme <code>locations</code> country codes specify karta hai, <code>color</code> continent ke basis par colors assign karta hai, <code>size</code> GDP ke according bubble size set karta hai, aur <code>projection</code> map ki display style define karta hai. Is map ko hum rotate, zoom aur hover kar sakte hain for detailed information.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>GeoMaps visualize data in geographical context on world maps</li>
+                    <li>Gapminder is a built-in dataset with country-level historical data</li>
+                    <li><code>px.scatter_geo()</code> creates interactive geographical scatter plots</li>
+                    <li>ISO alpha codes (iso_alpha) are used to identify countries</li>
+                    <li>Bubble size can represent quantitative variables like GDP or population</li>
+                    <li>Maps support rotation, zoom, and hover interactions</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What is the purpose of the <code>locations</code> parameter in <code>px.scatter_geo()</code>?</p>
+                    <div class="answer">
+                        The <code>locations</code> parameter specifies which column contains the country identification codes (like ISO alpha-3 codes: IND, USA, CHN) that Plotly uses to place data points on the geographical map.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a GeoMap showing population (pop) by country for the year 2007, with continents color-coded.</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+df = px.data.gapminder().query("year == 2007")
+fig = px.scatter_geo(df, locations="iso_alpha", 
+                     color="continent", size="pop",
+                     hover_name="country",
+                     title="World Population 2007")
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. What does the "natural earth" projection represent?</p>
+                    <div class="answer">
+                        "Natural earth" is a map projection that provides a visually balanced representation of the Earth, minimizing distortions in both shape and size, making it ideal for world maps.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. Name three interactive features available in Plotly GeoMaps.</p>
+                    <div class="answer">
+                        (1) Click and drag to rotate the map, (2) Scroll wheel to zoom in/out, (3) Hover over countries to see detailed information in tooltips.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: 3D Scatter Plot -->
+        <section id="3d-scatter">
+            <h2>3. Interactive 3D Scatter Plot</h2>
+            
+            <p>Three-dimensional scatter plots extend traditional 2D scatter plots by adding a third dimension, allowing us to visualize relationships between three variables simultaneously. This is particularly useful when exploring multidimensional datasets where patterns may not be visible in two dimensions alone.</p>
+
+            <h3>Understanding 3D Visualization</h3>
+            <p>A <strong>3D scatter plot</strong> places data points in a three-dimensional coordinate system with X, Y, and Z axes. Unlike 2D plots that are confined to a flat plane, 3D plots allow you to:</p>
+            <ul>
+                <li>Rotate the view to see data from different angles</li>
+                <li>Identify clusters and patterns in three dimensions</li>
+                <li>Add color as a fourth dimension for additional categorization</li>
+                <li>Zoom and pan to explore specific regions</li>
+            </ul>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Required Libraries</h4>
+            <pre>
+import plotly.express as px
+import numpy as np
+import pandas as pd
+            </pre>
+
+            <p><code>numpy</code> is essential for generating random data and performing numerical operations, while <code>pandas</code> helps structure our data.</p>
+
+            <h4>Step 2: Generate Random 3D Data</h4>
+            <p>To create meaningful 3D visualizations, we first need data with three numerical dimensions. We'll generate random data using NumPy:</p>
+
+            <pre>
+# Set random seed for reproducibility
+np.random.seed(10)
+
+# Generate 100 random points in 3D space
+x = np.random.randn(100)
+y = np.random.randn(100)
+z = np.random.randn(100)
+
+# Generate random categories for color coding
+color = np.random.choice(['A', 'B', 'C'], 100)
+            </pre>
+
+            <h3>Understanding the Data Generation</h3>
+
+            <h4>Random Seed</h4>
+            <p>The <code>np.random.seed(10)</code> function sets a starting point for random number generation. This ensures that every time you run the code, you get the <strong>same random numbers</strong>, making your results reproducible. The number 10 is arbitrary; you could use any integer.</p>
+
+            <div class="professor-note">
+                The professor explained that setting a seed is important for demonstration purposes and debugging. It captures uncertainty while maintaining consistency across multiple runs. In production environments or real experiments, you might omit the seed to get truly random results each time.
+            </div>
+
+            <h4>Random Normal Distribution</h4>
+            <p><code>np.random.randn(100)</code> generates 100 random numbers from a <strong>standard normal distribution</strong> (mean = 0, standard deviation = 1). This creates a bell-curved distribution of values, mostly clustering around zero.</p>
+
+            <h4>Random Choices for Categories</h4>
+            <p><code>np.random.choice(['A', 'B', 'C'], 100)</code> randomly selects 100 items from the list ['A', 'B', 'C']. This creates categorical data that we'll use for color coding our 3D points.</p>
+
+            <h4>Step 3: Create DataFrame</h4>
+            <p>We organize our generated data into a structured DataFrame:</p>
+
+            <pre>
+df = pd.DataFrame({
+    'x': x,
+    'y': y,
+    'z': z,
+    'color': color
+})
+            </pre>
+
+            <p>This creates a table with four columns: x, y, z (coordinates), and color (category).</p>
+
+            <h4>Step 4: Create the 3D Scatter Plot</h4>
+            <pre>
+fig = px.scatter_3d(df, 
+                    x='x',           # X-axis column
+                    y='y',           # Y-axis column
+                    z='z',           # Z-axis column
+                    color='color',   # Color by category
+                    title='Interactive 3D Scatter Plot')
+
+fig.show()
+            </pre>
+
+            <h3>Understanding Key Parameters</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Purpose</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>df</code></td>
+                        <td>Data Source</td>
+                        <td>The DataFrame containing all data</td>
+                    </tr>
+                    <tr>
+                        <td><code>x</code></td>
+                        <td>X-axis</td>
+                        <td>Column name for horizontal axis</td>
+                    </tr>
+                    <tr>
+                        <td><code>y</code></td>
+                        <td>Y-axis</td>
+                        <td>Column name for vertical axis</td>
+                    </tr>
+                    <tr>
+                        <td><code>z</code></td>
+                        <td>Z-axis (Depth)</td>
+                        <td>Column name for depth dimension</td>
+                    </tr>
+                    <tr>
+                        <td><code>color</code></td>
+                        <td>Categorization</td>
+                        <td>Column for color coding (4th dimension)</td>
+                    </tr>
+                    <tr>
+                        <td><code>title</code></td>
+                        <td>Chart Title</td>
+                        <td>Descriptive title for the plot</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Interactive Features of 3D Scatter Plots</h3>
+            <p>The generated 3D scatter plot is highly interactive with the following capabilities:</p>
+
+            <h4>1. Rotation</h4>
+            <p>Click and drag anywhere on the plot to rotate the 3D space. This allows you to view your data from different angles, revealing patterns that might be hidden from a single viewpoint.</p>
+
+            <h4>2. Zoom</h4>
+            <p>Use your mouse scroll wheel (or pinch gesture on touchscreens) to zoom in and out. This helps you focus on specific clusters or examine outliers more closely.</p>
+
+            <h4>3. Pan</h4>
+            <p>Hold Shift and drag to pan (move) the plot without rotating it. This is useful when you've zoomed in and want to explore different regions.</p>
+
+            <h4>4. Hover Information</h4>
+            <p>Move your mouse over any data point to see its exact X, Y, Z coordinates and category information in a tooltip.</p>
+
+            <h4>5. Reset View</h4>
+            <p>Double-click anywhere on the plot to reset to the original view orientation.</p>
+
+            <div class="professor-note">
+                The professor demonstrated that you can rotate the plot left, right, up, and down to see the data from all angles. He emphasized that this interactivity is what makes 3D plots in Plotly superior to static 3D visualizations, as it allows for true exploration of the data space.
+            </div>
+
+            <h3>Practical Applications</h3>
+            <p>3D scatter plots are particularly useful in fields such as:</p>
+            <ul>
+                <li><strong>Machine Learning</strong>: Visualizing feature spaces with three principal components</li>
+                <li><strong>Physics</strong>: Plotting particle positions or trajectories in 3D space</li>
+                <li><strong>Chemistry</strong>: Molecular structure visualization</li>
+                <li><strong>Economics</strong>: Analyzing relationships between three economic indicators</li>
+                <li><strong>Biology</strong>: Plotting morphological measurements across three dimensions</li>
+            </ul>
+
+            <div class="hinglish-summary">
+                3D scatter plot teen dimensions (X, Y, Z axes) mein data points ko visualize karta hai. Pehle hum <code>numpy</code> use karke random data generate karte hain - <code>np.random.seed()</code> se reproducible results milte hain aur <code>np.random.randn(100)</code> se 100 random values generate hote hain jo normal distribution follow karte hain. Phir <code>np.random.choice()</code> se categories (A, B, C) randomly assign karte hain color coding ke liye. Sab data ko DataFrame mein organize karke <code>px.scatter_3d()</code> function use karte hain jisme x, y, z columns specify karte hain aur color ke through 4th dimension add karte hain. Result ek interactive plot hota hai jisko rotate, zoom aur pan kar sakte hain sabhi angles se data dekhne ke liye.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>3D scatter plots visualize relationships between three numerical variables</li>
+                    <li><code>np.random.seed()</code> ensures reproducible random data generation</li>
+                    <li><code>np.random.randn()</code> generates normally distributed random numbers</li>
+                    <li>Color coding adds a fourth dimension to 3D plots</li>
+                    <li>Interactive features include rotation, zoom, pan, and hover tooltips</li>
+                    <li><code>px.scatter_3d()</code> requires x, y, and z column specifications</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What is the purpose of <code>np.random.seed()</code> in 3D plot generation?</p>
+                    <div class="answer">
+                        <code>np.random.seed()</code> sets a starting point for random number generation, ensuring that the same "random" numbers are generated each time the code runs, making results reproducible and consistent for demonstration and debugging.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a 3D scatter plot with 50 random points and two categories ('Red', 'Blue').</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+import numpy as np
+import pandas as pd
+
+np.random.seed(42)
+df = pd.DataFrame({
+    'x': np.random.randn(50),
+    'y': np.random.randn(50),
+    'z': np.random.randn(50),
+    'category': np.random.choice(['Red', 'Blue'], 50)
+})
+fig = px.scatter_3d(df, x='x', y='y', z='z', 
+                    color='category', 
+                    title='3D Plot with 50 Points')
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. What does <code>np.random.randn(100)</code> generate?</p>
+                    <div class="answer">
+                        It generates 100 random numbers from a standard normal distribution with mean=0 and standard deviation=1, creating a bell-curved distribution of values mostly clustered around zero.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. Name three ways to interact with a 3D scatter plot in Plotly.</p>
+                    <div class="answer">
+                        (1) Click and drag to rotate the 3D view, (2) Scroll wheel to zoom in and out, (3) Hover over points to see exact coordinate values and categories.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Animated Scatter Plot -->
+        <section id="animated-scatter">
+            <h2>4. Animated Scatter Plot (Time-series Motion)</h2>
+            
+            <p>Animated scatter plots bring the dimension of <strong>time</strong> into data visualization, allowing viewers to see how data evolves over time. This is particularly powerful for understanding trends, changes, and patterns in temporal data. The most famous example is Hans Rosling's presentation showing how countries developed over decades using animated bubble charts.</p>
+
+            <h3>Understanding Time-Series Animation</h3>
+            <p>An <strong>animated scatter plot</strong> is essentially a series of scatter plots shown in sequence, where each frame represents a different time period. As the animation plays, you can observe:</p>
+            <ul>
+                <li>How individual data points move across the plot over time</li>
+                <li>Emerging trends and patterns in the data</li>
+                <li>Relative changes between different groups or categories</li>
+                <li>Convergence or divergence of data clusters</li>
+            </ul>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Libraries and Load Dataset</h4>
+            <pre>
+import plotly.express as px
+
+# Load complete Gapminder dataset (all years)
+df = px.data.gapminder()
+            </pre>
+
+            <p>Unlike our previous GeoMap example where we filtered for a single year, here we load the <strong>complete Gapminder dataset</strong> containing data from multiple years (1952-2007). This temporal data is essential for creating animation.</p>
+
+            <div class="note-box">
+                <strong>Dataset Overview:</strong> The complete Gapminder dataset contains 1,704 rows representing country-year combinations from 1952 to 2007, measured every 5 years. This gives us 12 time points for each country.
+            </div>
+
+            <h4>Step 2: Create the Animated Scatter Plot</h4>
+            <p>Now we'll create an animated visualization showing global development over time:</p>
+
+            <pre>
+fig = px.scatter(df, 
+                 x="gdpPercap",              # X-axis: GDP per capita
+                 y="lifeExp",                # Y-axis: Life expectancy
+                 animation_frame="year",     # Animate over years
+                 animation_group="country",  # Track countries across frames
+                 size="pop",                 # Bubble size by population
+                 color="continent",          # Color by continent
+                 hover_name="country",       # Show country on hover
+                 log_x=True,                 # Logarithmic X-axis
+                 size_max=60,                # Maximum bubble size
+                 range_x=[100, 100000],      # X-axis range
+                 range_y=[20, 90],           # Y-axis range (life expectancy)
+                 title='Global Development Over Time')
+
+fig.show()
+            </pre>
+
+            <h3>Understanding Key Parameters</h3>
+
+            <h4>Animation Parameters</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Purpose</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>animation_frame</code></td>
+                        <td>Time Dimension</td>
+                        <td>Column that defines animation frames (here: "year")</td>
+                    </tr>
+                    <tr>
+                        <td><code>animation_group</code></td>
+                        <td>Tracking ID</td>
+                        <td>Column that tracks entities across frames (here: "country")</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                The professor emphasized that <code>animation_frame</code> tells Plotly which column to use for creating different frames of the animation, while <code>animation_group</code> ensures that the same country is tracked consistently as it moves across the plot over time. Without animation_group, you might see countries disappearing and reappearing rather than smoothly transitioning.
+            </div>
+
+            <h4>Visual Parameters</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value/Purpose</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>x="gdpPercap"</code></td>
+                        <td>Horizontal axis</td>
+                        <td>GDP per capita (economic indicator)</td>
+                    </tr>
+                    <tr>
+                        <td><code>y="lifeExp"</code></td>
+                        <td>Vertical axis</td>
+                        <td>Life expectancy (health indicator)</td>
+                    </tr>
+                    <tr>
+                        <td><code>size="pop"</code></td>
+                        <td>Bubble size</td>
+                        <td>Population (larger bubbles = more people)</td>
+                    </tr>
+                    <tr>
+                        <td><code>color="continent"</code></td>
+                        <td>Color coding</td>
+                        <td>Different colors for each continent</td>
+                    </tr>
+                    <tr>
+                        <td><code>hover_name="country"</code></td>
+                        <td>Tooltip label</td>
+                        <td>Country name appears on hover</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Scale and Range Parameters</h4>
+
+            <p><strong>Logarithmic X-axis (<code>log_x=True</code>)</strong>: GDP per capita varies enormously between countries—from hundreds to tens of thousands of dollars. A logarithmic scale compresses this wide range, making it easier to compare countries across different economic levels. On a log scale, the distance from 1,000 to 10,000 is the same as from 10,000 to 100,000.</p>
+
+            <p><strong>Maximum Bubble Size (<code>size_max=60</code>)</strong>: This limits the maximum size of bubbles, preventing extremely populous countries (like China and India) from overwhelming the visualization.</p>
+
+            <p><strong>Range Specifications</strong>:</p>
+            <ul>
+                <li><code>range_x=[100, 100000]</code>: Sets GDP per capita range from $100 to $100,000</li>
+                <li><code>range_y=[20, 90]</code>: Sets life expectancy range from 20 to 90 years</li>
+            </ul>
+
+            <p>These fixed ranges ensure that the plot axes don't change as the animation plays, making it easier to track movement and changes over time.</p>
+
+            <h3>Interpreting the Animation</h3>
+
+            <h4>What the Plot Shows</h4>
+            <p>This animated visualization, inspired by Hans Rosling's famous presentations, reveals several global development trends:</p>
+
+            <ul>
+                <li><strong>Economic Growth</strong>: Countries generally move rightward (increasing GDP per capita)</li>
+                <li><strong>Health Improvements</strong>: Countries move upward (increasing life expectancy)</li>
+                <li><strong>Population Growth</strong>: Bubbles grow larger over time (particularly China and India)</li>
+                <li><strong>Regional Patterns</strong>: Different continents cluster in different regions of the plot</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor pointed out that when you play the animation from 1952 to 2007, you can clearly see two large bubbles (China and India) because of their massive populations. You can also observe how most countries move toward the upper-right corner of the plot, indicating improvements in both wealth and health. Some African countries, however, show stagnation or decline in certain periods, particularly during the HIV/AIDS crisis of the 1990s.
+            </div>
+
+            <h3>Interactive Controls</h3>
+            <p>The animated scatter plot provides several interactive controls:</p>
+
+            <h4>1. Play/Pause Button</h4>
+            <p>Click the play button to start the animation. It automatically cycles through all years from 1952 to 2007. Click pause to stop at any point.</p>
+
+            <h4>2. Year Slider</h4>
+            <p>Drag the slider to jump to specific years or manually step through the animation frame by frame.</p>
+
+            <h4>3. Legend Filtering</h4>
+            <p>Click on continent names in the legend to show/hide specific continents. For example, if you only want to see Asian countries' development, you can hide other continents.</p>
+
+            <h4>4. Hover Information</h4>
+            <p>At any point during or after the animation, hover over bubbles to see detailed information: country name, exact GDP per capita, life expectancy, population, and year.</p>
+
+            <h4>5. Zoom and Pan</h4>
+            <p>Even during animation, you can zoom into specific regions of the plot to examine particular groups of countries more closely.</p>
+
+            <div class="hinglish-summary">
+                Animated scatter plot time ke sath data ka evolution dikhata hai, jaise ki Hans Rosling ke famous TED talks mein. Hum complete Gapminder dataset load karte hain jo 1952 se 2007 tak ki information contain karta hai (1704 rows). <code>px.scatter()</code> function mein <strong>animation_frame="year"</strong> batata hai ki kon sa column animation frames define karega, aur <strong>animation_group="country"</strong> ensure karta hai ki same country ko track kiya jaye across all frames. X-axis par GDP per capita, Y-axis par life expectancy, bubble size population represent karta hai, aur colors continents ke liye hain. <code>log_x=True</code> se logarithmic scale use hota hai kyunki GDP ki range bahut wide hai. Range parameters (range_x, range_y) fix rehte hain taki animation ke doran axes change na ho. Result mein ek interactive animation milta hai jisme play/pause button, year slider, aur hover tooltips hote hain.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Animated scatter plots add the dimension of time to data visualization</li>
+                    <li><code>animation_frame</code> specifies which column contains time/sequence data</li>
+                    <li><code>animation_group</code> ensures entities are tracked consistently across frames</li>
+                    <li>Logarithmic scales (<code>log_x=True</code>) handle wide-ranging data effectively</li>
+                    <li>Fixed axis ranges prevent visual jumping during animation</li>
+                    <li>Interactive controls include play/pause, slider, and legend filtering</li>
+                    <li>Bubble size can represent a fourth variable (e.g., population)</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What is the difference between <code>animation_frame</code> and <code>animation_group</code>?</p>
+                    <div class="answer">
+                        <code>animation_frame</code> specifies which column defines different time points/frames (like "year"), while <code>animation_group</code> identifies which entities to track across frames (like "country"), ensuring smooth transitions rather than disappearing/reappearing points.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Why do we use <code>log_x=True</code> for GDP per capita visualization?</p>
+                    <div class="answer">
+                        We use logarithmic scale because GDP per capita varies enormously (from hundreds to hundreds of thousands). A log scale compresses this wide range, making it possible to compare countries at different economic levels on the same plot without extremely wealthy countries being off-scale.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. Write code to create an animated scatter plot showing GDP vs life expectancy for years 2000-2007 only.</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+df = px.data.gapminder()
+df_filtered = df[df['year'] >= 2000]
+fig = px.scatter(df_filtered, x="gdpPercap", y="lifeExp",
+                 animation_frame="year", 
+                 animation_group="country",
+                 size="pop", color="continent",
+                 log_x=True, title='2000-2007 Development')
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. What does the bubble size represent in the Gapminder animated plot?</p>
+                    <div class="answer">
+                        The bubble size represents the population of each country. Larger bubbles indicate countries with higher populations (like China and India), while smaller bubbles represent countries with smaller populations.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Interactive Heatmap -->
+        <section id="heatmap">
+            <h2>5. Interactive Heatmap</h2>
+            
+            <p>A heatmap is a data visualization technique that displays values in a matrix format using color gradients. The intensity of color represents the magnitude of values—darker or brighter colors indicate higher or lower values. Heatmaps are excellent for identifying patterns, correlations, and anomalies in tabular data at a glance.</p>
+
+            <h3>Understanding Heatmaps</h3>
+            <p>Heatmaps are particularly useful when you have:</p>
+            <ul>
+                <li><strong>Matrix Data</strong>: Data organized in rows and columns</li>
+                <li><strong>Correlation Matrices</strong>: Showing relationships between variables</li>
+                <li><strong>Time-Series Data</strong>: Values changing over time periods</li>
+                <li><strong>Geographical Data</strong>: Like weather patterns across regions</li>
+                <li><strong>Performance Metrics</strong>: Comparing multiple entities across multiple criteria</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor mentioned that we commonly see heatmaps in weather reporting, where different colors represent temperature or rainfall variations across geographical locations. For example, red might indicate high temperatures while blue indicates cooler areas.
+            </div>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Required Libraries</h4>
+            <pre>
+import plotly.express as px
+import numpy as np
+import pandas as pd
+            </pre>
+
+            <h4>Step 2: Generate Random Data</h4>
+            <p>For demonstration purposes, we'll create a 10×10 matrix of random values:</p>
+
+            <pre>
+# Generate random data: 10 rows × 10 columns
+data = np.random.rand(10, 10)
+            </pre>
+
+            <p><code>np.random.rand(10, 10)</code> creates a 10×10 matrix filled with random values between 0 and 1. Each cell contains a random decimal number that we'll visualize using color intensity.</p>
+
+            <h4>Step 3: Create DataFrame with Column Names</h4>
+            <p>To make our heatmap more interpretable, we'll assign meaningful column names:</p>
+
+            <pre>
+# Create DataFrame with column names C0, C1, C2, ..., C9
+df = pd.DataFrame(data, columns=[f'C{i}' for i in range(10)])
+            </pre>
+
+            <p>The list comprehension <code>[f'C{i}' for i in range(10)]</code> creates column names: C0, C1, C2, C3, C4, C5, C6, C7, C8, C9. The <code>f'C{i}'</code> is an f-string that formats the column name dynamically.</p>
+
+            <div class="note-box">
+                <strong>Understanding List Comprehension:</strong> The expression <code>[f'C{i}' for i in range(10)]</code> is a concise way to create a list. It's equivalent to:
+                <pre>
+columns = []
+for i in range(10):
+    columns.append(f'C{i}')
+                </pre>
+            </div>
+
+            <h4>Step 4: Create the Interactive Heatmap</h4>
+            <p>Now we use Plotly's <code>imshow()</code> function (image show) to create the heatmap:</p>
+
+            <pre>
+fig = px.imshow(df, 
+                color_continuous_scale='viridis',
+                title='Interactive Heatmap Example')
+
+fig.show()
+            </pre>
+
+            <h3>Understanding Key Parameters</h3>
+
+            <h4>The imshow() Function</h4>
+            <p><code>px.imshow()</code> stands for "image show" and is designed to display matrix data as an image. Each cell in the matrix becomes a colored square in the heatmap, with color representing the cell's value.</p>
+
+            <h4>Color Scales</h4>
+            <p>The <code>color_continuous_scale</code> parameter determines the color scheme used in the heatmap. <strong>Viridis</strong> is a perceptually uniform color scale that works well for most data. It ranges from dark purple (low values) through blue and green to bright yellow (high values).</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Color Scale</th>
+                        <th>Description</th>
+                        <th>Best Used For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>viridis</strong></td>
+                        <td>Purple → Blue → Green → Yellow</td>
+                        <td>General purpose, colorblind-friendly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>plasma</strong></td>
+                        <td>Purple → Pink → Orange → Yellow</td>
+                        <td>High contrast visualizations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>blues</strong></td>
+                        <td>Light Blue → Dark Blue</td>
+                        <td>Single-hue representations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>rdbu</strong></td>
+                        <td>Red → White → Blue</td>
+                        <td>Diverging data (positive/negative)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>hot</strong></td>
+                        <td>Black → Red → Yellow → White</td>
+                        <td>Temperature-related data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Reading the Heatmap</h3>
+            <p>In the generated heatmap:</p>
+            <ul>
+                <li><strong>Columns</strong> are labeled C0 through C9 (horizontal axis)</li>
+                <li><strong>Rows</strong> are numbered 0 through 9 (vertical axis)</li>
+                <li><strong>Colors</strong> represent values from 0 (dark purple/blue) to 1 (bright yellow)</li>
+                <li><strong>Color Legend</strong> on the right shows the value-to-color mapping</li>
+            </ul>
+
+            <div class="professor-note">
+                The professor demonstrated that when you hover your mouse over any cell in the heatmap, you can see three pieces of information: the X value (column name), Y value (row number), and the actual numerical value. For example, hovering over a yellow cell might show "C5, Row 3, Value: 0.87", indicating this cell is in column C5, row 3, and has a value of 0.87.
+            </div>
+
+            <h3>Interactive Features</h3>
+            <p>Plotly's interactive heatmap provides several useful features:</p>
+
+            <h4>1. Hover Information</h4>
+            <p>Move your mouse over any cell to see its exact coordinates and value in a tooltip.</p>
+
+            <h4>2. Zoom</h4>
+            <p>Select a region by clicking and dragging to zoom into specific parts of the heatmap. This is particularly useful for large matrices.</p>
+
+            <h4>3. Pan</h4>
+            <p>After zooming, you can pan around the heatmap to explore different regions.</p>
+
+            <h4>4. Reset View</h4>
+            <p>Double-click to reset to the original view after zooming or panning.</p>
+
+            <h4>5. Export</h4>
+            <p>Download the heatmap as a static PNG image using the camera icon in the toolbar.</p>
+
+            <h3>Practical Applications</h3>
+            <p>Heatmaps are widely used in various domains:</p>
+
+            <ul>
+                <li><strong>Data Science</strong>: Visualizing correlation matrices between features</li>
+                <li><strong>Biology</strong>: Gene expression data analysis</li>
+                <li><strong>Business</strong>: Product performance across regions and time periods</li>
+                <li><strong>Web Analytics</strong>: Click patterns and user behavior on websites</li>
+                <li><strong>Meteorology</strong>: Temperature, precipitation, or pressure maps</li>
+                <li><strong>Finance</strong>: Stock correlation analysis, risk assessment matrices</li>
+            </ul>
+
+            <h3>Customization Example</h3>
+            <p>You can customize your heatmap further:</p>
+
+            <pre>
+# More customized heatmap
+fig = px.imshow(df, 
+                color_continuous_scale='rdbu',  # Red-Blue diverging scale
+                aspect='auto',                   # Automatic aspect ratio
+                labels=dict(x="Features", y="Samples", color="Values"),
+                title='Customized Interactive Heatmap')
+
+fig.update_xaxes(side="top")  # Move x-axis labels to top
+fig.show()
+            </pre>
+
+            <div class="hinglish-summary">
+                Heatmap ek matrix visualization technique hai jisme colors se values ko represent karte hain. High values bright color aur low values dark color se dikhte hain. Jaise weather reports mein temperature maps hote hain, waise hi data ko visualize karte hain. Pehle <code>np.random.rand(10, 10)</code> se 10×10 random matrix generate karte hain (values 0 se 1 ke beech). Phir DataFrame banate hain aur columns ko names dete hain using list comprehension: <code>[f'C{i}' for i in range(10)]</code> jo C0, C1, C2...C9 generate karta hai. <code>px.imshow()</code> function se heatmap create karte hain, jisme <strong>color_continuous_scale='viridis'</strong> color scheme define karta hai (purple se yellow tak). Interactive features mein hover se exact values dekh sakte hain, zoom/pan kar sakte hain, aur different color scales use kar sakte hain jaise blues, rdbu, hot etc.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Heatmaps use color gradients to represent numerical values in matrix format</li>
+                    <li><code>np.random.rand(m, n)</code> generates m×n matrix of random values (0 to 1)</li>
+                    <li>List comprehension <code>[f'C{i}' for i in range(n)]</code> creates column labels efficiently</li>
+                    <li><code>px.imshow()</code> displays matrix data as colored images</li>
+                    <li>Viridis is a perceptually uniform, colorblind-friendly color scale</li>
+                    <li>Interactive hover shows exact cell coordinates and values</li>
+                    <li>Different color scales suit different data types (continuous, diverging, sequential)</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What does <code>px.imshow()</code> stand for and what is its purpose?</p>
+                    <div class="answer">
+                        <code>px.imshow()</code> stands for "image show" and displays matrix data as a heatmap/image where each cell is colored according to its value. It's used to visualize 2D array data using color gradients.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a 5×5 heatmap using the 'blues' color scale.</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+import numpy as np
+import pandas as pd
+
+data = np.random.rand(5, 5)
+df = pd.DataFrame(data, 
+                  columns=[f'Col{i}' for i in range(5)])
+fig = px.imshow(df, color_continuous_scale='blues',
+                title='5x5 Blues Heatmap')
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. What information is displayed when you hover over a cell in a Plotly heatmap?</p>
+                    <div class="answer">
+                        When hovering over a cell, you see three pieces of information: (1) X value (column name/index), (2) Y value (row name/index), and (3) the actual numerical value in that cell.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. Explain what <code>[f'C{i}' for i in range(10)]</code> generates.</p>
+                    <div class="answer">
+                        This list comprehension generates a list of 10 column names: ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']. It's a concise way to create sequential labels using f-strings.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Dashboard-style Subplots -->
+        <section id="dashboard">
+            <h2>6. Dashboard-style Subplots</h2>
+            
+            <p>Dashboards combine multiple visualizations in a single view, providing a comprehensive overview of data from different perspectives. Instead of creating separate plots, subplots arrange multiple charts in a grid layout, making it easy to compare and analyze related information side-by-side. This is the hallmark of professional data presentations and business intelligence tools.</p>
+
+            <h3>Understanding Subplots</h3>
+            <p>A <strong>subplot</strong> is a plot that exists within a larger figure containing multiple plots. Think of it as dividing your canvas into a grid (rows and columns), and placing different visualizations in each cell. This approach is particularly valuable when:</p>
+            <ul>
+                <li>You want to show multiple related visualizations together</li>
+                <li>You need to compare different aspects of the same data</li>
+                <li>You're creating a comprehensive dashboard or report</li>
+                <li>You want to save space by combining multiple charts</li>
+            </ul>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Import Required Libraries</h4>
+            <pre>
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import numpy as np
+            </pre>
+
+            <p>Here we introduce <code>plotly.graph_objects</code> (imported as <code>go</code>), which provides low-level control over plot elements. We also import <code>make_subplots</code>, a specialized function for creating subplot grids.</p>
+
+            <div class="note-box">
+                <strong>Plotly Express vs Graph Objects:</strong> While <code>plotly.express</code> (px) provides high-level, easy-to-use functions, <code>plotly.graph_objects</code> (go) offers more granular control. For complex layouts like subplots, we often use both together.
+            </div>
+
+            <h4>Step 2: Generate Data for Multiple Plots</h4>
+            <p>We'll create sample data representing different mathematical functions:</p>
+
+            <pre>
+# Generate x values from 0 to 10
+x = np.linspace(0, 10, 100)
+
+# Generate different y functions
+y1 = np.sin(x)           # Sine wave
+y2 = np.cos(x)           # Cosine wave
+y3 = np.exp(-x)          # Exponential decay
+            </pre>
+
+            <h3>Understanding the Data Generation</h3>
+
+            <h4>np.linspace() Function</h4>
+            <p><code>np.linspace(0, 10, 100)</code> creates 100 evenly spaced values between 0 and 10. Unlike <code>range()</code> which only works with integers, <code>linspace</code> creates floating-point numbers with equal spacing: \[0, 0.101, 0.202, ..., 9.898, 10.0\]</p>
+
+            <h4>Mathematical Functions</h4>
+            <ul>
+                <li><strong>Sine Function</strong>: $y_1 = \sin(x)$ - Creates a smooth oscillating wave between -1 and 1</li>
+                <li><strong>Cosine Function</strong>: $y_2 = \cos(x)$ - Similar to sine but shifted by $\pi/2$ radians</li>
+                <li><strong>Exponential Decay</strong>: $y_3 = e^{-x}$ - Starts at 1 and rapidly decreases toward 0</li>
+            </ul>
+
+            <h4>Step 3: Create the Subplot Grid</h4>
+            <pre>
+# Create a 2×2 grid of subplots
+fig = make_subplots(rows=2, cols=2,
+                    subplot_titles=('Sine Wave', 'Cosine Wave', 
+                                  'Exponential Decay', 'Combined View'))
+            </pre>
+
+            <p>The <code>make_subplots()</code> function creates a figure with a grid layout:</p>
+            <ul>
+                <li><code>rows=2, cols=2</code>: Creates a 2×2 grid (4 plots total)</li>
+                <li><code>subplot_titles</code>: A tuple containing titles for each subplot</li>
+            </ul>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Row, Col</th>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Top-left</td>
+                        <td>Row 1, Col 1</td>
+                        <td>Sine Wave</td>
+                    </tr>
+                    <tr>
+                        <td>Top-right</td>
+                        <td>Row 1, Col 2</td>
+                        <td>Cosine Wave</td>
+                    </tr>
+                    <tr>
+                        <td>Bottom-left</td>
+                        <td>Row 2, Col 1</td>
+                        <td>Exponential Decay</td>
+                    </tr>
+                    <tr>
+                        <td>Bottom-right</td>
+                        <td>Row 2, Col 2</td>
+                        <td>Combined View</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Step 4: Add Traces to Subplots</h4>
+            <p>Now we add individual plots (called "traces") to specific positions in the grid:</p>
+
+            <pre>
+# Add trace to Row 1, Column 1 (Sine)
+fig.add_trace(go.Scatter(x=x, y=y1, mode='lines', name='sin(x)'), 
+              row=1, col=1)
+
+# Add trace to Row 1, Column 2 (Cosine)
+fig.add_trace(go.Scatter(x=x, y=y2, mode='lines', name='cos(x)'), 
+              row=1, col=2)
+
+# Add trace to Row 2, Column 1 (Exponential)
+fig.add_trace(go.Scatter(x=x, y=y3, mode='lines', name='exp(-x)'), 
+              row=2, col=1)
+
+# Add trace to Row 2, Column 2 (Combined)
+fig.add_trace(go.Scatter(x=x, y=y1+y2, mode='lines', name='sin+cos'), 
+              row=2, col=2)
+            </pre>
+
+            <h3>Understanding go.Scatter()</h3>
+            <p>The <code>go.Scatter()</code> function creates a scatter/line plot with these parameters:</p>
+            <ul>
+                <li><code>x</code>: Data for x-axis</li>
+                <li><code>y</code>: Data for y-axis</li>
+                <li><code>mode='lines'</code>: Display as connected lines (other options: 'markers', 'lines+markers')</li>
+                <li><code>name</code>: Label for the legend</li>
+            </ul>
+
+            <p>The <code>row</code> and <code>col</code> parameters specify where in the grid to place this trace.</p>
+
+            <div class="professor-note">
+                The professor emphasized that in the fourth subplot (row 2, column 2), we're showing a combined view by plotting <code>y1+y2</code>, which adds the sine and cosine functions together. This demonstrates how multiple mathematical functions can be combined and visualized.
+            </div>
+
+            <h4>Step 5: Update Layout and Display</h4>
+            <pre>
+# Update overall figure layout
+fig.update_layout(height=700, width=900, 
+                  title_text="Interactive Subplot Dashboard")
+
+# Display the figure
+fig.show()
+            </pre>
+
+            <p>The <code>update_layout()</code> method sets overall properties:</p>
+            <ul>
+                <li><code>height=700</code>: Figure height in pixels</li>
+                <li><code>width=900</code>: Figure width in pixels</li>
+                <li><code>title_text</code>: Main title above all subplots</li>
+            </ul>
+
+            <h3>Interactive Features of Subplots</h3>
+            <p>Each subplot in the dashboard is fully interactive:</p>
+
+            <h4>1. Independent Zoom</h4>
+            <p>You can zoom into any individual subplot by selecting a region with your mouse. Each subplot maintains its own zoom level independently.</p>
+
+            <h4>2. Unified Legend</h4>
+            <p>A single legend shows all traces. Clicking a legend item hides/shows that trace across all relevant subplots.</p>
+
+            <h4>3. Hover Information</h4>
+            <p>Hover over any line in any subplot to see exact coordinate values.</p>
+
+            <h4>4. Double-Click Reset</h4>
+            <p>Double-clicking on a subplot resets its zoom to the original view.</p>
+
+            <div class="professor-note">
+                The professor demonstrated that you can select any area of a plot and zoom in, then double-click to zoom back out. This makes it easy to focus on specific regions of interest in any subplot while maintaining context from the other plots.
+            </div>
+
+            <h3>Practical Applications</h3>
+            <p>Dashboard-style subplots are extensively used in:</p>
+            <ul>
+                <li><strong>Business Intelligence</strong>: Showing multiple KPIs (Key Performance Indicators) together</li>
+                <li><strong>Scientific Research</strong>: Comparing experimental results across different conditions</li>
+                <li><strong>Financial Analysis</strong>: Displaying stock prices, volumes, and technical indicators</li>
+                <li><strong>Engineering</strong>: Showing multiple sensor readings or system metrics simultaneously</li>
+                <li><strong>Data Science</strong>: Feature distribution analysis and model comparison</li>
+            </ul>
+
+            <h3>Advanced Customization</h3>
+            <p>You can further customize subplots:</p>
+
+            <pre>
+# Create subplots with different types
+fig = make_subplots(
+    rows=2, cols=2,
+    specs=[[{"type": "scatter"}, {"type": "bar"}],
+           [{"type": "scatter"}, {"type": "scatter"}]],
+    subplot_titles=('Line Plot', 'Bar Chart', 'Area Plot', 'Combined')
+)
+            </pre>
+
+            <p>The <code>specs</code> parameter allows you to specify different plot types for each cell in the grid.</p>
+
+            <div class="hinglish-summary">
+                Dashboard-style subplots multiple visualizations ko ek hi figure mein combine karte hain, jaise professional dashboards mein hota hai. Pehle <code>from plotly.subplots import make_subplots</code> aur <code>plotly.graph_objects as go</code> import karte hain. Data generation ke liye <code>np.linspace(0, 10, 100)</code> use karte hain jo 0 se 10 tak 100 evenly spaced values create karta hai. Teen functions banate hain: sine (y1), cosine (y2), aur exponential decay (y3). <strong>make_subplots(rows=2, cols=2)</strong> se 2×2 grid create karte hain jisme 4 plots rahenge. Har subplot mein <code>fig.add_trace()</code> se plot add karte hain using <code>go.Scatter()</code>, aur <code>row</code> aur <code>col</code> parameters se position specify karte hain. Fourth subplot mein combined view dikhate hain (sin+cos). Finally <code>update_layout()</code> se height, width aur title set karte hain. Result ek interactive dashboard hota hai jisme har subplot ko individually zoom kar sakte hain.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li>Subplots combine multiple visualizations in a grid layout</li>
+                    <li><code>make_subplots()</code> creates the grid structure with rows and columns</li>
+                    <li><code>np.linspace()</code> generates evenly spaced numerical sequences</li>
+                    <li><code>go.Scatter()</code> provides low-level control for creating plots</li>
+                    <li><code>fig.add_trace()</code> places individual plots at specific grid positions</li>
+                    <li>Each subplot can be zoomed and interacted with independently</li>
+                    <li><code>update_layout()</code> sets overall figure properties like size and title</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What is the difference between <code>plotly.express</code> and <code>plotly.graph_objects</code>?</p>
+                    <div class="answer">
+                        <code>plotly.express</code> provides high-level, easy-to-use functions for quick visualizations, while <code>plotly.graph_objects</code> offers low-level control for complex customizations like subplots and detailed layout configurations.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a 1×3 subplot showing three different mathematical functions.</p>
+                    <div class="answer">
+                        <pre>
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import numpy as np
+
+x = np.linspace(0, 5, 100)
+fig = make_subplots(rows=1, cols=3,
+                    subplot_titles=('x²', 'x³', '√x'))
+fig.add_trace(go.Scatter(x=x, y=x**2, mode='lines'), 
+              row=1, col=1)
+fig.add_trace(go.Scatter(x=x, y=x**3, mode='lines'), 
+              row=1, col=2)
+fig.add_trace(go.Scatter(x=x, y=np.sqrt(x), mode='lines'), 
+              row=1, col=3)
+fig.show()
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. What does <code>np.linspace(0, 10, 100)</code> generate?</p>
+                    <div class="answer">
+                        It generates 100 evenly spaced floating-point numbers between 0 and 10 (inclusive), creating a sequence: [0.0, 0.101, 0.202, ..., 9.898, 10.0].
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. How do you specify where to place a trace in a subplot grid?</p>
+                    <div class="answer">
+                        Use the <code>row</code> and <code>col</code> parameters in the <code>fig.add_trace()</code> function. For example: <code>fig.add_trace(trace, row=2, col=3)</code> places the trace in row 2, column 3 of the grid.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Export and Share -->
+        <section id="export">
+            <h2>7. Export and Share Interactive Plots</h2>
+            
+            <p>One of the most powerful features of Plotly is the ability to export your interactive visualizations as standalone HTML files. This means you can share your plots with others, and they'll be able to interact with them (hover, zoom, pan) even without Python or Plotly installed. This is invaluable for reports, presentations, and web applications.</p>
+
+            <h3>Why Export to HTML?</h3>
+            <p>Exporting to HTML format provides several advantages:</p>
+            <ul>
+                <li><strong>Full Interactivity Preserved</strong>: All hover effects, zoom, and pan features remain functional</li>
+                <li><strong>Standalone Files</strong>: No dependencies required—just open in a web browser</li>
+                <li><strong>Easy Sharing</strong>: Send via email, upload to websites, or embed in web applications</li>
+                <li><strong>Cross-Platform</strong>: Works on any device with a web browser (desktop, mobile, tablet)</li>
+                <li><strong>Lightweight</strong>: HTML files are typically small and easy to distribute</li>
+            </ul>
+
+            <h3>Exporting Your Plots</h3>
+
+            <h4>Basic Export Syntax</h4>
+            <p>To export any Plotly figure to HTML, use the <code>write_html()</code> method:</p>
+
+            <pre>
+# Export to HTML file
+fig.write_html("interactive_plot.html")
+            </pre>
+
+            <p>This creates a file named <code>interactive_plot.html</code> in your current working directory. You can then:</p>
+            <ul>
+                <li>Open it directly in any web browser</li>
+                <li>Share it with colleagues via email or cloud storage</li>
+                <li>Embed it in websites or documentation</li>
+                <li>Include it in reports or presentations</li>
+            </ul>
+
+            <h3>Complete Export Examples</h3>
+
+            <h4>Example 1: Export a Pie Chart</h4>
+            <pre>
+import plotly.express as px
+import pandas as pd
+
+data = {'Category': ['A', 'B', 'C'], 'Values': [30, 50, 20]}
+df = pd.DataFrame(data)
+fig = px.pie(df, names='Category', values='Values')
+
+# Export to HTML
+fig.write_html("pie_chart.html")
+            </pre>
+
+            <h4>Example 2: Export a Dashboard</h4>
+            <pre>
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+
+fig = make_subplots(rows=1, cols=2)
+fig.add_trace(go.Scatter(x=[1,2,3], y=[4,5,6]), row=1, col=1)
+fig.add_trace(go.Bar(x=[1,2,3], y=[7,8,9]), row=1, col=2)
+
+# Export dashboard
+fig.write_html("dashboard.html")
+            </pre>
+
+            <div class="professor-note">
+                The professor emphasized that when you run the <code>write_html()</code> command in Google Colab, the HTML file gets saved in your current working directory space within Colab. You can then download it from the Colab file browser and share it anywhere. The recipient only needs a web browser to view and interact with your visualization—no Python or coding knowledge required!
+            </div>
+
+            <h3>Advanced Export Options</h3>
+
+            <h4>1. Customizing File Location</h4>
+            <p>You can specify a full path:</p>
+            <pre>
+fig.write_html("/content/drive/MyDrive/plots/my_plot.html")
+            </pre>
+
+            <h4>2. Include Plotly.js Locally</h4>
+            <p>By default, the HTML file references Plotly.js from a CDN. To make it fully self-contained:</p>
+            <pre>
+fig.write_html("plot.html", include_plotlyjs='cdn')  # Default (requires internet)
+fig.write_html("plot.html", include_plotlyjs=True)   # Includes library (larger file)
+            </pre>
+
+            <h4>3. Auto-open in Browser</h4>
+            <pre>
+fig.write_html("plot.html", auto_open=True)  # Opens automatically in default browser
+            </pre>
+
+            <h4>4. Configuration Options</h4>
+            <pre>
+config = {'displayModeBar': False}  # Hide the toolbar
+fig.write_html("plot.html", config=config)
+            </pre>
+
+            <h3>Other Export Formats</h3>
+            <p>Plotly also supports exporting to static image formats:</p>
+
+            <h4>PNG Export</h4>
+            <pre>
+fig.write_image("plot.png")  # Requires kaleido library
+            </pre>
+
+            <h4>PDF Export</h4>
+            <pre>
+fig.write_image("plot.pdf")
+            </pre>
+
+            <h4>SVG Export</h4>
+            <pre>
+fig.write_image("plot.svg")  # Vector format (scalable)
+            </pre>
+
+            <div class="note-box">
+                <strong>Note:</strong> Static image export (PNG, PDF, SVG) requires the <code>kaleido</code> library. Install it with: <code>pip install kaleido</code>
+            </div>
+
+            <h3>Sharing Best Practices</h3>
+            <ul>
+                <li><strong>File Naming</strong>: Use descriptive names like <code>sales_2024_dashboard.html</code></li>
+                <li><strong>Documentation</strong>: Include a README or instructions if sharing complex dashboards</li>
+                <li><strong>File Size</strong>: If files are large, consider compressing or using CDN for Plotly.js</li>
+                <li><strong>Privacy</strong>: Ensure data is anonymized if sharing sensitive information</li>
+                <li><strong>Version Control</strong>: Keep track of different versions if your data updates regularly</li>
+            </ul>
+
+            <h3>Embedding in Websites</h3>
+            <p>To embed an exported HTML plot in a webpage:</p>
+
+            <pre>
+&lt;iframe src="interactive_plot.html" width="800" height="600"&gt;&lt;/iframe&gt;
+            </pre>
+
+            <p>Or directly in Jupyter/Colab notebooks:</p>
+            <pre>
+from IPython.display import IFrame
+IFrame(src='interactive_plot.html', width=800, height=600)
+            </pre>
+
+            <div class="hinglish-summary">
+                Plotly plots ko export karke share karna bahut easy hai. <code>fig.write_html("filename.html")</code> method se aap apne interactive plot ko standalone HTML file mein save kar sakte hain. Is HTML file ko koi bhi web browser mein khol sakta hai aur saare interactive features (hover, zoom, pan) kaam karenge—Python ya Plotly ki zarurat nahi. File apne current working directory mein save hoti hai (Google Colab mein Colab file browser se download kar sakte hain). Advanced options bhi available hain jaise <code>include_plotlyjs=True</code> se fully self-contained file bana sakte hain (internet ki zarurat nahi), <code>auto_open=True</code> se automatically browser mein khulta hai, aur <code>write_image()</code> se PNG, PDF, SVG format mein static images export kar sakte hain (kaleido library required). Yeh exported files emails, websites, presentations mein easily share aur embed kiye ja sakte hain.
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🔑 Key Takeaways</h4>
+                <ul>
+                    <li><code>fig.write_html()</code> exports interactive plots as standalone HTML files</li>
+                    <li>Exported HTML files preserve all interactivity (hover, zoom, pan)</li>
+                    <li>No dependencies required for viewing—just a web browser</li>
+                    <li><code>include_plotlyjs=True</code> creates fully self-contained files</li>
+                    <li><code>write_image()</code> exports to static formats (PNG, PDF, SVG)</li>
+                    <li>Static image export requires the <code>kaleido</code> library</li>
+                    <li>HTML files can be easily shared, embedded, and distributed</li>
+                </ul>
+            </div>
+
+            <!-- Practice Questions -->
+            <div class="practice-questions">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1. What method is used to export a Plotly figure as an HTML file?</p>
+                    <div class="answer">
+                        The <code>fig.write_html("filename.html")</code> method is used to export Plotly figures as interactive HTML files that can be opened in any web browser.
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2. Write code to create a simple scatter plot and export it to "my_plot.html".</p>
+                    <div class="answer">
+                        <pre>
+import plotly.express as px
+import pandas as pd
+
+df = pd.DataFrame({'x': [1, 2, 3, 4], 'y': [10, 15, 13, 17]})
+fig = px.scatter(df, x='x', y='y', title='My Scatter Plot')
+fig.write_html("my_plot.html")
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3. What is the advantage of using <code>include_plotlyjs=True</code> when exporting?</p>
+                    <div class="answer">
+                        Using <code>include_plotlyjs=True</code> includes the entire Plotly JavaScript library in the HTML file, making it fully self-contained and functional without internet connection (though the file size will be larger).
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4. Which library is required to export Plotly figures as PNG or PDF images?</p>
+                    <div class="answer">
+                        The <code>kaleido</code> library is required for static image export. Install it with: <code>pip install kaleido</code>, then use <code>fig.write_image("plot.png")</code>.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mind Map Section -->
+        <section id="mindmap" class="mindmap">
+            <h2>8. 📊 Comprehensive Mind Map: Interactive Plots Part 2</h2>
+            
+            <div class="mindmap-container">
+                <!-- Central Node -->
+                <div class="mindmap-node" style="font-size: 1.3em;">
+                    Interactive Plots with Plotly
+                </div>
+
+                <!-- Branch 1: Pie & Donut Charts -->
+                <div class="mindmap-branch">
+                    <div style="background: #e3f2fd; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #1976d2;">
+                        <h3 style="color: #1976d2; margin-bottom: 10px;">🥧 Pie & Donut Charts</h3>
+                        <div class="mindmap-subbranch">px.pie()</div>
+                        <div class="mindmap-subbranch">hole parameter (0 to 1)</div>
+                        <div class="mindmap-subbranch">names & values</div>
+                        <div class="mindmap-subbranch">Auto percentage calculation</div>
+                        <div class="mindmap-subbranch">Budget allocation, Market share</div>
+                    </div>
+
+                    <!-- Branch 2: GeoMaps -->
+                    <div style="background: #f3e5f5; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #7b1fa2;">
+                        <h3 style="color: #7b1fa2; margin-bottom: 10px;">🗺️ Interactive GeoMaps</h3>
+                        <div class="mindmap-subbranch">px.scatter_geo()</div>
+                        <div class="mindmap-subbranch">Gapminder dataset</div>
+                        <div class="mindmap-subbranch">iso_alpha (country codes)</div>
+                        <div class="mindmap-subbranch">Projection types</div>
+                        <div class="mindmap-subbranch">Rotate, zoom, hover</div>
+                    </div>
+                </div>
+
+                <!-- Branch 3: 3D & Animated Plots -->
+                <div class="mindmap-branch">
+                    <div style="background: #e8f5e9; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #388e3c;">
+                        <h3 style="color: #388e3c; margin-bottom: 10px;">📦 3D Scatter Plots</h3>
+                        <div class="mindmap-subbranch">px.scatter_3d()</div>
+                        <div class="mindmap-subbranch">X, Y, Z axes</div>
+                        <div class="mindmap-subbranch">np.random.seed()</div>
+                        <div class="mindmap-subbranch">np.random.randn()</div>
+                        <div class="mindmap-subbranch">Color as 4th dimension</div>
+                    </div>
+
+                    <!-- Branch 4: Animated Plots -->
+                    <div style="background: #fff3e0; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #f57c00;">
+                        <h3 style="color: #f57c00; margin-bottom: 10px;">🎬 Animated Scatter</h3>
+                        <div class="mindmap-subbranch">animation_frame</div>
+                        <div class="mindmap-subbranch">animation_group</div>
+                        <div class="mindmap-subbranch">Time-series data</div>
+                        <div class="mindmap-subbranch">log_x for wide ranges</div>
+                        <div class="mindmap-subbranch">Play/pause controls</div>
+                    </div>
+                </div>
+
+                <!-- Branch 5: Heatmaps & Dashboards -->
+                <div class="mindmap-branch">
+                    <div style="background: #fce4ec; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #c2185b;">
+                        <h3 style="color: #c2185b; margin-bottom: 10px;">🔥 Interactive Heatmaps</h3>
+                        <div class="mindmap-subbranch">px.imshow()</div>
+                        <div class="mindmap-subbranch">Color gradients</div>
+                        <div class="mindmap-subbranch">Viridis, plasma, blues</div>
+                        <div class="mindmap-subbranch">Matrix visualization</div>
+                        <div class="mindmap-subbranch">Correlation analysis</div>
+                    </div>
+
+                    <!-- Branch 6: Subplots -->
+                    <div style="background: #e0f2f1; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #00796b;">
+                        <h3 style="color: #00796b; margin-bottom: 10px;">📊 Dashboard Subplots</h3>
+                        <div class="mindmap-subbranch">make_subplots()</div>
+                        <div class="mindmap-subbranch">rows & cols grid</div>
+                        <div class="mindmap-subbranch">go.Scatter()</div>
+                        <div class="mindmap-subbranch">add_trace() with position</div>
+                        <div class="mindmap-subbranch">Independent zoom</div>
+                    </div>
+                </div>
+
+                <!-- Branch 7: Export & Share -->
+                <div class="mindmap-branch">
+                    <div style="background: #f1f8e9; padding: 20px; border-radius: 15px; margin: 10px; border: 3px solid #689f38;">
+                        <h3 style="color: #689f38; margin-bottom: 10px;">💾 Export & Share</h3>
+                        <div class="mindmap-subbranch">write_html()</div>
+                        <div class="mindmap-subbranch">Standalone HTML files</div>
+                        <div class="mindmap-subbranch">write_image() (PNG, PDF, SVG)</div>
+                        <div class="mindmap-subbranch">include_plotlyjs option</div>
+                        <div class="mindmap-subbranch">Web embedding</div>
+                    </div>
+                </div>
+
+                <!-- Key Libraries -->
+                <div style="margin-top: 30px; text-align: center;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🔧 Key Libraries Used</h3>
+                    <div class="mindmap-branch">
+                        <div class="mindmap-subbranch" style="background: #667eea; color: white;">plotly.express (px)</div>
+                        <div class="mindmap-subbranch" style="background: #764ba2; color: white;">plotly.graph_objects (go)</div>
+                        <div class="mindmap-subbranch" style="background: #43a047; color: white;">pandas (pd)</div>
+                        <div class="mindmap-subbranch" style="background: #fb8c00; color: white;">numpy (np)</div>
+                        <div class="mindmap-subbranch" style="background: #e53935; color: white;">plotly.subplots</div>
+                    </div>
+                </div>
+
+                <!-- Common Features -->
+                <div style="margin-top: 30px; text-align: center;">
+                    <h3 style="color: #764ba2; margin-bottom: 15px;">✨ Common Interactive Features</h3>
+                    <div class="mindmap-branch">
+                        <div class="mindmap-subbranch" style="border-color: #667eea;">Hover Information</div>
+                        <div class="mindmap-subbranch" style="border-color: #667eea;">Zoom & Pan</div>
+                        <div class="mindmap-subbranch" style="border-color: #667eea;">Legend Toggle</div>
+                        <div class="mindmap-subbranch" style="border-color: #667eea;">Reset View (Double-click)</div>
+                        <div class="mindmap-subbranch" style="border-color: #667eea;">Export as Image</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px;">
+            <h3 style="margin-bottom: 15px;">🎓 End of Interactive Plots - Part 2</h3>
+            <p style="font-size: 1.1em; margin-bottom: 10px;">Master these advanced visualizations to create professional, interactive data presentations!</p>
+            <p style="opacity: 0.9;">Practice the code examples, explore the interactive features, and build your own dashboards.</p>
+            <p style="margin-top: 20px; font-style: italic;">Happy Plotting! 📊✨</p>
+</br>
+<p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+           <p style="font-size: 1.1em; color: #6c757d;">
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

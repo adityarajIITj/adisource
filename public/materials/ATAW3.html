@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/ata/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Thinking & Applications - Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .toc {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            background: white;
+            margin: 25px 0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2, h3 {
+            color: #667eea;
+        }
+        
+        h1 {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .key-term {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .professor-note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .hinglish-summary {
+            background-color: #f0f8e7;
+            border: 1px solid #8bc34a;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .hinglish-summary::before {
+            content: "📝 Hinglish Summary: ";
+            font-weight: bold;
+            color: #689f38;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .practice-questions {
+            background-color: #fff5f5;
+            border: 1px solid #f56565;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .practice-questions h3 {
+            color: #c53030;
+            margin-top: 0;
+        }
+        
+        .key-takeaways {
+            background-color: #f7fafc;
+            border: 1px solid #4299e1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .key-takeaways h3 {
+            color: #2b6cb0;
+            margin-top: 0;
+        }
+        
+        .diagram-placeholder {
+            background-color: #f5f5f5;
+            border: 2px dashed #ccc;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        .central-node {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .branch {
+            position: absolute;
+            background: #764ba2;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .branch1 { top: -50px; left: 200px; }
+        .branch2 { top: 50px; left: 220px; }
+        .branch3 { bottom: 50px; left: 200px; }
+        .branch4 { bottom: -50px; left: 50px; }
+        .branch5 { top: 50px; left: -250px; }
+        .branch6 { top: -50px; left: -200px; }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ATA Week 3 Notes </h1>
+        <h2> made by me (Armaan Kachhawa )</h2>
+        <p><strong>During my First semester</strong></p>
+    </div>
+
+    <div class="toc">
+        <h2>📚 Table of Contents</h2>
+        <ul>
+            <li><a href="#intro">1. Introduction to Computers</a></li>
+            <li><a href="#components">2. Computer Components & Architecture</a></li>
+            <li><a href="#von-neumann">3. Von Neumann Architecture</a></li>
+            <li><a href="#programming">4. Programming & Compilation Process</a></li>
+            <li><a href="#binary">5. Binary Language & Communication</a></li>
+            <li><a href="#number-systems">6. Number Systems</a></li>
+            <li><a href="#data-representation">7. Data Representation & Storage Units</a></li>
+            <li><a href="#mind-map">8. Comprehensive Mind Map</a></li>
+        </ul>
+    </div>
+
+    <div class="section" id="intro">
+        <h1>1. Introduction to Computers</h1>
+        
+        <h2>What is a Computer?</h2>
+        <p>A <span class="key-term">computer</span> is a <strong>general purpose device</strong> that can be programmed to process information and yield meaningful results. It's essentially a sophisticated <span class="key-term">data processor</span> - a machine capable of taking information or data as input, processing it, and producing useful output.</p>
+
+        <div class="professor-note">
+            The professor emphasized that computers are fundamentally data processing machines. They take input data, perform operations on it, and generate output data. This simple concept underlies all computer operations, no matter how complex they appear.
+        </div>
+
+        <h2>How Does a Computer Work?</h2>
+        <p>The basic working principle involves three main components:</p>
+        <ul>
+            <li><strong>Program:</strong> List of instructions given to the computer</li>
+            <li><strong>Information Store:</strong> Data, images, files, videos that need processing</li>
+            <li><strong>Computer:</strong> Processes the information store according to program instructions</li>
+        </ul>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Basic Computer Working Model - Program → Information Store → Computer → Results]
+        </div>
+
+        <div class="hinglish-summary">
+            Computer ek general purpose device hai jo data ko process karta hai. Isme program (instructions), information store (data), aur processing unit hota hai. Basically input data leke, kuch processing karke, useful output deta hai.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> What are the three main components of computer operation?<br>
+                    <strong>A:</strong> Program (instructions), Information Store (data), and Computer (processor)</li>
+                <li><strong>Q:</strong> Why is a computer called a "general purpose device"?<br>
+                    <strong>A:</strong> Because it can be programmed to perform various tasks by changing the instructions/program</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Computers are programmable data processing machines</li>
+                <li>They follow a simple input-process-output model</li>
+                <li>The same hardware can perform different tasks with different programs</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="components">
+        <h1>2. Computer Components & Architecture</h1>
+        
+        <h2>Physical Components</h2>
+        <p>When you open any desktop or laptop machine, you'll see a similar organization with these key components:</p>
+
+        <div class="professor-note">
+            The professor described that if you look inside any computer, you'll see a big green board - this is the motherboard. It's like the foundation that connects all components together through printed circuits.
+        </div>
+
+        <h3>Motherboard</h3>
+        <p>The <span class="key-term">motherboard</span> is the main green circuit board that:</p>
+        <ul>
+            <li>Contains circuit connections and <span class="key-term">buses</span></li>
+            <li>Connects one device to another device</li>
+            <li>Has circuits printed on the board for high speed and low power consumption</li>
+            <li>Is built on a <span class="key-term">Printed Circuit Board (PCB)</span></li>
+        </ul>
+
+        <h3>Core Components</h3>
+        <table>
+            <tr>
+                <th>Component</th>
+                <th>Function</th>
+                <th>Characteristics</th>
+            </tr>
+            <tr>
+                <td><strong>CPU/Processor</strong></td>
+                <td>Processing unit containing ALU</td>
+                <td>Performs mathematical operations on data</td>
+            </tr>
+            <tr>
+                <td><strong>Memory (RAM)</strong></td>
+                <td>Stores programs and data temporarily</td>
+                <td>Volatile storage, needs constant power</td>
+            </tr>
+            <tr>
+                <td><strong>Hard Disk</strong></td>
+                <td>Permanent data storage</td>
+                <td>Non-volatile, retains data without power</td>
+            </tr>
+        </table>
+
+        <h2>Memory Types</h2>
+        
+        <h3>Main Memory (RAM)</h3>
+        <p><span class="key-term">Random Access Memory (RAM)</span> is the main memory that:</p>
+        <ul>
+            <li>Stores programs and data temporarily</li>
+            <li>Uses <span class="key-term">volatile storage</span> technology</li>
+            <li>Built with <span class="key-term">DRAM (Dynamic RAM)</span> using capacitors</li>
+            <li>Requires constant power and periodic refresh</li>
+        </ul>
+
+        <div class="professor-note">
+            The professor explained that capacitors lose charge over time, which is why DRAM needs to be refreshed periodically. This is why your computer loses all data in RAM when power is turned off.
+        </div>
+
+        <h3>Secondary Memory (Hard Disk)</h3>
+        <p><span class="key-term">Hard Disk</span> provides:</p>
+        <ul>
+            <li><span class="key-term">Persistent/Non-volatile storage</span></li>
+            <li>Made of <span class="key-term">magnetic materials</span></li>
+            <li>Retains data even without power</li>
+            <li>Much larger capacity than RAM</li>
+        </ul>
+
+        <h2>Modern Storage Technologies</h2>
+        <p><span class="key-term">Solid State Drives (SSDs)</span>:</p>
+        <ul>
+            <li>Made with logic gates (NAND gates) instead of magnetic materials</li>
+            <li>Non-volatile storage</li>
+            <li>Faster read/write speeds than traditional HDDs</li>
+            <li>Lower power consumption</li>
+        </ul>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Computer Architecture showing CPU, RAM, Hard Disk, and Motherboard connections]
+        </div>
+
+        <div class="hinglish-summary">
+            Computer ke andar motherboard hota hai jo sabko connect karta hai. CPU processing karta hai, RAM temporary data store karta hai (power off mein delete ho jata hai), aur Hard Disk permanent storage hai. SSD newer technology hai jo faster aur efficient hai traditional hard disk se.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> What is the difference between volatile and non-volatile storage?<br>
+                    <strong>A:</strong> Volatile storage (RAM) loses data when power is off, non-volatile storage (Hard Disk) retains data permanently</li>
+                <li><strong>Q:</strong> Why does DRAM need to be refreshed?<br>
+                    <strong>A:</strong> Because it uses capacitors that lose charge over time</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Motherboard connects all components via printed circuits</li>
+                <li>RAM is volatile, fast, smaller capacity</li>
+                <li>Hard Disk is non-volatile, slower, larger capacity</li>
+                <li>SSDs offer better performance than traditional HDDs</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="von-neumann">
+        <h1>3. Von Neumann Architecture</h1>
+        
+        <p>The fundamental design of modern computers is based on the <span class="key-term">Von Neumann Architecture</span>, proposed by the great physicist and scientist <strong>John von Neumann</strong>.</p>
+
+        <h2>Architecture Design</h2>
+        <p>The Von Neumann architecture consists of:</p>
+        <ul>
+            <li><span class="key-term">CPU (Central Processing Unit)</span> connected to <span class="key-term">Memory</span></li>
+            <li>CPU contains:
+                <ul>
+                    <li><span class="key-term">Control Unit</span></li>
+                    <li><span class="key-term">Arithmetic Logic Unit (ALU)</span></li>
+                </ul>
+            </li>
+            <li>Multiple channels between CPU and Memory</li>
+        </ul>
+
+        <div class="professor-note">
+            The professor emphasized that this design allows for provable algorithms - algorithms that can be guaranteed to execute within a finite number of steps. This has deep theoretical foundations in computer science.
+        </div>
+
+        <h2>Why This Design Works</h2>
+        <p>The separation of processing (CPU) and storage (Memory) enables:</p>
+        <ul>
+            <li>Efficient algorithm execution</li>
+            <li>Provable computational processes</li>
+            <li>Finite step guarantees for problem solving</li>
+            <li>Flexibility in programming</li>
+        </ul>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Von Neumann Architecture showing CPU (Control Unit + ALU) connected to Memory via multiple channels]
+        </div>
+
+        <h2>Computer vs Human Brain</h2>
+        <p>Interesting comparison between electronic computers and human brains:</p>
+
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>Computer</th>
+                <th>Human Brain</th>
+            </tr>
+            <tr>
+                <td>Intelligence</td>
+                <td>Limited (but improving with AI)</td>
+                <td>Highly intelligent</td>
+            </tr>
+            <tr>
+                <td>Speed of calculations</td>
+                <td>Ultra-fast</td>
+                <td>Relatively slow</td>
+            </tr>
+            <tr>
+                <td>Can get tired</td>
+                <td>Never</td>
+                <td>After sometime</td>
+            </tr>
+            <tr>
+                <td>Can get bored</td>
+                <td>Never</td>
+                <td>Almost always</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            The professor noted that while computers are "ultra-fast and ultra-dumb," advances in AI and machine learning are making computers much more intelligent, though still not matching human cognitive abilities in many areas.
+        </div>
+
+        <div class="hinglish-summary">
+            Von Neumann architecture mein CPU aur Memory alag hote hain aur connected hote hain. Isse efficient algorithms ban sakte hain jo finite steps mein complete ho jate hain. Computer ultra-fast hai lekin brain se kam intelligent, lekin AI ke saath ye gap kam ho raha hai.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> What are the main components of Von Neumann architecture?<br>
+                    <strong>A:</strong> CPU (with Control Unit and ALU) connected to Memory</li>
+                <li><strong>Q:</strong> What advantage does separating CPU and Memory provide?<br>
+                    <strong>A:</strong> Enables provable algorithms and efficient processing with finite step guarantees</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Von Neumann architecture is the foundation of modern computers</li>
+                <li>Separation of processing and storage enables efficient computation</li>
+                <li>Computers excel in speed but humans excel in intelligence</li>
+                <li>AI is bridging the intelligence gap between computers and humans</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="programming">
+        <h1>4. Programming & Compilation Process</h1>
+        
+        <h2>Program Development Lifecycle</h2>
+        <p>The process of creating and running programs involves several steps:</p>
+
+        <h3>Step 1: Writing Programs</h3>
+        <p>Programs are written using an <span class="key-term">editor</span> in <span class="key-term">high-level languages</span> such as:</p>
+        <ul>
+            <li><strong>C</strong></li>
+            <li><strong>C++</strong></li>
+            <li><strong>Java</strong></li>
+            <li><strong>Python</strong></li>
+        </ul>
+
+        <div class="professor-note">
+            The professor explained that high-level languages are called "high-level" because they use English-like syntax that's comfortable for humans to understand and write, but computers cannot understand these languages directly.
+        </div>
+
+        <h3>Step 2: Compilation</h3>
+        <p><span class="key-term">Compilation</span> converts high-level programs into:</p>
+        <ul>
+            <li><span class="key-term">Binary format</span> (low-level representation)</li>
+            <li><span class="key-term">Executable</span> format that computers understand</li>
+            <li>Machine code that the processor can execute</li>
+        </ul>
+
+        <h3>Step 3: Execution</h3>
+        <p>During execution:</p>
+        <ol>
+            <li>Binary is loaded from <strong>Hard Disk</strong> to <strong>RAM</strong></li>
+            <li>CPU executes the binary instructions</li>
+            <li>Results are produced</li>
+        </ol>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Programming Process - High-level Code → Compiler → Binary → Loading to RAM → Execution → Output]
+        </div>
+
+        <h2>What Computers Can and Cannot Understand</h2>
+        
+        <h3>❌ Complex Instructions (Cannot Understand)</h3>
+        <ul>
+            <li>Multiply two matrices</li>
+            <li>Compute the determinant of a matrix</li>
+            <li>Find the shortest path between Mumbai and Delhi</li>
+        </ul>
+
+        <h3>✅ Simple Instructions (Can Understand)</h3>
+        <ul>
+            <li>Add a + b to get c</li>
+            <li>Multiply a × b to get c</li>
+            <li>Basic arithmetic operations</li>
+        </ul>
+
+        <h2>Levels of Abstraction</h2>
+        <p><span class="key-term">Abstraction levels</span> in programming:</p>
+        <ul>
+            <li><strong>Higher Level:</strong> Complex operations (matrix multiplication, pathfinding)</li>
+            <li><strong>Lower Level:</strong> Simple operations (addition, multiplication)</li>
+        </ul>
+
+        <div class="professor-note">
+            The professor emphasized that complex operations must be broken down into multiple simple operations that the computer can understand. This is the essence of algorithmic thinking.
+        </div>
+
+        <div class="hinglish-summary">
+            Programming mein high-level language (jaise C, Python) mein code likhte hain, phir compiler use karke binary format mein convert karte hain. Computer sirf simple operations samajh sakta hai, complex operations ko chote steps mein todna padta hai.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> Why do we need compilation?<br>
+                    <strong>A:</strong> To convert high-level human-readable code into binary format that computers can understand</li>
+                <li><strong>Q:</strong> Give an example of breaking down a complex operation.<br>
+                    <strong>A:</strong> Matrix multiplication can be broken down into multiple addition and multiplication operations</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>High-level languages are human-friendly but need translation</li>
+                <li>Compilation converts human code to machine code</li>
+                <li>Complex operations must be decomposed into simple steps</li>
+                <li>Understanding abstraction levels is crucial for programming</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="binary">
+        <h1>5. Binary Language & Communication</h1>
+        
+        <h2>Why Binary Language?</h2>
+        <p>Computers communicate using <span class="key-term">binary language</span> - a language made of only <strong>0</strong> and <strong>1</strong>. This limitation exists because:</p>
+
+        <div class="professor-note">
+            The professor used a great analogy: imagine trying to teach a small child who knows only two words. You'd have to break down complex instructions into very simple steps. Similarly, computers know only 0 and 1, but can still perform complex operations through combinations.
+        </div>
+
+        <h2>Transistor Foundation</h2>
+        <p>Computers are built with <span class="key-term">transistors</span> that:</p>
+        <ul>
+            <li>Can hold <span class="key-term">high state</span> (represented as 1)</li>
+            <li>Can hold <span class="key-term">low state</span> (represented as 0)</li>
+            <li>Are combined to form <span class="key-term">logic devices</span>:
+                <ul>
+                    <li>Adders</li>
+                    <li>Subtractors</li>
+                    <li>Multipliers</li>
+                    <li>Storage devices</li>
+                    <li>Communication devices</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>Boolean Algebra Foundation</h2>
+        <p><span class="key-term">George Boole</span> provided the mathematical foundation through <span class="key-term">Boolean algebra</span>, which showed that:</p>
+        <ul>
+            <li>All fundamental mathematical operations can be performed using binary numbers</li>
+            <li>Logical states (high/low, 1/0) can represent and process any data</li>
+            <li>Complex computations are possible with just two symbols</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            Computer sirf 0 aur 1 samajh sakta hai kyunki transistors sirf high aur low state mein hote hain. George Boole ne Boolean algebra diya jo dikhata hai ki binary numbers se saare mathematical operations ho sakte hain. Ek chote bacche ki tarah hai jo sirf do words jaanta hai but still complex kaam kar sakta hai.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> Why does computer use only 0 and 1?<br>
+                    <strong>A:</strong> Because transistors can only be in high state (1) or low state (0)</li>
+                <li><strong>Q:</strong> Who provided the mathematical foundation for binary operations?<br>
+                    <strong>A:</strong> George Boole through Boolean algebra</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Binary language uses only 0 and 1</li>
+                <li>Transistors operate in high/low states</li>
+                <li>Boolean algebra enables complex operations with binary</li>
+                <li>Simple building blocks can create complex systems</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="number-systems">
+        <h1>6. Number Systems</h1>
+        
+        <h2>Types of Number Systems</h2>
+        <p>Different number systems use different numbers of symbols:</p>
+
+        <table>
+            <tr>
+                <th>Number System</th>
+                <th>Base</th>
+                <th>Symbols Used</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><strong>Decimal</strong></td>
+                <td>10</td>
+                <td>0, 1, 2, 3, 4, 5, 6, 7, 8, 9</td>
+                <td>256</td>
+            </tr>
+            <tr>
+                <td><strong>Binary</strong></td>
+                <td>2</td>
+                <td>0, 1</td>
+                <td>11111000</td>
+            </tr>
+            <tr>
+                <td><strong>Octal</strong></td>
+                <td>8</td>
+                <td>0, 1, 2, 3, 4, 5, 6, 7</td>
+                <td>400</td>
+            </tr>
+            <tr>
+                <td><strong>Hexadecimal</strong></td>
+                <td>16</td>
+                <td>0-9, A, B, C, D, E, F</td>
+                <td>100</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            The professor explained that you can create any base-k number system by simply deciding how many symbols you want to use. The base determines the number of unique symbols available.
+        </div>
+
+        <h2>Number System Conversions</h2>
+        
+        <h3>Decimal to Binary Conversion</h3>
+        <p>Example: Convert 56 to binary</p>
+        <pre>
+56 ÷ 2 = 28 remainder 0
+28 ÷ 2 = 14 remainder 0  
+14 ÷ 2 = 7  remainder 0
+7  ÷ 2 = 3  remainder 1
+3  ÷ 2 = 1  remainder 1
+1  ÷ 2 = 0  remainder 1
+
+Reading remainders from bottom to top: 111000
+</pre>
+
+        <h3>Binary to Decimal Conversion</h3>
+        <p>Example: Convert 111000 to decimal</p>
+        <p>$111000_2 = 1×2^5 + 1×2^4 + 1×2^3 + 0×2^2 + 0×2^1 + 0×2^0$</p>
+        <p>$= 32 + 16 + 8 + 0 + 0 + 0 = 56_{10}$</p>
+
+        <h2>Hexadecimal System</h2>
+        <p>Hexadecimal uses 16 symbols:</p>
+        <ul>
+            <li>Numbers: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9</li>
+            <li>Letters: A, B, C, D, E, F (representing 10, 11, 12, 13, 14, 15)</li>
+        </ul>
+
+        <h2>Why Different Number Systems?</h2>
+        <p><span class="key-term">Different levels of abstraction require different number systems:</span></p>
+        <ul>
+            <li><strong>Lowest level:</strong> Binary (machine level)</li>
+            <li><strong>Intermediate levels:</strong> Octal, Hexadecimal (programming/debugging)</li>
+            <li><strong>Highest level:</strong> Decimal (human interface)</li>
+        </ul>
+
+        <div class="hinglish-summary">
+            Number systems mein alag-alag symbols use karte hain. Decimal mein 10 symbols (0-9), binary mein sirf 2 (0,1), aur hexadecimal mein 16 symbols hain. Computer ke different levels par different number systems ki zarurat hoti hai - machine level par binary, programming mein hex, aur humans ke liye decimal.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> Convert 10 (decimal) to binary.<br>
+                    <strong>A:</strong> 1010</li>
+                <li><strong>Q:</strong> What does 'A' represent in hexadecimal?<br>
+                    <strong>A:</strong> 10 in decimal</li>
+                <li><strong>Q:</strong> Convert binary 1011 to decimal.<br>
+                    <strong>A:</strong> $1×2^3 + 0×2^2 + 1×2^1 + 1×2^0 = 8 + 0 + 2 + 1 = 11$</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Different number systems serve different purposes</li>
+                <li>Conversion between systems follows mathematical patterns</li>
+                <li>Binary is essential for machine-level understanding</li>
+                <li>Each system has its optimal use case and abstraction level</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="data-representation">
+        <h1>7. Data Representation & Storage Units</h1>
+        
+        <h2>Fundamental Units</h2>
+        
+        <h3>Bit and Byte</h3>
+        <p><span class="key-term">Bit</span>: Fundamental unit of data - a single 0 or 1</p>
+        <p><span class="key-term">Byte</span>: Collection of 8 bits</p>
+        <p>Example byte: <code>11110000</code></p>
+
+        <h2>Storage Unit Hierarchy</h2>
+        <p>Storage units follow powers of 2:</p>
+
+        <table>
+            <tr>
+                <th>Unit</th>
+                <th>Abbreviation</th>
+                <th>Size</th>
+                <th>Mathematical Representation</th>
+            </tr>
+            <tr>
+                <td>Byte</td>
+                <td>B</td>
+                <td>8 bits</td>
+                <td>$2^3$ bits</td>
+            </tr>
+            <tr>
+                <td>Kilobyte</td>
+                <td>KB</td>
+                <td>1,024 bytes</td>
+                <td>$2^{10}$ bytes</td>
+            </tr>
+            <tr>
+                <td>Megabyte</td>
+                <td>MB</td>
+                <td>1,024 KB</td>
+                <td>$2^{20}$ bytes</td>
+            </tr>
+            <tr>
+                <td>Gigabyte</td>
+                <td>GB</td>
+                <td>1,024 MB</td>
+                <td>$2^{30}$ bytes</td>
+            </tr>
+            <tr>
+                <td>Terabyte</td>
+                <td>TB</td>
+                <td>1,024 GB</td>
+                <td>$2^{40}$ bytes</td>
+            </tr>
+        </table>
+
+        <h2>Important Powers of 2</h2>
+        <p>These values are frequently used in computer science:</p>
+
+        <table>
+            <tr>
+                <th>Power</th>
+                <th>Decimal Value</th>
+                <th>Binary Representation</th>
+            </tr>
+            <tr>
+                <td>$2^0$</td>
+                <td>1</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>$2^1$</td>
+                <td>2</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>$2^2$</td>
+                <td>4</td>
+                <td>100</td>
+            </tr>
+            <tr>
+                <td>$2^3$</td>
+                <td>8</td>
+                <td>1000</td>
+            </tr>
+            <tr>
+                <td>$2^{10}$</td>
+                <td>1,024</td>
+                <td>10000000000</td>
+            </tr>
+        </table>
+
+        <div class="professor-note">
+            The professor emphasized that understanding powers of 2 is crucial because they appear frequently in computer science calculations. For example, when representing $2^{10}$ in binary, only the bit at position 10 is 1, and all others are 0.
+        </div>
+
+        <h2>Data Representation at Different Levels</h2>
+        <p>Understanding how data flows between abstraction levels:</p>
+        <ul>
+            <li><strong>High Level:</strong> Programs work with decimal numbers</li>
+            <li><strong>Compilation:</strong> Converts to binary representation</li>
+            <li><strong>Machine Level:</strong> All operations performed in binary</li>
+            <li><strong>Storage:</strong> Data stored as binary patterns</li>
+        </ul>
+
+        <h2>Practical Applications</h2>
+        <p>This knowledge is essential for:</p>
+        <ul>
+            <li>Memory optimization</li>
+            <li>Understanding data storage requirements</li>
+            <li>Debugging low-level issues</li>
+            <li>Algorithm efficiency analysis</li>
+        </ul>
+
+        <div class="professor-note">
+            The professor noted that while high-level programming often abstracts away binary details, understanding the underlying representation helps in debugging, optimization, and designing efficient algorithms.
+        </div>
+
+        <div class="hinglish-summary">
+            Data representation mein bit sabse chota unit hai (0 ya 1), 8 bits milke 1 byte banate hain. Storage units powers of 2 mein badhte hain - KB, MB, GB, TB. High level mein decimal use karte hain lekin machine level par sab binary mein convert ho jata hai. Ye samajhna zaruri hai debugging aur optimization ke liye.
+        </div>
+
+        <div class="practice-questions">
+            <h3>🤔 Practice Questions</h3>
+            <ol>
+                <li><strong>Q:</strong> How many bits are in 2 KB?<br>
+                    <strong>A:</strong> $2 × 2^{10} × 8 = 2 × 1024 × 8 = 16,384$ bits</li>
+                <li><strong>Q:</strong> What is $2^8$ in decimal?<br>
+                    <strong>A:</strong> 256</li>
+                <li><strong>Q:</strong> How many bytes can represent the number 1000 in binary?<br>
+                    <strong>A:</strong> 1000 requires 10 bits (since $2^{10} = 1024 > 1000 > 2^9 = 512$), so 2 bytes minimum</li>
+            </ol>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li>Bit is the fundamental unit of digital information</li>
+                <li>Storage units increase by powers of 2</li>
+                <li>Understanding binary representation aids in optimization</li>
+                <li>Different abstraction levels use different number systems appropriately</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mind-map">
+        <h1 id="mind-map">8. Comprehensive Mind Map</h1>
+        <div class="mind-map-container">
+            <div class="central-node">
+                Computer Fundamentals
+                <div class="branch branch1">Von Neumann Architecture<br>CPU + Memory</div>
+                <div class="branch branch2">Components<br>Motherboard, RAM, HDD</div>
+                <div class="branch branch3">Programming<br>High-level → Binary</div>
+                <div class="branch branch4">Storage Units<br>Bit, Byte, KB, MB, GB</div>
+                <div class="branch branch5">Number Systems<br>Binary, Decimal, Hex</div>
+                <div class="branch branch6">Binary Language<br>0s and 1s, Transistors</div>
+            </div>
+        </div>
+        
+        <h2>Concept Connections</h2>
+        <ul>
+            <li><strong>Hardware ↔ Software:</strong> Physical components enable software execution</li>
+            <li><strong>High-level ↔ Low-level:</strong> Compilation bridges human and machine languages</li>
+            <li><strong>Number Systems ↔ Data Storage:</strong> Different systems serve different abstraction needs</li>
+            <li><strong>Binary ↔ Transistors:</strong> Physical limitations determine digital representation</li>
+            <li><strong>Architecture ↔ Performance:</strong> Design choices affect computational capabilities</li>
+        </ul>
+    </div>
+
+    <footer style="text-align: center; margin-top: 50px; padding: 20px; background-color: #667eea; color: white; border-radius: 10px;">
+        <h3>I created this knowledge during my first semester of BSc in Applied AI and Data Science. </h3>
+        <h3>~ Armaan Kachhawa</h3>
+ </footer>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

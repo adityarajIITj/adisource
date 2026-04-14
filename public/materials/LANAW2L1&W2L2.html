@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis - Lecture Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        h1 {
+            font-size: 2rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+        h2 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 0.3rem;
+            margin-top: 1.5rem;
+        }
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 1.25rem;
+        }
+        p {
+            margin: 1rem 0;
+        }
+        .toc {
+            background-color: #f7f7f7;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #3498db;
+        }
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .hinglish-summary {
+            background-color: #FFF9C4;
+            border-left: 4px solid #FBC02D;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .key-takeaways {
+            background-color: #E8F5E9;
+            border-left: 4px solid #4CAF50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .practice-questions {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .extra-content {
+            background-color: #F3E5F5;
+            border-left: 4px solid #9C27B0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        /* START: CSS for Mind Map Visualization (add to your existing <style> tag) */
+
+.mindmap-visualization-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px; /* Adjusted padding */
+    margin: 1.5rem 0;
+    text-align: center;
+    overflow-x: auto; /* Allows horizontal scrolling if map is wide */
+    background-color: #fdfdfd; /* Slightly off-white background for the map area */
+    border-radius: 8px; /* Slightly more pronounced radius */
+    border: 1px solid #e0e0e0; /* Softer border for the container */
+    position: relative; /* For positioning connecting lines */
+}
+
+.mm-node {
+    padding: 8px 12px; /* Slightly reduced padding for child nodes */
+    margin: 6px 4px;   /* Slightly reduced margin */
+    border: 1px solid; /* Border color will be set by specific class */
+    border-radius: 25px; /* Pill shape */
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: inline-block;
+    min-width: 100px;
+    position: relative; /* For pseudo-elements used for lines */
+    z-index: 1; /* Nodes appear above lines */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mm-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.mm-central-topic {
+    background-color: #2c3e50; /* Your h1 color */
+    color: white;
+    font-size: 1.3em; /* Adjusted size */
+    font-weight: 600; /* Matches your h tags */
+    padding: 12px 20px; /* Adjusted padding */
+    border-color: #2c3e50;
+    margin-bottom: 25px; /* Space before main branches */
+}
+
+.mm-level-1 {
+    background-color: #e3f2fd; /* Your .practice-questions blue */
+    color: #2c3e50;
+    border-color: #2196F3;
+    font-size: 1.05em; /* Adjusted */
+    font-weight: 600;
+}
+
+.mm-level-2 {
+    background-color: #e8f5e9; /* Your .key-takeaways green */
+    color: #333;
+    border-color: #4CAF50;
+    font-size: 0.9em; /* Adjusted */
+    padding: 6px 10px; /* Adjusted */
+    min-width: 90px;
+}
+
+/* You can add .mm-level-3 if your map goes deeper */
+/*
+.mm-level-3 {
+    background-color: #FFF9C4; / Your .hinglish-summary yellow /
+    color: #333;
+    border-color: #FBC02D;
+    font-size: 0.8em;
+}
+*/
+
+.mm-branches {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow branches to wrap on smaller screens */
+    position: relative; /* For line origins */
+}
+
+.mm-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px; /* Spacing between main branches */
+    padding-top: 25px; /* Space for line from central topic */
+    position: relative;
+}
+
+.mm-sub-branches {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 8px; /* Space below parent node */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.mm-sub-branches li {
+    padding-top: 20px; /* Space for line from parent node */
+    position: relative;
+}
+
+/* Basic CSS Connecting Lines (Vertical) */
+/* These create a simple vertical line from the parent to the child/group of children. */
+
+/* Line from central topic to each main branch's connection point */
+.mm-branch::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 25px; /* Adjust length to connect visually */
+    background-color: #bdc3c7; /* Your h2 border color */
+    z-index: 0;
+}
+
+/* Line from a Level 1 node to its group of sub-branches */
+.mm-branch > .mm-node.mm-level-1 + .mm-sub-branches::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 100%; /* Position at the top of the sub-branch container */
+    transform: translateX(-50%);
+    width: 2px;
+    height: 8px; /* Short connector from node to where child lines start */
+    background-color: #bdc3c7;
+    z-index: 0;
+}
+
+/* Line from each sub-branch list item to its node */
+.mm-sub-branches > li::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 20px; /* Adjust length to connect visually */
+    background-color: #bdc3c7;
+    z-index: 0;
+}
+
+/* Consider removing the ::before for the first child if it looks redundant
+   or adjust line heights carefully.
+   If you want lines spreading out more horizontally before dropping,
+   that requires more complex pseudo-elements or SVG/JavaScript.
+*/
+
+/* END: CSS for Mind Map Visualization */
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .vector-diagram {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .header-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <h1 class="text-3xl font-bold text-center mb-2">Linear Algebra and Numerical Analysis</h1>
+  
+        </div>
+
+        <div class="toc">
+            <h2 id="table-of-contents">Table of Contents</h2>
+            <ul class="list-disc pl-5">
+                <li><a href="#introduction">Introduction to Linear Algebra</a></li>
+                <li><a href="#history">History of Linear Algebra</a></li>
+                <li><a href="#applications">Applications of Linear Algebra</a></li>
+                <li><a href="#vectors">Understanding Vectors</a>
+                    <ul class="list-disc pl-5">
+                        <li><a href="#vector-notation">Vector Notation and Formal Definition</a></li>
+                        <li><a href="#special-vectors">Zero, Ones, and Unit Vectors</a></li>
+                    </ul>
+                </li>
+                <li><a href="#python-vectors">Vectors in Python</a>
+                    <ul class="list-disc pl-5">
+                        <li><a href="#numpy-arrays">Using NumPy Arrays</a></li>
+                        <li><a href="#vector-orientations">Vector Orientations</a></li>
+                    </ul>
+                </li>
+                <li><a href="#vector-operations">Vector Operations</a>
+                    <ul class="list-disc pl-5">
+                        <li><a href="#vector-addition">Vector Addition</a></li>
+                        <li><a href="#scalar-multiplication">Scalar Multiplication</a></li>
+                        <li><a href="#vector-magnitude">Vector Magnitude</a></li>
+                    </ul>
+                </li>
+                <li><a href="#practice">Practice Questions and Solutions</a></li>
+                <li><a href="#mind-map">Comprehensive Mind Map</a></li>
+                <li><a href="#summary">Course Summary</a></li>
+            </ul>
+        </div>
+
+        <h1 id="introduction">Introduction to Linear Algebra</h1>
+        
+        <p>Linear algebra is a branch of mathematics that forms the foundation of data science and AI applications. While it may sound abstract, it's essentially <strong>the mathematics of data</strong>, with matrices and vectors serving as the language of data.</p>
+        
+        <div class="extra-content">
+            <p>Professor mentioned in class: Linear algebra has an enormous amount of real-world applications using tools and techniques that are essential for modern AI and data science.</p>
+        </div>
+        
+        <p>Linear algebra focuses primarily on:</p>
+        <ul class="list-disc pl-5">
+            <li>Linear combinations</li>
+            <li>The study of lines and planes</li>
+            <li>Vector spaces</li>
+            <li>Mappings required for linear transformations</li>
+        </ul>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul class="list-disc pl-5">
+                <li>Linear algebra is fundamental to understanding data science and AI</li>
+                <li>Matrices and vectors are the "language" of data</li>
+                <li>It helps us solve systems of linear equations</li>
+                <li>Linear algebra concepts have direct applications in real-world problems</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Linear algebra ek aisa branch of mathematics hai jo data science aur AI applications ka foundation hai. Isme hum vectors aur matrices ke through data ko represent karte hain. Linear algebra se hum linear combinations, vector spaces, aur transformations ko samajh sakte hain. Ye branch relatively young hai par modern technology mein bahut important role play karta hai.</p>
+        </div>
+
+        <h2 id="history">History of Linear Algebra</h2>
+        
+        <p>Linear algebra is a relatively young field of mathematics that was initially formalized in the 1800s to find unknowns in systems of linear equations. The development of linear algebra can be traced through several key contributors:</p>
+        
+        <ul class="list-disc pl-5">
+            <li><strong>Leibniz</strong> (1693) - Introduced the concept of determinants</li>
+            <li><strong>Gabriel Cramer</strong> (1750) - Used determinants for solving linear systems, now known as <strong>Cramer's Rule</strong></li>
+            <li><strong>Carl Friedrich Gauss</strong> - Further developed the theory of solving linear systems with <strong>Gaussian elimination</strong></li>
+        </ul>
+        
+        <p>The study of matrix algebra first emerged in England in the mid-1800s. Surprisingly, linear algebra only appeared in American graduate textbooks in the 1940s and in undergraduate textbooks in the 1950s, making it a relatively recent addition to mainstream mathematics education.</p>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Linear algebra ek relatively young field hai jo 1800s mein formalize hua tha. Isme Leibniz ne determinants introduce kiye, Cramer ne linear equations ko solve karne ke liye determinants ka use kiya, aur Gauss ne Gaussian elimination method develop kiya. Matrix algebra England mein mid-1800s mein develop hui. Surprisingly, America mein ye sirf 1940s mein graduate textbooks aur 1950s mein undergraduate textbooks mein appear hui.</p>
+        </div>
+
+        <h2 id="applications">Applications of Linear Algebra</h2>
+        
+        <p>Linear algebra has wide-ranging applications in modern science and technology:</p>
+        
+        <ul class="list-disc pl-5">
+            <li><strong>Digital Photography</strong> - Image transformation and processing</li>
+            <li><strong>Computer Graphics</strong> - Video games, digital effects in movies</li>
+            <li><strong>Web Search Algorithms</strong> - Page ranking systems</li>
+            <li><strong>Telecommunications</strong> - Signal processing</li>
+            <li><strong>Machine Learning</strong> - Neural networks, dimensionality reduction</li>
+            <li><strong>Biomedical Imaging</strong> - X-ray analysis, disease detection</li>
+        </ul>
+        
+        <div class="extra-content">
+            <p>Professor mentioned in class: During COVID-19, linear algebra techniques were used for analyzing lung X-rays, where numbers represented as vectors and matrices helped identify abnormalities in different parts of the lungs.</p>
+        </div>
+        
+        <p>In machine learning applications, data is encoded as vectors and matrices, processed through neural networks, and then decoded to produce meaningful outputs such as disease detection results that can guide clinical treatment.</p>
+        
+        <h3>Real-life Applications of Vectors</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>Vector Application</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Image Processing</td>
+                    <td>RGB color values represented as vectors</td>
+                </tr>
+                <tr>
+                    <td>Business Models</td>
+                    <td>Quantities of different commodities or resources</td>
+                </tr>
+                <tr>
+                    <td>Finance</td>
+                    <td>Portfolio of company shares (positive for long positions, negative for short positions)</td>
+                </tr>
+                <tr>
+                    <td>Economics</td>
+                    <td>Cash flow where X<sub>i</sub> is the payment during period i</td>
+                </tr>
+                <tr>
+                    <td>Audio Processing</td>
+                    <td>Acoustic pressure at sample times</td>
+                </tr>
+                <tr>
+                    <td>Machine Learning</td>
+                    <td>Feature vectors where X<sub>i</sub> is the value of feature/attribute i</td>
+                </tr>
+                <tr>
+                    <td>Marketing</td>
+                    <td>Customer purchases in terms of dollar value of product i over a period</td>
+                </tr>
+                <tr>
+                    <td>Text Analysis</td>
+                    <td>Word counts in a document or text</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul class="list-disc pl-5">
+                <li>Linear algebra is used in everyday technologies from photos to web searches</li>
+                <li>It forms the foundation of machine learning and AI systems</li>
+                <li>Vectors can represent diverse real-world data from multiple domains</li>
+                <li>Understanding linear algebra enables us to solve complex data problems</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Linear algebra hamare daily technology mein use hoti hai jaise digital photos, video games, web search aur telecommunications. Machine learning mein, data ko vectors aur matrices ke form mein encode kiya jata hai aur neural networks ke through process kiya jata hai. Real-life examples mein RGB colors, business resources, financial portfolios, audio processing aur text analysis shamil hain. COVID-19 ke time mein, lung X-rays ko analyze karne ke liye bhi linear algebra use hui thi.</p>
+        </div>
+
+        <h1 id="vectors">Understanding Vectors</h1>
+        
+        <h2 id="vector-notation">Vector Notation and Formal Definition</h2>
+        
+        <p>In linear algebra, a <strong>vector</strong> is an ordered list of numbers. While in abstract linear algebra, vectors may contain other mathematical objects including functions, we will focus only on vectors comprising numbers for practical applications.</p>
+        
+        <p>A vector can be represented in several ways:</p>
+        <pre>
+As a column:    As a row:     Alternative notations:
+   ⎡1.5⎤        [1.5 3.6 7.2 -9.1]       v = (1.5, 3.6, 7.2, -9.1)
+   ⎢3.6⎥                                 v = [1.5, 3.6, 7.2, -9.1]
+   ⎢7.2⎥
+   ⎣-9.1⎦
+        </pre>
+        
+        <p>Key terminology:</p>
+        <ul class="list-disc pl-5">
+            <li>The numbers in the list are called <strong>elements</strong>, <strong>entries</strong>, <strong>coefficients</strong>, or <strong>components</strong></li>
+            <li>The number of elements is the <strong>size</strong>, <strong>dimension</strong>, or <strong>length</strong> of the vector</li>
+            <li>A vector of size n is called an <strong>n-vector</strong></li>
+            <li>Individual elements can be referenced by position (e.g., "the third entry is 7.2")</li>
+        </ul>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Linear algebra mein vector ek ordered list of numbers hota hai. Ise column form ya row form mein represent kar sakte hain. Vector mein jo numbers hote hain unhe elements, entries, coefficients ya components kehte hain. Vector mein jitne elements hote hain use vector ki size, dimension ya length kehte hain. Agar vector mein n elements hain to use n-vector kehte hain.</p>
+        </div>
+
+        <h2 id="special-vectors">Zero, Ones, and Unit Vectors</h2>
+        
+        <p>There are several special types of vectors that are commonly used in linear algebra:</p>
+        
+        <h3>Zero Vector</h3>
+        <p>A vector with all entries equal to 0 is called the <strong>zero vector</strong>, denoted by <strong>0</strong>:</p>
+        <pre>
+   ⎡0⎤        
+   ⎢0⎥        or    [0 0 0]
+   ⎣0⎦
+        </pre>
+        
+        <h3>Ones Vector</h3>
+        <p>An n-vector with all entries equal to 1 is denoted by <strong>1</strong>:</p>
+        <pre>
+   ⎡1⎤        
+   ⎢1⎥        or    [1 1 1]
+   ⎣1⎦
+        </pre>
+        
+        <h3>Unit Vectors</h3>
+        <p>A <strong>unit vector</strong> has only one entry equal to 1 and all others equal to 0. Unit vectors are denoted by e<sub>i</sub> where i is the position of the 1:</p>
+        <pre>
+e₁ = ⎡1⎤     e₂ = ⎡0⎤     e₃ = ⎡0⎤
+     ⎢0⎥          ⎢1⎥          ⎢0⎥
+     ⎣0⎦          ⎣0⎦          ⎣1⎦
+        </pre>
+        
+        <div class="extra-content">
+            <p>Professor mentioned in class: Unit vectors are particularly important for further operations on matrices, and we will see them again in later lectures when discussing linear transformations.</p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul class="list-disc pl-5">
+                <li>Vectors are ordered lists of numbers that form the basic building blocks in linear algebra</li>
+                <li>Vectors can be represented in multiple ways (column, row, or list notation)</li>
+                <li>Special vectors like the zero vector, ones vector, and unit vectors have important roles</li>
+                <li>Unit vectors are especially useful for operations and transformations</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Linear algebra mein kuch special vectors hote hain: zero vector jisme sabhi entries zero hoti hain, ones vector jisme sabhi entries 1 hoti hain, aur unit vectors jinme sirf ek position par 1 hota hai aur baki sab jagah 0 hote hain. Unit vectors ko e₁, e₂, e₃, etc. ke roop mein denote karte hain jahan subscript 1 ki position batata hai. Ye special vectors aage ke matrix operations mein bahut useful honge.</p>
+        </div>
+
+        <h1 id="python-vectors">Vectors in Python</h1>
+        
+        <h2 id="numpy-arrays">Using NumPy Arrays</h2>
+        
+        <p>In Python, vectors can be represented using several data types, but NumPy arrays are best suited for linear algebra operations. Here are the main ways to create vectors in Python:</p>
+        
+        <pre>
+import numpy as np
+
+# As a simple list (not ideal for linear algebra operations)
+asList = [1, 2, 3]
+
+# As a NumPy array without specific orientation
+asArray = np.array([1, 2, 3])
+
+# As a row vector (2D array with 1 row)
+rowVec = np.array([[1, 2, 3]])
+
+# As a column vector (2D array with 1 column)
+colVec = np.array([[1], [2], [3]])
+        </pre>
+        
+        <p>The <code>asArray</code> variable is an <strong>orientationless array</strong>, meaning it is neither a row nor a column vector but simply a 1D list of numbers in NumPy. While a simple Python list may seem like the easiest way to represent a vector, many linear algebra operations won't work on standard Python lists.</p>
+        
+        <div class="extra-content">
+            <p>Professor mentioned in class: It's recommended to use NumPy arrays over Python lists for vector operations because NumPy provides better functionality for vector arithmetic, which Python lists do not support directly.</p>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Python mein vectors ko represent karne ke liye NumPy arrays ka use karna sabse better option hai. Simple Python lists bhi use kar sakte hain, lekin unpe linear algebra operations perform nahi kar sakte. NumPy mein vectors ko different ways mein create kar sakte hain - orientationless array, row vector, ya column vector. NumPy import karke np.array() function se vectors create kiye jate hain.</p>
+        </div>
+
+        <h2 id="vector-orientations">Vector Orientations</h2>
+        
+        <p>In Python, it's important to understand the dimensionality and shape of vectors:</p>
+        
+        <ul class="list-disc pl-5">
+            <li>In mathematical terms, the <strong>dimensionality</strong> of a vector is the number of elements it contains</li>
+            <li>In Python, however, <strong>dimensionality</strong> refers to the number of geometric dimensions used to print out the numerical object</li>
+            <li>All vectors shown earlier are considered "two-dimensional arrays" in Python, regardless of the number of elements they contain</li>
+            <li>A list of numbers without orientation is considered a 1D array in Python</li>
+            <li>The mathematical dimensionality (number of elements) is called the <strong>length</strong> or <strong>shape</strong> of the vector in Python</li>
+        </ul>
+        
+        <p>We can explore these orientations by examining the shape of variables:</p>
+        
+        <pre>
+print(asList)                # Output: [1, 2, 3]
+print(asArray)               # Output: [1 2 3]
+print(rowVec)                # Output: [[1 2 3]]
+print(colVec)                # Output: [[1]
+                             #          [2]
+                             #          [3]]
+
+print(len(asArray))          # Output: 3
+print(asArray.shape)         # Output: (3,)
+print(rowVec.shape)          # Output: (1, 3)
+print(colVec.shape)          # Output: (3, 1)
+        </pre>
+        
+        <p>The shape of the variables gives you M rows and N columns in the format (M, N). For a 1D array, it simply shows the length as a tuple with one element.</p>
+        
+        <h3>Geometric Interpretation of Vectors</h3>
+        
+        <p>2-vectors (x₁, x₂) can represent a location or a displacement in 2D space. For example, if we have a vector (x₁, x₂), we can plot it on a 2D coordinate system where x₁ is along the x-axis and x₂ is along the y-axis.</p>
+        
+        <div class="vector-diagram">
+            <svg width="300" height="250" viewBox="-150 -125 300 250" aria-labelledby="vectorPlotTitle" role="img" style="border:1px solid #ddd; background-color: #f9f9f9; display: block; margin: auto;">
+                <title id="vectorPlotTitle">2D Vector Plot showing an example vector v = [3, 2]</title>
+                <defs>
+                    <marker id="svg_axes_arrowhead" markerWidth="8" markerHeight="6" refX="7.5" refY="3" orient="auto" fill="#333">
+                        <polygon points="0 0, 8 3, 0 6" />
+                    </marker>
+                    <marker id="svg_vector_arrowhead" markerWidth="8" markerHeight="6" refX="7.5" refY="3" orient="auto" fill="#c0392b"> {/* A shade of red */}
+                        <polygon points="0 0, 8 3, 0 6" />
+                    </marker>
+                </defs>
+        
+                <g id="gridLines" stroke="#e0e0e0" stroke-width="0.75">
+                    <line x1="-100" y1="-100" x2="-100" y2="100" /> <line x1="-80" y1="-100" x2="-80" y2="100" />
+                    <line x1="-60" y1="-100" x2="-60" y2="100" /> <line x1="-40" y1="-100" x2="-40" y2="100" />
+                    <line x1="-20" y1="-100" x2="-20" y2="100" />
+                    <line x1="20" y1="-100" x2="20" y2="100" /> <line x1="40" y1="-100" x2="40" y2="100" />
+                    <line x1="60" y1="-100" x2="60" y2="100" /> <line x1="80" y1="-100" x2="80" y2="100" />
+                    <line x1="100" y1="-100" x2="100" y2="100" />
+                    <line y1="-100" x1="-100" y2="-100" x2="100" /> <line y1="-80" x1="-100" y2="-80" x2="100" />
+                    <line y1="-60" x1="-100" y2="-60" x2="100" /> <line y1="-40" x1="-100" y2="-40" x2="100" />
+                    <line y1="-20" x1="-100" y2="-20" x2="100" />
+                    <line y1="20" x1="-100" y2="20" x2="100" /> <line y1="40" x1="-100" y2="40" x2="100" />
+                    <line y1="60" x1="-100" y2="60" x2="100" /> <line y1="80" x1="-100" y2="80" x2="100" />
+                    <line y1="100" x1="-100" y2="100" x2="100" />
+                </g>
+        
+                <g id="coordinateAxes" stroke="#333" stroke-width="1.5">
+                    <line x1="0" y1="-115" x2="0" y2="115" marker-end="url(#svg_axes_arrowhead)" />
+                    <text x="8" y="-105" font-family="Segoe UI, Tahoma, Geneva, Verdana, sans-serif" font-size="12px" fill="#333">Y</text>
+                    <line x1="-140" y1="0" x2="140" y2="0" marker-end="url(#svg_axes_arrowhead)" />
+                    <text x="130" y="-8" font-family="Segoe UI, Tahoma, Geneva, Verdana, sans-serif" font-size="12px" fill="#333">X</text>
+                </g>
+        
+                <g id="axisTicks" font-family="Segoe UI, Tahoma, Geneva, Verdana, sans-serif" font-size="10px" fill="#555">
+                    <g text-anchor="middle">
+                        <text x="20" y="15">1</text> <text x="40" y="15">2</text> <text x="60" y="15">3</text> <text x="80" y="15">4</text> <text x="100" y="15">5</text>
+                        <text x="-20" y="15">-1</text> <text x="-40" y="15">-2</text> <text x="-60" y="15">-3</text> <text x="-80" y="15">-4</text> <text x="-100" y="15">-5</text>
+                    </g>
+                    <g text-anchor="end">
+                        <text x="-5" y="-18">1</text> <text x="-5" y="-38">2</text> <text x="-5" y="-58">3</text> <text x="-5" y="-78">4</text> <text x="-5" y="-98">5</text>
+                        <text x="-5" y="22">-1</text> <text x="-5" y="42">-2</text> <text x="-5" y="62">-3</text> <text x="-5" y="82">-4</text> <text x="-5" y="102">-5</text>
+                    </g>
+                    <text x="0" y="0" dx="5" dy="12" font-size="9px" text-anchor="start">(0,0)</text>
+                </g>
+        
+                <line x1="0" y1="0" x2="60" y2="-40" stroke="#c0392b" stroke-width="2.5" marker-end="url(#svg_vector_arrowhead)" />
+                <text x="65" y="-45" font-family="Segoe UI, Tahoma, Geneva, Verdana, sans-serif" font-size="11px" fill="#c0392b" font-weight="bold">v = [3, 2]</text>
+        
+                <circle cx="0" cy="0" r="2.5" fill="#333" />
+            </svg>
+        </div>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul class="list-disc pl-5">
+                <li>NumPy is the preferred library for vector operations in Python</li>
+                <li>Understanding the difference between mathematical dimensionality and Python's concept of shape is crucial</li>
+                <li>Row vectors have shape (1, n) while column vectors have shape (n, 1)</li>
+                <li>Vectors can be visualized geometrically in 2D or 3D space</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Python mein vectors ke orientation ko samajhna important hai. Mathematical terms mein vector ki dimensionality uske elements ki count hoti hai, lekin Python mein dimensionality ka matlab geometric dimensions hota hai. Python mein orientationless array ki shape (n,) hoti hai, row vector ki shape (1, n) hoti hai, aur column vector ki shape (n, 1) hoti hai. 2D vectors ko coordinate system par plot karke geometrically visualize kar sakte hain.</p>
+        </div>
+
+        <h1 id="vector-operations">Vector Operations</h1>
+        
+        <p>Vector operations are essential for working with data in linear algebra. As the professor mentioned, "Vectors are like nouns; they are the characters in our linear algebra story. The fun in linear algebra comes from the verbs—the actions that breathe life into the characters. Those actions are called operations."</p>
+        
+        <h2 id="vector-addition">Vector Addition</h2>
+        
+        <p>Vector addition follows these properties:</p>
+        
+        <ol class="list-decimal pl-5">
+            <li><strong>Commutative property</strong>: A + B = B + A</li>
+            <li><strong>Associative property</strong>: A + (B + C) = (A + B) + C</li>
+            <li><strong>Zero vector property</strong>: A + 0 = 0 + A = A</li>
+            <li><strong>Negative vector property</strong>: A + (-A) = 0</li>
+        </ol>
+        
+        <p>In Python, we can add vectors using NumPy:</p>
+        
+        <pre>
+import numpy as np
+
+# Create vectors
+A = np.array([1, 2, 3])
+B = np.array([4, 5, 6])
+
+# Vector addition
+C = A + B  # Results in [5, 7, 9]
+        </pre>
+        
+        <p>It's important to note that to add vectors, they must have the same dimensions (same number of elements).</p>
+        
+        <div class="practice-questions">
+            <h3>Practice Question 1</h3>
+            <p><strong>Question:</strong> Given the vectors [1, 3, 5] and [2, 4, 6], what is the result of vector addition?</p>
+            <p><strong>Solution:</strong> [1+2, 3+4, 5+6] = [3, 7, 11]</p>
+            
+            <h3>Practice Question 2</h3>
+            <p><strong>Question:</strong> Can you add a row vector to a column vector as in the following example?</p>
+            <pre>
+[1, 2, 3] + [[4],
+              [5],
+              [6]]
+            </pre>
+            <p><strong>Solution:</strong> In standard mathematical linear algebra, you cannot directly add a row vector to a column vector because their dimensions don't match. However, in NumPy, broadcasting rules might allow this operation, resulting in a matrix where each element of the row vector is added to each element of the column vector.</p>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Vector addition mein kuch important properties hain jaise commutative property (A + B = B + A), associative property (A + (B + C) = (A + B) + C), aur zero vector property (A + 0 = A). Vectors ko add karne ke liye unke dimensions same hone chahiye. Python mein NumPy ka use karke vectors ko easily add kar sakte hain. Generally, row vector ko column vector ke saath directly add nahi kar sakte, kyunki unke dimensions match nahi karte.</p>
+        </div>
+
+        <h2 id="scalar-multiplication">Scalar Multiplication and Addition</h2>
+        
+        <p>Scalar multiplication involves multiplying each element of a vector by a scalar value (a single number):</p>
+        
+        <pre>
+# Scalar multiplication
+k = 2
+kA = k * A  # Results in [2, 4, 6]
+        </pre>
+        
+        <p>Some important properties of scalar multiplication include:</p>
+        
+        <ul class="list-disc pl-5">
+            <li>k(A + B) = kA + kB (distributive property)</li>
+            <li>(k + m)A = kA + mA (distributive property)</li>
+            <li>k(mA) = (km)A (associative property)</li>
+            <li>1A = A (identity property)</li>
+        </ul>
+        
+        <p>While <strong>scalar addition</strong> is not formally defined in linear algebra (since vectors and scalars are different mathematical objects), numerical processing programs like Python will allow adding scalars to vectors. The operation adds the scalar to each element of the vector:</p>
+        
+        <pre>
+# Scalar addition (not formally defined in linear algebra but supported in Python)
+A = np.array([1, 2, 3])
+k = 5
+result = A + k  # Results in [6, 7, 8]
+        </pre>
+        
+        <div class="extra-content">
+            <p>Professor mentioned in class: While we can perform scalar addition in Python, it's important to understand that this is not a formal linear algebra operation but a convenience provided by programming languages.</p>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Scalar multiplication mein hum ek vector ke har element ko ek scalar (single number) se multiply karte hain. Isme kuch properties hoti hain jaise distributive property aur associative property. Scalar addition linear algebra mein formally defined nahi hai, lekin Python jaise programming languages isme support karte hain, jahan scalar ko vector ke har element mein add kiya jata hai.</p>
+        </div>
+
+        <h2 id="vector-magnitude">Vector Magnitude</h2>
+        
+        <p>The <strong>magnitude</strong> of a vector (also called its length or norm) represents the "size" of the vector. In geometric terms, it's the distance from the origin to the point represented by the vector.</p>
+        
+        <p>For a vector v = [v₁, v₂, ..., vₙ], the magnitude is calculated as:</p>
+        
+        <p style="text-align: center;">||v|| = √(v₁² + v₂² + ... + vₙ²)</p>
+        
+        <p>This is also known as the Euclidean norm or the L2 norm.</p>
+        
+        <p>For example, with the vector v = [3, 4], the magnitude is:</p>
+        <p>||v|| = √(3² + 4²) = √(9 + 16) = √25 = 5</p>
+        
+        <p>In Python, we can calculate vector magnitude using NumPy:</p>
+        
+        <pre>
+import numpy as np
+
+v = np.array([3, 4])
+magnitude = np.linalg.norm(v)  # Results in 5.0
+        </pre>
+        
+        <h3>Scalar Multiplication and Vector Magnitude</h3>
+        
+        <p>When we multiply a vector by a scalar, the magnitude of the resulting vector follows this rule:</p>
+        <p>||kv|| = |k| × ||v||</p>
+        
+        <p>For example, if v = [3, 4] and k = 3:</p>
+        <p>||3v|| = ||[9, 12]|| = √(9² + 12²) = √(81 + 144) = √225 = 15</p>
+        <p>Which equals |3| × ||v|| = 3 × 5 = 15</p>
+        
+        <p>The absolute value of the scalar is used to ensure the magnitude remains positive even when multiplying by negative scalars.</p>
+        
+        <h3>Unit Vectors in Geometry</h3>
+        
+        <p>In some applications, we need a vector with a geometric length of one, called a <strong>unit vector</strong>. To convert any non-zero vector v into a unit vector û, we divide the vector by its magnitude:</p>
+        <p>û = v / ||v||</p>
+        
+        <p>This process is called <strong>normalization</strong>.</p>
+        
+        <div class="practice-questions">
+            <h3>Practice Question</h3>
+            <p><strong>Question:</strong> Calculate the magnitude of vector v = [1, 2, 2] and then find the unit vector in the same direction.</p>
+            <p><strong>Solution:</strong></p>
+            <p>||v|| = √(1² + 2² + 2²) = √(1 + 4 + 4) = √9 = 3</p>
+            <p>Unit vector û = v / ||v|| = [1/3, 2/3, 2/3]</p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul class="list-disc pl-5">
+                <li>Vector magnitude represents the "size" or "length" of a vector</li>
+                <li>The magnitude is calculated using the Euclidean norm (square root of sum of squares)</li>
+                <li>When a vector is multiplied by scalar k, its magnitude is multiplied by |k|</li>
+                <li>A unit vector has a magnitude of 1 and maintains the same direction as the original vector</li>
+                <li>In Python, the np.linalg.norm() function calculates vector magnitude</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Summary</h3>
+            <p>Vector magnitude (ya length/norm) vector ka "size" represent karta hai. Ise Euclidean norm se calculate kiya jata hai - vector ke har element ka square karke, sum karke, uska square root nikala jata hai. Jab hum vector ko ek scalar k se multiply karte hain, to magnitude |k| guna ho jata hai. Unit vector ek special vector hota hai jiska magnitude exactly 1 hota hai, aur direction original vector jaisa hi rehta hai. Python mein np.linalg.norm() function se magnitude calculate kiya ja sakta hai.</p>
+        </div>
+
+        <h1 id="practice">Practice Questions and Solutions</h1>
+        
+        <div class="practice-questions">
+            <h3>Quiz 1</h3>
+            <p><strong>(a) Given the vectors [2, 4, 6] and [1, 3, 5], what should be the result of the vector addition?</strong></p>
+            <p>Solution: Adding corresponding elements: [2+1, 4+3, 6+5] = [3, 7, 11]</p>
+            
+            <p><strong>(b) Can you write down a Python code using NumPy to add these vectors?</strong></p>
+            <pre>
+import numpy as np
+
+vector1 = np.array([2, 4, 6])
+vector2 = np.array([1, 3, 5])
+result = vector1 + vector2
+print(result)  # Output: [3 7 11]
+            </pre>
+            
+            <h3>Quiz 2</h3>
+            <p><strong>Can you add a row vector to a column vector as in the following example?</strong></p>
+            <pre>
+[1, 2, 3] + [[4],
+              [5],
+              [6]]
+            </pre>
+            <p>Solution: In standard mathematical linear algebra, you cannot directly add a row vector to a column vector because they have different shapes. The row vector has shape (1, 3) while the column vector has shape (3, 1).</p>
+            
+            <p>In NumPy, however, this operation might work due to broadcasting rules, resulting in a 3×3 matrix where each element of the row vector is added to each element of the column vector:</p>
+            <pre>
+import numpy as np
+
+row_vector = np.array([1, 2, 3])
+column_vector = np.array([[4], [5], [6]])
+
+# This will use broadcasting
+result = row_vector + column_vector
+print(result)
+# Output:
+# [[5 6 7]
+#  [6 7 8]
+#  [7 8 9]]
+            </pre>
+            
+            <h3>Additional Practice Question</h3>
+            <p><strong>Calculate the magnitude of the vector [3, 4, 0] and then find what scalar k would make the magnitude equal to 1.</strong></p>
+            <p>Solution:</p>
+            <p>||v|| = √(3² + 4² + 0²) = √(9 + 16 + 0) = √25 = 5</p>
+            <p>For ||kv|| = 1, we need: |k| × ||v|| = 1</p>
+            <p>Therefore: |k| × 5 = 1</p>
+            <p>So k = 1/5 = 0.2</p>
+        </div>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways from Practice Questions</h3>
+            <ul class="list-disc pl-5">
+                <li>Vector addition requires vectors of the same dimensionality</li>
+                <li>NumPy provides convenient methods for vector operations</li>
+                <li>Row and column vectors have different shapes and generally cannot be directly added</li>
+                <li>To normalize a vector (make its magnitude 1), divide it by its current magnitude</li>
+            </ul>
+        </div>
+
+        <h1 id="mind-map">Comprehensive Mind Map of Linear Algebra Concepts</h1>
+        
+        <div class="mindmap-visualization-area" aria-labelledby="mind-map"> <div class="mm-node mm-central-topic">
+            VECTORS
+        </div>
+        <ul class="mm-branches">
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Definition & Basics</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">Ordered List of Numbers</div></li>
+                    <li><div class="mm-node mm-level-2">Elements / Entries</div></li>
+                    <li><div class="mm-node mm-level-2">Size / Dimension / Length</div></li>
+                    <li><div class="mm-node mm-level-2">Notation (Column/Row)</div></li>
+                </ul>
+            </li>
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Special Vectors</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">Zero Vector (0)</div></li>
+                    <li><div class="mm-node mm-level-2">Ones Vector (1)</div></li>
+                    <li><div class="mm-node mm-level-2">Unit Vectors (e<sub>i</sub>)</div></li>
+                </ul>
+            </li>
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Vectors in Python</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">NumPy Arrays (<code>np.array</code>)</div></li>
+                    <li><div class="mm-node mm-level-2">Orientation (1D, Row, Column)</div></li>
+                    <li><div class="mm-node mm-level-2">Shape (<code>.shape</code>)</div></li>
+                </ul>
+            </li>
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Vector Operations</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">Addition (A + B)</div></li>
+                    <li><div class="mm-node mm-level-2">Scalar Multiplication (k * A)</div></li>
+                    <li><div class="mm-node mm-level-2">Magnitude / Norm (||v||)</div></li>
+                    <li><div class="mm-node mm-level-2">Normalization (û)</div></li>
+                     </ul>
+            </li>
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Geometric Interpretation</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">Points in Space</div></li>
+                    <li><div class="mm-node mm-level-2">Direction & Displacement</div></li>
+                    <li><div class="mm-node mm-level-2">2D/3D Plotting</div></li>
+                </ul>
+            </li>
+            <li class="mm-branch">
+                <div class="mm-node mm-level-1">Applications</div>
+                <ul class="mm-sub-branches">
+                    <li><div class="mm-node mm-level-2">Image Processing (RGB)</div></li>
+                    <li><div class="mm-node mm-level-2">Machine Learning (Features)</div></li>
+                    <li><div class="mm-node mm-level-2">Physics (Forces)</div></li>
+                    <li><div class="mm-node mm-level-2">Economics (Cash Flow)</div></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+        
+        <h1 id="summary">Course Summary</h1>
+        
+        <div class="key-takeaways">
+            <h3>Key Takeaways from the Course</h3>
+            <ul class="list-disc pl-5">
+                <li>Linear algebra methods are indispensable to modern data science and AI</li>
+                <li>Vectors and matrices are the fundamental building blocks of linear algebra</li>
+                <li>Python's NumPy library provides powerful tools for working with vectors and matrices</li>
+                <li>Vector operations include addition, scalar multiplication, and calculating magnitudes</li>
+                <li>Understanding vector properties allows us to solve complex data problems</li>
+                <li>These concepts form the foundation for more advanced topics like matrices and linear transformations</li>
+            </ul>
+        </div>
+        
+        <div class="hinglish-summary">
+            <h3>Course Summary</h3>
+            <p>Is course mein humne seekha ki linear algebra data science aur AI ka ek fundamental part hai. Humne vectors ki definition, vector notation, aur vector operations ko detail mein samjha. Python ke NumPy library ke through vectors ko represent karna aur unpe operations perform karna seekha. Vector addition, scalar multiplication, aur vector magnitude jaise concepts ko samjha. Ye sare concepts aage ke topics jaise matrices aur linear transformations ke liye foundation provide karte hain. Next video mein hum linear equations aur unke solutions ke bare mein discuss karenge.</p>
+        </div>
+        
+        <p class="text-center mt-8 mb-4">
+            <strong>This notes is made by my First sem learning ~ Armaan Kachhawa </strong>
+        </p>
+        
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

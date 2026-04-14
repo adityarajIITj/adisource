@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/prp/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Recognition - Lecture 12: PCA and Eigenfaces</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+     <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f7f7f7 0%, #eddaff 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        /* ==================== HEADER STYLES ==================== */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #667eea;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        /* ==================== TABLE OF CONTENTS ==================== */
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+        }
+        
+        .toc ul li a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            display: block;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        
+        .toc ul li a:hover {
+            background: #667eea;
+            color: white;
+            padding-left: 25px;
+        }
+        
+        .toc ul ul {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        
+        .toc ul ul li a {
+            font-size: 1em;
+            color: #555;
+        }
+        
+        /* ==================== CONTENT SECTIONS ==================== */
+        section {
+            margin: 50px 0;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 10px;
+            border-left: 5px solid #764ba2;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+            font-size: 1.05em;
+        }
+        
+        /* ==================== KEY TERMS & HIGHLIGHTS ==================== */
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        /* ==================== PROFESSOR'S NOTES ==================== */
+        .professor-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            display: block;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 10px;
+        }
+        
+        /* ==================== MATHEMATICAL CONTENT ==================== */
+        .math-box {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            overflow-x: auto;
+        }
+        
+        /* ==================== LISTS ==================== */
+        ul, ol {
+            margin: 20px 0 20px 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+        
+        /* ==================== TABLES ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* ==================== DIAGRAM PLACEHOLDERS ==================== */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 3px dashed #ff6b6b;
+            font-weight: 600;
+            color: #d63031;
+        }
+        
+        /* ==================== HINGLISH SUMMARY ==================== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-bottom: 15px;
+        }
+        
+        .hinglish-summary p {
+            font-style: italic;
+            color: #2d3436;
+        }
+        
+        /* ==================== PRACTICE QUESTIONS ==================== */
+        .practice-section {
+            background: #fff8e1;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border: 2px solid #ffc107;
+        }
+        
+        .practice-section h4 {
+            color: #f57c00;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        
+        .answer {
+            color: #424242;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        /* ==================== KEY TAKEAWAYS ==================== */
+        .key-takeaways {
+            background: #e8f5e9;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .key-takeaways h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            list-style: none;
+        }
+        
+        .key-takeaways li::before {
+            content: "✓ ";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* ==================== CODE BLOCKS ==================== */
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .code-block code {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        /* ==================== ALGORITHM BOX ==================== */
+        .algorithm-box {
+            background: #f3e5f5;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            border: 2px solid #9c27b0;
+        }
+        
+        .algorithm-box h4 {
+            color: #7b1fa2;
+            margin-bottom: 15px;
+        }
+        
+        /* ==================== MIND MAP ==================== */
+        .mindmap {
+            background: white;
+            padding: 40px;
+            margin: 40px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 40px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .mindmap-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            margin: 20px;
+            font-weight: 600;
+            font-size: 1.2em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .mindmap-branch {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .mindmap-leaf {
+            background: #84fab0;
+            padding: 15px 25px;
+            border-radius: 25px;
+            color: #1a1a1a;
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        
+        .mindmap-connector {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.3em;
+            }
+        }
+        
+        /* ==================== SCROLL TO TOP BUTTON ==================== */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .scroll-top:hover {
+            background: #764ba2;
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ==================== HEADER SECTION ==================== -->
+        <div class="header">
+            <h1>🎓 Pattern Recognition Principles</h1>
+            <p><strong>Lecture 12: Principal Component Analysis (PCA) & Eigenfaces</strong></p>
+            <p>Created By Armaan Kachhawa</p>
+        </div>
+
+        <!-- ==================== TABLE OF CONTENTS ==================== -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#recap">1. Recap: Linear Algebra Basics</a></li>
+                <li><a href="#dimensionality-reduction">2. Why Dimensionality Reduction?</a>
+                    <ul>
+                        <li><a href="#reasons">2.1 Five Key Reasons</a></li>
+                    </ul>
+                </li>
+                <li><a href="#covariance-matrix">3. Covariance Matrix</a>
+                    <ul>
+                        <li><a href="#eigenvalues">3.1 Eigenvalues of Covariance Matrix</a></li>
+                    </ul>
+                </li>
+                <li><a href="#pca-motivation">4. PCA Motivation</a></li>
+                <li><a href="#pca-theory">5. Principal Component Analysis (PCA)</a>
+                    <ul>
+                        <li><a href="#pca-mathematical">5.1 Mathematical Foundation</a></li>
+                        <li><a href="#pca-algorithm">5.2 PCA Algorithm</a></li>
+                        <li><a href="#pca-implementation">5.3 Implementation of PCA</a></li>
+                    </ul>
+                </li>
+                <li><a href="#eigenfaces">6. Eigenfaces</a>
+                    <ul>
+                        <li><a href="#eigenfaces-concept">6.1 Concept and History</a></li>
+                        <li><a href="#eigenfaces-method">6.2 Eigenface Method</a></li>
+                        <li><a href="#eigenfaces-implementation">6.3 Implementation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#takeaways">7. Key Takeaways</a></li>
+                <li><a href="#mindmap">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- ==================== SECTION 1: RECAP ==================== -->
+        <section id="recap">
+            <h2>1. Recap: Linear Algebra Basics</h2>
+            
+            <p>In the previous lecture, we revised some fundamental concepts of <span class="key-term">linear algebra</span>, particularly focusing on how to <strong>project a data point from one basis to another basis</strong>. This concept is crucial for understanding Principal Component Analysis (PCA) and dimensionality reduction.</p>
+
+            <h3>Basis Transformation</h3>
+            <p>Let's understand the concept of basis transformation with an example:</p>
+
+            <div class="professor-note">
+                Let's say there is a point in the standard basis where the x-axis is (1,0) and y-axis is (0,1). If we have a point in this basis, we can represent it using standard coordinates. However, if we want to represent this same vector in a different basis (let's call it the u-v basis), we need to project our point onto these new axes. We project in the u direction to get α₁ and in the v direction to get α₂ (where α₂ might be very small). Now this point can be represented as (α₁, α₂) in the u-v basis.
+            </div>
+
+            <div class="math-box">
+                <p><strong>Mathematical Representation:</strong></p>
+                <p>Original point in standard basis: \( \mathbf{x} = [x_1, x_2]^T \)</p>
+                <p>New representation in u-v basis: \( \mathbf{x}' = [\alpha_1, \alpha_2]^T \)</p>
+                <p>Where: \( \alpha_1 = \mathbf{x} \cdot \mathbf{u} \) and \( \alpha_2 = \mathbf{x} \cdot \mathbf{v} \)</p>
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Vector projection from standard basis (x,y) to new basis (u,v)]
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Yeh section linear algebra ki basic baatein recap karta hai. Humne dekha ki kaise ek point ko ek basis se doosre basis mein project karte hain. Jaise agar ek vector (x,y) basis mein hai, toh hum use (u,v) basis mein represent kar sakte hain by projecting it onto new axes. Yeh concept PCA ke liye bahut important hai kyunki PCA bhi data ko naye basis mein project karta hai jahan variance maximum ho.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Data points can be represented in different coordinate systems (bases)</li>
+                    <li>Projection allows us to transform data from one basis to another</li>
+                    <li>This transformation preserves the essential information of the data</li>
+                    <li>Basis transformation is the foundation for dimensionality reduction</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: What is the purpose of changing the basis of a vector?</p>
+                    <p class="answer">To represent the same data in a different coordinate system, which may reveal different properties or simplify computations, particularly for dimensionality reduction.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: How do we project a point onto a new basis?</p>
+                    <p class="answer">We take the dot product of the point with each basis vector to get the coordinates in the new basis system.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: Why is projection important for PCA?</p>
+                    <p class="answer">PCA finds new basis vectors (principal components) that maximize variance, and projection allows us to represent data in this optimal basis for dimensionality reduction.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 2: WHY DIMENSIONALITY REDUCTION ==================== -->
+        <section id="dimensionality-reduction">
+            <h2>2. Why Dimensionality Reduction?</h2>
+
+            <p><span class="key-term">Dimensionality reduction</span> is a fundamental technique in pattern recognition and machine learning. While data might exist in high-dimensional spaces, not all dimensions are equally important or useful.</p>
+
+            <div class="professor-note">
+                Sometimes some of the dimensions are not very useful, and the data can actually be represented in fewer dimensions. For example, even though data points might be two-dimensional, if we look at them carefully, we might find that representing them along just one particular axis (let's say the U dimension) captures most of the information, while the V dimension is negligible. So we can reduce the dimensionality by representing data using just the U dimension.
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D data points showing high variance along one axis and low variance along perpendicular axis]
+            </div>
+
+            <h3 id="reasons">2.1 Five Key Reasons for Dimensionality Reduction</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Description</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. Remove Redundancy</strong></td>
+                        <td>Many features may carry similar or duplicate information</td>
+                        <td>Eliminates unnecessary features while preserving information</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Reduce Noise</strong></td>
+                        <td>High-dimensional data often contains noisy dimensions</td>
+                        <td>Improves signal-to-noise ratio and model performance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Better Visualization</strong></td>
+                        <td>Humans can easily visualize 2D or 3D data</td>
+                        <td>Enables intuitive understanding of data patterns</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4. Avoid Curse of Dimensionality</strong></td>
+                        <td>High dimensions lead to sparse data and poor generalization</td>
+                        <td>Improves model accuracy and prevents overfitting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>5. Efficient Storage & Transmission</strong></td>
+                        <td>Lower dimensions require less memory and bandwidth</td>
+                        <td>Reduces computational costs and speeds up processing</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                There are plenty of reasons why dimensionality reduction is important. In many cases, you'll see that there are redundant features which are not important, and you can reduce noise by doing dimensionality reduction. You can better visualize and understand the data, and since you're projecting the data into lower dimensions, you can avoid the curse of dimensionality because of low storage requirements. Since the dimensions are reduced, data can be transmitted more efficiently as well.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Dimensionality reduction ek important technique hai jisme hum high-dimensional data ko kam dimensions mein represent karte hain. Iske paanch main reasons hain: redundant features ko remove karna, noise reduce karna, data ko better visualize karna, curse of dimensionality se bachna, aur storage aur transmission ko efficient banana. Basically, agar data 2D hai lekin actual mein ek hi dimension important hai, toh hum use 1D mein represent kar sakte hain bina jyada information lose kiye.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Not all dimensions in high-dimensional data are equally important</li>
+                    <li>Dimensionality reduction removes redundancy and noise</li>
+                    <li>Lower dimensions enable better visualization and understanding</li>
+                    <li>Reduces computational complexity and storage requirements</li>
+                    <li>Helps avoid the curse of dimensionality in machine learning models</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: What is the curse of dimensionality?</p>
+                    <p class="answer">As dimensions increase, data becomes increasingly sparse, making it difficult for models to find meaningful patterns and leading to poor generalization and overfitting.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: How does dimensionality reduction help with visualization?</p>
+                    <p class="answer">By reducing data to 2D or 3D, we can plot and visually inspect patterns, clusters, and relationships that would be impossible to see in higher dimensions.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: Does dimensionality reduction always lose information?</p>
+                    <p class="answer">While some information may be lost, good dimensionality reduction techniques (like PCA) preserve the most important variance in the data, minimizing information loss.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 3: COVARIANCE MATRIX ==================== -->
+        <section id="covariance-matrix">
+            <h2>3. Covariance Matrix</h2>
+
+            <p>The <span class="key-term">covariance matrix</span> is a fundamental mathematical tool that captures the variance and covariance relationships between different dimensions of data. It plays a crucial role in understanding data distribution and is essential for PCA.</p>
+
+            <h3>Understanding Covariance</h3>
+
+            <div class="professor-note">
+                Let's look at two types of data distributions. In one case, both x and y have roughly the same variance, but when x is increasing, y is decreasing. In another case, when x is increasing, y is also increasing. How do we capture this notion of variance between two dimensions? For that, we define a covariance matrix.
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Two scatter plots showing positive and negative covariance]
+            </div>
+
+            <h3>Mathematical Definition</h3>
+
+            <p>Consider a data matrix <strong>X</strong> where:</p>
+            <ul>
+                <li>Each column represents one sample/data point</li>
+                <li><strong>d</strong> = number of dimensions (features)</li>
+                <li><strong>n</strong> = number of samples</li>
+                <li>Dimensions: <strong>X</strong> is d × n matrix</li>
+            </ul>
+
+            <div class="math-box">
+                <p><strong>Data Matrix:</strong></p>
+                <p>$$ \mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n] $$</p>
+                <p>where each \( \mathbf{x}_i \) is a d-dimensional column vector</p>
+                
+                <p><strong>Mean Vector:</strong></p>
+                <p>$$ \boldsymbol{\mu} = \frac{1}{n} \sum_{j=1}^{n} \mathbf{x}_j $$</p>
+                
+                <p><strong>Covariance Matrix:</strong></p>
+                <p>$$ \boldsymbol{\Sigma} = \mathbb{E}[(\mathbf{x}_i - \boldsymbol{\mu})(\mathbf{x}_j - \boldsymbol{\mu})^T] $$</p>
+                
+                <p>The (i,j)-th element of the covariance matrix is:</p>
+                <p>$$ \Sigma_{ij} = \mathbb{E}[(x_i - \mu_i)(x_j - \mu_j)] $$</p>
+                
+                <p><strong>For mean-centered data:</strong></p>
+                <p>$$ \boldsymbol{\Sigma} = \frac{1}{n} \mathbf{X}\mathbf{X}^T $$</p>
+            </div>
+
+            <div class="professor-note">
+                The covariance matrix is a d × d matrix. It's a symmetric matrix because Σᵢⱼ = Σⱼᵢ, meaning if you exchange i and j, the value doesn't change. Therefore, it is a symmetric square matrix. The mean μ can be obtained by summing each row of the matrix X and dividing by n, the number of samples.
+            </div>
+
+            <h4>Properties of Covariance Matrix</h4>
+            <ul>
+                <li><strong>Dimensions:</strong> d × d square matrix</li>
+                <li><strong>Symmetry:</strong> Σᵢⱼ = Σⱼᵢ (symmetric matrix)</li>
+                <li><strong>Diagonal elements:</strong> Variance of individual features</li>
+                <li><strong>Off-diagonal elements:</strong> Covariance between pairs of features</li>
+                <li><strong>Positive semi-definite:</strong> All eigenvalues are non-negative</li>
+            </ul>
+
+            <h3 id="eigenvalues">3.1 Eigenvalues of Covariance Matrix</h3>
+
+            <p>The eigenvalues and eigenvectors of the covariance matrix carry special importance in data analysis.</p>
+
+            <div class="algorithm-box">
+                <h4>🔍 Key Property</h4>
+                <p><strong>Top eigenvector of covariance matrix is in the direction of maximum spread of data.</strong></p>
+                <p>"Top eigenvector" means the eigenvector corresponding to the highest eigenvalue.</p>
+            </div>
+
+            <div class="professor-note">
+                The eigenvectors or the top eigenvectors of the covariance matrix are important because they carry a special property. The top eigenvector of the covariance matrix is in the direction of maximum spread of data. For example, if you have data points where the spread is more in one direction, the top eigenvector will be pointing in that direction.
+            </div>
+
+            <h3>Mathematical Proof</h3>
+
+            <p>Let's prove why eigenvectors point in the direction of maximum variance:</p>
+
+            <div class="math-box">
+                <p><strong>Given:</strong></p>
+                <ul>
+                    <li>Let \( \mathbf{v} \) be a unit vector (direction of projection)</li>
+                    <li>Let \( \mathbf{X} \) be mean-centered data (d × n)</li>
+                    <li>Covariance matrix: \( \boldsymbol{\Sigma} = \frac{1}{n}\mathbf{X}\mathbf{X}^T \)</li>
+                </ul>
+                
+                <p><strong>Projection:</strong></p>
+                <p>Project data onto vector \( \mathbf{v} \):</p>
+                <p>$$ \mathbf{y} = \mathbf{v}^T\mathbf{X} $$</p>
+                <p>This gives us n projected points (1 × n)</p>
+                
+                <p><strong>Variance along projection:</strong></p>
+                <p>$$ \sigma_y^2 = \mathbb{E}[y^2] - \mathbb{E}[y]^2 $$</p>
+                
+                <p>Since X is mean-centered, \( \mathbb{E}[\mathbf{X}] = 0 \), therefore \( \mathbb{E}[y] = 0 \)</p>
+                
+                <p>$$ \sigma_y^2 = \mathbb{E}[y^2] = \mathbb{E}[(\mathbf{v}^T\mathbf{X})(\mathbf{v}^T\mathbf{X})^T] $$</p>
+                <p>$$ = \mathbb{E}[\mathbf{v}^T\mathbf{X}\mathbf{X}^T\mathbf{v}] $$</p>
+                <p>$$ = \mathbf{v}^T\mathbb{E}[\mathbf{X}\mathbf{X}^T]\mathbf{v} $$</p>
+                <p>$$ = \mathbf{v}^T\boldsymbol{\Sigma}\mathbf{v} $$</p>
+                
+                <p><strong>If \( \mathbf{v} \) is an eigenvector:</strong></p>
+                <p>$$ \boldsymbol{\Sigma}\mathbf{v} = \lambda\mathbf{v} $$</p>
+                
+                <p>Then:</p>
+                <p>$$ \sigma_y^2 = \mathbf{v}^T\lambda\mathbf{v} = \lambda(\mathbf{v}^T\mathbf{v}) = \lambda $$</p>
+                
+                <p><strong>Conclusion:</strong> The variance in any direction equals the eigenvalue in that direction. Therefore, maximum variance occurs along the eigenvector with the largest eigenvalue!</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Covariance matrix ek d×d matrix hai jo data ke variance aur different dimensions ke beech relationship ko capture karta hai. Iska sabse important property yeh hai ki iske eigenvectors us direction mein point karte hain jahan data ka spread maximum hai. Top eigenvector (jiska eigenvalue sabse bada ho) maximum variance ki direction batata hai. Mathematically, humne prove kiya ki agar data ko kisi direction mein project karein, toh us direction ka variance exactly us direction ke eigenvalue ke barabar hota hai.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Covariance matrix is a d × d symmetric matrix capturing variance relationships</li>
+                    <li>Diagonal elements represent variance of individual features</li>
+                    <li>Off-diagonal elements represent covariance between feature pairs</li>
+                    <li>Top eigenvector points in the direction of maximum data spread</li>
+                    <li>Eigenvalue equals the variance in the corresponding eigenvector direction</li>
+                    <li>For mean-centered data: Σ = (1/n)XX^T</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: What is the dimension of the covariance matrix for d-dimensional data?</p>
+                    <p class="answer">The covariance matrix is always d × d, a square matrix where d is the number of features/dimensions in the data.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: Why is the covariance matrix symmetric?</p>
+                    <p class="answer">Because covariance is commutative: Cov(X,Y) = Cov(Y,X), meaning Σᵢⱼ = Σⱼᵢ, which makes the matrix symmetric.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: What does the largest eigenvalue of the covariance matrix represent?</p>
+                    <p class="answer">It represents the maximum variance in the data, and its corresponding eigenvector points in the direction of maximum spread.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4: How do you compute the mean for mean-centering?</p>
+                    <p class="answer">Sum each row of the data matrix and divide by the number of samples (n), or equivalently, average all column vectors.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 4: PCA MOTIVATION ==================== -->
+        <section id="pca-motivation">
+            <h2>4. PCA Motivation</h2>
+
+            <p><span class="key-term">Principal Component Analysis (PCA)</span> is motivated by the need to find the optimal directions for representing data in lower dimensions while preserving maximum information.</p>
+
+            <div class="professor-note">
+                What PCA uses is this idea that the variance along a direction is the same as the eigenvalue in that direction. If the eigenvalue λ is maximum, the variance will also be maximum. So PCA tries to project data to that dimension where the variance is maximum, because that's where most of the information is captured.
+            </div>
+
+            <h3>Core Concept</h3>
+
+            <p>PCA identifies <span class="key-term">principal components</span> which are orthogonal directions in the feature space along which the data varies the most.</p>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D scatter plot with first principal component (PC1) showing maximum variance direction and second principal component (PC2) perpendicular to it]
+            </div>
+
+            <div class="math-box">
+                <p><strong>Principal Components:</strong></p>
+                <ul>
+                    <li><strong>PC1 (First Principal Component):</strong> Eigenvector of covariance matrix corresponding to the highest eigenvalue</li>
+                    <li><strong>PC2 (Second Principal Component):</strong> Eigenvector corresponding to the second-largest eigenvalue</li>
+                    <li><strong>PC3, PC4, ... PCd:</strong> Subsequent eigenvectors in order of decreasing eigenvalues</li>
+                </ul>
+                
+                <p>If dealing with multiple dimensions, we have principal components ranked by their corresponding eigenvalues.</p>
+            </div>
+
+            <h3>Why Maximum Variance?</h3>
+
+            <p>Projecting data along directions of maximum variance ensures:</p>
+            <ul>
+                <li><strong>Information Preservation:</strong> Variance represents information content</li>
+                <li><strong>Feature Discrimination:</strong> High variance directions separate data points effectively</li>
+                <li><strong>Noise Reduction:</strong> Low variance directions often contain noise</li>
+                <li><strong>Optimal Reconstruction:</strong> Maximum variance minimizes reconstruction error</li>
+            </ul>
+
+            <div class="professor-note">
+                In this case, the variance is maximum in the PC1 direction, while PC2 has less variance. If you're dealing with multiple dimensions, you'll have PC3, PC4, PC5, and so on, but they will all be corresponding to eigenvalues in decreasing order. So that's the idea - PCA finds these directions automatically.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>PCA ka main motivation yeh hai ki hum data ko un directions mein project karein jahan variance maximum ho, kyunki variance hi information ko represent karta hai. Principal components wo directions hote hain jo covariance matrix ke eigenvectors hain. PC1 sabse important hai (highest eigenvalue wala), phir PC2, PC3 aur aage bhi. Agar hum top-r principal components ko use karein, toh hum data ko r dimensions mein represent kar sakte hain original d dimensions ki jagah, jahan r << d.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>PCA finds directions of maximum variance in data</li>
+                    <li>Principal components are eigenvectors of the covariance matrix</li>
+                    <li>Components are ranked by their corresponding eigenvalues</li>
+                    <li>PC1 captures the most variance, PC2 the second most, and so on</li>
+                    <li>All principal components are orthogonal to each other</li>
+                    <li>Maximum variance directions preserve maximum information</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: What is a principal component?</p>
+                    <p class="answer">A principal component is an eigenvector of the covariance matrix, representing a direction of maximum variance in the data.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: Are principal components always perpendicular to each other?</p>
+                    <p class="answer">Yes, principal components are orthogonal (perpendicular) to each other because eigenvectors of a symmetric matrix are orthogonal.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: Why do we prefer directions with high variance?</p>
+                    <p class="answer">High variance directions contain more information about the data and better discriminate between different data points, while low variance directions often contain noise.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 5: PCA THEORY AND ALGORITHM ==================== -->
+        <section id="pca-theory">
+            <h2>5. Principal Component Analysis (PCA)</h2>
+
+            <p>Now let's explore the complete PCA methodology, including the mathematical foundation, algorithm, and practical implementation.</p>
+
+            <h3 id="pca-mathematical">5.1 Mathematical Foundation</h3>
+
+            <p>PCA performs <span class="key-term">unsupervised dimensionality reduction</span> by finding an optimal linear transformation that projects high-dimensional data into a lower-dimensional space.</p>
+
+            <div class="math-box">
+                <p><strong>Objective:</strong> Find a set of r orthogonal directions that capture maximum variance</p>
+                
+                <p><strong>Given:</strong></p>
+                <ul>
+                    <li>Data matrix \( \mathbf{X} \): d × n (d dimensions, n samples)</li>
+                    <li>Target dimensions: r < d</li>
+                </ul>
+                
+                <p><strong>Find:</strong></p>
+                <ul>
+                    <li>Projection matrix \( \mathbf{V}_r \): d × r</li>
+                    <li>Reduced representation \( \mathbf{Y} = \mathbf{V}_r^T\mathbf{X} \): r × n</li>
+                </ul>
+                
+                <p><strong>Where:</strong></p>
+                <p>\( \mathbf{V}_r \) contains top r eigenvectors of covariance matrix \( \boldsymbol{\Sigma} \)</p>
+            </div>
+
+            <h3 id="pca-algorithm">5.2 PCA Algorithm</h3>
+
+            <div class="algorithm-box">
+                <h4>📋 PCA Algorithm Steps</h4>
+                
+                <p><strong>Input:</strong></p>
+                <ul>
+                    <li>\( \mathbf{X}' \): d × n data matrix (each column is a sample)</li>
+                    <li>\( r \): number of components to retain (r < d)</li>
+                </ul>
+                
+                <p><strong>Output:</strong></p>
+                <ul>
+                    <li>\( \mathbf{V}_r \): d × r matrix of top r principal components</li>
+                    <li>\( \mathbf{Y} \): r × n reduced representation</li>
+                </ul>
+                
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li><strong>Zero-Mean Centering:</strong>
+                        <ul>
+                            <li>Compute mean: \( \boldsymbol{\mu} = \frac{1}{n}\mathbf{X}'\mathbf{1}_n \)</li>
+                            <li>Center data: \( \mathbf{X} = \mathbf{X}' - \boldsymbol{\mu}\mathbf{1}_n^T \)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Compute Covariance Matrix:</strong>
+                        <ul>
+                            <li>\( \boldsymbol{\Sigma} = \frac{1}{n}\mathbf{X}\mathbf{X}^T \)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Eigen Decomposition:</strong>
+                        <ul>
+                            <li>Compute eigenvalues \( \lambda_1, \lambda_2, \ldots, \lambda_d \)</li>
+                            <li>Compute eigenvectors \( \mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_d \)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Sort and Select:</strong>
+                        <ul>
+                            <li>Sort eigenvalues in descending order: \( \lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_d \)</li>
+                            <li>Select top r eigenvectors: \( \mathbf{V}_r = [\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_r] \)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Project Data:</strong>
+                        <ul>
+                            <li>Reduced representation: \( \mathbf{Y} = \mathbf{V}_r^T\mathbf{X} \)</li>
+                            <li>Dimensions: r × n (each point now has r dimensions)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Reconstruction (Optional):</strong>
+                        <ul>
+                            <li>\( \tilde{\mathbf{X}} = \mathbf{V}_r\mathbf{Y} + \boldsymbol{\mu}\mathbf{1}_n^T \)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="professor-note">
+                The algorithm has four to five basic steps. First, you make the data zero-mean by computing the mean and subtracting it from each column. Once you have zero-mean data, you can compute the covariance matrix which is (1/n)XX^T. Then you do eigen decomposition and find out the eigenvalues and eigenvectors. You sort the eigenvalues from largest to lowest and take the eigenvectors corresponding to the larger eigenvalues - the top r eigenvectors. Finally, you project the data points into this new dimensional basis, and that becomes the new reduced representation.
+            </div>
+
+            <h3 id="pca-implementation">5.3 Implementation of PCA</h3>
+
+            <p>Let's understand the practical implementation with Python code:</p>
+
+            <pre><div class="code-block">
+<code># Import required libraries
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Step 1: Generate 2D data
+# Create 100 samples with mean zero and specified covariance
+mean = [0, 0]
+cov = [[3, 2], [2, 2]]  # Covariance matrix
+data = np.random.multivariate_normal(mean, cov, 100)
+
+# Step 2: Mean centering
+# Subtract mean from each column
+X = data - np.mean(data, axis=0)
+
+# Step 3: Compute covariance matrix
+# C = (1/n) * X * X^T
+n = X.shape[0]
+C = (1/n) * np.dot(X.T, X)
+
+# Step 4: Compute eigenvalues and eigenvectors
+eigenvalues, eigenvectors = np.linalg.eig(C)
+
+# Step 5: Sort in descending order
+idx = eigenvalues.argsort()[::-1]
+eigenvalues = eigenvalues[idx]
+eigenvectors = eigenvectors[:, idx]
+
+# Step 6: Select top k eigenvectors (principal components)
+k = 1  # Reduce to 1 dimension
+V_r = eigenvectors[:, :k]
+
+# Step 7: Project data onto principal component
+Y = np.dot(X, V_r)
+
+# Step 8: Reconstruct (optional)
+X_reconstructed = np.dot(Y, V_r.T)
+
+# Visualization
+plt.figure(figsize=(10, 6))
+plt.scatter(X[:, 0], X[:, 1], alpha=0.5, label='Original Data')
+plt.scatter(X_reconstructed[:, 0], X_reconstructed[:, 1], 
+            alpha=0.5, color='red', label='Projected Data')
+plt.arrow(0, 0, eigenvectors[0, 0]*3, eigenvectors[1, 0]*3, 
+          head_width=0.2, color='black', label='PC1')
+plt.legend()
+plt.title('PCA Visualization')
+plt.show()
+</code>
+            </div></pre>
+
+            <div class="professor-note">
+                This code is exactly the same as the algorithm. We're creating some 2D data points with mean zero and some covariance. Then we subtract the mean from each column of the data matrix to get mean-centered data. We compute the covariance matrix C = (1/n)XX^T. This gives us a 2×2 matrix since the data is 2D. Then we compute eigenvalues and eigenvectors using NumPy's linear algebra library, sort them in descending order, and take the top eigenvector (first principal component). We project the data onto this PC, and if we want to reconstruct, we can do that too. When you run this, you see the original data distribution and the principal axis shown as a line - this is where the spread is maximum, and all points get projected onto this axis.
+            </div>
+
+            <h4>Understanding the Output</h4>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Scatter plot showing original 2D data (blue dots), projected 1D data on PC1 axis (red dots), and PC1 direction as an arrow]
+            </div>
+
+            <p>The visualization shows:</p>
+            <ul>
+                <li><strong>Blue dots:</strong> Original 2D data points</li>
+                <li><strong>Black arrow:</strong> First principal component (PC1) - direction of maximum variance</li>
+                <li><strong>Red dots:</strong> Projected data points on PC1 axis</li>
+                <li><strong>Key insight:</strong> Instead of representing data with two coordinates, we can now use just one coordinate (position along PC1) without losing much information</li>
+            </ul>
+
+            <div class="professor-note">
+                Instead of representing the data in two-dimensional points, we can represent an approximate version in one-dimensional points without losing much information. This is PCA's job - finding out where to project. PCA tells us this dashed line is the first principal component where we're projecting, while the second principal component will be perpendicular to this. If you project into the second dimension as well, you'll be able to exactly reconstruct the data back. But if you don't do that, you won't exactly reconstruct but you'll approximately reconstruct, and that is good enough for most pattern recognition applications.
+            </div>
+
+            <h4>Reconstruction Trade-off</h4>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Components Used</th>
+                        <th>Reconstruction Quality</th>
+                        <th>Dimensionality Reduction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>All components (r = d)</td>
+                        <td>Perfect reconstruction</td>
+                        <td>No reduction</td>
+                    </tr>
+                    <tr>
+                        <td>Top r components (r < d)</td>
+                        <td>Approximate reconstruction</td>
+                        <td>Reduced to r dimensions</td>
+                    </tr>
+                    <tr>
+                        <td>Fewer components (smaller r)</td>
+                        <td>Lower quality</td>
+                        <td>Greater reduction</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>PCA algorithm mein 5 main steps hain: pehle data ko mean-centered karo, phir covariance matrix compute karo, uske baad eigenvalues aur eigenvectors nikalo, inhe descending order mein sort karke top-r eigenvectors select karo, aur finally data ko in r principal components par project karo. Implementation mein humne 2D data ko 1D mein reduce kiya using numpy library. Result mein original blue dots dikhe aur unka projection red dots mein PC1 axis par. Agar hum saare components use karein toh perfect reconstruction hogi, lekin agar sirf top-r use karein toh approximate reconstruction hogi jo kaafi applications ke liye sufficient hai.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>PCA is an unsupervised dimensionality reduction technique</li>
+                    <li>The algorithm has 5 main steps: mean-centering, covariance computation, eigen decomposition, sorting & selection, and projection</li>
+                    <li>Mean-centering is essential before computing covariance</li>
+                    <li>Top r eigenvectors form the new basis for reduced representation</li>
+                    <li>Projection reduces each d-dimensional point to r dimensions</li>
+                    <li>Reconstruction is possible but approximate when r < d</li>
+                    <li>Trade-off exists between dimensionality reduction and reconstruction quality</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: Why is mean-centering necessary in PCA?</p>
+                    <p class="answer">Mean-centering ensures the covariance matrix correctly captures variance relationships and simplifies the computation to Σ = (1/n)XX^T.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: What happens if we use all d principal components?</p>
+                    <p class="answer">We can perfectly reconstruct the original data with no information loss, but there's no dimensionality reduction benefit.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: How do we choose the value of r (number of components)?</p>
+                    <p class="answer">Based on explained variance ratio - typically choose r such that cumulative variance explained is ≥ 90-95%, or based on application requirements.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4: Is PCA supervised or unsupervised?</p>
+                    <p class="answer">PCA is unsupervised - it doesn't use label information and only analyzes the structure of the input data itself.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q5: What is the computational complexity of PCA?</p>
+                    <p class="answer">The bottleneck is eigen decomposition of d×d matrix, which is O(d³), plus O(nd²) for covariance computation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 6: EIGENFACES ==================== -->
+        <section id="eigenfaces">
+            <h2>6. Eigenfaces</h2>
+
+            <p><span class="key-term">Eigenfaces</span> is a groundbreaking application of PCA for face recognition and representation, introduced in the 1990s. It demonstrates how PCA can be used to compactly represent complex visual data.</p>
+
+            <h3 id="eigenfaces-concept">6.1 Concept and History</h3>
+
+            <div class="professor-note">
+                This is a seminal paper from the 90s (published in CVPR), and this is an application of PCA for representing faces. If you remember, in the 90s people used to work on very small datasets because there weren't many faces available - people didn't even have smartphones! We don't have large datasets as we're seeing today. Storage was also a problem at that time, so you had limited storage and limited number of faces to deal with. This idea came around the 90s - that faces can be represented very compactly using PCA.
+            </div>
+
+            <h4>Historical Context</h4>
+            <ul>
+                <li><strong>Era:</strong> 1990s (Pre-smartphone, pre-big data)</li>
+                <li><strong>Challenges:</strong> Limited storage, small datasets, computational constraints</li>
+                <li><strong>Innovation:</strong> Compact face representation using PCA</li>
+                <li><strong>Venue:</strong> Published in CVPR (Computer Vision and Pattern Recognition)</li>
+                <li><strong>Impact:</strong> Pioneered statistical approach to face recognition</li>
+            </ul>
+
+            <h3 id="eigenfaces-method">6.2 Eigenface Method</h3>
+
+            <p>The eigenface method treats each face image as a high-dimensional vector and uses PCA to find a compact representation.</p>
+
+            <h4>Data Preparation</h4>
+
+            <div class="math-box">
+                <p><strong>Setup:</strong></p>
+                <ul>
+                    <li>n face images (e.g., 5 frontal face images)</li>
+                    <li>Each image: grayscale, same size h × w</li>
+                    <li>Image dimensions: height h, width w</li>
+                </ul>
+                
+                <p><strong>Vectorization:</strong></p>
+                <p>Reshape each h × w image into a vector:</p>
+                <p>$$ d = h \times w $$</p>
+                <p>Each face becomes a d × 1 column vector (reading pixels row by row)</p>
+                
+                <p><strong>Data Matrix:</strong></p>
+                <p>Stack all n face vectors as columns:</p>
+                <p>$$ \mathbf{X}' = [\mathbf{f}_1, \mathbf{f}_2, \ldots, \mathbf{f}_n] $$</p>
+                <p>Dimensions: d × n matrix</p>
+            </div>
+
+            <div class="professor-note">
+                We have n face images - in this example, we have 5 face images. They are frontal faces, very clean, not much of other things, only the face. Each image is grayscale with height h and width w. Each is of the same size. If you reshape this face, we can make a vector of h × w = d dimensions. How? You can just take pixels in row order, read the pixel values in this order and get a d × 1 representation. So now a face is represented as a vector of d × 1. We stack all n vectors as columns in the data matrix, giving us d × n dimensions.
+            </div>
+
+            <h4>Computing Eigenfaces</h4>
+
+            <div class="algorithm-box">
+                <h4>📋 Eigenface Algorithm</h4>
+                
+                <p><strong>Step 1: Compute Mean Face</strong></p>
+                <p>$$ \boldsymbol{\mu} = \frac{1}{n}\sum_{i=1}^{n}\mathbf{f}_i $$</p>
+                <p>The mean face is the average of all face vectors (d × 1)</p>
+                
+                <p><strong>Step 2: Center All Images</strong></p>
+                <p>Subtract mean face from each face:</p>
+                <p>$$ \mathbf{X} = \mathbf{X}' - \boldsymbol{\mu}\mathbf{1}_n^T $$</p>
+                
+                <p><strong>Step 3: Covariance Matrix Trick</strong></p>
+                <p>Instead of computing d × d matrix Σ = (1/n)XX^T, compute:</p>
+                <p>$$ \mathbf{A} = \frac{1}{n}\mathbf{X}^T\mathbf{X} $$</p>
+                <p>Dimensions: n × n (much smaller when n << d!)</p>
+                
+                <p><strong>Why this trick?</strong></p>
+                <ul>
+                    <li>For 100×100 images: d = 10,000</li>
+                    <li>Regular way: 10,000 × 10,000 = 100 million elements!</li>
+                    <li>Trick way (10 faces): 10 × 10 = 100 elements</li>
+                    <li>Computational savings: enormous!</li>
+                </ul>
+                
+                <p><strong>Step 4: Eigen Decomposition</strong></p>
+                <p>Compute eigenvalues and eigenvectors of A</p>
+                <p>Then convert to eigenvectors of Σ:</p>
+                <p>If \( \mathbf{v}_A \) is eigenvector of A, then \( \mathbf{v}_\Sigma = \mathbf{X}\mathbf{v}_A \) is eigenvector of Σ</p>
+                
+                <p><strong>Step 5: Select Top r Eigenfaces</strong></p>
+                <p>Choose top r eigenvectors (typically 25-30)</p>
+                <p>\( \mathbf{V}_r = [\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_r] \)</p>
+                
+                <p><strong>Step 6: Project and Represent</strong></p>
+                <p>Each face represented by r coefficients:</p>
+                <p>$$ \mathbf{y}_i = \mathbf{V}_r^T(\mathbf{f}_i - \boldsymbol{\mu}) $$</p>
+            </div>
+
+            <div class="professor-note">
+                People in eigenface applied a trick because storage was an issue. The covariance matrix XX^T is d × d, and for 100×100 images, d = 10,000, meaning 10⁴ × 10⁴ matrix - that's huge! So instead, they computed A = (1/n)X^TX which is only n × n, like 10 × 10, much easier to compute. The trick is, there's a relation between eigenvectors of C and eigenvectors of A - you just multiply the eigenvector of A with X and you get the eigenvector of C. With this trick, they computed eigenvalues and eigenvectors for the covariance matrix efficiently.
+            </div>
+
+            <h4>Eigenfaces Visualization</h4>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Grid showing mean face in center, surrounded by top 9 eigenfaces (ghost-like face patterns representing principal components)]
+            </div>
+
+            <p>The eigenfaces look like ghostly face patterns:</p>
+            <ul>
+                <li><strong>Mean Face:</strong> Average of all training faces</li>
+                <li><strong>Eigenface 1 (PC1):</strong> Captures maximum variance (e.g., lighting variations)</li>
+                <li><strong>Eigenface 2 (PC2):</strong> Second most variance (e.g., face shape)</li>
+                <li><strong>Eigenface 3-9:</strong> Subsequent components capturing finer details</li>
+            </ul>
+
+            <div class="professor-note">
+                These are the top 9 eigenfaces, and this is the mean face. These are eigenvectors - the first eigenvector where variance is maximum, the second eigenvector, and so on. These are PC1 (principal component 1), PC2, etc. If you can get 9 eigenfaces, now these eigenfaces are going to be useful for representing data. You project that data by mean-centering it to this V_r or r-dimensional space. Then you get just r points to represent a face. So now a face can be represented using just r dimensions where r is much, much lesser than d - typically just 25 to 30 is good enough for representing faces.
+            </div>
+
+            <h3 id="eigenfaces-implementation">6.3 Implementation</h3>
+
+<pre><div class="code-block">
+<code># Import libraries
+import numpy as np
+from sklearn.datasets import fetch_olivetti_faces
+import matplotlib.pyplot as plt
+
+# Load Olivetti faces dataset
+faces = fetch_olivetti_faces()
+X_prime = faces.data  # Shape: (n_samples, d)
+X_prime = X_prime.T   # Transpose to d × n
+
+# Step 1: Mean-centering
+mu = np.mean(X_prime, axis=1, keepdims=True)
+X = X_prime - mu
+
+# Step 2: Small covariance trick
+# Compute L = (1/n) * X^T * X instead of (1/n) * X * X^T
+n = X.shape[1]
+L = (1/n) * np.dot(X.T, X)  # n × n matrix
+
+# Step 3: Compute eigenvalues and eigenvectors of L
+eigenvalues_L, eigenvectors_L = np.linalg.eig(L)
+
+# Step 4: Compute eigenfaces
+# Eigenfaces of Σ = X * eigenvectors of L
+eigenfaces = np.dot(X, eigenvectors_L)
+
+# Normalize eigenfaces
+for i in range(eigenfaces.shape[1]):
+    eigenfaces[:, i] /= np.linalg.norm(eigenfaces[:, i])
+
+# Step 5: Take top r eigenfaces
+r = 20  # Represent face with just 20 numbers
+V_r = eigenfaces[:, :r]
+
+# Step 6: Project a face onto eigenface space
+test_face = X[:, 0:1]  # Take first face
+coefficients = np.dot(V_r.T, test_face)  # r × 1
+
+# Step 7: Reconstruct face
+reconstructed = np.dot(V_r, coefficients) + mu
+
+# Visualization
+fig, axes = plt.subplots(2, 10, figsize=(15, 4))
+# Display top 20 eigenfaces
+for i in range(20):
+    axes[i//10, i%10].imshow(eigenfaces[:, i].reshape(64, 64), 
+                             cmap='gray')
+    axes[i//10, i%10].axis('off')
+plt.suptitle('Top 20 Eigenfaces')
+plt.show()
+
+# Compare original and reconstructed
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+axes[0].imshow(X[:, 0].reshape(64, 64) + mu.reshape(64, 64), 
+               cmap='gray')
+axes[0].set_title('Original Face')
+axes[1].imshow(reconstructed.reshape(64, 64), cmap='gray')
+axes[1].set_title(f'Reconstructed with {r} components')
+plt.show()
+</code>
+            </div></pre>
+
+            <div class="professor-note">
+                We're using the Olivetti faces dataset. First, we load the data and compute the mean. Then, instead of computing eigenvalues for a d × d matrix, we compute it for an n × n matrix using the trick. We compute eigenfaces by multiplying X with eigenvectors of L, then normalize them. We take the top r eigenfaces - let's say 20. With just 20 numbers, we can represent a face! When you run this, you see different eigenfaces. We're showing 20 of them. Then we see the original face and the reconstructed face with just 20 numbers. They're not exactly the same, but quite close. If we increase to 200, they become even closer - very, very similar representation. So the idea is: just with a few numbers like 25 or 30, we're able to represent faces.
+            </div>
+
+            <h4>Quality vs. Components Trade-off</h4>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Number of Components</th>
+                        <th>Reconstruction Quality</th>
+                        <th>Storage Required</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>20 components</td>
+                        <td>Recognizable but some details lost</td>
+                        <td>Minimal (20 numbers per face)</td>
+                    </tr>
+                    <tr>
+                        <td>50 components</td>
+                        <td>Good quality, facial features clear</td>
+                        <td>Low (50 numbers per face)</td>
+                    </tr>
+                    <tr>
+                        <td>200 components</td>
+                        <td>Excellent, nearly identical</td>
+                        <td>Moderate (200 numbers per face)</td>
+                    </tr>
+                    <tr>
+                        <td>Full (10,000 for 100×100)</td>
+                        <td>Perfect reconstruction</td>
+                        <td>High (all pixels)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Applications of Eigenfaces</h4>
+            <ul>
+                <li><strong>Face Recognition:</strong> Match faces by comparing eigenface coefficients</li>
+                <li><strong>Face Compression:</strong> Store faces using just 25-30 numbers instead of thousands</li>
+                <li><strong>Face Generation:</strong> Create new faces by combining eigenfaces</li>
+                <li><strong>Facial Feature Analysis:</strong> Understand what variations exist in face dataset</li>
+            </ul>
+
+            <h4>Limitations</h4>
+            <div class="professor-note">
+                It's very good in terms of data compression and representation. However, it works mostly for frontal faces. When faces are in the wild - different poses, lighting, expressions - it's not that useful. But for controlled environments with frontal faces, it can represent faces using only a few points.
+            </div>
+
+            <ul>
+                <li><strong>Pose Sensitivity:</strong> Works best for frontal faces, struggles with profile views</li>
+                <li><strong>Lighting Variations:</strong> Sensitive to dramatic lighting changes</li>
+                <li><strong>Expression Changes:</strong> Large expressions can affect recognition</li>
+                <li><strong>Occlusions:</strong> Glasses, beards, or accessories reduce accuracy</li>
+                <li><strong>Modern Alternatives:</strong> Deep learning methods (CNNs) now outperform eigenfaces</li>
+            </ul>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>Eigenfaces ek 90s ka revolutionary technique hai jisme PCA ko face representation ke liye use kiya gaya. Har face ko ek vector banake (pixels ko flatten karke), phir PCA apply karke hum eigenfaces nikalte hain. Ye eigenfaces ghost-like patterns hoti hain jo maximum variance capture karti hain. Storage problem ko solve karne ke liye, unhone ek trick use ki - directly d×d covariance matrix compute karne ki jagah n×n matrix compute kiya jo bahut chota hota hai. Result mein, sirf 25-30 numbers se hum ek poora face represent kar sakte hain instead of hazar pixels! Lekin yeh sirf frontal faces ke liye achha kaam karta hai, wild poses ke liye itna effective nahi hai.
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Eigenfaces is a seminal 1990s application of PCA for face recognition</li>
+                    <li>Each face image is vectorized into d dimensions (d = height × width)</li>
+                    <li>Computational trick: compute n×n matrix instead of d×d when n << d</li>
+                    <li>Eigenfaces are eigenvectors of face covariance matrix</li>
+                    <li>Typical representation: 25-30 eigenfaces for good reconstruction</li>
+                    <li>Massive compression: represent 10,000-pixel face with just 30 numbers</li>
+                    <li>Works best for frontal faces in controlled environments</li>
+                    <li>Historical importance: pioneered statistical approach to face recognition</li>
+                </ul>
+            </div>
+
+            <div class="practice-section">
+                <h4>💡 Practice Questions</h4>
+                
+                <div class="question">
+                    <p class="question-text">Q1: Why was the computational trick important in eigenfaces?</p>
+                    <p class="answer">It reduced computation from a d×d matrix (e.g., 10,000×10,000) to n×n matrix (e.g., 10×10), making eigenface computation feasible with 1990s computing resources.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q2: What does the mean face represent?</p>
+                    <p class="answer">The mean face is the average of all training faces and represents the "typical" face before capturing variations through eigenfaces.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q3: How many eigenfaces are typically needed for good face representation?</p>
+                    <p class="answer">Typically 25-30 eigenfaces provide good representation, though this can vary depending on the dataset and quality requirements.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q4: What are the main limitations of eigenfaces?</p>
+                    <p class="answer">Eigenfaces work best for frontal faces and struggle with pose variations, lighting changes, expressions, and occlusions in wild/uncontrolled environments.</p>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Q5: How is a new face recognized using eigenfaces?</p>
+                    <p class="answer">Project the new face onto the eigenface space to get its coefficients, then compare these coefficients with stored face coefficients using distance metrics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 7: KEY TAKEAWAYS ==================== -->
+        <section id="takeaways">
+            <h2>7. Final Key Takeaways</h2>
+
+            <div class="key-takeaways">
+                <h4>🎯 Complete Lecture Summary</h4>
+                <ul>
+                    <li><strong>Top Eigenvectors:</strong> The eigenvectors corresponding to top-r eigenvalues of the covariance matrix of the original data are called Principal Components (PCs)</li>
+                    <li><strong>PCA Projects Data:</strong> PCA projects the data points into Principal Components for dimensionality reduction</li>
+                    <li><strong>Unsupervised Technique:</strong> PCA is an unsupervised dimensionality reduction technique that doesn't require labels</li>
+                    <li><strong>Eigenface Application:</strong> Eigenface is a practical application of PCA on frontal face images for compact representation</li>
+                    <li><strong>Variance Maximization:</strong> PCA finds directions that maximize variance, preserving maximum information</li>
+                    <li><strong>Orthogonal Components:</strong> All principal components are orthogonal (perpendicular) to each other</li>
+                    <li><strong>Reconstruction Capability:</strong> Original data can be approximately reconstructed from reduced representation</li>
+                    <li><strong>Computational Efficiency:</strong> For face data, computational tricks enable efficient eigenface computation</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                To summarize what we've seen today: the top eigenvectors (when I say top, I mean corresponding to top-r eigenvalues) of the covariance matrix of the original data (original means mean-centered data, not projected data) are called principal components. PCA projects the data into principal components - the top principal components - and that way achieves dimensionality reduction. We've also seen Eigenface, a concept which comes from PCA where the data is faces, and we've seen how eigenface is useful for compact representation of face images. It works mostly for frontal faces; when faces are wild, it's not that useful. But it can represent faces using only a few points, which is very good for data compression and representation.
+            </div>
+        </section>
+
+        <!-- ==================== SECTION 8: COMPREHENSIVE MIND MAP ==================== -->
+        <section id="mindmap">
+            <div class="mindmap">
+                <h2>📊 Comprehensive Mind Map</h2>
+                
+                <div class="mindmap-container">
+                    <!-- Central Topic -->
+                    <div class="mindmap-node">PCA & EIGENFACES</div>
+                    
+                    <div class="mindmap-connector">▼</div>
+                    
+                    <!-- Main Branches -->
+                    <div class="mindmap-branch">
+                        <div style="background: #ff6b6b; color: white; padding: 15px 25px; border-radius: 25px; margin: 10px; font-weight: 600;">
+                            Foundation
+                        </div>
+                        <div style="background: #4ecdc4; color: white; padding: 15px 25px; border-radius: 25px; margin: 10px; font-weight: 600;">
+                            Why Reduce?
+                        </div>
+                        <div style="background: #45b7d1; color: white; padding: 15px 25px; border-radius: 25px; margin: 10px; font-weight: 600;">
+                            Mathematics
+                        </div>
+                        <div style="background: #f9ca24; color: #1a1a1a; padding: 15px 25px; border-radius: 25px; margin: 10px; font-weight: 600;">
+                            PCA Algorithm
+                        </div>
+                        <div style="background: #6c5ce7; color: white; padding: 15px 25px; border-radius: 25px; margin: 10px; font-weight: 600;">
+                            Eigenfaces
+                        </div>
+                    </div>
+                    
+                    <div class="mindmap-connector">▼</div>
+                    
+                    <!-- Sub-branches for Foundation -->
+                    <div style="background: #ffe5e5; padding: 20px; border-radius: 10px; margin: 10px;">
+                        <h4 style="color: #ff6b6b;">Foundation</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">Basis Transformation</div>
+                            <div class="mindmap-leaf">Vector Projection</div>
+                            <div class="mindmap-leaf">Linear Algebra</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-branches for Why Reduce -->
+                    <div style="background: #e0f7f7; padding: 20px; border-radius: 10px; margin: 10px;">
+                        <h4 style="color: #4ecdc4;">Why Dimensionality Reduction?</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">Remove Redundancy</div>
+                            <div class="mindmap-leaf">Reduce Noise</div>
+                            <div class="mindmap-leaf">Better Visualization</div>
+                            <div class="mindmap-leaf">Avoid Curse</div>
+                            <div class="mindmap-leaf">Efficient Storage</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-branches for Mathematics -->
+                    <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 10px;">
+                        <h4 style="color: #45b7d1;">Mathematical Foundation</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">Covariance Matrix Σ</div>
+                            <div class="mindmap-leaf">Eigenvalues λ</div>
+                            <div class="mindmap-leaf">Eigenvectors v</div>
+                            <div class="mindmap-leaf">Maximum Variance</div>
+                            <div class="mindmap-leaf">Σ = (1/n)XX^T</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-branches for PCA Algorithm -->
+                    <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 10px;">
+                        <h4 style="color: #f39c12;">PCA Algorithm Steps</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">1. Mean-Center Data</div>
+                            <div class="mindmap-leaf">2. Compute Σ</div>
+                            <div class="mindmap-leaf">3. Eigen Decomposition</div>
+                            <div class="mindmap-leaf">4. Sort & Select Top-r</div>
+                            <div class="mindmap-leaf">5. Project Y=V_r^T·X</div>
+                            <div class="mindmap-leaf">6. Reconstruct (Optional)</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-branches for Eigenfaces -->
+                    <div style="background: #f0e6ff; padding: 20px; border-radius: 10px; margin: 10px;">
+                        <h4 style="color: #6c5ce7;">Eigenfaces Application</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">Vectorize h×w Face</div>
+                            <div class="mindmap-leaf">Mean Face μ</div>
+                            <div class="mindmap-leaf">n×n Trick</div>
+                            <div class="mindmap-leaf">25-30 Components</div>
+                            <div class="mindmap-leaf">Frontal Faces</div>
+                            <div class="mindmap-leaf">90s Innovation</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Connections and Relationships -->
+                    <div style="background: #e8f5e9; padding: 25px; border-radius: 10px; margin: 20px 0; border: 3px solid #4caf50;">
+                        <h4 style="color: #2e7d32;">🔗 Key Relationships</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;">➜ <strong>Variance = Eigenvalue:</strong> Variance along eigenvector direction equals its eigenvalue</li>
+                            <li style="margin: 10px 0;">➜ <strong>Top Eigenvector = PC1:</strong> Highest eigenvalue corresponds to first principal component</li>
+                            <li style="margin: 10px 0;">➜ <strong>PCA → Eigenfaces:</strong> Eigenfaces is PCA applied to face image vectors</li>
+                            <li style="margin: 10px 0;">➜ <strong>d dimensions → r dimensions:</strong> Reduce from original to compressed representation</li>
+                            <li style="margin: 10px 0;">➜ <strong>Unsupervised:</strong> No labels needed, only data structure matters</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Practical Applications -->
+                    <div style="background: #fff3e0; padding: 25px; border-radius: 10px; margin: 20px 0; border: 3px solid #ff9800;">
+                        <h4 style="color: #e65100;">🎯 Practical Applications</h4>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-leaf">Face Recognition</div>
+                            <div class="mindmap-leaf">Image Compression</div>
+                            <div class="mindmap-leaf">Data Visualization</div>
+                            <div class="mindmap-leaf">Noise Filtering</div>
+                            <div class="mindmap-leaf">Feature Extraction</div>
+                            <div class="mindmap-leaf">Pattern Discovery</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

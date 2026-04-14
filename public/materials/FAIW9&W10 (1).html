@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fai/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability and Statistics in AI - Complete Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <!-- MathJax Configuration for LaTeX Math Rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ============================================
+           GLOBAL STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        /* ============================================
+           HEADER STYLES
+           ============================================ */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .header .course-info {
+            margin-top: 15px;
+            font-size: 0.95em;
+            opacity: 0.85;
+        }
+        
+        /* ============================================
+           TABLE OF CONTENTS
+           ============================================ */
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc ul li {
+            margin: 12px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc ul li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .toc ul ul {
+            margin-left: 30px;
+            margin-top: 8px;
+        }
+        
+        .toc ul ul li {
+            font-size: 0.95em;
+        }
+        
+        /* ============================================
+           HEADING STYLES
+           ============================================ */
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-top: 60px;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 3px solid #764ba2;
+            padding-bottom: 12px;
+            margin-top: 50px;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #495057;
+            margin-top: 35px;
+        }
+        
+        h4 {
+            font-size: 1.3em;
+            color: #6c757d;
+            margin-top: 25px;
+        }
+        
+        /* ============================================
+           TEXT FORMATTING
+           ============================================ */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #764ba2;
+            font-style: italic;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           BOX STYLES (for special content)
+           ============================================ */
+        .definition-box {
+            background: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .definition-box h4 {
+            color: #2196F3;
+            margin-top: 0;
+        }
+        
+        .example-box {
+            background: #f0f9ff;
+            border-left: 5px solid #0ea5e9;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example-box h4 {
+            color: #0ea5e9;
+            margin-top: 0;
+        }
+        
+        .professor-note {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note:before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            display: block;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+        
+        .important-box {
+            background: #fee;
+            border-left: 5px solid #e53e3e;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .important-box:before {
+            content: "⚠️ Important:";
+            display: block;
+            font-weight: bold;
+            color: #e53e3e;
+            margin-bottom: 10px;
+        }
+        
+        /* ============================================
+           HINGLISH SUMMARY BOXES
+           ============================================ */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 2px solid #ff6b6b;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary h4 {
+            color: #c92a2a;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary:before {
+            content: "🇮🇳 ";
+            font-size: 1.5em;
+        }
+        
+        /* ============================================
+           LIST STYLES
+           ============================================ */
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        ul li {
+            list-style-type: disc;
+        }
+        
+        /* ============================================
+           TABLE STYLES
+           ============================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* ============================================
+           PRACTICE QUESTIONS
+           ============================================ */
+        .practice-section {
+            background: #f0fdf4;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 2px solid #10b981;
+        }
+        
+        .practice-section h3 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .question h4 {
+            color: #047857;
+            margin-top: 0;
+        }
+        
+        .answer {
+            background: #ecfdf5;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #34d399;
+        }
+        
+        .answer:before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        /* ============================================
+           KEY TAKEAWAYS
+           ============================================ */
+        .key-takeaways {
+            background: #fef3c7;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            border: 2px solid #f59e0b;
+        }
+        
+        .key-takeaways h3 {
+            color: #d97706;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .key-takeaways li {
+            padding-left: 35px;
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        .key-takeaways li:before {
+            content: "⭐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        
+        /* ============================================
+           DIAGRAM PLACEHOLDER
+           ============================================ */
+        .diagram-placeholder {
+            background: #f1f5f9;
+            border: 2px dashed #94a3b8;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            border-radius: 10px;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        /* ============================================
+           MIND MAP STYLES
+           ============================================ */
+        .mindmap {
+            background: white;
+            padding: 40px;
+            margin: 50px 0;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 40px;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .mindmap-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3em;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .mindmap-children {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .mindmap-child {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .mindmap-child h4 {
+            color: #2196F3;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .mindmap-child ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .mindmap-child li {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        
+        /* ============================================
+           FORMULA BOX
+           ============================================ */
+        .formula-box {
+            background: #fff;
+            border: 2px solid #667eea;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .formula-box .formula-title {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .mindmap-children {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ============================================
+           PRINT STYLES
+           ============================================ */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .header {
+                background: #667eea;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ============================================
+             HEADER SECTION
+             ============================================ -->
+        <div class="header">
+            <h1>Probability and Statistics in AI</h1>
+            <div class="subtitle">Comprehensive Lecture Notes</div>
+            <div class="course-info">
+                By Armaan Kachhawa
+            </div>
+        </div>
+
+        <!-- ============================================
+             TABLE OF CONTENTS
+             ============================================ -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Introduction: Why Probability in AI?</a>
+                    <ul>
+                        <li><a href="#section1-1">1.1 Limitations of Logic-Based Systems</a></li>
+                        <li><a href="#section1-2">1.2 Sources of Uncertainty</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section2">2. Basics of Probability Theory</a>
+                    <ul>
+                        <li><a href="#section2-1">2.1 Random Experiments and Sample Space</a></li>
+                        <li><a href="#section2-2">2.2 Events and Sigma Algebra</a></li>
+                        <li><a href="#section2-3">2.3 Definition of Probability</a></li>
+                        <li><a href="#section2-4">2.4 Naive Probability Definition</a></li>
+                        <li><a href="#section2-5">2.5 Understanding Probability: The Limiting Sense</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section3">3. Independent and Dependent Events</a>
+                    <ul>
+                        <li><a href="#section3-1">3.1 Independent Events</a></li>
+                        <li><a href="#section3-2">3.2 Venn Diagrams and Set Operations</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section4">4. Conditional Probability</a>
+                    <ul>
+                        <li><a href="#section4-1">4.1 Definition and Intuition</a></li>
+                        <li><a href="#section4-2">4.2 Multiplication Law</a></li>
+                        <li><a href="#section4-3">4.3 Law of Total Probability</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section5">5. Bayes' Theorem</a>
+                    <ul>
+                        <li><a href="#section5-1">5.1 Derivation of Bayes' Rule</a></li>
+                        <li><a href="#section5-2">5.2 Components: Prior, Likelihood, Posterior</a></li>
+                        <li><a href="#section5-3">5.3 Medical Test Example</a></li>
+                        <li><a href="#section5-4">5.4 Iterative Application of Bayes' Rule</a></li>
+                        <li><a href="#section5-5">5.5 Philosophical Implications</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mindmap">6. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             SECTION 1: INTRODUCTION
+             ============================================ -->
+        <h1 id="section1">1. Introduction: Why Probability in AI?</h1>
+
+        <h2 id="section1-1">1.1 Limitations of Logic-Based Systems</h2>
+        
+        <p>In previous lectures, we explored various logical systems including <strong>propositional logic</strong>, <strong>first-order logic</strong>, <strong>logical agents</strong>, and <strong>knowledge-based agents</strong>. While these systems are powerful, they share common characteristics that limit their applicability to real-world problems:</p>
+
+        <div class="definition-box">
+            <h4>Characteristics of Logic-Based Systems</h4>
+            <ul>
+                <li><strong>Rule-based:</strong> They operate on fixed, deterministic rules</li>
+                <li><strong>Deterministic:</strong> Given the same input, they always produce the same output</li>
+                <li><strong>Binary truth values:</strong> Statements are either True (1) or False (0)</li>
+            </ul>
+        </div>
+
+        <p>The fundamental problem with these systems is their <strong>limitation of expressibility</strong> when modeling the real world. Why is this the case?</p>
+
+        <div class="important-box">
+            Our real world is <strong>too complex</strong> to be adequately captured by simple rule-based systems. Most phenomena we observe contain inherent <strong>uncertainties</strong> that cannot be represented with binary true/false values.
+        </div>
+
+        <div class="professor-note">
+            There's a distinction between the <strong>real world</strong> and the <strong>representative world</strong> (our model). The model is never perfect because we make simplifying assumptions to make calculations easier. The closest model we can achieve of our complex real world comes through a <strong>probabilistic view</strong> — one that captures uncertainty.
+        </div>
+
+        <h2 id="section1-2">1.2 Sources of Uncertainty</h2>
+
+        <p>Uncertainty in real-world modeling arises from multiple sources:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Source of Uncertainty</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Incomplete Data</strong></td>
+                    <td>We cannot observe all aspects of the environment</td>
+                    <td>Sensor limitations, partial observations</td>
+                </tr>
+                <tr>
+                    <td><strong>Noisy Data</strong></td>
+                    <td>Measurements contain errors and noise</td>
+                    <td>Sensor noise, measurement errors</td>
+                </tr>
+                <tr>
+                    <td><strong>Complex Systems</strong></td>
+                    <td>Infinite or extremely large number of variables affecting outcomes</td>
+                    <td>Weather systems, human behavior</td>
+                </tr>
+                <tr>
+                    <td><strong>Inherent Randomness</strong></td>
+                    <td>Some phenomena are fundamentally unpredictable</td>
+                    <td>Quantum mechanics, coin flips</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="professor-note">
+            In logic, we deal with black and white — true or false. But in the real world, there are many <strong>shades of grey</strong>, many shades of truth. Probability theory allows us to capture these nuances by assigning values between 0 and 1, rather than just 0 or 1.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>Hinglish Summary (संक्षेप)</h4>
+            <p>Dekho, pehle humne logic ke baare mein padha tha — propositional logic, first-order logic, sab kuch deterministic tha. Matlab ek hi input pe hamesha same output milega. Lekin real world itna simple nahi hai bhai! Real world mein bohot saari uncertainties hain. Incomplete data hai, noisy data hai, bahut saare variables hain jo kisi bhi phenomenon ko affect karte hain. Isliye hume probability theory chahiye jo in uncertainties ko handle kar sake. Logic mein sirf true/false (0/1) hota hai, lekin probability mein hum 0 se 1 ke beech mein koi bhi value le sakte hain — ye grey areas ko represent karne mein help karta hai!</p>
+        </div>
+
+        <!-- ============================================
+             SECTION 2: BASICS OF PROBABILITY
+             ============================================ -->
+        <h1 id="section2">2. Basics of Probability Theory</h1>
+
+        <h2 id="section2-1">2.1 Random Experiments and Sample Space</h2>
+
+        <div class="definition-box">
+            <h4>Sample Space ($\Omega$)</h4>
+            <p>The <strong>sample space</strong> is the collection of all possible outcomes of a random experiment.</p>
+            <p class="formula-box">$\Omega = \{\text{all possible outcomes}\}$</p>
+        </div>
+
+        <h3>Understanding Key Terms</h3>
+
+        <h4>Experiment vs. Random Experiment</h4>
+
+        <p>An <strong>experiment</strong> is a physical process or action. For example, <em>flipping a coin</em> or <em>rolling a dice</em>. The experiment itself is <strong>deterministic</strong> — it follows the laws of physics.</p>
+
+        <div class="important-box">
+            <strong>Randomness</strong> doesn't lie in the experiment itself, but in the <strong>outcome</strong>. Before performing the experiment, we cannot predict with certainty which outcome will occur. This uncertainty in the outcome makes it a <strong>random experiment</strong>.
+        </div>
+
+        <h4>Purpose-Dependent Outcomes</h4>
+
+        <div class="professor-note">
+            A crucial concept that students often miss: The outcomes we define depend entirely on <strong>what we are interested in measuring</strong>. The same physical experiment can have different sample spaces based on our purpose!
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Flipping a Coin</h4>
+            
+            <p><strong>Purpose 1:</strong> We're interested in which side lands face-up</p>
+            <ul>
+                <li>Sample Space: $\Omega = \{H, T\}$ where H = Head, T = Tail</li>
+            </ul>
+
+            <p><strong>Purpose 2:</strong> We're interested in how many times the coin rotates before landing</p>
+            <ul>
+                <li>Sample Space: $\Omega = \{0, 1, 2, 3, ...\} = \mathbb{N}_0$ (non-negative integers)</li>
+            </ul>
+
+            <p><strong>Purpose 3:</strong> We're interested in the velocity of the coin just before it hits the palm</p>
+            <ul>
+                <li>Sample Space: $\Omega = \mathbb{R}^+$ (all positive real numbers)</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Rolling a Dice</h4>
+            
+            <p><strong>Purpose 1:</strong> Which face lands on top?</p>
+            <ul>
+                <li>Sample Space: $\Omega = \{1, 2, 3, 4, 5, 6\}$</li>
+            </ul>
+
+            <p><strong>Purpose 2:</strong> How many times does it rotate?</p>
+            <ul>
+                <li>Sample Space: $\Omega = \{0, 1, 2, 3, ...\}$</li>
+            </ul>
+
+            <p><strong>Purpose 3:</strong> Rolling dice twice, sum of outcomes equals 5</p>
+            <ul>
+                <li>Sample Space: $\Omega = \{(1,4), (4,1), (2,3), (3,2)\}$</li>
+            </ul>
+        </div>
+
+        <div class="important-box">
+            <strong>Key Insight:</strong> Never assume that an experiment has only one associated sample space. The sample space is defined by the user's purpose and what they choose to measure. Different purposes lead to different sample spaces for the same physical experiment.
+        </div>
+
+        <h2 id="section2-2">2.2 Events and Sigma Algebra</h2>
+
+        <div class="definition-box">
+            <h4>Event</h4>
+            <p>An <strong>event</strong> is a subset of the sample space.</p>
+            <p class="formula-box">If $A \subseteq \Omega$, then $A$ is an event</p>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Rolling a Dice</h4>
+            
+            <p>Sample Space: $\Omega = \{1, 2, 3, 4, 5, 6\}$</p>
+            
+            <p><strong>Event A:</strong> Getting an even number</p>
+            <ul>
+                <li>$A = \{2, 4, 6\} \subset \Omega$</li>
+            </ul>
+
+            <p><strong>Event B:</strong> Getting a number greater than 4</p>
+            <ul>
+                <li>$B = \{5, 6\} \subset \Omega$</li>
+            </ul>
+        </div>
+
+        <h3>Sigma Algebra ($\sigma$-algebra)</h3>
+
+        <div class="professor-note">
+            Here's an important mathematical subtlety: We cannot define probability on <strong>all possible subsets</strong> of the sample space (the power set). There's deep mathematical theory behind this. Instead, we define probability on a special collection of subsets called a <strong>sigma algebra</strong>.
+        </div>
+
+        <div class="definition-box">
+            <h4>Sigma Algebra ($\mathcal{F}$ or $\sigma(\Omega)$)</h4>
+            <p>A <strong>sigma algebra</strong> is a collection of subsets of the sample space $\Omega$ that satisfies the following three properties:</p>
+            
+            <ol>
+                <li><strong>Contains empty set and sample space:</strong><br>
+                    $\emptyset \in \mathcal{F}$ and $\Omega \in \mathcal{F}$</li>
+                
+                <li><strong>Closed under complement:</strong><br>
+                    If $A \in \mathcal{F}$, then $A^c = \Omega \setminus A \in \mathcal{F}$</li>
+                
+                <li><strong>Closed under countable union:</strong><br>
+                    If $A_1, A_2, A_3, ... \in \mathcal{F}$, then $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$</li>
+            </ol>
+        </div>
+
+        <div class="important-box">
+            <strong>Events are elements of the sigma algebra.</strong> When we talk about events, we're referring to the sets that belong to $\mathcal{F}$.
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Sigma Algebra for Rolling a Dice</h4>
+            
+            <p>Sample Space: $\Omega = \{1, 2, 3, 4, 5, 6\}$</p>
+            
+            <p>The sigma algebra $\mathcal{F}$ contains:</p>
+            <ul>
+                <li><strong>Empty set:</strong> $\emptyset$</li>
+                <li><strong>Singletons:</strong> $\{1\}, \{2\}, \{3\}, \{4\}, \{5\}, \{6\}$</li>
+                <li><strong>Pairs:</strong> $\{1,2\}, \{1,3\}, ..., \{5,6\}$</li>
+                <li><strong>Triples:</strong> $\{1,2,3\}, \{1,2,4\}, ..., \{4,5,6\}$</li>
+                <li><strong>Quadruples:</strong> $\{1,2,3,4\}, ..., \{3,4,5,6\}$</li>
+                <li><strong>Quintuples:</strong> $\{1,2,3,4,5\}, ..., \{2,3,4,5,6\}$</li>
+                <li><strong>Full set:</strong> $\Omega = \{1,2,3,4,5,6\}$</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Sigma Algebra for Flipping a Coin</h4>
+            
+            <p>Sample Space: $\Omega = \{H, T\}$</p>
+            
+            <p>Sigma algebra: $\mathcal{F} = \{\emptyset, \{H\}, \{T\}, \{H,T\}\}$</p>
+            
+            <p>For flipping a coin twice (ordered outcomes):</p>
+            <p>Sample Space: $\Omega = \{HH, HT, TH, TT\}$</p>
+            <p>The sigma algebra contains all possible subsets of this sample space.</p>
+        </div>
+
+        <div class="professor-note">
+            When dealing with ordered outcomes (like flipping twice), $HT$ and $TH$ are different because the first position represents the first flip and the second position represents the second flip. Order matters in sequences!
+        </div>
+
+        <h2 id="section2-3">2.3 Definition of Probability</h2>
+
+        <div class="definition-box">
+            <h4>Probability Measure</h4>
+            <p>A <strong>probability</strong> is a function (or map) that assigns values to events:</p>
+            
+            <div class="formula-box">
+                <p>$P: \mathcal{F} \rightarrow [0, 1]$</p>
+            </div>
+            
+            <p>This function is called a <strong>probability measure</strong> if it satisfies the following axioms:</p>
+        </div>
+
+        <div class="definition-box">
+            <h4>Axioms of Probability</h4>
+            
+            <p><strong>Axiom 1:</strong> The probability of the entire sample space is 1</p>
+            <div class="formula-box">$P(\Omega) = 1$</div>
+            
+            <p><strong>Axiom 2:</strong> The probability of the empty set is 0</p>
+            <div class="formula-box">$P(\emptyset) = 0$</div>
+            
+            <p><strong>Axiom 3:</strong> The probability of a complement</p>
+            <div class="formula-box">$P(A^c) = 1 - P(A)$</div>
+            
+            <p><strong>Axiom 4:</strong> For pairwise disjoint events (countable additivity)</p>
+            <div class="formula-box">
+                If $A_i \cap A_j = \emptyset$ for $i \neq j$, then<br>
+                $P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)$
+            </div>
+        </div>
+
+        <h2 id="section2-4">2.4 Naive Probability Definition</h2>
+
+        <p>Before the axiomatic definition, probability was understood through a simpler, counting-based approach called the <strong>naive definition</strong>.</p>
+
+        <div class="definition-box">
+            <h4>Naive Definition of Probability</h4>
+            <p>For equally likely outcomes in a finite sample space:</p>
+            
+            <div class="formula-box">
+                <div class="formula-title">Naive Probability Formula</div>
+                $P(A) = \frac{\text{Number of favorable outcomes}}{\text{Total number of possible outcomes}}$
+            </div>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Flipping a Coin</h4>
+            
+            <p>Sample Space: $\Omega = \{H, T\}$</p>
+            
+            <p><strong>Find:</strong> $P(H)$ — Probability of getting heads</p>
+            
+            <p><strong>Solution:</strong></p>
+            <ul>
+                <li>Number of favorable outcomes = 1 (only H)</li>
+                <li>Total number of outcomes = 2 (H or T)</li>
+                <li>$P(H) = \frac{1}{2} = 0.5$</li>
+            </ul>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Flipping a Coin Twice</h4>
+            
+            <p>Sample Space: $\Omega = \{HH, HT, TH, TT\}$</p>
+            
+            <p><strong>Find:</strong> Probability of getting two heads</p>
+            
+            <p><strong>Solution:</strong></p>
+            <ul>
+                <li>Event: $A = \{HH\}$</li>
+                <li>Number of favorable outcomes = 1</li>
+                <li>Total number of outcomes = 4</li>
+                <li>$P(A) = \frac{1}{4} = 0.25$</li>
+            </ul>
+        </div>
+
+        <div class="important-box">
+            This naive definition assumes all outcomes are <strong>equally likely</strong>. For a fair (unbiased) coin, each outcome has the same probability. If the coin were biased, this formula wouldn't apply!
+        </div>
+
+        <h2 id="section2-5">2.5 Understanding Probability: The Limiting Sense</h2>
+
+        <div class="professor-note">
+            This is a critical concept that many students misunderstand. When we say the probability of getting heads is $\frac{1}{2}$, it does NOT mean that if you flip a coin 10 times, you will get exactly 5 heads and 5 tails. Let me explain what it actually means...
+        </div>
+
+        <p>Consider flipping a fair coin multiple times. The question is: <strong>What does $P(H) = 0.5$ really mean?</strong></p>
+
+        <div class="definition-box">
+            <h4>Frequentist Interpretation of Probability</h4>
+            <p>Probability is understood in a <strong>limiting sense</strong>:</p>
+            
+            <div class="formula-box">
+                $P(H) = \lim_{n \to \infty} \frac{\text{Number of heads in } n \text{ flips}}{n}$
+            </div>
+            
+            <p>As the number of experiments increases, the <strong>ratio</strong> of favorable outcomes to total outcomes converges to the probability.</p>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Understanding the Limiting Process</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Number of Flips</th>
+                        <th>Heads Obtained</th>
+                        <th>Tails Obtained</th>
+                        <th>Ratio (Heads/Total)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10</td>
+                        <td>6</td>
+                        <td>4</td>
+                        <td>6/10 = 0.60</td>
+                    </tr>
+                    <tr>
+                        <td>100</td>
+                        <td>55</td>
+                        <td>45</td>
+                        <td>55/100 = 0.55</td>
+                    </tr>
+                    <tr>
+                        <td>1,000</td>
+                        <td>505</td>
+                        <td>495</td>
+                        <td>505/1000 = 0.505</td>
+                    </tr>
+                    <tr>
+                        <td>10,000</td>
+                        <td>5,012</td>
+                        <td>4,988</td>
+                        <td>5012/10000 = 0.5012</td>
+                    </tr>
+                    <tr>
+                        <td>$\infty$</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>→ 0.5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="important-box">
+            <strong>Key Points:</strong>
+            <ul>
+                <li>With few trials (10 flips), there's significant variation from 0.5</li>
+                <li>As trials increase, the ratio gets <strong>closer and closer</strong> to 0.5</li>
+                <li>The ratio converges to 0.5 in the limit as $n \to \infty$</li>
+                <li>There will always be some difference in finite experiments — this is natural!</li>
+            </ul>
+        </div>
+
+        <div class="professor-note">
+            When modeling the real world, we always make an error. The model says the ratio should be exactly 0.5, but in reality, even with 1000 flips, you might get 505 heads. The difference between the model and reality is the modeling error. But the key is that they're "very, very close" — almost surely close to 0.5 as the number of trials increases.
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>Hinglish Summary (संक्षेप)</h4>
+            <p>Probability theory ke basics samajhte hain. Sabse pehle <strong>sample space</strong> hota hai jo saare possible outcomes ka collection hai. Important baat ye hai ki outcomes depend karte hain ki hum kya measure karna chahte hain! Same experiment ke liye different purposes ke liye different sample spaces ho sakte hain. <strong>Event</strong> sample space ka subset hota hai. <strong>Sigma algebra</strong> ek special collection hai subsets ka jis par hum probability define kar sakte hain. Aur probability ek function hai jo 0 se 1 ke beech value deta hai. Jab hum kehte hain coin flip ka probability 0.5 hai, iska matlab ye NAHI hai ki 10 baar me exactly 5 baar heads aayega. Iska matlab hai ki jaise jaise hum zyada experiments karte hain, heads ka ratio 0.5 ke close hota jata hai — ye limiting sense mein samajhna chahiye!</p>
+        </div>
+
+        <div class="practice-section">
+            <h3>🎯 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Question 1:</h4>
+                <p>A dice is rolled. What is the probability of getting an odd number?</p>
+                <div class="answer">
+                    <p>Sample space: $\Omega = \{1, 2, 3, 4, 5, 6\}$</p>
+                    <p>Event (odd numbers): $A = \{1, 3, 5\}$</p>
+                    <p>Number of favorable outcomes = 3</p>
+                    <p>Total outcomes = 6</p>
+                    <p>$P(A) = \frac{3}{6} = \frac{1}{2} = 0.5$</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Question 2:</h4>
+                <p>If you flip a coin 50 times and get 28 heads, does this contradict the fact that $P(H) = 0.5$?</p>
+                <div class="answer">
+                    <p>No, it does not contradict! The probability 0.5 is a limiting value as the number of trials approaches infinity. With finite trials (50 flips), we expect variation around 0.5. The ratio here is 28/50 = 0.56, which is reasonably close to 0.5. If we performed thousands of flips, we'd expect the ratio to converge closer to 0.5.</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Question 3:</h4>
+                <p>Why can't we define probability on all subsets of the sample space?</p>
+                <div class="answer">
+                    <p>Due to deep mathematical reasons, particularly for uncountable sample spaces (like the real numbers), defining probability on all subsets (the power set) leads to contradictions and paradoxes. This is why we need sigma algebras — they provide a mathematically consistent framework where probability can be properly defined. For countable spaces like dice or coins, the power set works fine, but for general probability theory, we need the sigma algebra structure.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🔑 Key Takeaways</h3>
+            <ul>
+                <li>Sample space depends on what we're measuring, not just the physical experiment</li>
+                <li>Events are subsets of the sample space, specifically elements of the sigma algebra</li>
+                <li>Probability is a function that maps events to values between 0 and 1</li>
+                <li>The naive definition works for equally likely outcomes in finite spaces</li>
+                <li>Probability must be understood in a limiting sense — as the number of trials increases, observed ratios converge to theoretical probabilities</li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             SECTION 3: INDEPENDENT AND DEPENDENT EVENTS
+             ============================================ -->
+        <h1 id="section3">3. Independent and Dependent Events</h1>
+
+        <h2 id="section3-1">3.1 Independent Events</h2>
+
+        <div class="definition-box">
+            <h4>Independent Events</h4>
+            <p>Two events $A$ and $B$ are <strong>independent</strong> if the occurrence of one event does not affect the probability of the other event occurring.</p>
+            
+            <div class="formula-box">
+                <div class="formula-title">Mathematical Definition of Independence</div>
+                $P(A \cap B) = P(A) \times P(B)$
+            </div>
+        </div>
+
+        <p>Independence means that one event provides no information about the other. They are completely unrelated in terms of their occurrence.</p>
+
+        <div class="example-box">
+            <h4>Example: Flipping a Coin and Rolling a Dice</h4>
+            
+            <p>Consider two events:</p>
+            <ul>
+                <li><strong>Event A:</strong> Getting heads when flipping a coin</li>
+                <li><strong>Event B:</strong> Getting 2 when rolling a dice</li>
+            </ul>
+            
+            <p><strong>Are these independent?</strong> Yes!</p>
+            
+            <p><strong>Calculation:</strong></p>
+            <ul>
+                <li>$P(A) = \frac{1}{2}$ (probability of heads)</li>
+                <li>$P(B) = \frac{1}{6}$ (probability of getting 2 on dice)</li>
+                <li>$P(A \cap B) = P(\text{heads AND 2}) = \frac{1}{2} \times \frac{1}{6} = \frac{1}{12}$</li>
+            </ul>
+            
+            <p>Since $P(A \cap B) = P(A) \times P(B)$, the events are independent.</p>
+        </div>
+
+        <div class="professor-note">
+            The outcome of flipping a coin should not depend on the outcome of rolling a dice, and vice versa. They are separate physical processes. This is the intuitive meaning of independence — one event doesn't influence the other.
+        </div>
+
+        <h2 id="section3-2">3.2 Venn Diagrams and Set Operations</h2>
+
+        <p>Venn diagrams provide a visual way to understand relationships between events and probability calculations.</p>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Venn Diagram showing two overlapping circles A and B within rectangle Ω]
+            <br><br>
+            • Rectangle represents sample space Ω<br>
+            • Circle A represents event A<br>
+            • Circle B represents event B<br>
+            • Overlapping region represents A ∩ B (intersection)<br>
+            • Combined area of both circles represents A ∪ B (union)
+        </div>
+
+        <h3>Set Operations and Their Probabilities</h3>
+
+        <div class="definition-box">
+            <h4>Intersection ($A \cap B$)</h4>
+            <p>The intersection represents outcomes that belong to <strong>both</strong> A and B.</p>
+            <p>In the Venn diagram, this is the overlapping region between the two circles.</p>
+        </div>
+
+        <div class="definition-box">
+            <h4>Union ($A \cup B$)</h4>
+            <p>The union represents outcomes that belong to <strong>either</strong> A or B (or both).</p>
+            
+            <div class="formula-box">
+                <div class="formula-title">Addition Rule for Union</div>
+                $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+            </div>
+            
+            <p><strong>Why subtract $P(A \cap B)$?</strong><br>
+            When we add $P(A)$ and $P(B)$, we count the intersection region twice. To correct this, we subtract it once.</p>
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Calculating Union Probability</h4>
+            
+            <p>Suppose:</p>
+            <ul>
+                <li>$P(A) = 0.4$</li>
+                <li>$P(B) = 0.5$</li>
+                <li>$P(A \cap B) = 0.2$</li>
+            </ul>
+            
+            <p><strong>Find:</strong> $P(A \cup B)$</p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>$P(A \cup B) = P(A) + P(B) - P(A \cap B)$</p>
+            <p>$P(A \cup B) = 0.4 + 0.5 - 0.2 = 0.7$</p>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>Hinglish Summary (संक्षेप)</h4>
+            <p>Do events independent hote hain jab ek event ka hona dusre event ki probability ko affect nahi karta. Mathematically, agar $P(A \cap B) = P(A) \times P(B)$ hai, to A aur B independent hain. For example, coin flip aur dice roll independent events hain kyunki ek ka result dusre ko affect nahi karta. Venn diagram se hum visually samajh sakte hain — intersection (A ∩ B) wo region hai jaha dono events occur hote hain, aur union (A ∪ B) wo region hai jaha kam se kam ek event occur hota hai. Union ka probability calculate karne ke liye hum addition rule use karte hain!</p>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🔑 Key Takeaways</h3>
+            <ul>
+                <li>Independent events satisfy: $P(A \cap B) = P(A) \times P(B)$</li>
+                <li>Independence means one event doesn't influence the other</li>
+                <li>Venn diagrams visually represent event relationships</li>
+                <li>Union probability requires subtracting the intersection to avoid double-counting</li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             SECTION 4: CONDITIONAL PROBABILITY
+             ============================================ -->
+        <h1 id="section4">4. Conditional Probability</h1>
+
+        <h2 id="section4-1">4.1 Definition and Intuition</h2>
+
+        <p>Conditional probability is one of the most important concepts in probability theory and forms the foundation for Bayesian reasoning.</p>
+
+        <div class="definition-box">
+            <h4>Conditional Probability</h4>
+            <p>The <strong>conditional probability</strong> of event $A$ given that event $B$ has occurred is denoted by $P(A|B)$ and defined as:</p>
+            
+            <div class="formula-box">
+                <div class="formula-title">Conditional Probability Formula</div>
+                $P(A|B) = \frac{P(A \cap B)}{P(B)}$ <br><br>
+                <strong>provided</strong> $P(B) > 0$
+            </div>
+        </div>
+
+        <div class="important-box">
+            <strong>Critical Condition:</strong> Conditional probability is only defined when $P(B) > 0$. If $P(B) = 0$, then $P(A|B)$ is undefined because we cannot divide by zero. Moreover, it doesn't make sense to ask "what if B occurred" when B is impossible!
+        </div>
+
+        <h3>Intuitive Understanding Using Venn Diagrams</h3>
+
+        <div class="professor-note">
+            Let me explain the intuition behind this formula. When we say "given B has occurred," we're essentially changing our sample space. Instead of considering all of Ω, we now only consider B as our new "universe." Within this restricted space B, we ask: what portion contains A?
+        </div>
+
+        <div class="diagram-placeholder">
+            [Insert diagram: Conditional Probability Venn Diagram]
+            <br><br>
+            • Original sample space: Ω (large rectangle)<br>
+            • Event B has occurred → New sample space is now just B<br>
+            • Event A ∩ B is the part of A that lies within B<br>
+            • P(A|B) = "What fraction of B contains A?" = (A ∩ B) / B
+        </div>
+
+        <p>The formula makes intuitive sense:</p>
+        <ul>
+            <li><strong>Numerator:</strong> $P(A \cap B)$ — the probability of both A and B occurring together</li>
+            <li><strong>Denominator:</strong> $P(B)$ — we normalize by this because B is now our entire "universe"</li>
+            <li><strong>Result:</strong> The fraction of B that contains A</li>
+        </ul>
+
+        <h2 id="section4-2">4.2 Multiplication Law</h2>
+
+        <p>By rearranging the conditional probability formula, we get the <strong>multiplication law</strong>:</p>
+
+        <div class="formula-box">
+            <div class="formula-title">Multiplication Law</div>
+            $P(A \cap B) = P(A|B) \times P(B)$
+            <br><br>
+            <em>Equivalently:</em><br>
+            $P(A \cap B) = P(B|A) \times P(A)$
+        </div>
+
+        <p>This tells us that the probability of both events occurring equals the probability of one event times the conditional probability of the other given the first.</p>
+
+        <h2 id="section4-3">4.3 Law of Total Probability</h2>
+
+        <p>When the sample space is partitioned into disjoint events, we can compute probabilities using the law of total probability.</p>
+
+        <div class="definition-box">
+            <h4>Partition of Sample Space</h4>
+            <p>Events $A_1, A_2, ..., A_n$ form a <strong>partition</strong> of $\Omega$ if:</p>
+            <ol>
+                <li>They are mutually disjoint: $A_i \cap A_j = \emptyset$ for $i \neq j$</li>
+                <li>Their union is the entire space: $A_1 \cup A_2 \cup ... \cup A_n = \Omega$</li>
+            </ol>
+        </div>
+
+        <div class="formula-box">
+            <div class="formula-title">Law of Total Probability</div>
+            If $A_1, A_2, ..., A_n$ partition $\Omega$, then for any event $A$:
+            <br><br>
+            $P(A) = \sum_{i=1}^{n} P(A|A_i) \times P(A_i)$
+        </div>
+
+        <h3>Derivation</h3>
+
+        <p>The law can be derived as follows:</p>
+
+        <p>Since $A_1, A_2, ..., A_n$ partition $\Omega$, we can write:</p>
+        <p>$$\Omega = A_1 \cup A_2 \cup ... \cup A_n$$</p>
+
+        <p>Therefore, for any event $A$:</p>
+        <p>$$A = A \cap \Omega = A \cap (A_1 \cup A_2 \cup ... \cup A_n)$$</p>
+        <p>$$A = (A \cap A_1) \cup (A \cap A_2) \cup ... \cup (A \cap A_n)$$</p>
+
+        <p>Since the $A_i$ are disjoint, the intersections $(A \cap A_i)$ are also disjoint. Using the additivity of probability:</p>
+        <p>$$P(A) = P(A \cap A_1) + P(A \cap A_2) + ... + P(A \cap A_n)$$</p>
+
+        <p>Applying the multiplication law to each term:</p>
+        <p>$$P(A) = P(A|A_1)P(A_1) + P(A|A_2)P(A_2) + ... + P(A|A_n)P(A_n)$$</p>
+
+        <h3>Special Case: Binary Partition</h3>
+
+        <p>The most common application uses a binary partition with an event $B$ and its complement $B^c$:</p>
+
+        <div class="formula-box">
+            $P(A) = P(A|B)P(B) + P(A|B^c)P(B^c)$
+        </div>
+
+        <div class="example-box">
+            <h4>Example: Application of Total Probability</h4>
+            
+            <p>A factory has two machines. Machine 1 produces 60% of items, Machine 2 produces 40%. Machine 1 has a 5% defect rate, Machine 2 has a 10% defect rate. What's the probability a randomly selected item is defective?</p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>Let $D$ = item is defective</p>
+            <p>Let $M_1$ = produced by Machine 1, $M_2$ = produced by Machine 2</p>
+            
+            <p>Given:</p>
+            <ul>
+                <li>$P(M_1) = 0.6$, $P(M_2) = 0.4$</li>
+                <li>$P(D|M_1) = 0.05$, $P(D|M_2) = 0.10$</li>
+            </ul>
+            
+            <p>Using law of total probability:</p>
+            <p>$P(D) = P(D|M_1)P(M_1) + P(D|M_2)P(M_2)$</p>
+            <p>$P(D) = (0.05)(0.6) + (0.10)(0.4)$</p>
+            <p>$P(D) = 0.03 + 0.04 = 0.07$</p>
+            
+            <p>The probability of a defective item is 7%.</p>
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>Hinglish Summary (संक्षेप)</h4>
+            <p><strong>Conditional probability</strong> ek bahut important concept hai! Jab hum kehte hain P(A|B), matlab "B ke given hone par A ki probability kya hai?" Formula hai: P(A|B) = P(A ∩ B) / P(B). Intuition ye hai ki jab B ho chuka hai, to humara sample space badal gaya — ab sirf B hi hamara naya sample space hai, aur us mein hum dekh rahe hain ki kitna portion A ka hai. <strong>Multiplication law</strong> kehta hai ki P(A ∩ B) = P(A|B) × P(B). Aur <strong>law of total probability</strong> use hota hai jab sample space partitions mein divided ho — ye kehta hai ki total probability nikalne ke liye hum sabhi partitions ka weighted sum lete hain!</p>
+        </div>
+
+        <div class="practice-section">
+            <h3>🎯 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Question 1:</h4>
+                <p>A box contains 3 red balls and 2 blue balls. Two balls are drawn without replacement. What is the probability the second ball is red given the first ball was red?</p>
+                <div class="answer">
+                    <p>After drawing one red ball:</p>
+                    <ul>
+                        <li>Remaining balls: 2 red, 2 blue (4 total)</li>
+                        <li>$P(\text{second red | first red}) = \frac{2}{4} = \frac{1}{2}$</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Question 2:</h4>
+                <p>In a class, 70% of students study CS and 30% study Math. Among CS students, 60% are male. Among Math students, 40% are male. If a randomly selected student is male, what's the probability they study CS?</p>
+                <div class="answer">
+                    <p>This requires Bayes' theorem (next section), but we can set it up:</p>
+                <p>Given: $P(CS) = 0.7$, $P(M) = 0.3$, $P(\text{Male}|CS) = 0.6$, $P(\text{Male}|M) = 0.4$</p>
+                    <p>First find $P(\text{Male})$ using total probability:</p>
+                    <p>$P(\text{Male}) = 0.6(0.7) + 0.4(0.3) = 0.42 + 0.12 = 0.54$</p>
+                    <p>Then: $P(CS|\text{Male}) = \frac{P(\text{Male}|CS) \times P(CS)}{P(\text{Male})} = \frac{0.6 \times 0.7}{0.54} = \frac{0.42}{0.54} \approx 0.778$</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🔑 Key Takeaways</h3>
+            <ul>
+                <li>Conditional probability changes the sample space to the conditioning event</li>
+                <li>$P(A|B)$ is only defined when $P(B) > 0$</li>
+                <li>Multiplication law allows computing joint probabilities from conditional probabilities</li>
+                <li>Law of total probability is useful when the sample space is partitioned</li>
+                <li>These concepts form the foundation for Bayes' theorem</li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             SECTION 5: BAYES' THEOREM
+             ============================================ -->
+        <h1 id="section5">5. Bayes' Theorem</h1>
+
+        <div class="professor-note">
+            Bayes' theorem is one of the most important results in probability theory and has revolutionized fields ranging from AI and machine learning to social sciences, psychology, and even our understanding of human decision-making. This is not just a formula — it tells us something profound about how we should update our beliefs when new evidence arrives!
+        </div>
+
+        <h2 id="section5-1">5.1 Derivation of Bayes' Rule</h2>
+
+        <p>Bayes' theorem follows directly from the definition of conditional probability and the multiplication law.</p>
+
+        <p>Starting from the definition of conditional probability:</p>
+        <p>$$P(A|B) = \frac{P(A \cap B)}{P(B)}$$</p>
+
+        <p>And similarly:</p>
+        <p>$$P(B|A) = \frac{P(B \cap A)}{P(A)}$$</p>
+
+        <p>Since $P(A \cap B) = P(B \cap A)$ (intersection is commutative), we can write:</p>
+        <p>$$P(A|B) \times P(B) = P(B|A) \times P(A)$$</p>
+
+        <p>Rearranging to solve for $P(B|A)$:</p>
+
+        <div class="formula-box">
+            <div class="formula-title">Bayes' Theorem (Simple Form)</div>
+
+            $$P(B|A) = \frac{P(A|B) \times P(B)}{P(A)}$$
+        </div>
+
+        <p>We can also express $P(A)$ using the law of total probability:</p>
+        <p>$$P(A) = P(A|B)P(B) + P(A|B^c)P(B^c)$$</p>
+
+        <p>Substituting this into Bayes' theorem:</p>
+
+        <div class="formula-box">
+            <div class="formula-title">Bayes' Theorem (Expanded Form)</div>
+
+            $$P(B|A) = \frac{P(A|B) \times P(B)}{P(A|B)P(B) + P(A|B^c)P(B^c)}$$
+        </div>
+
+        <h2 id="section5-2">5.2 Components: Prior, Likelihood, Posterior</h2>
+
+        <p>Each component of Bayes' theorem has a special meaning and name:</p>
+
+        <div class="formula-box">
+            <div class="formula-title">Bayes' Theorem with Terminology</div>
+
+            $$\underbrace{P(B|A)}_{\text{Posterior}} = \frac{\overbrace{P(A|B)}^{\text{Likelihood}} \times \overbrace{P(B)}^{\text{Prior}}}{\underbrace{P(A)}_{\text{Evidence/Total Probability}}}$$
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Name</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>$P(B)$</td>
+                    <td><strong>Prior Probability</strong></td>
+                    <td>Our initial belief about B before seeing evidence A. This is what we believe before any new information arrives.</td>
+                </tr>
+                <tr>
+                    <td>$P(A|B)$</td>
+                    <td><strong>Likelihood</strong></td>
+                    <td>How likely is the evidence A if hypothesis B is true? This is the "update factor" — how the evidence affects our belief.</td>
+                </tr>
+                <tr>
+                    <td>$P(A)$</td>
+                    <td><strong>Evidence/Marginal Probability</strong></td>
+                    <td>The total probability of observing evidence A (normalizing constant)</td>
+                </tr>
+                <tr>
+                    <td>$P(B|A)$</td>
+                    <td><strong>Posterior Probability</strong></td>
+                    <td>Our updated belief about B after observing evidence A. This becomes the new prior for the next iteration!</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="important-box">
+            <strong>The Bayesian Philosophy:</strong> Bayes' theorem quantifies how we should rationally update our beliefs when new evidence arrives. The prior represents our initial belief, the likelihood represents how the evidence relates to our hypothesis, and the posterior represents our updated belief. This is the essence of rational thinking!
+        </div>
+
+        <h2 id="section5-3">5.3 Medical Test Example</h2>
+
+        <p>Let's work through a detailed, real-world example that demonstrates the power and importance of Bayes' theorem.</p>
+
+        <div class="example-box">
+            <h4>Example: Rare Disease and Medical Test</h4>
+            
+            <p><strong>Scenario:</strong> You're not feeling well and visit a doctor. The doctor suggests a test for a rare disease. The test comes back <strong>positive</strong>. Should you panic?</p>
+            
+            <p><strong>Given Information:</strong></p>
+            <ul>
+                <li>The disease is very rare: only <strong>0.001%</strong> (0.00001) of the population has it</li>
+                <li>The test is very accurate: <strong>99%</strong> accurate
+                    <ul>
+                        <li>If you have the disease, the test is positive 99% of the time (True Positive Rate)</li>
+                        <li>If you don't have the disease, the test is negative 99% of the time (True Negative Rate)</li>
+                        <li>This means False Positive Rate = 1%</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p><strong>Question:</strong> Given that your test is positive, what's the probability you actually have the disease?</p>
+        </div>
+
+        <div class="professor-note">
+            Most people, even doctors sometimes, would think: "The test is 99% accurate and it's positive, so I probably have the disease!" But this intuition is wrong! Let's apply Bayes' theorem carefully...
+        </div>
+
+        <h3>Solution: Step-by-Step Application of Bayes' Theorem</h3>
+
+        <p><strong>Step 1: Define the events</strong></p>
+        <ul>
+            <li>Let $D$ = has the disease</li>
+            <li>Let $T^+$ = test result is positive</li>
+        </ul>
+
+        <p><strong>Step 2: Write what we know</strong></p>
+        <ul>
+            <li>Prior: $P(D) = 0.00001$ (0.001% of population)</li>
+            <li>Complement: $P(D^c) = 1 - 0.00001 = 0.99999$</li>
+            <li>Likelihood (True Positive Rate): $P(T^+|D) = 0.99$</li>
+            <li>False Positive Rate: $P(T^+|D^c) = 0.01$ (100% - 99% specificity)</li>
+        </ul>
+
+        <p><strong>Step 3: What we want to find</strong></p>
+        <p>$P(D|T^+)$ = Probability of having the disease given a positive test</p>
+
+        <p><strong>Step 4: Apply Bayes' theorem</strong></p>
+
+        <div class="formula-box">
+
+            $$P(D|T^+) = \frac{P(T^+|D) \times P(D)}{P(T^+|D) \times P(D) + P(T^+|D^c) \times P(D^c)}$$
+        </div>
+
+        <p><strong>Step 5: Substitute values</strong></p>
+
+        <p>$$P(D|T^+) = \frac{0.99 \times 0.00001}{(0.99 \times 0.00001) + (0.01 \times 0.99999)}$$</p>
+
+        <p>$$P(D|T^+) = \frac{0.0000099}{0.0000099 + 0.0099999}$$</p>
+
+        <p>$$P(D|T^+) = \frac{0.0000099}{0.0100098}$$</p>
+
+        <p>$$P(D|T^+) \approx 0.00099 \approx 0.001 = 0.1\%$$</p>
+
+        <div class="important-box">
+            <strong>Shocking Result:</strong> Even though the test is 99% accurate and came back positive, the probability you actually have the disease is only about <strong>0.1%</strong> (or roughly 1 in 1000)!
+        </div>
+
+        <h3>Why Is This Result So Counter-Intuitive?</h3>
+
+        <div class="professor-note">
+            The key insight is the <strong>prior probability</strong> — the base rate. The disease is so rare (0.001%) that even a highly accurate test produces many false positives. Here's another way to think about it...
+        </div>
+
+        <p><strong>Imagine testing 1,000,000 people:</strong></p>
+        <ul>
+            <li><strong>Have disease:</strong> $1,000,000 \times 0.00001 = 10$ people</li>
+            <li><strong>Don't have disease:</strong> $999,990$ people</li>
+        </ul>
+
+        <p><strong>Test results:</strong></p>
+        <ul>
+            <li><strong>True Positives:</strong> $10 \times 0.99 \approx 10$ people (diseased people correctly identified)</li>
+            <li><strong>False Positives:</strong> $999,990 \times 0.01 \approx 10,000$ people (healthy people incorrectly flagged)</li>
+            <li><strong>Total Positives:</strong> $10 + 10,000 = 10,010$ people</li>
+        </ul>
+
+        <p><strong>Of those who test positive:</strong></p>
+        <p>$$\text{Probability of actually having disease} = \frac{10}{10,010} \approx 0.001 = 0.1\%$$</p>
+
+        <p>Even though only 1% of healthy people test positive (false positive rate), there are so many more healthy people than sick people that the false positives vastly outnumber the true positives!</p>
+
+        <h2 id="section5-4">5.4 Iterative Application of Bayes' Rule</h2>
+
+        <div class="professor-note">
+            Bayes' rule should not be applied just once! It should be applied iteratively. When you receive new evidence, you update your beliefs. That updated belief (the posterior) becomes your new prior when the next piece of evidence arrives. This is the essence of Bayesian learning!
+        </div>
+
+        <h3>Continuing the Medical Test Example</h3>
+
+        <p>After the first test came back positive with only 0.1% chance of disease, your doctor suggests: "Let's do the test again from a different lab to be sure."</p>
+
+        <p><strong>Second test also comes back positive. Now what's the probability?</strong></p>
+
+        <p><strong>Key Insight:</strong> The posterior from the first test becomes the prior for the second test!</p>
+
+        <p><strong>Updated Information:</strong></p>
+        <ul>
+            <li><strong>New Prior:</strong> $P(D) = 0.001$ (from first test result) — NO LONGER 0.00001!</li>
+            <li>Second test accuracy remains the same: $P(T^+|D) = 0.99$, $P(T^+|D^c) = 0.01$</li>
+        </ul>
+
+        <p><strong>Apply Bayes' theorem again:</strong></p>
+
+        <div class="formula-box">
+
+            $$P(D|T^+_{\text{second}}) = \frac{P(T^+|D) \times P_{\text{new prior}}(D)}{P(T^+|D) \times P_{\text{new prior}}(D) + P(T^+|D^c) \times P_{\text{new prior}}(D^c)}$$
+        </div>
+
+        <p>$$P(D|T^+_{\text{second}}) = \frac{0.99 \times 0.001}{(0.99 \times 0.001) + (0.01 \times 0.999)}$$</p>
+
+        <p>$$P(D|T^+_{\text{second}}) = \frac{0.00099}{0.00099 + 0.00999}$$</p>
+
+        <p>$$P(D|T^+_{\text{second}}) = \frac{0.00099}{0.01098}$$</p>
+
+        <p>$$P(D|T^+_{\text{second}}) \approx 0.090 = 9\%$$</p>
+
+        <div class="important-box">
+            After the second positive test, the probability jumps from 0.1% to <strong>9%</strong>!
+        </div>
+
+        <p><strong>If you take a third test and it's also positive:</strong></p>
+        <p>New prior = 0.09</p>
+
+        <p>$$P(D|T^+_{\text{third}}) = \frac{0.99 \times 0.09}{(0.99 \times 0.09) + (0.01 \times 0.91)}$$</p>
+
+        <p>$$P(D|T^+_{\text{third}}) = \frac{0.0891}{0.0891 + 0.0091} \approx 0.907 = 90.7\%$$</p>
+
+        <div class="important-box">
+            After three consecutive positive tests, the probability is now over <strong>90%</strong>! This is why doctors often recommend multiple tests when dealing with serious diagnoses.
+        </div>
+
+        <h3>Progression of Beliefs</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Stage</th>
+                    <th>Prior (Before Evidence)</th>
+                    <th>Evidence</th>
+                    <th>Posterior (After Evidence)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Initial</td>
+                    <td>0.001% (0.00001)</td>
+                    <td>First positive test</td>
+                    <td>0.1% (0.001)</td>
+                </tr>
+                <tr>
+                    <td>Second Iteration</td>
+                    <td>0.1% (0.001)</td>
+                    <td>Second positive test</td>
+                    <td>9% (0.09)</td>
+                </tr>
+                <tr>
+                    <td>Third Iteration</td>
+                    <td>9% (0.09)</td>
+                    <td>Third positive test</td>
+                    <td>90.7% (0.907)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="professor-note">
+            Notice how each posterior becomes the next prior! This is sequential Bayesian updating. Each new piece of evidence refines our belief. This is exactly how we should think rationally — start with a prior, observe evidence, update to get a posterior, then use that posterior as the prior for the next observation.
+        </div>
+
+        <h2 id="section5-5">5.5 Philosophical Implications of Bayes' Theorem</h2>
+
+        <p>Bayes' theorem isn't just a mathematical formula — it has profound implications for how we should think, learn, and make decisions.</p>
+
+        <h3>1. The Importance of Priors</h3>
+
+        <div class="important-box">
+            <strong>Your starting beliefs matter!</strong> The prior probability $P(B)$ fundamentally affects your conclusions. Two people with different priors who see the same evidence will reach different conclusions (though they'll converge over time with enough evidence).
+        </div>
+
+        <h3>2. The Danger of Extreme Beliefs (Rigidity)</h3>
+
+        <div class="professor-note">
+            Here's something fascinating about human behavior that Bayes' theorem explains mathematically: rigid people whose beliefs are at extremes (0 or 1) cannot learn from evidence! Let me show you why...
+        </div>
+
+        <p><strong>Case 1: Absolute certainty ($P(B) = 1$)</strong></p>
+
+        <p>If someone believes $P(B) = 1$ (absolutely certain B is true), then:</p>
+        <ul>
+            <li>$P(B^c) = 0$ (complement is impossible)</li>
+        </ul>
+
+        <p>When new evidence A arrives:</p>
+
+        <p>$$P(B|A) = \frac{P(A|B) \times P(B)}{P(A|B) \times P(B) + P(A|B^c) \times P(B^c)}$$</p>
+
+        <p>$$P(B|A) = \frac{P(A|B) \times 1}{P(A|B) \times 1 + P(A|B^c) \times 0}$$</p>
+
+        <p>$$P(B|A) = \frac{P(A|B)}{P(A|B)} = 1$$</p>
+
+        <div class="important-box">
+            The posterior equals the prior! Even when new evidence arrives, the person's belief remains $P(B|A) = 1$. They cannot update their belief because they started with absolute certainty.
+        </div>
+
+        <p><strong>Case 2: Absolute impossibility ($P(B) = 0$)</strong></p>
+
+        <p>Similarly, if $P(B) = 0$:</p>
+
+        <p>$$P(B|A) = \frac{P(A|B) \times 0}{P(A|B) \times 0 + P(A|B^c) \times 1} = 0$$</p>
+
+        <div class="important-box">
+            Again, the belief doesn't change! Someone who believes something is absolutely impossible cannot be convinced otherwise, no matter what evidence they see.
+        </div>
+
+        <div class="professor-note">
+            This explains rigid thinking in real life! You know people who, no matter how much evidence you show them, will not change their mind? Mathematically, they've assigned probability 0 or 1 to their belief. For them, even strong evidence cannot change their position. This is the mathematical explanation for why it's so hard to change the mind of someone with extreme views!
+        </div>
+
+        <h3>3. The Value of Open-Mindedness</h3>
+
+        <div class="important-box">
+            <strong>Life Lesson from Bayes:</strong> Always maintain beliefs between 0 and 1 (exclusive of the endpoints). Be open to the possibility that you might be wrong! Even if you believe something very strongly (say 0.99), leave room for the possibility (0.01) that you're mistaken. This allows you to learn from new evidence.
+        </div>
+
+        <h3>4. Small Changes Can Lead to Big Impacts</h3>
+
+        <div class="professor-note">
+            Even very small probabilities, when updated repeatedly with consistent evidence, can grow dramatically! We saw this with the disease example: starting at 0.001%, after three tests, we reached 90.7%. This teaches us about <strong>persistence and compound effects</strong>.
+        </div>
+
+        <p>In life, this means:</p>
+        <ul>
+            <li><strong>Small habits matter:</strong> Even a tiny positive change (small probability shift), repeated consistently, leads to dramatic transformation</li>
+            <li><strong>Don't give up on rare events:</strong> Just because something has low initial probability doesn't mean it's impossible—consistent evidence can shift beliefs dramatically</li>
+            <li><strong>Iterative learning works:</strong> You don't need to learn everything at once; sequential updates (studying a little every day) compound over time</li>
+        </ul>
+
+        <h3>5. Breaking Out of Loops</h3>
+
+        <div class="professor-note">
+            Sometimes we feel stuck in loops — doing the same thing repeatedly without progress. Why? Because we're operating with probability 0 or 1 somewhere! To break the loop, introduce new evidence, try something different, make a small change. Even a 0.00001 probability of something different is infinitely better than 0!
+        </div>
+
+        <p><strong>Example:</strong> Studying all the time but not improving?</p>
+        <ul>
+            <li>Your belief: "If I don't study constantly (probability 1), I'll fail" → rigid belief!</li>
+            <li>Breakthrough: "Maybe taking breaks helps (small probability)" → try it → see evidence → update belief</li>
+            <li>Even small changes (going for a walk, watching a movie) can provide new evidence that updates your belief system</li>
+        </ul>
+
+        <h3>6. The Role of Judges and Decision-Makers</h3>
+
+        <div class="professor-note">
+            Judges in court, managers in companies, teachers grading students — they all face the same challenge: making decisions under uncertainty. Bayes' theorem tells us how they should think!
+        </div>
+
+        <p>A good judge:</p>
+        <ul>
+            <li>Starts with a prior (presumption of innocence: some reasonable probability)</li>
+            <li>Observes evidence (witness testimony, documents, etc.)</li>
+            <li>Updates beliefs using Bayes' rule with each new piece of evidence</li>
+            <li>Reaches a conclusion based on the final posterior</li>
+        </ul>
+
+        <p>A biased judge who has already decided (prior = 0 or 1) cannot be swayed by evidence, no matter how strong!</p>
+
+        <h3>7. Hope and Optimism</h3>
+
+        <div class="important-box">
+            <strong>Message of Hope:</strong> Even if your current situation seems nearly impossible (very low probability), don't set it to exactly zero! As long as there's some tiny spark of possibility, consistent positive evidence can shift things dramatically in your favor. This is the mathematical basis for "never give up" — as long as P > 0, there's hope!
+        </div>
+
+        <div class="hinglish-summary">
+            <h4>Hinglish Summary (संक्षेप)</h4>
+            <p><strong>Bayes' theorem</strong> probability theory ka sabse powerful concept hai! Formula hai: P(B|A) = [P(A|B) × P(B)] / P(A). Isme chaar components hain — <strong>Prior</strong> (pehle se belief), <strong>Likelihood</strong> (evidence kitna strong hai), <strong>Evidence</strong> (total probability), aur <strong>Posterior</strong> (updated belief). Medical test example mein dekha ki ek rare disease ke liye test positive aaya, lekin actual probability bahut kam hai (0.1%) kyunki disease hi bahut rare hai! Jab hum test dobara karte hain aur wo bhi positive aata hai, tab probability 9% ho jati hai, aur teen positive tests ke baad 90% tak pahunch jati hai! Ye iterative process hai. <strong>Life lesson:</strong> Rigid beliefs (0 ya 1) kabhi change nahi hote, chahe kitna bhi evidence mile. Hamesha open-minded raho — beliefs ko 0 aur 1 ke beech rakho taki tum seekh sako. Choti choti changes bhi, consistently apply karne par, bahut bada impact create kar sakte hain. Ye formula sirf math nahi hai — ye zindagi jeene ka tarika hai!</p>
+        </div>
+
+        <div class="practice-section">
+            <h3>🎯 Practice Questions</h3>
+            
+            <div class="question">
+                <h4>Question 1:</h4>
+                <p>A bag contains 3 fair coins and 1 biased coin (heads probability = 0.8). You randomly pick a coin and flip it twice, getting two heads. What's the probability you picked the biased coin?</p>
+                <div class="answer">
+                    <p>Let B = biased coin, F = fair coin</p>
+                    <p>Prior: P(B) = 1/4 = 0.25, P(F) = 3/4 = 0.75</p>
+                    <p>Likelihood: P(HH|B) = 0.8 × 0.8 = 0.64, P(HH|F) = 0.5 × 0.5 = 0.25</p>
+                    <p>Using Bayes: P(B|HH) = [P(HH|B) × P(B)] / [P(HH|B)×P(B) + P(HH|F)×P(F)]</p>
+                    <p>= [0.64 × 0.25] / [0.64×0.25 + 0.25×0.75]</p>
+                    <p>= 0.16 / [0.16 + 0.1875] = 0.16 / 0.3475 ≈ 0.46 or 46%</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Question 2:</h4>
+                <p>In a city, 1% of people are criminals. A facial recognition system correctly identifies criminals 95% of the time and incorrectly flags innocent people 2% of the time. If someone is flagged by the system, what's the probability they're actually a criminal?</p>
+                <div class="answer">
+                    <p>Let C = criminal, F = flagged by system</p>
+                    <p>Given: P(C) = 0.01, P(C^c) = 0.99</p>
+                    <p>P(F|C) = 0.95, P(F|C^c) = 0.02</p>
+                    <p>Find: P(C|F) = ?</p>
+                    <p>P(C|F) = [P(F|C) × P(C)] / [P(F|C)×P(C) + P(F|C^c)×P(C^c)]</p>
+                    <p>= [0.95 × 0.01] / [0.95×0.01 + 0.02×0.99]</p>
+                    <p>= 0.0095 / [0.0095 + 0.0198]</p>
+                    <p>= 0.0095 / 0.0293 ≈ 0.324 or 32.4%</p>
+                    <p>Despite 95% accuracy, only 32.4% of flagged people are actually criminals (due to low base rate)!</p>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h4>Question 3:</h4>
+                <p>Explain why someone with belief P(B) = 1 cannot learn from evidence.</p>
+                <div class="answer">
+                    <p>If P(B) = 1 (absolute certainty), then P(B^c) = 0.</p>
+                    <p>When applying Bayes' theorem with new evidence A:</p>
+                    <p>P(B|A) = [P(A|B)×1] / [P(A|B)×1 + P(A|B^c)×0] = P(A|B) / P(A|B) = 1</p>
+                    <p>The posterior equals the prior (both = 1), so the belief doesn't change regardless of the evidence. This person has "closed their mind" mathematically — they're certain they're right and no evidence can convince them otherwise. This is why maintaining beliefs strictly between 0 and 1 (never exactly 0 or 1) is important for rational learning.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🔑 Key Takeaways</h3>
+            <ul>
+                <li>Bayes' theorem: P(B|A) = [P(A|B) × P(B)] / P(A) — combines prior belief with evidence</li>
+                <li>Prior probability is crucial — base rates matter enormously in real-world applications</li>
+                <li>Posterior from one update becomes the prior for the next — iterative Bayesian learning</li>
+                <li>Extreme beliefs (probability 0 or 1) prevent learning — always stay open-minded</li>
+                <li>Even small probabilities can grow dramatically with consistent evidence</li>
+                <li>Bayes' theorem explains rational belief updating and decision-making</li>
+                <li>Applications span medicine, AI, law, psychology, and everyday life</li>
+            </ul>
+        </div>
+
+        <!-- ============================================
+             COMPREHENSIVE MIND MAP
+             ============================================ -->
+        <div class="mindmap" id="mindmap">
+            <h2>🧠 Comprehensive Mind Map: Probability and Statistics in AI</h2>
+            
+            <div class="mindmap-container">
+                <!-- Main Topic -->
+                <div class="mindmap-node">
+                    Probability and Statistics in AI
+                </div>
+                
+                <!-- Level 1: Main Topics -->
+                <div class="mindmap-children">
+                    <div class="mindmap-child">
+                        <h4>1. Why Probability in AI?</h4>
+                        <ul>
+                            <li>Logic-based systems are deterministic</li>
+                            <li>Real world has uncertainty</li>
+                            <li>Sources: incomplete data, noise, complexity</li>
+                            <li>Need probabilistic view</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>2. Basic Concepts</h4>
+                        <ul>
+                            <li>Random Experiment</li>
+                            <li>Sample Space (Ω)</li>
+                            <li>Events (subsets of Ω)</li>
+                            <li>Sigma Algebra (σ)</li>
+                            <li>Probability Measure P: σ → [0,1]</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>3. Probability Axioms</h4>
+                        <ul>
+                            <li>P(Ω) = 1</li>
+                            <li>P(∅) = 0</li>
+                            <li>P(A^c) = 1 - P(A)</li>
+                            <li>Additivity for disjoint events</li>
+                            <li>Naive definition: favorable/total</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>4. Event Relationships</h4>
+                        <ul>
+                            <li>Independent: P(A∩B) = P(A)×P(B)</li>
+                            <li>Union: P(A∪B) = P(A)+P(B)-P(A∩B)</li>
+                            <li>Intersection: A∩B</li>
+                            <li>Complement: A^c</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>5. Conditional Probability</h4>
+                        <ul>
+                            <li>P(A|B) = P(A∩B)/P(B)</li>
+                            <li>Changes sample space to B</li>
+                            <li>Multiplication Law: P(A∩B) = P(A|B)×P(B)</li>
+                            <li>Defined only when P(B) > 0</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>6. Total Probability</h4>
+                        <ul>
+                            <li>Partition sample space</li>
+                            <li>P(A) = Σ P(A|A_i)×P(A_i)</li>
+                            <li>Binary: P(A) = P(A|B)P(B) + P(A|B^c)P(B^c)</li>
+                            <li>Useful for marginalizing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>7. Bayes' Theorem</h4>
+                        <ul>
+                            <li>P(B|A) = [P(A|B)×P(B)]/P(A)</li>
+                            <li>Prior: P(B)</li>
+                            <li>Likelihood: P(A|B)</li>
+                            <li>Posterior: P(B|A)</li>
+                            <li>Iterative updating</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>8. Applications</h4>
+                        <ul>
+                            <li>Medical diagnosis</li>
+                            <li>Machine learning</li>
+                            <li>Decision making under uncertainty</li>
+                            <li>Belief updating</li>
+                            <li>AI reasoning systems</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindmap-child">
+                        <h4>9. Philosophical Insights</h4>
+                        <ul>
+                            <li>Importance of priors</li>
+                            <li>Danger of extreme beliefs (0 or 1)</li>
+                            <li>Value of open-mindedness</li>
+                            <li>Small changes compound</li>
+                            <li>Rational belief updating</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Connections Section -->
+                <div style="margin-top: 40px; padding: 20px; background: #f0f9ff; border-radius: 10px;">
+                    <h3 style="color: #0ea5e9; margin-bottom: 15px;">🔗 Key Connections</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Conditional Probability → Bayes' Theorem:</strong> Bayes' rule is derived directly from conditional probability definition</li>
+                        <li><strong>Total Probability → Bayes' Denominator:</strong> P(A) in Bayes' theorem uses law of total probability</li>
+                        <li><strong>Sigma Algebra → Probability Definition:</strong> Probability is defined on sigma algebra, not arbitrary subsets</li>
+                        <li><strong>Independence → Conditional Probability:</strong> If independent, P(A|B) = P(A)</li>
+                        <li><strong>Posterior → Prior:</strong> In iterative Bayes', posterior becomes next prior</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             FINAL COMPREHENSIVE SUMMARY
+             ============================================ -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; margin: 50px 0; border-radius: 15px;">
+            <h2 style="color: white; border: none; margin-top: 0;">📚 Final Comprehensive Summary</h2>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                We began our journey by understanding why probability is essential in AI — logic-based systems, while powerful, cannot capture the uncertainties inherent in the real world. We learned that probability provides a framework for reasoning under uncertainty, assigning values between 0 and 1 rather than binary true/false.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                The foundations were built on <strong>sample spaces</strong> (outcomes of random experiments), <strong>events</strong> (subsets of sample space), and <strong>sigma algebras</strong> (collections where probability is properly defined). We discovered that outcomes depend on what we measure, not just the physical experiment itself.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong>Conditional probability</strong> introduced the crucial concept of updating our sample space based on given information, leading us to the <strong>multiplication law</strong> and <strong>law of total probability</strong>. These tools allow us to decompose complex probability calculations into manageable pieces.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                The pinnacle of our study was <strong>Bayes' theorem</strong> — a simple formula with profound implications. It teaches us how to rationally update beliefs when new evidence arrives. Through the medical test example, we saw how prior probabilities (base rates) dramatically affect conclusions, even with highly accurate tests. The iterative nature of Bayesian updating showed us that learning is a sequential process.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Beyond mathematics, we discovered life lessons: the danger of rigid thinking (probabilities of 0 or 1), the importance of open-mindedness, the power of small consistent changes, and the rational way to update beliefs. <strong>Bayes' theorem isn't just about numbers — it's about how we should think, learn, and make decisions in an uncertain world.</strong>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <p style="font-size: 1.1em; color: #6c757d;">
+                <strong>End of Lecture Notes</strong><br>
+                Probability and Statistics in AI<br>
+            </p>
+            
+        <p>
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p>~ Armaan Kachhawa</p>
+   
+        </div>
+
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

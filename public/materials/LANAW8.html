@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis - Eigenvalues and Eigenvectors Complete Lecture Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        .math-expression {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+        }
+        .matrix {
+            border: 1px solid #000;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 8px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+        }
+        .eigenvalue-highlight {
+            background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.3em;
+            background-position: 0 88%;
+        }
+        .eigenvector-highlight {
+            background: linear-gradient(120deg, #dbeafe 0%, #dbeafe 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.3em;
+            background-position: 0 88%;
+        }
+        .extra-content {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .hinglish-summary {
+            background: #fef7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .key-takeaways {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .practice-question {
+            background: #faf5ff;
+            border: 1px solid #d8b4fe;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .solution {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+        .mind-map-node {
+            background: #ffffff;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .toc-link {
+            transition: all 0.3s ease;
+        }
+        .toc-link:hover {
+            background: #f1f5f9;
+            padding-left: 12px;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">Linear Algebra and Numerical Analysis</h1>
+                <h2 class="text-2xl font-medium mb-2">BS./BSc. in Applied AI and Data Science</h2>
+                <p class="text-xl opacity-90">Module 3.2 & 3.3: Computation of Eigenvalues and Eigenvectors</p>
+            </div>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="bg-gray-100 p-6 border-b">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-list mr-2"></i>Table of Contents
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <a href="#module-3-2" class="toc-link block p-2 rounded hover:bg-blue-50">1. Module 3.2: Basic Concepts</a>
+                <a href="#real-world-apps" class="toc-link block p-2 rounded hover:bg-blue-50">2. Real-World Applications</a>
+                <a href="#examples" class="toc-link block p-2 rounded hover:bg-blue-50">3. Learning Through Examples</a>
+                <a href="#calculation-methods" class="toc-link block p-2 rounded hover:bg-blue-50">4. Calculation Methods</a>
+                <a href="#eigenspace" class="toc-link block p-2 rounded hover:bg-blue-50">5. Eigenspace Theory</a>
+                <a href="#geometric-interpretation" class="toc-link block p-2 rounded hover:bg-blue-50">6. Geometric Interpretation</a>
+                <a href="#practice-problems" class="toc-link block p-2 rounded hover:bg-blue-50">7. Practice Problems</a>
+                <a href="#module-3-3" class="toc-link block p-2 rounded hover:bg-blue-50">8. Module 3.3: Python Implementation</a>
+                <a href="#diagonalization" class="toc-link block p-2 rounded hover:bg-blue-50">9. Matrix Diagonalization</a>
+                <a href="#symmetric-matrices" class="toc-link block p-2 rounded hover:bg-blue-50">10. Symmetric Matrices</a>
+                <a href="#mind-map" class="toc-link block p-2 rounded hover:bg-blue-50">11. Complete Mind Map</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="p-8">
+            <!-- Module 3.2 Introduction -->
+            <section id="module-3-2" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-blue-600 border-b-2 border-blue-200 pb-2">
+                    Module 3.2: Computation of Eigenvalues and Eigenvectors
+                </h2>
+                
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Learning Objectives</h3>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li><strong class="eigenvalue-highlight">Eigenvalues of a Square Matrix</strong></li>
+                        <li><strong class="eigenvector-highlight">Eigenvectors and Applications</strong></li>
+                        <li><strong>Eigenvalues, Eigenvectors and Matrix Diagonalization</strong></li>
+                        <li><strong>Vector Space and Linear Independence</strong></li>
+                    </ol>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> This module constitutes very important milestones in our learning objective of linear algebra and numerical analysis. This is somewhere intermediate between linear algebra and numerical analysis courses, serving as a bridge between these two domains.
+                </div>
+
+                <p class="text-lg leading-relaxed mb-6">
+                    In this comprehensive module, we tackle new questions related to <strong class="eigenvalue-highlight">eigenvalues</strong> and <strong class="eigenvector-highlight">eigenvectors</strong> and how we compute them in real applications, specifically concerning data science and machine learning. <strong>Eigenvectors</strong> are special types of vectors that, when a linear transformation is applied to them, only change in scale but not in orientation or direction.
+                </p>
+
+                <div class="key-takeaways">
+                    <h4 class="font-semibold mb-2"><i class="fas fa-key text-green-600 mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Eigenvalues are scalar factors that determine how much eigenvectors are scaled</li>
+                        <li>Eigenvectors remain on the same line after transformation but change in magnitude</li>
+                        <li>These concepts bridge linear algebra and numerical analysis</li>
+                        <li>Applications span from image compression to Google's PageRank algorithm</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Real-World Applications -->
+            <section id="real-world-apps" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-purple-600 border-b-2 border-purple-200 pb-2">
+                    Real-World Applications of Eigenvalues and Eigenvectors
+                </h2>
+
+                <p class="text-lg mb-6">
+                    Eigenvalues and eigenvectors are <strong>indispensable to data science</strong> and have numerous practical applications:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-image text-blue-600 mr-2"></i>Image Compression
+                        </h3>
+                        <p>Eigenvalues and eigenvectors are used in image compression techniques to represent pixel values in images in a more compact form, enabling efficient storage and transmission.</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <i class="fas fa-search text-green-600 mr-2"></i>Google PageRank Algorithm
+                        </h3>
+                        <p>The PageRank algorithm determines the importance of web pages and relies heavily on eigenvalues and eigenvectors. Each page's PageRank is determined by the eigenvector corresponding to the largest eigenvalue of the link matrix.</p>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> The algorithm represents the web as a graph, and each page's PageRank is determined by the eigenvector corresponding to the largest eigenvalue of the link matrix, which links between the pages visited by users. This determines how many users have visited web pages more frequently, assigning ranks to web pages using graph theoretical methods.
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Additional Applications (from Elementary Linear Algebra):</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Diffusion Problems:</strong> Gas molecules and ion diffusion</li>
+                            <li><strong>Genetics:</strong> DNA structures and genetic properties</li>
+                            <li><strong>Population Growth:</strong> Modeling rabbit population dynamics</li>
+                        </ul>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Engineering:</strong> Bridge and building architecture</li>
+                            <li><strong>Astronomy:</strong> Relative maxima and minima problems</li>
+                            <li><strong>Principal Component Analysis:</strong> Data dimensionality reduction</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Eigenvalues aur eigenvectors bahut important hai data science mein. Ye image compression, Google search rankings, aur population modeling mein use hote hain. Basically, ye special vectors hain jo transformation ke baad sirf size change karte hain, direction nahi. Real world mein ye har jagah use hote hain - engineering se lekar genetics tak.
+                </div>
+            </section>
+
+            <!-- Learning Through Examples -->
+            <section id="examples" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600 border-b-2 border-indigo-200 pb-2">
+                    Learning Through Examples
+                </h2>
+
+                <p class="text-lg mb-6">
+                    <em>"There is nothing better than learning through examples for any new concept or theory."</em> Let's start with a practical problem.
+                </p>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-question-circle text-purple-600 mr-2"></i>Example 1: Determining Eigenvectors</h3>
+                    <p class="mb-4">Given vectors <strong>V</strong> and <strong>U</strong>, determine if they are eigenvectors of matrix <strong>A</strong>. If yes, find the associated eigenvalues.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="text-center">
+                            <p class="font-semibold mb-2">Vector V (3×1)</p>
+                            <div class="matrix">
+                                <div>-3</div>
+                                <div>0</div>
+                                <div>1</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold mb-2">Vector U (3×1)</p>
+                            <div class="matrix">
+                                <div>-1</div>
+                                <div>2</div>
+                                <div>1</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold mb-2">Matrix A (3×3)</p>
+                            <div class="matrix">
+                                <div>2 4 3</div>
+                                <div>-4 -6 -3</div>
+                                <div>3 3 1</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Solution for Vector V:</h4>
+                        <p class="mb-2">Step 1: Calculate <span class="math-expression">A × V</span></p>
+                        <p class="mb-2">Matrix multiplication gives us: <span class="math-expression">[-6, 0, 2]ᵀ</span></p>
+                        <p class="mb-2">Step 2: Factor out common scalar: <span class="math-expression">2 × [-3, 0, 1]ᵀ = 2V</span></p>
+                        <p class="mb-4"><strong>Result:</strong> <span class="math-expression">AV = 2V</span>, so <strong>V is an eigenvector with eigenvalue λ = 2</strong></p>
+
+                        <h4 class="font-semibold mb-2">Solution for Vector U:</h4>
+                        <p class="mb-2">Step 1: Calculate <span class="math-expression">A × U</span></p>
+                        <p class="mb-2">Matrix multiplication gives us: <span class="math-expression">[0, 6, 4]ᵀ</span></p>
+                        <p><strong>Result:</strong> No scalar λ exists such that AU = λU, so <strong>U is NOT an eigenvector</strong></p>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> One condition we learned from these examples is that there has to be a scalar multiplying the vector. If we can write AU = λU where λ is a scalar, then U is an eigenvector and λ is its eigenvalue.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-calculator text-blue-600 mr-2"></i>Example 2: Step-by-Step Eigenvalue Calculation</h3>
+                    <p class="mb-4">Given matrix A, find eigenvalues and eigenvectors:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>2 0</div>
+                            <div>0 -1</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Solution:</h4>
+                        <p class="mb-2">Step 1: Test vector <span class="math-expression">X₁ = [1, 0]ᵀ</span></p>
+                        <p class="mb-2"><span class="math-expression">A × X₁ = [2, 0]ᵀ = 2 × [1, 0]ᵀ = 2X₁</span></p>
+                        <p class="mb-2"><strong>First eigenvector:</strong> X₁ with eigenvalue λ₁ = 2</p>
+                        
+                        <p class="mb-2">Step 2: Test vector <span class="math-expression">X₂ = [0, 1]ᵀ</span></p>
+                        <p class="mb-2"><span class="math-expression">A × X₂ = [0, -1]ᵀ = -1 × [0, 1]ᵀ = -1X₂</span></p>
+                        <p><strong>Second eigenvector:</strong> X₂ with eigenvalue λ₂ = -1</p>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Examples se samajhna easy hai ki eigenvector kaise identify karte hain. Matrix A ko vector se multiply karo, agar result scalar × original vector ke equal aaye, toh wo eigenvector hai. Scalar value hi eigenvalue hota hai. Agar koi scalar nahi mila, toh wo eigenvector nahi hai.
+                </div>
+            </section>
+
+            <!-- Calculation Methods -->
+            <section id="calculation-methods" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-red-600 border-b-2 border-red-200 pb-2">
+                    General Method for Finding Eigenvalues and Eigenvectors
+                </h2>
+
+                <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">The Fundamental Eigenvalue Equation</h3>
+                    <div class="text-center text-2xl font-bold mb-4">
+                        <span class="math-expression">Ax = λx</span>
+                    </div>
+                    <p class="text-center text-gray-600">Where A is an n×n matrix, λ is the eigenvalue (scalar), and x is the eigenvector (non-zero vector)</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Step 1: Rearrange the Equation</h4>
+                        <p class="mb-2">From <span class="math-expression">Ax = λx</span>, we get:</p>
+                        <p class="mb-2"><span class="math-expression">Ax - λx = 0</span></p>
+                        <p><span class="math-expression">(A - λI)x = 0</span></p>
+                        <p class="text-sm text-gray-600 mt-2">Where I is the identity matrix of appropriate size</p>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Step 2: Apply the Non-trivial Solution Condition</h4>
+                        <p class="mb-2">For non-trivial solutions (x ≠ 0), the determinant must be zero:</p>
+                        <div class="text-center text-xl font-bold">
+                            <span class="math-expression">det(A - λI) = 0</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">This is called the <strong>characteristic equation</strong></p>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Step 3: Solve the Characteristic Polynomial</h4>
+                        <p class="mb-2">Expanding the determinant gives a polynomial in λ:</p>
+                        <p class="mb-2">• For 2×2 matrices: quadratic polynomial (2 eigenvalues)</p>
+                        <p class="mb-2">• For 3×3 matrices: cubic polynomial (3 eigenvalues)</p>
+                        <p>• For n×n matrices: nth degree polynomial (n eigenvalues)</p>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> We are not looking at trivial solutions where λ = 0. We seek non-zero eigenvalues that provide meaningful insights. The characteristic polynomial method allows us to find eigenvectors and eigenvalues for any given matrix A.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-cogs text-orange-600 mr-2"></i>Worked Example: 2×2 Matrix</h3>
+                    <p class="mb-4">Find eigenvalues of matrix A:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>-5  2</div>
+                            <div> 2 -2</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Step-by-Step Solution:</h4>
+                        
+                        <p class="mb-2"><strong>Step 1:</strong> Set up eigenvalue equations</p>
+                        <p class="mb-2">Let x = [x₁, x₂]ᵀ, then Ax = λx gives us:</p>
+                        <div class="bg-gray-100 p-3 rounded mb-2">
+                            <p>-5x₁ + 2x₂ = λx₁</p>
+                            <p>2x₁ - 2x₂ = λx₂</p>
+                        </div>
+
+                        <p class="mb-2"><strong>Step 2:</strong> Rearrange to standard form</p>
+                        <div class="bg-gray-100 p-3 rounded mb-2">
+                            <p>(-5 - λ)x₁ + 2x₂ = 0</p>
+                            <p>2x₁ + (-2 - λ)x₂ = 0</p>
+                        </div>
+
+                        <p class="mb-2"><strong>Step 3:</strong> Calculate determinant</p>
+                        <p class="mb-2"><span class="math-expression">det(A - λI) = (-5 - λ)(-2 - λ) - (2)(2)</span></p>
+                        <p class="mb-2"><span class="math-expression">= λ² + 7λ + 6 = 0</span></p>
+
+                        <p class="mb-2"><strong>Step 4:</strong> Solve quadratic equation</p>
+                        <p class="mb-2"><span class="math-expression">(λ + 1)(λ + 6) = 0</span></p>
+                        <p><strong>Eigenvalues:</strong> λ₁ = -1, λ₂ = -6</p>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Eigenvalues nikalne ka systematic method hai. Pehle Ax = λx equation setup karo, phir (A - λI)x = 0 banao. Non-trivial solution ke liye determinant zero hona chahiye. Characteristic polynomial solve karne se eigenvalues mil jaate hain. 2×2 matrix ke liye quadratic equation, 3×3 ke liye cubic equation milta hai.
+                </div>
+            </section>
+
+            <!-- Eigenspace Theory -->
+            <section id="eigenspace" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-teal-600 border-b-2 border-teal-200 pb-2">
+                    Eigenspace Theory and Theorems
+                </h2>
+
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-graduation-cap text-blue-600 mr-2"></i>Theorem 1: Eigenspace Definition
+                    </h3>
+                    <p class="mb-4">
+                        If A is an n×n matrix with eigenvalue λ, then the set of all eigenvectors corresponding to λ, together with the zero vector, forms a <strong>subspace</strong> of ℝⁿ called the <strong class="eigenvalue-highlight">eigenspace</strong> of λ.
+                    </p>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-semibold mb-3">Proof of Eigenspace as Subspace:</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-medium mb-2">1. Closure under Addition:</p>
+                            <p class="mb-2">Let x₁ and x₂ be eigenvectors with eigenvalue λ:</p>
+                            <p class="mb-1"><span class="math-expression">Ax₁ = λx₁</span> and <span class="math-expression">Ax₂ = λx₂</span></p>
+                            <p class="mb-1">Then: <span class="math-expression">A(x₁ + x₂) = Ax₁ + Ax₂ = λx₁ + λx₂ = λ(x₁ + x₂)</span></p>
+                            <p class="text-green-600">✓ Therefore, x₁ + x₂ is also an eigenvector with eigenvalue λ</p>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-2">2. Closure under Scalar Multiplication:</p>
+                            <p class="mb-2">Let c be a scalar and x₁ be an eigenvector with eigenvalue λ:</p>
+                            <p class="mb-1"><span class="math-expression">A(cx₁) = c(Ax₁) = c(λx₁) = λ(cx₁)</span></p>
+                            <p class="text-green-600">✓ Therefore, cx₁ is also an eigenvector with eigenvalue λ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> This eigenspace concept is fundamental because it shows that all eigenvectors associated with the same eigenvalue form a mathematical structure called a subspace. This has profound implications for understanding the geometry of linear transformations.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-compass text-indigo-600 mr-2"></i>Example: Finding Eigenspaces</h3>
+                    <p class="mb-4">Given matrix A, find the eigenvalues and their corresponding eigenspaces:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>-1  0</div>
+                            <div> 0  1</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Solution:</h4>
+                        
+                        <p class="mb-2"><strong>For vector along X-axis:</strong> V = [x, 0]ᵀ</p>
+                        <p class="mb-2"><span class="math-expression">A × [x, 0]ᵀ = [-x, 0]ᵀ = -1 × [x, 0]ᵀ</span></p>
+                        <p class="mb-4"><strong>Eigenvalue λ₁ = -1</strong>, Eigenspace: all vectors along X-axis</p>
+                        
+                        <p class="mb-2"><strong>For vector along Y-axis:</strong> V = [0, y]ᵀ</p>
+                        <p class="mb-2"><span class="math-expression">A × [0, y]ᵀ = [0, y]ᵀ = 1 × [0, y]ᵀ</span></p>
+                        <p><strong>Eigenvalue λ₂ = 1</strong>, Eigenspace: all vectors along Y-axis</p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-theorem text-green-600 mr-2"></i>Theorem 2: Characteristic Equation
+                    </h3>
+                    <p class="mb-4">
+                        Finding eigenvalues and eigenvectors of matrix A is equivalent to:
+                    </p>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li>Finding scalar λ such that <span class="math-expression">det(λI - A) = 0</span></li>
+                        <li>Finding non-zero solutions of <span class="math-expression">(λI - A)x = 0</span></li>
+                    </ol>
+                    <p class="mt-4 text-sm text-gray-600">
+                        This gives us the systematic approach: solve the characteristic equation for eigenvalues, then substitute back to find eigenvectors.
+                    </p>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Eigenspace ek mathematical concept hai jo batata hai ki same eigenvalue wale sabhi eigenvectors ek subspace banate hain. Ye closure properties satisfy karta hai - addition aur scalar multiplication ke under. Geometric interpretation ye hai ki transformation matrix ko apply karne se ye vectors sirf scale hote hain, direction nahi change hota.
+                </div>
+            </section>
+
+            <!-- Geometric Interpretation -->
+            <section id="geometric-interpretation" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-orange-600 border-b-2 border-orange-200 pb-2">
+                    Geometric Interpretation of Eigenvalues
+                </h2>
+
+                <div class="bg-orange-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-eye text-orange-600 mr-2"></i>Visual Understanding
+                    </h3>
+                    <p class="text-lg">
+                        Eigenvalues and eigenvectors represent a beautiful fusion of <strong>algebra and geometry</strong>. When we multiply a vector by a matrix, we're performing a geometric transformation in space.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Matrix as Operator</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>A</strong> is an n×n matrix (operator)</li>
+                            <li><strong>x</strong> is a vector in ℝⁿ</li>
+                            <li><strong>λ</strong> is a scalar (eigenvalue)</li>
+                            <li><strong>Ax = λx</strong> represents scaling transformation</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Geometric Properties</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Eigenvector direction remains <strong>unchanged</strong></li>
+                            <li>Only the <strong>magnitude</strong> changes by factor λ</li>
+                            <li>Forms a straight line through the origin</li>
+                            <li>Angle θ with axis remains constant</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> If λ = 2, then vector x becomes 2x (doubles in magnitude). If λ = 3, then x becomes 3x (triples in magnitude). The orientation stays the same - this is the key geometric insight. This property is extensively used in optics, image processing, and dimensionality reduction.
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-100 to-purple-100 p-6 rounded-lg mb-6">
+                    <h4 class="text-lg font-semibold mb-3">Reflection Property Example</h4>
+                    <p class="mb-3">Consider matrix A that performs reflection across the Y-axis:</p>
+                    <div class="text-center mb-3">
+                        <div class="matrix">
+                            <div>-1  0</div>
+                            <div> 0  1</div>
+                        </div>
+                    </div>
+                    <p class="mb-2">• Vectors along X-axis: reflected (eigenvalue = -1)</p>
+                    <p class="mb-2">• Vectors along Y-axis: unchanged (eigenvalue = +1)</p>
+                    <p>This demonstrates how eigenvalues capture the essential behavior of transformations.</p>
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-ruler-combined text-purple-600 mr-2"></i>Geometric Analysis Exercise</h3>
+                    <p class="mb-4">Analyze the geometric meaning of the following transformation:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>0  1</div>
+                            <div>-1 0</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Geometric Analysis:</h4>
+                        <p class="mb-2"><strong>Step 1:</strong> Find characteristic polynomial</p>
+                        <p class="mb-2"><span class="math-expression">det(A - λI) = λ² + 1 = 0</span></p>
+                        
+                        <p class="mb-2"><strong>Step 2:</strong> Solve for eigenvalues</p>
+                        <p class="mb-2"><span class="math-expression">λ² = -1</span> → <span class="math-expression">λ = ±i</span></p>
+                        
+                        <p class="mb-2"><strong>Geometric Interpretation:</strong></p>
+                        <ul class="list-disc list-inside space-y-1 ml-4">
+                            <li>Complex eigenvalues indicate <strong>rotation</strong></li>
+                            <li>This matrix rotates vectors by 90° counterclockwise</li>
+                            <li>No real eigenvectors exist (all directions change)</li>
+                            <li>Magnitude |λ| = 1 indicates no scaling, pure rotation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Geometric interpretation mein algebra aur geometry ka beautiful combination hai. Eigenvector ki direction same rehti hai, bas magnitude λ times ho jata hai. Matrix ek operator ki tarah kaam karta hai jo transformation perform karta hai. Agar λ positive hai toh same direction mein scaling, agar negative hai toh opposite direction mein. Complex eigenvalues rotation indicate karte hain.
+                </div>
+            </section>
+
+            <!-- Practice Problems -->
+            <section id="practice-problems" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-pink-600 border-b-2 border-pink-200 pb-2">
+                    Practice Problems and Solutions
+                </h2>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-pencil-alt text-pink-600 mr-2"></i>Problem 1</h3>
+                    <p class="mb-4">Find the eigenvalues and eigenvectors of the matrix:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>-4 -6</div>
+                            <div> 3  5</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Complete Solution:</h4>
+                        
+                        <p class="mb-2"><strong>Step 1:</strong> Set up characteristic polynomial</p>
+                        <p class="mb-2"><span class="math-expression">A - λI = [(-4-λ) -6; 3 (5-λ)]</span></p>
+                        
+                        <p class="mb-2"><strong>Step 2:</strong> Calculate determinant</p>
+                        <p class="mb-2"><span class="math-expression">det(A - λI) = (-4-λ)(5-λ) - (-6)(3)</span></p>
+                        <p class="mb-2"><span class="math-expression">= -20 + 4λ - 5λ + λ² + 18</span></p>
+                        <p class="mb-2"><span class="math-expression">= λ² - λ - 2 = 0</span></p>
+                        
+                        <p class="mb-2"><strong>Step 3:</strong> Solve quadratic equation</p>
+                        <p class="mb-2"><span class="math-expression">(λ - 2)(λ + 1) = 0</span></p>
+                        <p class="mb-4"><strong>Eigenvalues:</strong> λ₁ = 2, λ₂ = -1</p>
+                        
+                        <p class="mb-2"><strong>Step 4:</strong> Find eigenvectors</p>
+                        <div class="bg-gray-100 p-4 rounded">
+                            <p class="mb-2"><strong>For λ₁ = 2:</strong></p>
+                            <p class="mb-1"><span class="math-expression">(A - 2I)x = 0</span> gives system:</p>
+                            <p class="mb-1">-6x₁ - 6x₂ = 0</p>
+                            <p class="mb-2">3x₁ + 3x₂ = 0</p>
+                            <p class="mb-3"><strong>Eigenvector:</strong> any multiple of [1, -1]ᵀ</p>
+                            
+                            <p class="mb-2"><strong>For λ₂ = -1:</strong></p>
+                            <p class="mb-1"><span class="math-expression">(A + I)x = 0</span> gives system:</p>
+                            <p class="mb-1">-3x₁ - 6x₂ = 0</p>
+                            <p class="mb-2">3x₁ + 6x₂ = 0</p>
+                            <p><strong>Eigenvector:</strong> any multiple of [2, -1]ᵀ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-calculator text-indigo-600 mr-2"></i>Problem 2</h3>
+                    <p class="mb-4">Find the characteristic polynomial and eigenvalues of:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>3 1</div>
+                            <div>0 2</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Solution:</h4>
+                        
+                        <p class="mb-2"><strong>Step 1:</strong> Form characteristic polynomial</p>
+                        <p class="mb-2"><span class="math-expression">A - λI = [(3-λ) 1; 0 (2-λ)]</span></p>
+                        
+                        <p class="mb-2"><strong>Step 2:</strong> Calculate determinant (upper triangular)</p>
+                        <p class="mb-2"><span class="math-expression">det(A - λI) = (3-λ)(2-λ) - (1)(0)</span></p>
+                        <p class="mb-2"><span class="math-expression">= (3-λ)(2-λ)</span></p>
+                        
+                        <p class="mb-2"><strong>Characteristic Polynomial:</strong> <span class="math-expression">(3-λ)(2-λ) = 0</span></p>
+                        <p><strong>Eigenvalues:</strong> λ₁ = 3, λ₂ = 2</p>
+                        
+                        <div class="bg-blue-50 p-3 rounded mt-4">
+                            <p class="text-sm"><strong>Note:</strong> For triangular matrices, eigenvalues are simply the diagonal entries!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4 class="font-semibold mb-2"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Problem-Solving Tips</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Always check if the matrix is triangular - eigenvalues are diagonal entries</li>
+                        <li>For 2×2 matrices, use the quadratic formula for characteristic polynomial</li>
+                        <li>Verify solutions by substituting back into the original eigenvalue equation</li>
+                        <li>Remember that eigenvectors are determined up to scalar multiples</li>
+                        <li>Complex eigenvalues indicate rotational transformations</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Practice problems solve karne ke liye systematic approach follow karo. Pehle characteristic polynomial banao, phir determinant calculate karo. Quadratic ya higher order equation solve karke eigenvalues nikalo. Phir har eigenvalue ke liye eigenvector find karo by substituting back. Triangular matrices ke liye shortcut hai - diagonal elements hi eigenvalues hain.
+                </div>
+            </section>
+
+            <!-- Module 3.3 Python Implementation -->
+            <section id="module-3-3" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-green-600 border-b-2 border-green-200 pb-2">
+                    Module 3.3: Python Implementation and Matrix Diagonalization
+                </h2>
+
+                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fab fa-python text-green-600 mr-2"></i>Python: Making Eigenvalues Super Easy!
+                    </h3>
+                    <p class="text-lg mb-4">
+                        <em>"Finding eigenvalues and eigenvectors is super easy in Python!"</em> Let's explore how NumPy makes complex linear algebra operations simple.
+                    </p>
+                </div>
+
+                <div class="bg-gray-900 text-green-400 p-6 rounded-lg mb-6 font-mono">
+                    <h4 class="text-white text-lg mb-3">Basic Eigenvalue Computation:</h4>
+                    <pre class="text-sm"><code># Step 1: Import required libraries
+import numpy as np
+from numpy.linalg import eig
+
+# Step 2: Define your matrix
+A = np.array([[1, 2],
+              [3, 4]])
+
+# Step 3: Compute eigenvalues (one line!)
+eigenvalues = np.linalg.eigvals(A)
+print("Eigenvalues:", eigenvalues)
+
+# Step 4: Compute both eigenvalues and eigenvectors
+eigenvalues, eigenvectors = np.linalg.eig(A)
+print("Eigenvalues:", eigenvalues)
+print("Eigenvectors:\n", eigenvectors)</code></pre>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> The eigenvalues are like keys that you insert into the matrix, just like inserting keys in a door to open it. The eigenvalues are like keys that unlock the mystical eigenvectors, which are really mysterious and not available to us without proper computation.
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Example: 2×2 Matrix</h4>
+                        <div class="bg-gray-100 p-4 rounded mb-3">
+                            <code>
+                                A = np.array([[1, 2], [3, 4]])<br>
+                                eigenvals = np.linalg.eigvals(A)<br>
+                                # Result: [-0.37, 5.37]
+                            </code>
+                        </div>
+                        <p class="text-sm text-gray-600">Results rounded to 2 decimal places</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Key Functions</h4>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><code>np.linalg.eigvals()</code> - eigenvalues only</li>
+                            <li><code>np.linalg.eig()</code> - both eigenvalues & eigenvectors</li>
+                            <li><code>np.linalg.eigh()</code> - for symmetric matrices</li>
+                            <li><code>scipy.linalg</code> - extended functionality</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="text-lg font-semibold mb-3">Understanding the Mathematical Foundation</h4>
+                    <p class="mb-3">The Python implementation follows our mathematical understanding:</p>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li><strong>Eigenvalue Equation:</strong> <span class="math-expression">Ax = λx</span></li>
+                        <li><strong>Rearranged Form:</strong> <span class="math-expression">(A - λI)x = 0</span></li>
+                        <li><strong>Key Insight:</strong> Eigenvector is in the null space of (A - λI)</li>
+                        <li><strong>Solution Method:</strong> Set determinant to zero and solve for λ</li>
+                    </ol>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> The eigenvector is in the null space of the matrix shifted by its eigenvalue. This is the only thing to remember - you shift the matrix by unknown eigenvalue λ, and solve the resulting system. Python handles all the computational complexity for us.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fab fa-python text-blue-600 mr-2"></i>Python Practice: 3×3 Matrix</h3>
+                    <p class="mb-4">Let's work with the 3×3 matrix from our earlier lectures:</p>
+                    
+                    <div class="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 font-mono">
+                        <pre class="text-sm"><code>import numpy as np
+
+# Define the 3x3 matrix from lecture
+A = np.array([[-4,  6, -7],
+              [ 3, -5,  0],
+              [ 0,  0,  3]])
+
+# Find eigenvalues and eigenvectors
+eigenvalues, eigenvectors = np.linalg.eig(A)
+
+print("Eigenvalues:", eigenvalues)
+print("Eigenvectors:")
+for i, (val, vec) in enumerate(zip(eigenvalues, eigenvectors.T)):
+    print(f"λ{i+1} = {val:.2f}, eigenvector = {vec}")
+</code></pre>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Expected Output Analysis:</h4>
+                        <p class="mb-2">Based on our manual calculation, we expect:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>λ₁ = 2</strong> (first eigenvalue)</li>
+                            <li><strong>λ₂ = 3</strong> (second eigenvalue)</li>
+                            <li><strong>λ₃ = -1</strong> (third eigenvalue)</li>
+                        </ul>
+                        <p class="mt-3 text-sm text-gray-600">Python will compute these instantly and provide the corresponding eigenvectors.</p>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Python mein eigenvalues nikalna bahut easy hai! NumPy library use karke ek line mein solution mil jata hai. Manual calculation jo hum lecture mein karte hain, wohi concept Python automatically handle kar deta hai. Eigenvalues matrix ke "keys" ki tarah hain jo eigenvectors ko unlock karte hain. Real applications mein Python ki speed aur accuracy invaluable hai.
+                </div>
+            </section>
+
+            <!-- Matrix Diagonalization -->
+            <section id="diagonalization" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-purple-600 border-b-2 border-purple-200 pb-2">
+                    Matrix Diagonalization
+                </h2>
+
+                <div class="bg-purple-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-vector-square text-purple-600 mr-2"></i>What is Matrix Diagonalization?
+                    </h3>
+                    <p class="text-lg mb-4">
+                        Matrix diagonalization is a process that transforms a square matrix into a diagonal matrix through similarity transformation. This simplifies many matrix operations significantly.
+                    </p>
+                    <div class="text-center text-xl font-bold">
+                        <span class="math-expression">P⁻¹AP = D</span>
+                    </div>
+                    <p class="text-center text-gray-600 mt-2">Where D is a diagonal matrix and P is the matrix of eigenvectors</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Key Properties</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Diagonal Matrix:</strong> All off-diagonal entries are zero</li>
+                            <li><strong>Eigenvalues:</strong> Appear on the main diagonal</li>
+                            <li><strong>Similar Matrices:</strong> Have same eigenvalues</li>
+                            <li><strong>Powers:</strong> Easy to compute for diagonal matrices</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Conditions for Diagonalization</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Matrix must be <strong>square</strong></li>
+                            <li>Must have <strong>n linearly independent</strong> eigenvectors</li>
+                            <li><strong>Symmetric matrices</strong> are always diagonalizable</li>
+                            <li>Invertible matrix P must exist</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-semibold mb-3">
+                        <i class="fas fa-triangle text-yellow-600 mr-2"></i>Special Case: Triangular Matrices
+                    </h4>
+                    <p class="mb-3">For triangular matrices (upper or lower), eigenvalues are simply the diagonal entries!</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <p class="font-semibold mb-2">Upper Triangular</p>
+                            <div class="matrix">
+                                <div>a₁₁ a₁₂ a₁₃</div>
+                                <div> 0  a₂₂ a₂₃</div>
+                                <div> 0   0  a₃₃</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold mb-2">Lower Triangular</p>
+                            <div class="matrix">
+                                <div>a₁₁  0   0 </div>
+                                <div>a₂₁ a₂₂  0 </div>
+                                <div>a₃₁ a₃₂ a₃₃</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center mt-3 font-medium">Eigenvalues: λ₁ = a₁₁, λ₂ = a₂₂, λ₃ = a₃₃</p>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> The powers of a diagonal matrix are extremely easy to compute. If D = diag(λ₁, λ₂), then D² = diag(λ₁², λ₂²), and Dᵏ = diag(λ₁ᵏ, λ₂ᵏ). This makes diagonal matrices incredibly useful for computational efficiency.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-cogs text-purple-600 mr-2"></i>Example: Computing Matrix Powers</h3>
+                    <p class="mb-4">Given diagonal matrix D, compute D⁵:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>λ₁  0 </div>
+                            <div> 0 λ₂</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Solution:</h4>
+                        
+                        <p class="mb-2"><strong>Step 1:</strong> Apply power rule for diagonal matrices</p>
+                        <div class="text-center mb-2">
+                            <div class="matrix">
+                                <div>λ₁⁵  0  </div>
+                                <div> 0  λ₂⁵</div>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-2"><strong>General Formula:</strong> For any positive integer k:</p>
+                        <div class="text-center mb-2">
+                            <div class="matrix">
+                                <div>λ₁ᵏ  0  </div>
+                                <div> 0  λ₂ᵏ</div>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-2"><strong>Comparison:</strong> Computing A⁵ for general matrix requires 4 matrix multiplications, but D⁵ requires only scalar exponentiation!</p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                    <h4 class="text-lg font-semibold mb-3">
+                        <i class="fas fa-equals text-green-600 mr-2"></i>Similar Matrices Theorem
+                    </h4>
+                    <p class="mb-3">If A and B are similar matrices (A ~ B), then they have the same eigenvalues.</p>
+                    
+                    <div class="bg-white border border-gray-200 rounded p-4">
+                        <p class="font-medium mb-2">Proof Outline:</p>
+                        <p class="mb-1">If B = P⁻¹AP, then:</p>
+                        <p class="mb-1"><span class="math-expression">det(B - λI) = det(P⁻¹AP - λI)</span></p>
+                        <p class="mb-1"><span class="math-expression">= det(P⁻¹(A - λI)P)</span></p>
+                        <p class="mb-1"><span class="math-expression">= det(P⁻¹)det(A - λI)det(P)</span></p>
+                        <p><span class="math-expression">= det(A - λI)</span> ✓</p>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Matrix diagonalization ek powerful technique hai jo square matrix ko diagonal matrix mein convert kar deta hai. Iska main fayda ye hai ki diagonal matrices ke operations bahut easy hote hain - especially powers calculate karna. Triangular matrices ke liye eigenvalues directly diagonal entries hain. Similar matrices ke same eigenvalues hote hain, jo ek important property hai.
+                </div>
+            </section>
+
+            <!-- Symmetric Matrices -->
+            <section id="symmetric-matrices" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-cyan-600 border-b-2 border-cyan-200 pb-2">
+                    Symmetric Matrices and Orthogonality
+                </h2>
+
+                <div class="bg-cyan-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-balance-scale text-cyan-600 mr-2"></i>Properties of Symmetric Matrices
+                    </h3>
+                    <p class="text-lg mb-4">
+                        Symmetric matrices have special properties that make them particularly important in applications like Principal Component Analysis (PCA) and data science.
+                    </p>
+                    <div class="text-center">
+                        <span class="math-expression">A = Aᵀ</span> (Matrix equals its transpose)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Key Properties</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Always diagonalizable</strong></li>
+                            <li><strong>Real eigenvalues</strong> only</li>
+                            <li><strong>Orthogonal eigenvectors</strong> for distinct eigenvalues</li>
+                            <li>Can be diagonalized by <strong>orthogonal matrix</strong></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold mb-3">Example Symmetric Matrix</h4>
+                        <div class="text-center mb-2">
+                            <div class="matrix">
+                                <div>a c</div>
+                                <div>c b</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Note: Element (1,2) = Element (2,1) = c</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h4 class="text-lg font-semibold mb-3">Discriminant Analysis for 2×2 Symmetric Matrix</h4>
+                    <p class="mb-3">For symmetric matrix with characteristic polynomial λ² - (a+b)λ + (ab-c²) = 0:</p>
+                    
+                    <div class="bg-white border border-gray-200 rounded p-4 mb-3">
+                        <p class="mb-2"><strong>Discriminant:</strong> Δ = (a+b)² - 4(ab-c²)</p>
+                        <p class="mb-2"><span class="math-expression">= a² + 2ab + b² - 4ab + 4c²</span></p>
+                        <p class="mb-2"><span class="math-expression">= (a-b)² + 4c² ≥ 0</span></p>
+                    </div>
+                    
+                    <p class="text-green-600 font-medium">Since discriminant ≥ 0, symmetric matrices always have real eigenvalues!</p>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> The discriminant (a-b)² + 4c² is always ≥ 0 because both terms are squares. This proves that symmetric matrices always have real eigenvalues, which is crucial for many applications in data science and machine learning.
+                </div>
+
+                <div class="practice-question">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-project-diagram text-cyan-600 mr-2"></i>Orthogonality of Eigenvectors</h3>
+                    <p class="mb-4">Prove that eigenvectors of symmetric matrices corresponding to distinct eigenvalues are orthogonal:</p>
+                    
+                    <div class="text-center mb-4">
+                        <div class="matrix">
+                            <div>0  1</div>
+                            <div>1  0</div>
+                        </div>
+                    </div>
+
+                    <div class="solution">
+                        <h4 class="font-semibold mb-2">Complete Proof:</h4>
+                        
+                        <p class="mb-2"><strong>Step 1:</strong> Find characteristic polynomial</p>
+                        <p class="mb-2"><span class="math-expression">det(A - λI) = det([−λ 1; 1 −λ]) = λ² - 1</span></p>
+                        
+                        <p class="mb-2"><strong>Step 2:</strong> Solve for eigenvalues</p>
+                        <p class="mb-2"><span class="math-expression">λ² - 1 = 0</span> → <span class="math-expression">λ₁ = 1, λ₂ = -1</span></p>
+                        
+                        <p class="mb-2"><strong>Step 3:</strong> Find eigenvectors</p>
+                        <div class="bg-gray-100 p-3 rounded mb-2">
+                            <p class="mb-1"><strong>For λ₁ = 1:</strong> (A - I)x = 0</p>
+                            <p class="mb-1">[-1 1; 1 -1]x = 0 → x₁ = [1, 1]ᵀ</p>
+                            <p class="mb-1"><strong>For λ₂ = -1:</strong> (A + I)x = 0</p>
+                            <p>[1 1; 1 1]x = 0 → x₂ = [1, -1]ᵀ</p>
+                        </div>
+                        
+                        <p class="mb-2"><strong>Step 4:</strong> Verify orthogonality</p>
+                        <p class="mb-2"><span class="math-expression">x₁ · x₂ = [1, 1] · [1, -1] = 1(1) + 1(-1) = 0</span> ✓</p>
+                        
+                        <p class="text-green-600 font-medium">The eigenvectors are orthogonal!</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-semibold mb-3">
+                        <i class="fas fa-star text-amber-600 mr-2"></i>Importance in Data Science
+                    </h4>
+                    <p class="mb-3">Symmetric matrices and their orthogonal eigenvectors are fundamental to:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Principal Component Analysis (PCA):</strong> Covariance matrices are symmetric</li>
+                        <li><strong>Dimensionality Reduction:</strong> Orthogonal eigenvectors form new coordinate system</li>
+                        <li><strong>Data Compression:</strong> Largest eigenvalues capture most variance</li>
+                        <li><strong>Machine Learning:</strong> Feature extraction and noise reduction</li>
+                    </ul>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4 class="font-semibold mb-2"><i class="fas fa-graduation-cap text-green-600 mr-2"></i>Chapter Summary</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Matrix diagonalization simplifies matrix operations significantly</li>
+                        <li>Diagonal matrices make power calculations trivial</li>
+                        <li>Symmetric matrices are always diagonalizable with real eigenvalues</li>
+                        <li>Orthogonal eigenvectors form the foundation for PCA and dimensionality reduction</li>
+                        <li>Python makes complex eigenvalue computations accessible and fast</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Symmetric matrices ke special properties hain - ye hamesha diagonalizable hote hain aur real eigenvalues dete hain. Distinct eigenvalues ke corresponding eigenvectors orthogonal hote hain, jo PCA aur machine learning mein bahut important hai. Ye properties data science applications mein dimensionality reduction aur feature extraction ke liye use hoti hain.
+                </div>
+            </section>
+
+            <!-- Complete Mind Map -->
+            <section id="mind-map" class="mb-12">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600 border-b-2 border-indigo-200 pb-2">
+                    Complete Mind Map: Eigenvalues and Eigenvectors
+                </h2>
+
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-lg">
+                    <div class="flex flex-col items-center space-y-6">
+                        <!-- Central Node -->
+                        <div class="mind-map-node bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xl font-bold text-center">
+                            EIGENVALUES &<br>EIGENVECTORS
+                        </div>
+
+                        <!-- Main Branches -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                            <!-- Theory Branch -->
+                            <div class="space-y-4">
+                                <div class="mind-map-node bg-red-100 border-red-300 text-center font-semibold">
+                                    THEORY & CONCEPTS
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="mind-map-node bg-red-50 border-red-200 text-sm">
+                                        Fundamental Equation: Ax = λx
+                                    </div>
+                                    <div class="mind-map-node bg-red-50 border-red-200 text-sm">
+                                        Characteristic Polynomial: det(A - λI) = 0
+                                    </div>
+                                    <div class="mind-map-node bg-red-50 border-red-200 text-sm">
+                                        Eigenspace: Subspace of all eigenvectors
+                                    </div>
+                                    <div class="mind-map-node bg-red-50 border-red-200 text-sm">
+                                        Geometric Interpretation: Scaling transformation
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Applications Branch -->
+                            <div class="space-y-4">
+                                <div class="mind-map-node bg-green-100 border-green-300 text-center font-semibold">
+                                    APPLICATIONS
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="mind-map-node bg-green-50 border-green-200 text-sm">
+                                        Image Compression
+                                    </div>
+                                    <div class="mind-map-node bg-green-50 border-green-200 text-sm">
+                                        Google PageRank Algorithm
+                                    </div>
+                                    <div class="mind-map-node bg-green-50 border-green-200 text-sm">
+                                        Principal Component Analysis (PCA)
+                                    </div>
+                                    <div class="mind-map-node bg-green-50 border-green-200 text-sm">
+                                        Population Dynamics & Genetics
+                                    </div>
+                                    <div class="mind-map-node bg-green-50 border-green-200 text-sm">
+                                        Engineering & Bridge Design
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Computation Branch -->
+                            <div class="space-y-4">
+                                <div class="mind-map-node bg-blue-100 border-blue-300 text-center font-semibold">
+                                    COMPUTATION
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="mind-map-node bg-blue-50 border-blue-200 text-sm">
+                                        Manual: Solve characteristic equation
+                                    </div>
+                                    <div class="mind-map-node bg-blue-50 border-blue-200 text-sm">
+                                        Python: np.linalg.eig()
+                                    </div>
+                                    <div class="mind-map-node bg-blue-50 border-blue-200 text-sm">
+                                        Triangular Matrices: Diagonal entries
+                                    </div>
+                                    <div class="mind-map-node bg-blue-50 border-blue-200 text-sm">
+                                        Verification: Substitute back into Ax = λx
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Topics -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-8">
+                            <!-- Diagonalization Branch -->
+                            <div class="space-y-4">
+                                <div class="mind-map-node bg-purple-100 border-purple-300 text-center font-semibold">
+                                    MATRIX DIAGONALIZATION
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="mind-map-node bg-purple-50 border-purple-200 text-sm">
+                                        P⁻¹AP = D (similarity transformation)
+                                    </div>
+                                    <div class="mind-map-node bg-purple-50 border-purple-200 text-sm">
+                                        Powers: Dᵏ = diag(λ₁ᵏ, λ₂ᵏ, ...)
+                                    </div>
+                                    <div class="mind-map-node bg-purple-50 border-purple-200 text-sm">
+                                        Similar matrices: Same eigenvalues
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Symmetric Matrices Branch -->
+                            <div class="space-y-4">
+                                <div class="mind-map-node bg-orange-100 border-orange-300 text-center font-semibold">
+                                    SYMMETRIC MATRICES
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="mind-map-node bg-orange-50 border-orange-200 text-sm">
+                                        Always diagonalizable
+                                    </div>
+                                    <div class="mind-map-node bg-orange-50 border-orange-200 text-sm">
+                                        Real eigenvalues only
+                                    </div>
+                                    <div class="mind-map-node bg-orange-50 border-orange-200 text-sm">
+                                        Orthogonal eigenvectors
+                                    </div>
+                                    <div class="mind-map-node bg-orange-50 border-orange-200 text-sm">
+                                        Foundation for PCA
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Relationships -->
+                        <div class="w-full mt-8">
+                            <div class="mind-map-node bg-yellow-100 border-yellow-300 text-center font-semibold mb-4">
+                                KEY RELATIONSHIPS & FORMULAS
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div class="mind-map-node bg-yellow-50 border-yellow-200 text-sm text-center">
+                                    Ax = λx
+                                </div>
+                                <div class="mind-map-node bg-yellow-50 border-yellow-200 text-sm text-center">
+                                    det(A - λI) = 0
+                                </div>
+                                <div class="mind-map-node bg-yellow-50 border-yellow-200 text-sm text-center">
+                                    (A - λI)x = 0
+                                </div>
+                                <div class="mind-map-node bg-yellow-50 border-yellow-200 text-sm text-center">
+                                    P⁻¹AP = D
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-lg mt-6">
+                    <h4 class="text-lg font-semibold mb-3 text-center">
+                        <i class="fas fa-route text-gray-600 mr-2"></i>Learning Path Summary
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="text-center">
+                            <div class="font-semibold text-blue-600 mb-2">FOUNDATION</div>
+                            <p>Basic concepts, definitions, geometric interpretation</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-semibold text-green-600 mb-2">APPLICATION</div>
+                            <p>Real-world examples, Python implementation, problem solving</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-semibold text-purple-600 mb-2">ADVANCED</div>
+                            <p>Diagonalization, symmetric matrices, data science applications</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Summary -->
+            <section class="mb-12">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-center">
+                        <i class="fas fa-medal mr-2"></i>Course Completion Summary
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-3">What We've Mastered:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li>Fundamental eigenvalue equation and its applications</li>
+                                <li>Geometric interpretation and real-world relevance</li>
+                                <li>Manual calculation methods and Python implementation</li>
+                                <li>Matrix diagonalization and its computational advantages</li>
+                                <li>Special properties of symmetric matrices</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Next Steps in Learning:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li>Orthogonalization processes and Gram-Schmidt</li>
+                                <li>Vector spaces and linear independence</li>
+                                <li>Advanced PCA and dimensionality reduction</li>
+                                <li>Singular Value Decomposition (SVD)</li>
+                                <li>Applications in machine learning algorithms</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <p class="text-lg italic">
+                            "Eigenvalues and eigenvectors are fundamental concepts that bridge pure mathematics with practical data science applications."
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white p-6 text-center">
+            <p class="mb-2">Linear Algebra and Numerical Analysis - Module 3.2 & 3.3</p>
+            <p class="text-sm text-gray-400">BS./BSc. in Applied AI and Data Science</p>
+            <p class="text-sm text-gray-400 mt-2">
+                <i class="fas fa-brain mr-1"></i>
+                Comprehensive lecture notes combining theory, examples, and practical implementation
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scrolling for table of contents links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add interactive elements for better engagement
+        document.querySelectorAll('.practice-question').forEach(question => {
+            const solution = question.querySelector('.solution');
+            if (solution) {
+                solution.style.display = 'none';
+                const toggleBtn = document.createElement('button');
+                toggleBtn.textContent = 'Show Solution';
+                toggleBtn.className = 'bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors';
+                toggleBtn.onclick = () => {
+                    if (solution.style.display === 'none') {
+                        solution.style.display = 'block';
+                        toggleBtn.textContent = 'Hide Solution';
+                    } else {
+                        solution.style.display = 'none';
+                        toggleBtn.textContent = 'Show Solution';
+                    }
+                };
+                question.insertBefore(toggleBtn, solution);
+            }
+        });
+
+        // Highlight code blocks on hover
+        document.querySelectorAll('.math-expression').forEach(expr => {
+            expr.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#e0f2fe';
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            expr.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#f8fafc';
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

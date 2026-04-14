@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Independence and Vector Spaces - Comprehensive Lecture Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .extra-content {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+        .hinglish-summary {
+            background-color: #e0f2fe;
+            border-left: 4px solid #0288d1;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .key-takeaways {
+            background-color: #f3e8ff;
+            border-left: 4px solid #8b5cf6;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+        .practice-section {
+            background-color: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .mind-map {
+            background-color: #fafafa;
+            border: 2px solid #666;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .vector-notation {
+            font-family: 'Courier New', monospace;
+            background-color: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        body {
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        h1 { font-size: 2.5rem; margin: 2rem 0; }
+        h2 { font-size: 2rem; margin: 1.5rem 0; }
+        h3 { font-size: 1.5rem; margin: 1.2rem 0; }
+        h4 { font-size: 1.25rem; margin: 1rem 0; }
+        .toc-link { transition: all 0.2s; }
+        .toc-link:hover { background-color: #e5e7eb; }
+        .definition-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .theorem-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="max-w-5xl mx-auto p-6">
+        <!-- Header -->
+        <header class="text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg">
+            <h1 class="text-4xl font-bold mb-2"><i class="fas fa-calculator mr-3"></i>Linear Algebra and Numerical Analysis</h1>
+            <h2 class="text-2xl">Module 3.5: Linear Independence and Linear Dependence</h2>
+            <p class="text-lg mt-4">BS/BSc in Applied AI and Data Science</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-center text-blue-600"><i class="fas fa-list mr-2"></i>Table of Contents</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ul class="space-y-2">
+                    <li><a href="#introduction" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">1. Introduction to Linear Independence</a></li>
+                    <li><a href="#definitions" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">2. Mathematical Definitions</a></li>
+                    <li><a href="#geometric" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">3. Geometric Interpretation</a></li>
+                    <li><a href="#determination" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">4. Determining Linear Dependency</a></li>
+                </ul>
+                <ul class="space-y-2">
+                    <li><a href="#functions" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">5. Linear Independence of Functions</a></li>
+                    <li><a href="#basis" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">6. Basis Vectors</a></li>
+                    <li><a href="#practice" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">7. Practice Problems</a></li>
+                    <li><a href="#mindmap" class="toc-link block p-2 rounded text-blue-600 hover:text-blue-800">8. Mind Map</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Introduction -->
+            <section id="introduction" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-play-circle mr-2"></i>1. Introduction to Linear Independence</h2>
+                
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> Welcome back friends and students to linear algebra and numerical analysis course. Today's topic is linear independence and linear dependence of a set of vectors. We'll cover these concepts as one of the learning outcomes, building on vector spaces from the last lecture, then move into orthogonality and basis in the next lecture.
+                </div>
+
+                <p class="text-lg mb-4">Linear independence and dependence are fundamental concepts in linear algebra that describe relationships between sets of vectors. These concepts are crucial for understanding vector spaces, dimensionality, and many applications in data science and machine learning.</p>
+
+                <div class="definition-box">
+                    <h3 class="text-xl font-bold mb-3"><i class="fas fa-info-circle mr-2"></i>Key Point</h3>
+                    <p><strong>Important:</strong> When we talk about linear independence, we don't talk about the property of a single vector. We rather talk about properties of a <strong>set of vectors</strong>. A set of vectors can be linearly independent or linearly dependent; it doesn't make sense to ask whether a single vector within a set is independent.</p>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Linear independence ka matlab ye hai ki vectors ka set independent hai ya dependent. Ek single vector ko independent nahi keh sakte, sirf vectors ke group ko independent ya dependent keh sakte hain. Ye concept data science aur machine learning mein bahut important hai.
+                </div>
+            </section>
+
+            <!-- Mathematical Definitions -->
+            <section id="definitions" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-square-root-alt mr-2"></i>2. Mathematical Definitions</h2>
+
+                <h3 class="text-2xl font-semibold mb-4">Linear Dependence</h3>
+                <div class="definition-box">
+                    <p class="mb-4">A set of vectors is <strong>linearly dependent</strong> if at least one vector in the set can be expressed as a linear weighted combination of the other vectors in that set.</p>
+                    <p>Mathematically: <span class="vector-notation">λ₁v₁ + λ₂v₂ + ... + λₙvₙ = 0</span></p>
+                    <p>where at least one <span class="vector-notation">λᵢ ≠ 0</span> (non-trivial solution)</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Linear Independence</h3>
+                <div class="definition-box">
+                    <p class="mb-4">A set of vectors is <strong>linearly independent</strong> if no vector in the set can be expressed as a linear combination of the others.</p>
+                    <p>Mathematically: <span class="vector-notation">λ₁v₁ + λ₂v₂ + ... + λₙvₙ = 0</span></p>
+                    <p>only when all <span class="vector-notation">λᵢ = 0</span> (trivial solution only)</p>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> This may seem like a strange definition. Where does it come from, and why is the zero vector so important? Some rearranging, starting with subtracting specific terms from both sides of the equation, will reveal why this equation indicates dependence.
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Rearranging the Equation</h3>
+                <p class="mb-4">By rearranging terms, we can rewrite the linear combination as:</p>
+                <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                    <p class="vector-notation text-center">λ₁v₁ = -(λ₂v₂ + λ₃v₃ + ... + λₙvₙ)</p>
+                </div>
+                <p class="mb-4">If <span class="vector-notation">λ₁ ≠ 0</span>, we can divide both sides by <span class="vector-notation">λ₁</span>:</p>
+                <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                    <p class="vector-notation text-center">v₁ = -(λ₂/λ₁)v₂ - (λ₃/λ₁)v₃ - ... - (λₙ/λ₁)vₙ</p>
+                </div>
+                <p>This shows that <span class="vector-notation">v₁</span> can be expressed as a linear combination of the other vectors, which is exactly what linear dependence means!</p>
+
+                <div class="key-takeaways">
+                    <h4 class="font-bold mb-2"><i class="fas fa-key mr-2"></i>Key Takeaways</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Linear dependence</strong> means redundancy - at least one vector is "unnecessary"</li>
+                        <li><strong>Linear independence</strong> means each vector contributes unique information</li>
+                        <li>The ratio of two scalars is also a scalar (provided denominator ≠ 0)</li>
+                        <li>When λ₁ = 0, the equation becomes undefined (singularity)</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Linear dependence ka matlab hai ki koi ek vector dusre vectors ki linear combination se banaया जा सकता है। Agar coefficients zero nahi hain, toh vectors dependent hain. Linear independence mein sirf trivial solution (sab coefficients zero) possible hai.
+                </div>
+            </section>
+
+            <!-- Geometric Interpretation -->
+            <section id="geometric" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-shapes mr-2"></i>3. Geometric Interpretation</h2>
+
+                <p class="text-lg mb-6">Understanding linear independence geometrically helps visualize these abstract concepts. Let's explore how vectors behave in different dimensional spaces.</p>
+
+                <h3 class="text-2xl font-semibold mb-4">Collinearity and Linear Dependence</h3>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Panel A: Collinear Vectors (R²)</h4>
+                    <p class="mb-4">The left-hand set contains two <strong>collinear vectors</strong>. This set is linearly dependent because you can create one vector as a scaled version of another vector.</p>
+                    
+                    <div class="extra-content">
+                        <strong>Professor mentioned in class:</strong> Collinearity is often encountered in machine learning and data science. When vectors are collinear, they have the same orientation and direction, just different magnitudes. This is a classic example of linear dependence.
+                    </div>
+
+                    <p class="mb-2"><strong>Example:</strong> If v₁ = [1, 2] and v₂ = [2, 4], then v₂ = 2v₁</p>
+                    <p>Therefore, the second vector is in the <strong>span</strong> of the first vector.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Panel B: Non-collinear Vectors (R²)</h4>
+                    <p class="mb-4">The middle set shows two vectors pointing in <strong>different directions</strong>. They are separated by an angle, making it impossible to create one vector as a scaled version of the other.</p>
+                    <p><strong>Result:</strong> This set is linearly independent.</p>
+                </div>
+
+                <div class="theorem-box">
+                    <h4 class="text-xl font-semibold mb-3"><i class="fas fa-lightbulb mr-2"></i>Important Theorem</h4>
+                    <p class="mb-3"><strong>Any set of M > N vectors in Rⁿ is necessarily linearly dependent.</strong></p>
+                    <p class="mb-3">Conversely: Any set of M ≤ N vectors in Rⁿ could be linearly independent.</p>
+                    <p><strong>Example:</strong> In R², any set of 3 or more vectors must be linearly dependent.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Panel C: Three Vectors in R²</h4>
+                    <p class="mb-4">The right-hand set shows <strong>three vectors in R²</strong>. This set is linearly dependent because any of the vectors can be obtained by a linear combination of the other two vectors.</p>
+                    
+                    <div class="extra-content">
+                        <strong>Professor mentioned in class:</strong> You can imagine an orthogonal coordinate system where the angle between X and Y axes is 90 degrees. If there's a vector R running through this system at angle θ, then X = R cos(θ) and Y = R sin(θ). Therefore, R = (R cos(θ))ê₁ + (R sin(θ))ê₂, where ê₁ and ê₂ are unit vectors along X and Y axes.
+                    </div>
+
+                    <p>In this example, the middle vector can be obtained by <strong>averaging</strong> the other two vectors (summing them and scalar multiplying by ½).</p>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4 class="font-bold mb-2"><i class="fas fa-key mr-2"></i>Geometric Key Points</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Collinear vectors</strong> are always linearly dependent</li>
+                        <li><strong>Non-collinear vectors</strong> in the same dimension can be linearly independent</li>
+                        <li><strong>More vectors than dimensions</strong> guarantees linear dependence</li>
+                        <li><strong>Orthogonal vectors</strong> are always linearly independent</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Geometric interpretation mein, collinear vectors (same direction) hamesha dependent होते हैं। Different directions mein vectors independent ho sakte hain। Agar vectors ki संख्या dimensions se ज्यादा है, toh वे definitely dependent होंगे। Orthogonal vectors hamesha independent होते हैं।
+                </div>
+            </section>
+
+            <!-- Determining Linear Dependency -->
+            <section id="determination" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-search mr-2"></i>4. Determining Linear Dependency</h2>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> Before learning about matrix-based algorithms for computing whether a set is linearly independent, we can apply a four-step procedure. This is not a strategy for solving large problems by hand because the size of matrices may be too large, but it helps us understand the concept for smaller sets.
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Four-Step Procedure</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-blue-600"><i class="fas fa-step-forward mr-2"></i>Step 1: Count Vectors</h4>
+                        <p>Count the number of vectors (M) in the set and compare to the dimension (N) of the space.</p>
+                        <p class="mt-2"><strong>If M > N:</strong> The set is necessarily dependent.</p>
+                        <p><strong>If M ≤ N:</strong> Move to Step 2.</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-blue-600"><i class="fas fa-step-forward mr-2"></i>Step 2: Check for Zero Vector</h4>
+                        <p>Any set that contains the <strong>zero vector</strong> is a dependent set.</p>
+                        <p class="mt-2">This is because: <span class="vector-notation">1·0⃗ + 0·v₁ + 0·v₂ + ... = 0⃗</span></p>
+                        <p>The coefficient of the zero vector is non-zero.</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-blue-600"><i class="fas fa-step-forward mr-2"></i>Step 3: Look for Patterns</h4>
+                        <p>Look for zeros in entries of some vectors, combined with non-zero entries in corresponding dimensions of other vectors.</p>
+                        <p class="mt-2"><strong>Remember:</strong> You cannot create something from nothing (except in Big Bang theory!)</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-blue-600"><i class="fas fa-step-forward mr-2"></i>Step 4: Trial and Error</h4>
+                        <p>Create one vector as a weighted combination of others. Check if the same weights work for all dimensions.</p>
+                        <p class="mt-2"><strong>If yes:</strong> Linearly dependent</p>
+                        <p><strong>If no:</strong> Linearly independent</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Worked Example</h3>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Determine if the following set is linearly dependent or independent:</h4>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="vector-notation">v₁ = [1, 1, 3], v₂ = [2, 2, 3], v₃ = [4, 5, 8]</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="font-semibold text-green-600">Step 1: Count vectors</h5>
+                            <p>M = 3 vectors in R³ (N = 3), so M = N. Continue to Step 2.</p>
+                        </div>
+
+                        <div>
+                            <h5 class="font-semibold text-green-600">Step 2: Check for zero vector</h5>
+                            <p>No zero vector present. Continue to Step 3.</p>
+                        </div>
+
+                        <div>
+                            <h5 class="font-semibold text-green-600">Step 4: Trial and error</h5>
+                            <p><strong>First dimension:</strong> 2(1) + 1(2) = 4 ✓</p>
+                            <p><strong>Second dimension:</strong> 2(1) + 1(2) = 4, but we need 5 ✗</p>
+                            <p><strong>Third dimension:</strong> 2(3) + 1(3) = 9, but we need 8 ✗</p>
+                        </div>
+
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <p class="font-semibold">Conclusion: The set is <strong>linearly independent</strong> because we cannot express v₃ as a linear combination of v₁ and v₂.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> This is a huge amount of trial and error procedures when dealing with large matrices. That's why numerical linear algebra algorithms are developed to determine linear dependency or independency efficiently, as well as the uniqueness of solutions of linear equations.
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Linear dependency check karne ke liye 4 steps hain: vectors गिनना, zero vector ढूंढना, patterns देखना, और trial-error करना। Small matrices के लिए ये manual method ठीक है, लेकिन large matrices के लिए algorithms की जरूरत होती है।
+                </div>
+            </section>
+
+            <!-- Linear Independence of Functions -->
+            <section id="functions" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-function mr-2"></i>5. Linear Independence of Functions</h2>
+
+                <p class="text-lg mb-6">Linear independence extends beyond vectors to <strong>function spaces</strong>. This concept is crucial in differential equations and signal processing.</p>
+
+                <div class="definition-box">
+                    <h3 class="text-xl font-bold mb-3"><i class="fas fa-info-circle mr-2"></i>Function Spaces</h3>
+                    <p class="mb-3">A vector space can be formed by the set of all functions from a set to a field (like real numbers).</p>
+                    <p>For instance, the set of all continuous functions from ℝ to ℝ is a vector space.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Linear Independence of Functions</h3>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <p class="mb-4">Two differentiable functions f(t) and g(t) are <strong>linearly dependent</strong> if there exist non-zero constants c₁ and c₂ such that:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="vector-notation text-center">c₁f(t) + c₂g(t) = 0 for all t</p>
+                    </div>
+                    <p>Otherwise, they are <strong>linearly independent</strong>.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Examples</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-red-600">Linearly Dependent</h4>
+                        <p class="mb-2"><span class="vector-notation">f(t) = 2sin²(t)</span></p>
+                        <p class="mb-2"><span class="vector-notation">g(t) = 1 - cos²(t)</span></p>
+                        <p class="text-sm">Since sin²(t) + cos²(t) = 1, we have:</p>
+                        <p class="vector-notation">f(t) = 2sin²(t) = 2(1 - cos²(t)) = 2g(t)</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h4 class="text-xl font-semibold mb-3 text-green-600">Linearly Independent</h4>
+                        <p class="mb-2"><span class="vector-notation">f(t) = sin(t)</span></p>
+                        <p class="mb-2"><span class="vector-notation">g(t) = cos(t)</span></p>
+                        <p class="text-sm">No constant combination of sin(t) and cos(t) equals zero for all t.</p>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> You can explore more examples at home: Are sin²(x), cos²(x), and cos(2x) linearly dependent or independent? Consider whether these functions are part of a larger vector space.
+                </div>
+
+                <div class="key-takeaways">
+                    <h4 class="font-bold mb-2"><i class="fas fa-key mr-2"></i>Applications in Data Science</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Signal Processing:</strong> Fourier analysis uses orthogonal function bases</li>
+                        <li><strong>Machine Learning:</strong> Feature independence prevents multicollinearity</li>
+                        <li><strong>Differential Equations:</strong> Solution spaces and basis functions</li>
+                        <li><strong>Numerical Analysis:</strong> Polynomial approximation and spline functions</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Functions ka भी linear independence हो सकता है। Agar koi constants से functions का combination हमेशा zero रहे, तो वे dependent हैं। Signal processing aur differential equations में ये concept बहुत useful है।
+                </div>
+            </section>
+
+            <!-- Basis Vectors -->
+            <section id="basis" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-vector-square mr-2"></i>6. Basis Vectors</h2>
+
+                <p class="text-lg mb-6">A basis is the <strong>combination of span and independence</strong>. Understanding basis vectors is fundamental for many applications in data science and machine learning.</p>
+
+                <div class="definition-box">
+                    <h3 class="text-xl font-bold mb-3"><i class="fas fa-info-circle mr-2"></i>Definition of Basis</h3>
+                    <p class="mb-3">A set of vectors {v₁, v₂, ..., vₙ} forms a basis for some subspace of ℝᴺ if it:</p>
+                    <ol class="list-decimal list-inside space-y-2 ml-4">
+                        <li><strong>Spans</strong> that subspace</li>
+                        <li>Is an <strong>independent</strong> set of vectors</li>
+                    </ol>
+                    <p class="mt-3">Geometrically, a basis is like a <strong>ruler for a space</strong> - it provides fundamental units (length and direction) to measure the space.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Standard Basis Vectors</h3>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Cartesian Axis Basis Vectors</h4>
+                    <p class="mb-4">The most common basis set contains only 0s and 1s:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2">ℝ²</h5>
+                            <div class="bg-gray-100 p-3 rounded">
+                                <p class="vector-notation">e₁ = [1, 0]</p>
+                                <p class="vector-notation">e₂ = [0, 1]</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2">ℝ³</h5>
+                            <div class="bg-gray-100 p-3 rounded">
+                                <p class="vector-notation">e₁ = [1, 0, 0]</p>
+                                <p class="vector-notation">e₂ = [0, 1, 0]</p>
+                                <p class="vector-notation">e₃ = [0, 0, 1]</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2">ℝⁿ</h5>
+                            <div class="bg-gray-100 p-3 rounded">
+                                <p class="vector-notation">eᵢ = [0,...,0,1,0,...,0]</p>
+                                <p class="text-sm">1 in i-th position</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-lg font-semibold mb-3">Properties of Standard Basis</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Unit length:</strong> ||eᵢ|| = √(1²) = 1</li>
+                        <li><strong>Mutually orthogonal:</strong> eᵢ · eⱼ = 0 for i ≠ j</li>
+                        <li><strong>Simplicity:</strong> Easy to work with computationally</li>
+                        <li><strong>Completeness:</strong> Can span the entire space</li>
+                    </ul>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor mentioned in class:</strong> This basis set is widely used because of its simplicity. Each basis vector has unit length, and all vectors in the set are mutually orthogonal - the dot product of any vector with any other vector is zero. You can verify: e₁ · e₂ = (1)(0) + (0)(1) = 0.
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4">Verification Examples</h3>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold mb-3">Unit Length Verification</h4>
+                    <div class="space-y-3">
+                        <p><strong>For ℝ²:</strong> ||e₁|| = √(1² + 0²) = 1</p>
+                        <p><strong>For ℝ³:</strong> ||e₁|| = √(1² + 0² + 0²) = 1</p>
+                    </div>
+
+                    <h4 class="text-xl font-semibold mb-3 mt-6">Orthogonality Verification</h4>
+                    <div class="space-y-3">
+                        <p><strong>For ℝ²:</strong> e₁ · e₂ = (1)(0) + (0)(1) = 0</p>
+                        <p><strong>For ℝ³:</strong> e₁ · e₂ = (1)(0) + (0)(1) + (0)(0) = 0</p>
+                    </div>
+                </div>
+
+                <div class="key-takeaways">
+                    <h4 class="font-bold mb-2"><i class="fas fa-key mr-2"></i>Applications in Data Science</h4>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Principal Component Analysis (PCA):</strong> Finding optimal basis for data</li>
+                        <li><strong>Singular Value Decomposition (SVD):</strong> Matrix factorization using orthogonal bases</li>
+                        <li><strong>Dimensionality Reduction:</strong> Projecting data onto lower-dimensional bases</li>
+                        <li><strong>Feature Engineering:</strong> Creating independent feature representations</li>
+                        <li><strong>Computer Graphics:</strong> Coordinate transformations and rotations</li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Hinglish Summary:</strong> Basis vectors वो होते हैं जो space को span करते हैं और independent भी होते हैं। Standard basis में 0s और 1s होते हैं, ये unit length के होते हैं और mutually orthogonal होते हैं। PCA, SVD जैसी techniques में basis vectors बहुत important हैं।
+                </div>
+            </section>
+
+            <!-- Practice Problems -->
+            <section id="practice" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-pencil-alt mr-2"></i>7. Practice Problems</h2>
+
+                <div class="practice-section">
+                    <h3 class="text-2xl font-semibold mb-4">Problem 1: Determining Linear Independence</h3>
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">Question:</p>
+                        <p>Are the following two sets dependent or independent?</p>
+                        <div class="mt-3">
+                            <p><strong>Set 1:</strong> <span class="vector-notation">w₁ = [2, 4, 6], w₂ = [1, 2, 4]</span></p>
+                            <p><strong>Set 2:</strong> <span class="vector-notation">v₁ = [1, 0, 2], v₂ = [0, 1, 1], v₃ = [2, 1, 5]</span></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="font-semibold mb-2">Solution:</p>
+                        <div class="space-y-3">
+                            <div>
+                                <p><strong>Set 1 Analysis:</strong></p>
+                                <p>Check if w₁ = k·w₂ for some scalar k:</p>
+                                <p>First two components: 2 = k·1 and 4 = k·2, so k = 2</p>
+                                <p>Third component: 6 ≟ 2·4 = 8 ❌</p>
+                                <p class="font-semibold text-green-600">Result: Set 1 is linearly independent</p>
+                            </div>
+                            <div>
+                                <p><strong>Set 2 Analysis:</strong></p>
+                                <p>Try to express v₃ as combination of v₁ and v₂:</p>
+                                <p>v₃ = a·v₁ + b·v₂</p>
+                                <p>[2, 1, 5] = a[1, 0, 2] + b[0, 1, 1]</p>
+                                <p>From equations: a = 2, b = 1, but 2(2) + 1(1) = 5 ✓</p>
+                                <p class="font-semibold text-red-600">Result: Set 2 is linearly dependent</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="practice-section">
+                    <h3 class="text-2xl font-semibold mb-4">Problem 2: Function Independence</h3>
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">Question:</p>
+                        <p>Determine if the functions f(x) = sin²(x), g(x) = cos²(x), and h(x) = 1 are linearly independent.</p>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="font-semibold mb-2">Solution:</p>
+                        <div class="space-y-3">
+                            <p>We need to check if c₁sin²(x) + c₂cos²(x) + c₃(1) = 0 for all x.</p>
+                            <p>Using the identity sin²(x) + cos²(x) = 1:</p>
+                            <p>We can write: 1·sin²(x) + 1·cos²(x) + (-1)·1 = 0</p>
+                            <p class="font-semibold text-red-600">Result: The functions are linearly dependent</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="practice-section">
+                    <h3 class="text-2xl font-semibold mb-4">Problem 3: Basis Verification</h3>
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">Question:</p>
+                        <p>Show that the vectors <span class="vector-notation">u₁ = [1, 1], u₂ = [1, -1]</span> form a basis for ℝ².</p>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="font-semibold mb-2">Solution:</p>
+                        <div class="space-y-3">
+                            <p><strong>Step 1: Check linear independence</strong></p>
+                            <p>c₁[1, 1] + c₂[1, -1] = [0, 0]</p>
+                            <p>This gives: c₁ + c₂ = 0 and c₁ - c₂ = 0</p>
+                            <p>Solving: c₁ = 0, c₂ = 0 (only trivial solution)</p>
+                            <p><strong>Step 2: Check spanning</strong></p>
+                            <p>For any [a, b] ∈ ℝ²: [a, b] = ((a+b)/2)[1, 1] + ((a-b)/2)[1, -1]</p>
+                            <p class="font-semibold text-green-600">Result: {u₁, u₂} forms a basis for ℝ²</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mind Map -->
+            <section id="mindmap" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-project-diagram mr-2"></i>8. Comprehensive Mind Map</h2>
+
+                <div class="mind-map">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-purple-600">LINEAR INDEPENDENCE & DEPENDENCE</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Column: Definitions -->
+                        <div class="space-y-4">
+                            <div class="bg-blue-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-800 mb-2">DEFINITIONS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li><strong>Linear Independence:</strong><br>λ₁v₁ + ... + λₙvₙ = 0 ⟺ all λᵢ = 0</li>
+                                    <li><strong>Linear Dependence:</strong><br>∃ λᵢ ≠ 0 such that λ₁v₁ + ... + λₙvₙ = 0</li>
+                                    <li><strong>Property of sets, not individual vectors</strong></li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-green-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-800 mb-2">GEOMETRIC VIEW</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• Collinear vectors → Dependent</li>
+                                    <li>• Non-collinear → Can be independent</li>
+                                    <li>• M > N vectors in ℝⁿ → Dependent</li>
+                                    <li>• Orthogonal vectors → Independent</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-yellow-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-yellow-800 mb-2">DETECTION METHODS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>1. Count vectors vs dimensions</li>
+                                    <li>2. Check for zero vector</li>
+                                    <li>3. Look for patterns</li>
+                                    <li>4. Trial and error</li>
+                                    <li>• Matrix algorithms for large sets</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Center Column: Core Concepts -->
+                        <div class="space-y-4">
+                            <div class="bg-purple-100 p-4 rounded-lg text-center">
+                                <h4 class="font-bold text-purple-800 mb-2">CORE RELATIONSHIP</h4>
+                                <div class="text-lg font-mono bg-white p-3 rounded">
+                                    SPAN + INDEPENDENCE = BASIS
+                                </div>
+                            </div>
+
+                            <div class="bg-red-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-red-800 mb-2">KEY THEOREMS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• Any set with zero vector is dependent</li>
+                                    <li>• M > N vectors in ℝⁿ are dependent</li>
+                                    <li>• Rearranging reveals dependence structure</li>
+                                    <li>• Basis vectors are minimal spanning sets</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-orange-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-orange-800 mb-2">FUNCTION SPACES</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• c₁f(t) + c₂g(t) = 0 ∀t</li>
+                                    <li>• Examples: sin²(t), cos²(t), 1</li>
+                                    <li>• Applications in signal processing</li>
+                                    <li>• Differential equations</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Applications -->
+                        <div class="space-y-4">
+                            <div class="bg-indigo-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-indigo-800 mb-2">BASIS VECTORS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• Standard basis: [1,0], [0,1]</li>
+                                    <li>• Unit length: ||eᵢ|| = 1</li>
+                                    <li>• Orthogonal: eᵢ · eⱼ = 0</li>
+                                    <li>• Span entire space</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-teal-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-teal-800 mb-2">DATA SCIENCE APPLICATIONS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• Principal Component Analysis</li>
+                                    <li>• Singular Value Decomposition</li>
+                                    <li>• Dimensionality Reduction</li>
+                                    <li>• Feature Engineering</li>
+                                    <li>• Multicollinearity Detection</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-pink-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-pink-800 mb-2">NEXT TOPICS</h4>
+                                <ul class="text-sm space-y-2">
+                                    <li>• Affine Spaces</li>
+                                    <li>• Orthogonal Basis</li>
+                                    <li>• Inner Products</li>
+                                    <li>• Orthogonal Projections</li>
+                                    <li>• Matrix Derivatives</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Central Connection Lines -->
+                    <div class="mt-8 text-center">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800 mb-2">CONCEPTUAL CONNECTIONS</h4>
+                            <p class="text-sm">Linear Independence ⟷ Basis Formation ⟷ Dimensionality ⟷ Data Science Applications</p>
+                            <p class="text-sm">Geometric Intuition ⟷ Algebraic Formulation ⟷ Computational Methods</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recap and Summary -->
+            <section id="recap" class="mb-10">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6"><i class="fas fa-bookmark mr-2"></i>Recap and Final Summary</h2>
+
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mb-6">
+                    <h3 class="text-2xl font-semibold mb-4">Key Points to Remember</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>Linear independence</strong> describes a set of vectors where no vector can be expressed as a linear combination of the others</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>None of the vectors are redundant</strong> - they each contribute unique information to the space they span</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>Linear independence is critical</strong> for determining vector space dimension and constructing bases</span>
+                            </li>
+                        </ul>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>Bases are minimal sets</strong> of vectors that can span the entire space</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>The span can be a subspace</strong> of a vector space</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                <span><strong>Linear independence is vital</strong> to many scientific and engineering fields</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="extra-content">
+                    <strong>Professor's closing remarks:</strong> Coming up next are important concepts related to matrix transformation, vector spaces, and linear independence: the concepts of affine spaces, followed by orthogonal basis, orthogonal complement, orthogonal basis vectors, inner products, and orthogonal projections. These will be very helpful when we get into dimension reduction techniques like Principal Component Analysis and Singular Value Decomposition, which are indispensable for machine learning and data science.
+                </div>
+
+                <div class="hinglish-summary">
+                    <strong>Final Hinglish Summary:</strong> Aaj humne linear independence aur dependence के बारे में सीखा। ये concepts data science में बहुत important हैं। Independent vectors कोई redundancy नहीं रखते, har vector unique information देता है। Basis vectors से पूरी space को span कर सकते हैं। अगले lectures में orthogonality, inner products, aur PCA जैसे topics आएंगे।
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-lg text-center">
+                    <h3 class="text-xl font-bold mb-2">Thank You!</h3>
+                    <p>These comprehensive notes cover all the essential concepts of Linear Independence and Linear Dependence. Use them for study, reference, and exam preparation.</p>
+                    <p class="mt-2 text-sm">Ready for export to PDF for offline study! 📚</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current section in TOC
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.toc-link');
+
+            function highlightCurrentSection() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 200) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('bg-blue-100', 'font-bold');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('bg-blue-100', 'font-bold');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', highlightCurrentSection);
+            highlightCurrentSection(); // Initial call
+        });
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

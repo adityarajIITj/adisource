@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/ata/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Thinking & Applications - Lecture 7: Functions and Modules in Python</title>
+    
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* ============ Overall Document Styling ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        /* ============ Title and Header Styling ============ */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            padding-left: 10px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* ============ Paragraph and Text Styling ============ */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            line-height: 1.9;
+        }
+        
+        strong {
+            color: #2980b9;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        /* ============ Code Block Styling ============ */
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        pre code {
+            color: inherit;
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        /* ============ List Styling ============ */
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        /* ============ Table Styling ============ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #ecf0f1;
+        }
+        
+        /* ============ Special Boxes ============ */
+        .docstring {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .professor-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .professor-note strong {
+            color: #ff9800;
+        }
+        
+        .hinglish-summary {
+            background-color: #f0f7ff;
+            border-left: 4px solid #2980b9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .key-takeaways {
+            background-color: #e8f8f5;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .key-takeaways h4 {
+            color: #27ae60;
+            margin-top: 0;
+        }
+        
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+        
+        .practice-questions {
+            background-color: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .practice-questions h4 {
+            color: #e67e22;
+            margin-top: 0;
+        }
+        
+        .question-item {
+            margin: 15px 0;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .answer-text {
+            color: #555;
+            padding-left: 20px;
+            border-left: 2px solid #f39c12;
+            margin-top: 5px;
+        }
+        
+        /* ============ Blockquote Styling ============ */
+        blockquote {
+            border-left: 4px solid #95a5a6;
+            padding-left: 15px;
+            margin: 20px 0;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        /* ============ Table of Contents ============ */
+        .toc {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 40px;
+        }
+        
+        .toc h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 10px;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .toc-level-2 {
+            margin-left: 20px;
+        }
+        
+        .toc-level-3 {
+            margin-left: 40px;
+        }
+        
+        /* ============ Mind Map Styling ============ */
+        .mindmap-container {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        
+        .mindmap-center {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        .mindmap-branch {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: white;
+            border-left: 4px solid #3498db;
+            border-radius: 3px;
+        }
+        
+        .mindmap-branch-title {
+            color: #2980b9;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        
+        .mindmap-item {
+            margin-left: 20px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        /* ============ Utility Classes ============ */
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        
+        .diagram-placeholder {
+            background-color: #ecf0f1;
+            border: 2px dashed #95a5a6;
+            padding: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .summary-box {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #1976d2;
+        }
+        
+        /* ============ Responsive Design ============ */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ============================================================ -->
+        <!-- SECTION: Title and Introduction -->
+        <!-- ============================================================ -->
+        
+        <h1>Functions and Modules in Python</h1>
+        <p class="header-subtitle">Lecture 7: Algorithmic Thinking & its Applications</p>
+        
+        <div class="summary-box">
+            <strong>Quick Overview:</strong> This lecture introduces two fundamental concepts in Python programming: <strong>functions</strong> (both built-in and modules) and how to <strong>create and use modules</strong>. We explore how Python provides pre-built functions through modules like <code>math</code>, and how to create our own reusable code by building modules and scripts. Understanding these concepts is crucial for writing modular, maintainable, and professional Python code. The lecture covers function calls, arguments, the mathematics module, module creation, documentation through docstrings, and the distinction between modules and scripts.
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION: Table of Contents -->
+        <!-- ============================================================ -->
+        
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ul>
+                <li><a href="#section-1">1. Introduction to Functions and Procedures</a></li>
+                <li><a href="#section-2">2. Function Calls in Python</a></li>
+                <li><a href="#section-3">3. Built-In Functions</a></li>
+                <li><a href="#section-4">4. Functions vs Modules</a></li>
+                <li><a href="#section-5">5. The Math Module</a></li>
+                <li><a href="#section-6">6. Using Modules and the import Statement</a></li>
+                <li><a href="#section-7">7. Creating Your Own Modules</a></li>
+                <li><a href="#section-8">8. Understanding Docstrings</a></li>
+                <li><a href="#section-9">9. User Input in Python</a></li>
+                <li><a href="#section-10">10. Modules vs Scripts</a></li>
+                <li><a href="#section-11">11. Working Directory and Module Location</a></li>
+                <li><a href="#section-12">12. Mind Map and Summary</a></li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 1: Introduction to Functions and Procedures -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-1">1. Introduction to Functions and Procedures</h2>
+        
+        <p>
+            Welcome to this comprehensive exploration of one of the most important and powerful concepts in modern programming: <strong>functions and procedures</strong>. These concepts form the backbone of professional software development and are central to writing clean, reusable, and maintainable code. As you progress in your journey as a programmer and engineer, understanding how to work with functions will be one of the most valuable skills you can develop.
+        </p>
+        
+        <p>
+            At its core, a <strong>program is a sequence of operations</strong> that transforms input data into output data. Every program follows this fundamental pattern: it receives input information, processes that information through a series of steps, and then produces output. While at the machine level, all data is represented as binary values, at our level of abstraction, we work with meaningful representations like numbers, characters, text, images, and videos. Each of these data types comes with its own set of operations that can be performed on them.
+        </p>
+        
+        <p>
+            Professor mentioned in class: In the previous lectures, we discussed the concept of <strong>data types</strong>, which are combinations of information and their associated operations. Not every operation is applicable to every data type. For instance, you cannot take the square root of a text string in the same way you do with a number. This specificity is fundamental to understanding how programming languages are structured.
+        </p>
+        
+        <h3>The Layering of Operations</h3>
+        
+        <p>
+            When we think about operations in programming, we can organize them into layers of abstraction. At <strong>Level 0</strong>, we have the most basic mathematical operators: addition (<code>+</code>), subtraction (<code>-</code>), multiplication (<code>*</code>), and division (<code>/</code>). These are the primitive building blocks of any arithmetic operation.
+        </p>
+        
+        <p>
+            However, programming becomes truly powerful when we move to <strong>Level 1</strong>. At this level, we combine two or more basic operations to create more complex operations. For example, we might combine addition and multiplication, or combine subtraction and division to solve more sophisticated problems. This idea of combining simpler operations to create more complex ones is the foundation of <strong>procedural programming</strong>.
+        </p>
+        
+        <p>
+            The key insight is that <strong>this combination of operations forms a standalone procedure</strong> or function. Once we've created this combination, it becomes a reusable mechanism that can be applied to multiple different kinds of problems. This is the power of abstraction in programming.
+        </p>
+        
+        <h3>From Data to Expressions to Programs</h3>
+        
+        <p>
+            Consider a simple example: we have variables <code>x = 3</code> and <code>y = 4</code>. We can then calculate <code>z = x + y</code> and store the result. Each of these lines represents an operation: the first two are memory operations (storing values), and the third is an arithmetic operation followed by a memory operation (addition and storage). When we combine these operations in sequence, we create a complete program.
+        </p>
+        
+        <p>
+            In high-level programming languages, every statement or line of code can be evaluated to produce a value or result. This fundamental principle means that <strong>a program is essentially a sequence of expressions</strong> that build upon each other to solve a problem. Understanding this concept is crucial for moving from writing simple scripts to designing sophisticated, modular programs.
+        </p>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Functions aur procedures programming mein sabse powerful tool hain. Ek program basically input ko process karke output produce karta hai. Operations ko levels mein organize kar sakte hain - basic operations jaise +, -, *, / se leke complex combinations tak. Jab aap simple operations ko combine karते हो, to wo ek standalone procedure ban jaata hai jo aap barebaar use kar sakte ho. Yeh abstraction ka power hai! Har statement aur line ek expression hoti hai jo kisi value ko evaluate karta hai.
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Functions and procedures are fundamental to modern programming</li>
+                <li>A program transforms input data through processing steps into output data</li>
+                <li>Data types combine information with their associated operations</li>
+                <li>Operations can be layered: basic operations can be combined to create complex operations</li>
+                <li>A combination of operations forms a reusable procedure or function</li>
+                <li>Programs are sequences of expressions that evaluate to values</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 2: Function Calls in Python -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-2">2. Function Calls in Python</h2>
+        
+        <p>
+            Python supports mathematical expressions using what are called <strong>function calls</strong>. A <strong>function call</strong> is essentially an invocation of a function with specific arguments. In Python, function calls follow a specific syntax that allows us to use functions in expressions, making our code more readable and powerful.
+        </p>
+        
+        <h3>The Anatomy of a Function Call</h3>
+        
+        <p>
+            A function call in Python has a specific form that consists of three main components:
+        </p>
+        
+        <pre><code>name(argument1, argument2, ...)</code></pre>
+        
+        <p>
+            The components are:
+        </p>
+        
+        <ul>
+            <li><strong>Function name:</strong> The identifier of the function you want to call (e.g., <code>round</code>, <code>max</code>, <code>abs</code>)</li>
+            <li><strong>Arguments:</strong> The values or expressions you pass to the function, separated by commas</li>
+            <li><strong>Parentheses:</strong> Used to enclose the arguments and indicate that this is a function call</li>
+        </ul>
+        
+        <p>
+            A critical concept to understand is that <strong>arguments are expressions, not just values</strong>. This means you can pass not only simple values like numbers, but also entire expressions that Python will evaluate before passing them to the function.
+        </p>
+        
+        <h3>Examples of Function Calls</h3>
+        
+        <p>
+            Let's look at some practical examples of function calls in Python:
+        </p>
+        
+        <pre><code>round(2.34)          # Rounds 2.34 to nearest integer
+max(a+3, 24)         # Finds maximum of (a+3) and 24
+int("42")            # Converts string to integer
+float("3.14")        # Converts string to float
+bool(1)              # Converts to boolean</code></pre>
+        
+        <p>
+            In the second example, <code>max(a+3, 24)</code>, notice that the first argument is an expression <code>a+3</code>. Python will first evaluate this expression (computing a plus 3), and then pass that result to the <code>max</code> function. This demonstrates the principle that <strong>arguments can be any expression</strong>.
+        </p>
+        
+        <h3>Functions as Expressions</h3>
+        
+        <p>
+            One of the most important aspects of function calls is that they are <strong>expressions</strong>. This means they can be used anywhere an expression can appear in Python code. Most commonly, you'll use function calls in assignment statements:
+        </p>
+        
+        <pre><code>x = round(2.34)      # Calls round, stores result in x
+y = max(10, 20)      # Calls max, stores result in y
+z = int("100")       # Calls int, stores result in z</code></pre>
+        
+        <p>
+            This capability to use function calls as expressions is what makes them so powerful. You can nest function calls, use them in calculations, and combine them with other operations. For example: <code>z = int(round(3.7))</code> first rounds 3.7 to 4, then converts it to an integer.
+        </p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> When you use function calls, Python evaluates them from the inside out when they're nested. So in <code>int(round(3.7))</code>, Python first executes <code>round(3.7)</code>, gets 4, and then passes that 4 to the <code>int()</code> function. Always remember this order of evaluation!
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Function calls ka pattern simple hai: name(argument1, argument2, ...). Arguments expressions ho sakte hain, sirf values nahi. Function calls apne aap expressions hain, to inhe assignment statements mein use kar sakte ho. Jab function calls nested ho, to Python andar se bahar ki taraf evaluate karta hai. Yeh flexibility functions ko bohat powerful banata hai!
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: What is the output of the following code?</div>
+                <pre><code>x = max(5, 10)
+y = round(3.6)
+z = x + y
+print(z)</code></pre>
+                <div class="answer-text">
+                    <strong>Answer:</strong> The output is 14. Here's why: <code>max(5, 10)</code> returns 10 (stored in x), <code>round(3.6)</code> returns 4 (stored in y), and <code>x + y = 10 + 4 = 14</code>.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Write a function call that would round the result of 7+8 divided by 3.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> <code>round((7+8)/3)</code> or <code>round(15/3)</code>. Both are equivalent since (7+8)/3 = 15/3 = 5.0, which rounds to 5.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Function calls follow the pattern: <code>name(argument1, argument2, ...)</code></li>
+                <li>Arguments are expressions, not just simple values</li>
+                <li>Function calls are expressions themselves and can be used in assignments</li>
+                <li>Nested function calls are evaluated from inside out</li>
+                <li>You can use multiple function calls together in complex expressions</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 3: Built-In Functions -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-3">3. Built-In Functions</h2>
+        
+        <p>
+            Python comes equipped with a set of <strong>built-in functions</strong> that are always available without needing to import anything. These functions are fundamental tools in your Python toolkit. You've already encountered several of these in your journey as a programmer, including type casting functions like <code>int()</code>, <code>float()</code>, and <code>bool()</code>, which convert between different data types.
+        </p>
+        
+        <h3>Common Built-In Functions</h3>
+        
+        <p>
+            Let's explore some of the most commonly used built-in functions:
+        </p>
+        
+        <table>
+            <tr>
+                <th>Function</th>
+                <th>Purpose</th>
+                <th>Example</th>
+                <th>Output</th>
+            </tr>
+            <tr>
+                <td><code>round()</code></td>
+                <td>Rounds a number to nearest integer</td>
+                <td><code>round(2.34)</code></td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><code>max()</code></td>
+                <td>Returns the maximum value</td>
+                <td><code>max(5, 10, 3)</code></td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td><code>min()</code></td>
+                <td>Returns the minimum value</td>
+                <td><code>min(5, 10, 3)</code></td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td><code>abs()</code></td>
+                <td>Returns absolute value</td>
+                <td><code>abs(-5)</code></td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td><code>len()</code></td>
+                <td>Returns length of a sequence</td>
+                <td><code>len("hello")</code></td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td><code>type()</code></td>
+                <td>Returns the data type</td>
+                <td><code>type(42)</code></td>
+                <td>&lt;class 'int'&gt;</td>
+            </tr>
+            <tr>
+                <td><code>int(), float(), bool()</code></td>
+                <td>Type conversion/casting</td>
+                <td><code>int("42")</code></td>
+                <td>42</td>
+            </tr>
+            <tr>
+                <td><code>str()</code></td>
+                <td>Converts to string</td>
+                <td><code>str(42)</code></td>
+                <td>"42"</td>
+            </tr>
+        </table>
+        
+        <h3>Functions as Commands vs. Expressions</h3>
+        
+        <p>
+            It's important to distinguish between two types of functions: those that are <strong>expressions</strong> and those that are <strong>commands/statements</strong>. Most functions you've seen so far are expressions because they return a value that can be used in your code:
+        </p>
+        
+        <pre><code>x = round(2.34)      # Expression: round returns a value
+y = max(10, 20)      # Expression: max returns a value</code></pre>
+        
+        <p>
+            However, some functions are commands that instruct Python to do something specific but don't return a usable value. Two important examples are:
+        </p>
+        
+        <ul>
+            <li><code>help()</code> - Displays documentation for an object or function</li>
+            <li><code>quit()</code> - Exits the Python interpreter</li>
+        </ul>
+        
+        <p>
+            These command functions typically take no arguments (or sometimes optional arguments) and don't return meaningful values for use in expressions. The best way to know whether a function is an expression or a command is to <strong>read the documentation</strong>.
+        </p>
+        
+        <h3>Accessing Built-In Function Documentation</h3>
+        
+        <p>
+            Python provides comprehensive online documentation for all built-in functions. You can access this at: <code>https://docs.python.org/3/library/functions.html</code>. This resource lists all available built-in functions with detailed explanations, parameters, and examples. While some functions in the documentation may appear advanced for your current level, you'll find them increasingly useful as you progress in your Python journey.
+        </p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Don't try to memorize all the built-in functions. Instead, develop the habit of consulting the documentation whenever you need a function. This is what professional programmers do every day! Learning to read and understand technical documentation is just as important as learning the language itself.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Python mein built-in functions pehle se available hote hain - inhe import karne ki zaroorat nahi. <code>round()</code>, <code>max()</code>, <code>min()</code>, <code>type()</code> jaise functions bohot common hain. Kuch functions expressions hain (jo value return karte hain), aur kuch commands hain (jo sirf action perform karte hain). Jab function ke baare mein pata nahi, to documentation read karo. Python ka official documentation very helpful hai!
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: What will be the output of <code>print(type(round(3.7)))</code>?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> The output will be <code>&lt;class 'int'&gt;</code>. This is because <code>round(3.7)</code> returns 4 (an integer), and <code>type(4)</code> returns the integer type.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Is <code>help()</code> an expression function or a command function? Explain.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> <code>help()</code> is a command function. It doesn't return a value that you can use in an expression. Instead, it performs an action (displays documentation). You wouldn't write something like <code>x = help(round)</code> and expect x to contain a useful value.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Python provides many built-in functions without requiring imports</li>
+                <li>Common functions include <code>round()</code>, <code>max()</code>, <code>min()</code>, <code>abs()</code>, <code>type()</code></li>
+                <li>Type casting functions (<code>int()</code>, <code>float()</code>, <code>str()</code>) convert between data types</li>
+                <li>Some functions are expressions (return values), others are commands (perform actions)</li>
+                <li>Always refer to official documentation when unsure about a function</li>
+                <li>The built-in functions reference is available at Python's official documentation site</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 4: Built-In Functions vs Modules -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-4">4. Built-In Functions vs Modules</h2>
+        
+        <p>
+            While Python provides many built-in functions out of the box, there are many more functions that you might expect to find but aren't included as built-ins. This raises an important question: where do these additional functions come from? The answer lies in Python's modular architecture.
+        </p>
+        
+        <h3>Why Are There Limited Built-In Functions?</h3>
+        
+        <p>
+            The designers of Python made a deliberate choice to keep the number of built-in functions relatively small. This is by design! Imagine if every possible function that Python could do was built-in. The language would become incredibly bloated, slow to load, and difficult to maintain. Instead, Python follows a philosophy of keeping the core language lean while providing additional functionality through <strong>modules</strong>.
+        </p>
+        
+        <p>
+            For example, you might expect to find functions like <code>sqrt()</code> (square root) or <code>cos()</code> (cosine) among the built-in functions, but they're not. These mathematical functions are instead available through the <code>math</code> module, which you can import when you need them.
+        </p>
+        
+        <h3>What is a Module?</h3>
+        
+        <p>
+            A <strong>module</strong> is a Python file that contains Python code—specifically, a collection of functions, variables, and classes that are grouped together by theme or purpose. Modules serve as a way for Python to provide optional functionality. Instead of loading everything at startup, Python loads only the modules you explicitly request through the <code>import</code> statement.
+        </p>
+        
+        <p>
+            Think of modules as <strong>libraries of functionality</strong>. Python comes with an extensive standard library containing dozens of modules, each providing specialized functions for different tasks. When you need a specific capability, you import the relevant module, and suddenly you have access to all its functions and variables.
+        </p>
+        
+        <h3>Importing a Module</h3>
+        
+        <p>
+            To access a module, you use Python's <strong>import command</strong>. The syntax is simple:
+        </p>
+        
+        <pre><code>import module_name</code></pre>
+        
+        <p>
+            Once you've imported a module, you access its functions using the module name as a prefix:
+        </p>
+        
+        <pre><code>module_name.function_name(arguments)</code></pre>
+        
+        <p>
+            This naming convention is important because it prevents <strong>namespace conflicts</strong>. Different modules might have functions with the same name, and by prefixing with the module name, Python can distinguish between them.
+        </p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The prefix requirement might seem like extra typing, but it's actually a feature, not a bug! It makes your code much more readable because anyone reading your code knows exactly which module a function comes from. Professional programmers actually prefer this explicit style.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Built-in functions limited hain by design - Python ko lean aur fast rakhne ke liye. Extra functions modules mein available hote hain. Module basically ek Python file hai jo related functions ka collection hota hai. Jab module ki jaroorat ho, to <code>import module_name</code> use karte ho. Phir <code>module_name.function_name()</code> se function access karte ho. Module name prefix dene se namespace conflicts avoid hote hain.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: Why don't all functions exist as built-in functions in Python?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> Because it would make Python bloated, slow to load, and hard to maintain. Python follows a philosophy of keeping the core lean and providing additional functionality through modules that users can import as needed.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: What is a module? Give an example of a situation where you would need to use a module.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> A module is a Python file containing related functions, variables, and classes grouped by theme. You would need a module when you want to use specialized functions not available as built-ins. For example, if you need to calculate the sine of an angle, you would need the <code>math</code> module because <code>sin()</code> is not a built-in function.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Built-in functions are intentionally kept limited for performance and maintainability</li>
+                <li>A module is a file containing Python code (functions, variables, classes)</li>
+                <li>Modules provide optional functionality organized by theme or purpose</li>
+                <li>Use the <code>import</code> statement to load a module</li>
+                <li>Access module functions with the syntax: <code>module_name.function_name()</code></li>
+                <li>Module prefixes prevent namespace conflicts and improve code readability</li>
+                <li>Python has an extensive standard library of modules available for various tasks</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 5: The Math Module -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-5">5. The Math Module</h2>
+        
+        <p>
+            One of the most commonly used modules in Python is the <code>math</code> module, which provides mathematical functions and constants that are not available as built-in functions. This module is essential for anyone working with mathematical computations, scientific calculations, or engineering applications. Let's explore how to use it and what it offers.
+        </p>
+        
+        <h3>Importing and Using the Math Module</h3>
+        
+        <p>
+            To use the math module, you first import it:
+        </p>
+        
+        <pre><code>import math</code></pre>
+        
+        <p>
+            Once imported, you can access all the math module's functions and constants. Let's look at a concrete example:
+        </p>
+        
+        <pre><code>>>> import math
+>>> math.cos(0)
+1.0
+>>> math.cos(math.pi)
+-1.0</code></pre>
+        
+        <p>
+            In this example, we're using <code>math.cos()</code> to calculate the cosine of an angle (in radians). Notice that we're also using <code>math.pi</code>, which is a constant in the math module that represents the value of π (pi). The cosine of 0 radians is 1.0, and the cosine of π radians is -1.0.
+        </p>
+        
+        <h3>Important Math Module Functions and Constants</h3>
+        
+        <table>
+            <tr>
+                <th>Function/Constant</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td><code>math.sqrt(x)</code></td>
+                <td>Square root of x</td>
+                <td><code>math.sqrt(16)</code> returns 4.0</td>
+            </tr>
+            <tr>
+                <td><code>math.sin(x)</code></td>
+                <td>Sine of x (in radians)</td>
+                <td><code>math.sin(math.pi/2)</code> returns 1.0</td>
+            </tr>
+            <tr>
+                <td><code>math.cos(x)</code></td>
+                <td>Cosine of x (in radians)</td>
+                <td><code>math.cos(0)</code> returns 1.0</td>
+            </tr>
+            <tr>
+                <td><code>math.tan(x)</code></td>
+                <td>Tangent of x (in radians)</td>
+                <td><code>math.tan(math.pi/4)</code> returns 1.0</td>
+            </tr>
+            <tr>
+                <td><code>math.pow(x, y)</code></td>
+                <td>x to the power of y</td>
+                <td><code>math.pow(2, 3)</code> returns 8.0</td>
+            </tr>
+            <tr>
+                <td><code>math.log(x)</code></td>
+                <td>Natural logarithm of x</td>
+                <td><code>math.log(1)</code> returns 0.0</td>
+            </tr>
+            <tr>
+                <td><code>math.pi</code></td>
+                <td>The constant π ≈ 3.14159...</td>
+                <td><code>math.pi</code> returns 3.141592653589793</td>
+            </tr>
+            <tr>
+                <td><code>math.e</code></td>
+                <td>The constant e ≈ 2.71828... (Euler's number)</td>
+                <td><code>math.e</code> returns 2.718281828459045</td>
+            </tr>
+        </table>
+        
+        <h3>Math Module Constants</h3>
+        
+        <p>
+            The math module provides two important mathematical constants. The first is <strong>π (pi)</strong>, which appears in countless mathematical and scientific formulas. The second is <strong>e (Euler's number)</strong>, which is fundamental to exponential and logarithmic functions. These constants are represented with great precision in Python, giving you accurate values for your calculations.
+        </p>
+        
+        <h3>Common Trigonometric and Scientific Calculations</h3>
+        
+        <p>
+            Here are some practical examples of using the math module for common calculations:
+        </p>
+        
+        <pre><code># Calculate the circumference of a circle with radius 5
+import math
+radius = 5
+circumference = 2 * math.pi * radius
+print(circumference)  # Output: 31.41592653589793
+
+# Calculate the hypotenuse of a right triangle
+side1 = 3
+side2 = 4
+hypotenuse = math.sqrt(side1**2 + side2**2)
+print(hypotenuse)  # Output: 5.0
+
+# Calculate the angle whose cosine is 0
+angle = math.acos(0)
+print(angle)  # Output: 1.5707963267948966 (which is π/2)</code></pre>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> When using trigonometric functions in Python, remember that they work with radians, not degrees. If you have an angle in degrees and need to convert it to radians, you can use <code>math.radians(degrees)</code>. Similarly, to convert from radians to degrees, use <code>math.degrees(radians)</code>.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            <code>math</code> module advanced mathematical functions provide karta hai. <code>import math</code> se module load karte ho. <code>math.cos()</code>, <code>math.sin()</code>, <code>math.sqrt()</code> jaise functions use kar sakte ho. <code>math.pi</code> aur <code>math.e</code> important constants hain. Trigonometric functions radians mein kaam karte hain, degrees mein nahi. Math module ka documentation online available hai jo detailed functions describe karta hai.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: Write code to calculate the area of a circle with radius 10 using the math module.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong>
+                    <pre><code>import math
+radius = 10
+area = math.pi * radius**2
+print(area)  # Output: 314.1592653589793</code></pre>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: What is the difference between <code>math.sin(0)</code> and <code>math.sin(math.pi)</code>?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> <code>math.sin(0)</code> returns 0.0 (sine of 0 radians is 0), while <code>math.sin(math.pi)</code> returns approximately 1.2246467991473532e-16 (essentially 0 with floating-point rounding error). In mathematics, sin(π) = 0, but due to floating-point precision, we get a very small number close to zero.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>The <code>math</code> module provides mathematical functions and constants</li>
+                <li>Import it with <code>import math</code></li>
+                <li>Common functions include <code>sqrt()</code>, trigonometric functions, and logarithms</li>
+                <li>Important constants are <code>math.pi</code> and <code>math.e</code></li>
+                <li>Trigonometric functions work with radians, not degrees</li>
+                <li>You can access full documentation at the Python documentation site</li>
+                <li>The math module is essential for scientific and engineering applications</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 6: Using Modules and the Import Statement -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-6">6. Using Modules and the Import Statement</h2>
+        
+        <p>
+            We've learned that modules are Python files containing useful functions and variables. Now let's dive deeper into the practical aspects of using modules: how to import them, different import strategies, and best practices for working with modules effectively.
+        </p>
+        
+        <h3>The Standard Import Statement</h3>
+        
+        <p>
+            The most common and recommended way to import a module is using the standard import statement:
+        </p>
+        
+        <pre><code>import math</code></pre>
+        
+        <p>
+            When you use this form, you must prefix all functions and variables from the module with the module name. This is actually a good thing because it keeps your code clear and prevents accidental name conflicts.
+        </p>
+        
+        <pre><code>>>> import math
+>>> math.cos(0)
+1.0
+>>> cos(0)  # ERROR! NameError: name 'cos' is not defined</code></pre>
+        
+        <p>
+            In this example, <code>cos(0)</code> doesn't work because Python doesn't know what <code>cos</code> is. You must use <code>math.cos(0)</code> to specify that you want the cosine function from the math module. This explicit notation is a feature that makes your code more readable and maintainable.
+        </p>
+        
+        <h3>Using the "from" Keyword</h3>
+        
+        <p>
+            Python also provides an alternative import mechanism using the <code>from</code> keyword:
+        </p>
+        
+        <pre><code>>>> from math import pi
+>>> pi
+3.141592653589793
+>>> from math import *
+>>> cos(pi)
+-1.0</code></pre>
+        
+        <p>
+            The first form, <code>from math import pi</code>, imports just the <code>pi</code> constant, and you can use it without the module prefix. The second form, <code>from math import *</code>, imports <em>everything</em> from the math module, and you don't need any prefix for any function or variable.
+        </p>
+        
+        <h3>When NOT to Use "from"</h3>
+        
+        <p>
+            While the <code>from</code> import style might seem convenient, there are important reasons to be cautious with it:
+        </p>
+        
+        <ul>
+            <li><strong>Namespace conflicts:</strong> Different modules might have functions with the same name. If you import multiple modules using <code>from</code>, you could accidentally overwrite functions or create confusion about which module a function comes from.</li>
+            <li><strong>Code readability:</strong> When someone reads your code, they might not immediately know which module a function comes from, making the code harder to understand and debug.</li>
+            <li><strong>Namespace pollution:</strong> Using <code>from module import *</code> brings potentially many names into your namespace, making it harder to track what's available.</li>
+        </ul>
+        
+        <p>
+            <strong>Professional recommendation:</strong> Use the standard <code>import module_name</code> form and prefix your function calls. This is considered best practice in professional Python development.
+        </p>
+        
+        <h3>Other Common Modules</h3>
+        
+        <p>
+            While the <code>math</code> module is extremely useful, Python's standard library includes many other modules for different purposes. Two notable ones are:
+        </p>
+        
+        <ul>
+            <li><strong>os module:</strong> Provides functions for interacting with the operating system, such as file operations, path manipulation, and accessing environment variables. The <code>os</code> module helps make Python code cross-platform compatible.</li>
+            <li><strong>random module:</strong> Provides functions for generating random numbers and selecting random items. You can generate random numbers from different distributions, shuffle sequences, and make random choices for simulations and games.</li>
+        </ul>
+        
+        <p>
+            For example:
+        </p>
+        
+        <pre><code>import random
+import os
+
+# Get current working directory
+current_dir = os.getcwd()
+
+# Generate a random number between 1 and 10
+random_num = random.randint(1, 10)
+
+# Randomly choose from a list
+colors = ["red", "blue", "green"]
+chosen_color = random.choice(colors)</code></pre>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> The <code>os</code> and <code>random</code> modules are just two examples. Python's standard library contains about 200+ modules covering everything from file operations to networking to data processing. As you progress, you'll learn to use more of these modules. The key is knowing where to find the documentation when you need a specific capability.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            <code>import module_name</code> standard tarika hai module import karne ka, aur ye best practice hai. Jab aap import karte ho, tab prefix lagata hai (e.g., <code>math.cos()</code>). <code>from math import pi</code> se sirf pi import ho jaata hai. <code>from math import *</code> se sab import ho jaata hai, lekin ye risky hai kyunki namespace conflicts ho sakte hain. Professional code mein standard import form use hota hai. <code>os</code> aur <code>random</code> modules bhi common hain.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: What's the difference between <code>import math</code> and <code>from math import *</code>?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> With <code>import math</code>, you must use the prefix <code>math.</code> for all functions and variables. With <code>from math import *</code>, everything is imported directly into your namespace and you don't need the prefix. However, the standard approach is preferred because it's clearer where functions come from and prevents namespace conflicts.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Why would using <code>from math import *</code> be problematic if you're also using <code>from random import *</code>?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> While it's unlikely for <code>math</code> and <code>random</code> specifically to conflict, in general, when you use <code>from module import *</code> with multiple modules, you risk having functions from one module silently overwrite functions from another if they have the same name. This can lead to subtle bugs that are hard to track down.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Standard import form: <code>import module_name</code> (recommended)</li>
+                <li>You must use module prefix with standard import: <code>module_name.function()</code></li>
+                <li>Alternative form with <code>from</code>: <code>from module import name</code> or <code>from module import *</code></li>
+                <li>The standard form is better for code clarity and preventing namespace conflicts</li>
+                <li>Python's standard library includes dozens of useful modules</li>
+                <li>The <code>os</code> module provides operating system interaction</li>
+                <li>The <code>random</code> module provides random number generation</li>
+                <li>Always refer to documentation when exploring new modules</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 7: Creating Your Own Modules -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-7">7. Creating Your Own Modules</h2>
+        
+        <p>
+            So far, we've explored Python's built-in functions and the modules provided by the standard library. But one of the most powerful aspects of Python is that you can create your own modules! This allows you to organize your code, make it reusable, and build professional applications. Let's learn how to create a simple module.
+        </p>
+        
+        <h3>Creating a Module: Step by Step</h3>
+        
+        <p>
+            Creating a module is surprisingly simple. A module is just a Python file (with a .py extension) that contains Python code. Let's say you want to create a module called <code>mymodule.py</code> in your project directory. Here's what you would do:
+        </p>
+        
+        <pre><code>""" 
+A simple module that demonstrates module creation.
+This module implements basic mathematical operations.
+"""
+
+# Simple variable
+x = 1 + 2
+x = 3 * x
+print(x)</code></pre>
+        
+        <p>
+            Notice that we've included a docstring at the very beginning of the module. A <strong>docstring</strong> is a special kind of string (enclosed in triple quotes) that serves as documentation for the entire module. This is a Python convention and best practice that we'll explore in more detail in the next section.
+        </p>
+        
+        <h3>Using Your Custom Module</h3>
+        
+        <p>
+            Once you've created your module file, you can import it just like any other Python module. If your module is in the same directory as your Python script, you can simply import it:
+        </p>
+        
+        <pre><code>>>> import mymodule</code></pre>
+        
+        <p>
+            When you import the module, Python executes all the code in the module file. In our example, this means the code that calculates <code>x = 1 + 2 = 3</code>, then <code>x = 3 * 3 = 9</code>, will be executed when you import the module.
+        </p>
+        
+        <p>
+            You can then access the variables defined in your module:
+        </p>
+        
+        <pre><code>>>> import mymodule
+>>> mymodule.x
+9</code></pre>
+        
+        <h3>Understanding Module Execution</h3>
+        
+        <p>
+            It's important to understand what happens when you import a module. Consider the following example:
+        </p>
+        
+        <pre><code>""" mymodule.py - Module Contents """
+x = 1 + 2
+x = 3 * x
+x  # This line does nothing in a module!</code></pre>
+        
+        <p>
+            When you import this module and try to access x from the Python shell:
+        </p>
+        
+        <pre><code>>>> import mymodule
+>>> x
+NameError: name 'x' is not defined
+>>> mymodule.x
+9</code></pre>
+        
+        <p>
+            The key insight here is that the last line <code>x</code> (just an expression by itself) does nothing when executed in a module. It's only in the interactive Python shell that a bare expression gets printed. In a module, you need to explicitly print values if you want to see them, or access them through the module namespace.
+        </p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> This is one of the most common sources of confusion for beginning programmers. In the interactive shell, bare expressions are automatically printed. In modules, they're not. That's why we use the <code>print()</code> function in modules when we want to display output. We'll see how to handle this properly when we distinguish between modules and scripts later.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Module create karna simple hai - bas ek .py file banao aur Python code likho. Har module ke starting mein docstring hona chahiye jo bataye ki module kya karta hai. <code>import mymodule</code> se apne module ko import kar sakte ho. Jab import karte ho, tab module ke code execute ho jaate hain. Module mein variables ko access karne ke liye <code>module_name.variable_name</code> use karte ho. Module mein bare expressions print nahi hote - print() function use karna padta hai.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: If you create a file called <code>calculator.py</code> with the code <code>result = 5 + 3</code>, how would you access this <code>result</code> in another Python script?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> You would import the module and access the variable with the module prefix:
+                    <pre><code>import calculator
+print(calculator.result)  # Outputs: 8</code></pre>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: What's the purpose of a docstring at the beginning of a module?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> A docstring (enclosed in triple quotes) serves as documentation for the entire module. It explains what the module does, what functions it provides, and how to use it. This documentation is essential for other programmers (or yourself in the future) to understand the module's purpose and usage.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>A module is simply a Python file with a .py extension</li>
+                <li>Include a docstring at the beginning of your module for documentation</li>
+                <li>All code in a module is executed when the module is imported</li>
+                <li>Access module variables and functions using the module name prefix</li>
+                <li>Variables defined in a module are not accessible in your namespace without the prefix</li>
+                <li>Bare expressions in modules don't produce output (unlike in the interactive shell)</li>
+                <li>Use <code>print()</code> function in modules if you want to display output</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 8: Understanding Docstrings -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-8">8. Understanding Docstrings</h2>
+        
+        <p>
+            Docstrings are a fundamental part of professional Python code. They're special comments that serve as documentation for your code. Unlike regular comments (which start with <code>#</code>), docstrings are string literals that appear as the first statement in a module, function, class, or method. They're not just ignored by Python—they're actually stored and can be accessed programmatically.
+        </p>
+        
+        <h3>What is a Docstring?</h3>
+        
+        <p>
+            A <strong>docstring</strong> is a string literal enclosed in triple quotes (<code>"""</code>) or triple single quotes (<code>'''</code>). It appears as the first statement in a module, function, class, or method. The key difference between docstrings and regular comments is that docstrings are actual string objects that Python preserves and makes accessible, while comments are simply ignored.
+        </p>
+        
+        <pre><code>"""
+This is a docstring for a module.
+It should explain what the module does,
+what functions it provides, and how to use it.
+"""
+
+# This is a regular comment - it explains something about the code
+x = 5</code></pre>
+        
+        <h3>Docstrings in Your Own Modules</h3>
+        
+        <p>
+            When you create a new module, it's essential to include a docstring that describes what your module does. Here's an example:
+        </p>
+        
+        <pre><code>"""
+My simple module.
+This file demonstrates how to create a module with documentation.
+Implements simple arithmetic operations.
+"""
+
+# Variable definitions
+x = 1 + 2
+x = 3 * x</code></pre>
+        
+        <p>
+            This docstring explains the purpose of the module, making it clear to anyone (including yourself months later) what the module is for and what it does. This is much better than having no documentation at all.
+        </p>
+        
+        <h3>Accessing Docstrings with the help() Function</h3>
+        
+        <p>
+            One of the powerful features of docstrings is that they're accessible through Python's <code>help()</code> function. This allows users of your module to get documentation right from the Python shell:
+        </p>
+        
+        <pre><code>>>> import mymodule
+>>> help(mymodule)</code></pre>
+        
+        <p>
+            When you run this, Python displays the docstring and other information about the module, making it easy for users to understand what the module provides.
+        </p>
+        
+        <h3>Docstring Conventions (PEP 257)</h3>
+        
+        <p>
+            Python has a style guide called <strong>PEP 257</strong> (Python Enhancement Proposal 257) that defines conventions for writing docstrings. Some key conventions include:
+        </p>
+        
+        <ul>
+            <li>Docstrings should be concise but complete</li>
+            <li>The first line should be a summary that fits on one line</li>
+            <li>If a longer description is needed, leave a blank line after the summary, then provide more details</li>
+            <li>For module docstrings, describe what the module does and what it provides</li>
+            <li>Use proper grammar and punctuation</li>
+        </ul>
+        
+        <p>
+            Here's an example of a well-formatted module docstring:
+        </p>
+        
+        <pre><code>"""
+Temperature conversion module.
+
+This module provides functions to convert temperatures between
+Celsius, Fahrenheit, and Kelvin scales. It's useful for scientific
+calculations and weather-related applications.
+"""</code></pre>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> Many professional Python developers say that writing good documentation is just as important as writing good code. Your code might work perfectly, but if no one (including yourself) can understand what it does, it's useless. Always invest time in writing clear, helpful docstrings.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Docstring triple quotes mein likha hua string hota hai jo module, function, ya class ke sabse pehle aata hai. Docstrings regular comments se alag hain kyunki Python inhe preserve karta hai aur help() function se access kiye ja sakte hain. Good practice hai har module ke liye clear aur helpful docstring likhnaa. Docstrings PEP 257 conventions follow karte hain. Docstring se users ko module ke baare mein samajhne mein madad milti hai.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: What's the difference between a docstring and a regular comment?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> A docstring is a string literal enclosed in triple quotes that appears as the first statement in a module/function/class, and Python preserves it as documentation that can be accessed by the <code>help()</code> function. A regular comment starts with <code>#</code> and is simply ignored by Python during execution.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Write a proper module docstring for a module that contains mathematical utility functions.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong>
+                    <pre><code>"""
+Mathematical utilities module.
+
+Provides helper functions for common mathematical calculations,
+including rounding, absolute values, and trigonometric operations.
+Built on top of Python's math module for enhanced functionality.
+"""</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Docstrings are triple-quoted strings that serve as documentation</li>
+                <li>They appear as the first statement in modules, functions, classes, or methods</li>
+                <li>Unlike comments, docstrings are preserved by Python and accessible through <code>help()</code></li>
+                <li>Docstrings are essential for professional Python code</li>
+                <li>Follow PEP 257 conventions for writing docstrings</li>
+                <li>A module docstring should explain what the module does and what it provides</li>
+                <li>The <code>help()</code> function displays a module's docstring and other documentation</li>
+                <li>Good documentation is as important as good code</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 9: User Input in Python -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-9">9. User Input in Python</h2>
+        
+        <p>
+            So far, we've learned how to write programs that process data we provide directly in the code. However, in real-world applications, programs need to accept input from users. Whether it's a number to perform a calculation, text to process, or choices to make, understanding how to handle user input is essential for creating interactive programs.
+        </p>
+        
+        <h3>The input() Function</h3>
+        
+        <p>
+            Python provides a built-in function called <code>input()</code> that allows you to get input from the user through the keyboard. The basic syntax is:
+        </p>
+        
+        <pre><code>variable = input("Prompt message")</code></pre>
+        
+        <p>
+            Here's a simple example:
+        </p>
+        
+        <pre><code>>>> x = input("Enter a number: ")
+Enter a number: 42
+>>> x
+'42'
+>>> type(x)
+&lt;class 'str'&gt;</code></pre>
+        
+        <p>
+            Notice something important: even though we entered the number 42, the <code>input()</code> function returns it as a string! This is one of the most important points to understand about <code>input()</code>. <strong>The input() function always returns a string, regardless of what the user types.</strong>
+        </p>
+        
+        <h3>Converting Input to the Desired Type</h3>
+        
+        <p>
+            Since <code>input()</code> always returns a string, if you need to work with numbers, you must convert the string to the appropriate type. This is where type casting functions come in handy:
+        </p>
+        
+        <pre><code>>>> x = input("Enter a number: ")
+Enter a number: 42
+>>> x
+'42'
+>>> y = int(x)
+>>> y
+42
+>>> type(y)
+&lt;class 'int'&gt;</code></pre>
+        
+        <p>
+            In this example, we use <code>int()</code> to convert the string '42' to the integer 42. Similarly, you can use <code>float()</code> to convert to floating-point numbers:
+        </p>
+        
+        <pre><code>>>> temperature = input("Enter temperature: ")
+Enter temperature: 98.6
+>>> temp_float = float(temperature)
+>>> temp_float
+98.6
+>>> type(temp_float)
+&lt;class 'float'&gt;</code></pre>
+        
+        <h3>Practical Example: Interactive Program</h3>
+        
+        <p>
+            Let's create a simple interactive program that takes user input and performs calculations:
+        </p>
+        
+        <pre><code>import math
+
+# Get radius from user
+radius_str = input("Enter the radius of a circle: ")
+radius = float(radius_str)
+
+# Calculate area
+area = math.pi * radius**2
+
+# Calculate circumference
+circumference = 2 * math.pi * radius
+
+# Display results
+print(f"Area: {area}")
+print(f"Circumference: {circumference}")</code></pre>
+        
+        <p>
+            This program demonstrates several key concepts: getting user input, converting it to the appropriate type, performing calculations using the math module, and displaying results.
+        </p>
+        
+        <h3>Common Pitfalls with input()</h3>
+        
+        <p>
+            There are several common mistakes beginners make when working with input():
+        </p>
+        
+        <ul>
+            <li><strong>Forgetting to convert:</strong> Trying to do math with input directly without converting to a number</li>
+            <li><strong>Type mismatch:</strong> Trying to convert invalid input (like "hello") to int()</li>
+            <li><strong>Unclear prompts:</strong> Providing prompts that don't clearly tell users what to enter</li>
+        </ul>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> In professional applications, handling invalid user input is crucial. If a user enters "hello" when you ask for a number and you try <code>int("hello")</code>, the program will crash with a ValueError. Later in your programming journey, you'll learn about error handling to make your programs more robust.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            <code>input()</code> function se user se input le sakte ho. <code>input("message")</code> user ko message dikhata hai aur keyboard se input wait karta hai. Important baat: <code>input()</code> hamesha string return karta hai, chahe user ne number daala ho. Agar number ke saath calculation karne ho, to <code>int()</code> ya <code>float()</code> se conversion karna padta hai. Conversio karni bhoolna common mistake hai!
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: Write code to get two numbers from the user and print their sum.</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong>
+                    <pre><code>num1_str = input("Enter first number: ")
+num2_str = input("Enter second number: ")
+num1 = int(num1_str)
+num2 = int(num2_str)
+sum_result = num1 + num2
+print(f"Sum: {sum_result}")</code></pre>
+                    Or more concisely:
+                    <pre><code>num1 = int(input("Enter first number: "))
+num2 = int(input("Enter second number: "))
+print(f"Sum: {num1 + num2}")</code></pre>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Why does this code produce an error, and how would you fix it?<br><code>age = input("Enter your age: ")<br>next_year_age = age + 1</code></div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> This produces an error because <code>input()</code> returns a string, and you can't add 1 to a string. The fix is to convert to an integer:
+                    <pre><code>age = int(input("Enter your age: "))
+next_year_age = age + 1</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>The <code>input()</code> function gets user input from the keyboard</li>
+                <li><code>input()</code> always returns a string, regardless of what the user types</li>
+                <li>Use type conversion functions (<code>int()</code>, <code>float()</code>) to convert input to other types</li>
+                <li>Provide clear, helpful prompts that tell users what to enter</li>
+                <li>Be cautious about type conversions—invalid input will cause errors</li>
+                <li>Interactive programs are more user-friendly than hardcoded values</li>
+                <li>Combining input with modules and calculations creates powerful interactive programs</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 10: Modules vs Scripts -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-10">10. Modules vs Scripts</h2>
+        
+        <p>
+            Now that we understand how to create modules and use the <code>input()</code> function, it's important to understand a crucial distinction in Python: the difference between <strong>modules</strong> and <strong>scripts</strong>. While they look similar (both are .py files with Python code), they serve very different purposes and should be structured differently.
+        </p>
+        
+        <h3>What is a Module?</h3>
+        
+        <p>
+            A <strong>module</strong> is a Python file that provides reusable functions, variables, and classes. You import it into other Python programs to access its functionality. A module is designed to be a library or toolkit. The goal is to provide useful code that other programs can use.
+        </p>
+        
+        <p>
+            Key characteristics of modules:
+        </p>
+        
+        <ul>
+            <li>Contains reusable functions and variables</li>
+            <li>Designed to be imported into other programs</li>
+            <li>Should include a docstring explaining what it provides</li>
+            <li>Shouldn't produce output when imported (unless necessary for testing)</li>
+            <li>Focuses on providing utilities and functions</li>
+        </ul>
+        
+        <pre><code>""" temp.py - Temperature conversion module """
+
+def to_fahrenheit(celsius):
+    """Convert Celsius to Fahrenheit"""
+    return (celsius * 9/5) + 32
+
+def to_celsius(fahrenheit):
+    """Convert Fahrenheit to Celsius"""
+    return (fahrenheit - 32) * 5/9</code></pre>
+        
+        <p>
+            When you import this module, you get access to the conversion functions without any output being produced.
+        </p>
+        
+        <h3>What is a Script?</h3>
+        
+        <p>
+            A <strong>script</strong> is a Python file that behaves like an application or program. It's meant to be run directly, not imported. A script is the final deliverable—the application that the end user runs. The goal is to solve a specific problem or perform specific tasks.
+        </p>
+        
+        <p>
+            Key characteristics of scripts:
+        </p>
+        
+        <ul>
+            <li>Designed to be executed directly (e.g., <code>python myscript.py</code>)</li>
+            <li>May import modules to use their functions</li>
+            <li>Typically produces output or performs actions</li>
+            <li>Contains the main application logic</li>
+            <li>Focuses on solving a specific problem</li>
+        </ul>
+        
+        <pre><code>""" weatherApp.py - Temperature conversion application """
+import temp
+
+# Get input from user
+celsius_temp = float(input("Enter temperature in Celsius: "))
+
+# Convert and display
+fahrenheit_temp = temp.to_fahrenheit(celsius_temp)
+print(f"{celsius_temp}°C = {fahrenheit_temp}°F")</code></pre>
+        
+        <h3>The Key Difference: Print Statements</h3>
+        
+        <p>
+            One of the most important practical differences between modules and scripts is their use of print statements. Let's compare:
+        </p>
+        
+        <table>
+            <tr>
+                <th>Module (temp.py)</th>
+                <th>Script (weatherApp.py)</th>
+            </tr>
+            <tr>
+                <td>Contains functions without print</td>
+                <td>Uses print() to display results</td>
+            </tr>
+            <tr>
+                <td>Designed for reuse</td>
+                <td>Designed as a finished application</td>
+            </tr>
+            <tr>
+                <td>No output when imported</td>
+                <td>Produces output when run</td>
+            </tr>
+            <tr>
+                <td>Functions return values</td>
+                <td>Prints values directly</td>
+            </tr>
+        </table>
+        
+        <p>
+            A script uses <code>print()</code> to display output to the user, while a module typically returns values through functions that the calling program can use.
+        </p>
+        
+        <h3>Files Look the Same, But Their Purpose Differs</h3>
+        
+        <p>
+            This is a crucial point: <strong>modules and scripts are both .py files and can look identical</strong>. The difference is in how they're used and what they're intended to do. Whether a file is a module or a script depends on its purpose and how it's used, not on the file structure itself.
+        </p>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> This is one of the most important concepts to grasp. Don't think "this is a module because of some structural difference." Instead, think: "This is a module because I designed it to provide reusable functions that other programs will import and use. This is a script because I designed it as a complete application that solves a specific problem."
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Module aur script dono .py files hain, lekin unka purpose alag alag hai. Module reusable functions provide karta hai jo dusre programs import karte hain. Script ek complete application hai jo directly run hota hai. Module functions use karta hai aur values return karta hai, script print() se output display karta hai. Dono files structural mein same lag sakte hain, lekin unka intention alag hota hai.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: If you were creating code to calculate compound interest, how would you structure it as a module? And as a script?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong><br><br>
+                    <strong>As a Module (finance.py):</strong>
+                    <pre><code>"""Compound interest calculation module"""
+
+def compound_interest(principal, rate, time, n):
+    """Calculate compound interest"""
+    return principal * (1 + rate/(100*n))**(n*time)</code></pre>
+                    
+                    <strong>As a Script (investmentApp.py):</strong>
+                    <pre><code>import finance
+
+principal = float(input("Enter principal amount: "))
+rate = float(input("Enter annual rate: "))
+time = float(input("Enter time in years: "))
+amount = finance.compound_interest(principal, rate, time, 12)
+print(f"Final amount: {amount}")</code></pre>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: Why should a module not have print statements?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> A module's goal is to provide reusable functions. Different programs might want to use the module's functions for different purposes—some might print results, others might save to a file, others might display on a GUI. By returning values instead of printing, the module is more flexible and reusable. The calling program can decide what to do with the returned value.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>Modules are files that provide reusable functions and variables</li>
+                <li>Scripts are files that act as complete applications</li>
+                <li>Modules are imported; scripts are executed directly</li>
+                <li>Modules should not produce output when imported</li>
+                <li>Scripts use <code>print()</code> to display output</li>
+                <li>Modules return values; scripts use values</li>
+                <li>Both modules and scripts are .py files, but they serve different purposes</li>
+                <li>The distinction is in intent and design, not file structure</li>
+                <li>Good module design makes code more reusable and maintainable</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 11: Working Directory and Module Location -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-11">11. Working Directory and Module Location</h2>
+        
+        <p>
+            An important practical aspect of working with modules is understanding how Python locates them. When you try to import a module, Python searches for it in specific locations. The most important of these is your <strong>working directory</strong>—the folder where you're currently working.
+        </p>
+        
+        <h3>The Working Directory</h3>
+        
+        <p>
+            The <strong>working directory</strong> is the folder on your computer where Python looks for files by default. When you run Python or execute a Python script, the working directory is the folder where that script is located or the folder from which you launched Python.
+        </p>
+        
+        <p>
+            When you try to import a module, Python first looks for it in the working directory. If the module is there, it imports it. If it's not there, Python looks in other system directories and installed packages.
+        </p>
+        
+        <h3>Organizing Your Project Files</h3>
+        
+        <p>
+            Here's a typical project structure:
+        </p>
+        
+        <pre><code>my_project/
+├── mymodule.py          # Your custom module
+├── script.py            # Your main script
+└── data.txt             # Data files</code></pre>
+        
+        <p>
+            If you want to use <code>mymodule.py</code> in <code>script.py</code>, both files should be in the same directory (my_project). Then, in your script, you can simply:
+        </p>
+        
+        <pre><code>import mymodule</code></pre>
+        
+        <h3>The Critical Rule: Working Directory Before Running Python</h3>
+        
+        <p>
+            This is extremely important: <strong>You must navigate to the correct working directory before running Python or executing a Python script.</strong> If you have a module file but you're not in its directory when you try to run Python, you'll get an ImportError.
+        </p>
+        
+        <p>
+            For example, if your module is in a folder called <code>code</code>, you need to:
+        </p>
+        
+        <pre><code># Navigate to the directory first
+cd code
+
+# Then run Python or your script
+python script.py
+# or
+python</code></pre>
+        
+        <p>
+            If you try to run Python from a different directory, the import will fail because Python can't find the module.
+        </p>
+        
+        <h3>Checking Your Working Directory</h3>
+        
+        <p>
+            You can check your current working directory using the <code>os</code> module:
+        </p>
+        
+        <pre><code>import os
+print(os.getcwd())  # Prints the current working directory</code></pre>
+        
+        <div class="professor-note">
+            <strong>Professor mentioned in class:</strong> This is one of the most common sources of frustration for beginners! You create a module file, try to import it, and get an error saying the module can't be found. The issue is almost always that you're in the wrong working directory. Always double-check that you're in the same directory as your module before trying to import it.
+        </div>
+        
+        <div class="hinglish-summary">
+            <strong>हिंदी/Hinglish Summary (सारांश):</strong><br>
+            Working directory woh folder hai jaha se Python code run ho raha hai. Jab module import karte ho, Python pehle working directory mein dhundta hai. Modules import karne se pehle ensure karo ki aap correct folder mein ho. Command line se <code>cd folder_name</code> se navigate karo. <code>os.getcwd()</code> se check kar sakte ho current directory kya hai. Module file aur script file same directory mein hone chahiye import karne ke liye.
+        </div>
+        
+        <div class="practice-questions">
+            <h4>Practice Questions</h4>
+            <div class="question-item">
+                <div class="question-text">Q1: You have a module called <code>calculator.py</code> in a folder called <code>my_tools</code>. How would you set up your environment to use this module?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> You would navigate to the <code>my_tools</code> folder using the command line:
+                    <pre><code>cd my_tools</code></pre>
+                    Then run Python from that directory. Only then can you successfully import the calculator module using <code>import calculator</code>.
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">Q2: You get an error "ModuleNotFoundError: No module named 'mymodule'" even though the file <code>mymodule.py</code> exists. What's likely the problem?</div>
+                <div class="answer-text">
+                    <strong>Answer:</strong> The most likely problem is that you're not in the correct working directory. You're probably in a different folder from where <code>mymodule.py</code> is located. Navigate to the correct folder using <code>cd</code> and then try importing again.
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-takeaways">
+            <h4>Key Takeaways</h4>
+            <ul>
+                <li>The working directory is the current folder where Python looks for files</li>
+                <li>Python searches the working directory first when importing modules</li>
+                <li>Module files should be in the same directory as your script</li>
+                <li>Always navigate to the correct directory before running Python</li>
+                <li>Use <code>cd folder_name</code> to change directories in the command line</li>
+                <li>Use <code>os.getcwd()</code> to check your current working directory</li>
+                <li>Module location errors are usually due to being in the wrong working directory</li>
+                <li>Organizing your files in a clear structure helps prevent these issues</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- SECTION 12: Mind Map and Summary -->
+        <!-- ============================================================ -->
+        
+        <h2 id="section-12">12. Mind Map and Comprehensive Summary</h2>
+        
+        <h3>Comprehensive Mind Map: Functions and Modules in Python</h3>
+        
+        <div class="mindmap-container">
+            <div class="mindmap-center">📚 Functions & Modules in Python</div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">1. Function Calls</div>
+                <div class="mindmap-item">• Syntax: <code>name(argument1, argument2, ...)</code></div>
+                <div class="mindmap-item">• Arguments are expressions, not just values</div>
+                <div class="mindmap-item">• Function calls are expressions themselves</div>
+                <div class="mindmap-item">• Can be nested: <code>int(round(3.7))</code></div>
+                <div class="mindmap-item">• Evaluated inside-out when nested</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">2. Built-In Functions</div>
+                <div class="mindmap-item">• Always available without import</div>
+                <div class="mindmap-item">• Type casting: <code>int()</code>, <code>float()</code>, <code>str()</code>, <code>bool()</code></div>
+                <div class="mindmap-item">• Math functions: <code>round()</code>, <code>max()</code>, <code>min()</code>, <code>abs()</code></div>
+                <div class="mindmap-item">• Expressions vs Commands: some return values, some perform actions</div>
+                <div class="mindmap-item">• Documentation at python.org</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">3. Modules Concept</div>
+                <div class="mindmap-item">• Files containing Python code and functions</div>
+                <div class="mindmap-item">• Keep language core lean, provide optional functionality</div>
+                <div class="mindmap-item">• Access via: <code>module_name.function_name()</code></div>
+                <div class="mindmap-item">• Prevents namespace conflicts</div>
+                <div class="mindmap-item">• Standard library provides dozens of modules</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">4. The Math Module</div>
+                <div class="mindmap-item">• Import: <code>import math</code></div>
+                <div class="mindmap-item">• Functions: <code>sqrt()</code>, <code>sin()</code>, <code>cos()</code>, <code>tan()</code>, <code>pow()</code>, <code>log()</code></div>
+                <div class="mindmap-item">• Constants: <code>math.pi</code>, <code>math.e</code></div>
+                <div class="mindmap-item">• Trigonometric functions use radians</div>
+                <div class="mindmap-item">• Essential for scientific calculations</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">5. Import Methods</div>
+                <div class="mindmap-item">• Standard: <code>import module_name</code> (recommended)</div>
+                <div class="mindmap-item">• Requires prefix: <code>module_name.function()</code></div>
+                <div class="mindmap-item">• Alternative: <code>from module import name</code> or <code>from module import *</code></div>
+                <div class="mindmap-item">• Avoid <code>from</code> due to namespace conflicts</div>
+                <div class="mindmap-item">• Standard form is professional best practice</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">6. Creating Modules</div>
+                <div class="mindmap-item">• Module = Python .py file with code</div>
+                <div class="mindmap-item">• Include docstring at beginning</div>
+                <div class="mindmap-item">• Code executes when module is imported</div>
+                <div class="mindmap-item">• Access variables: <code>module.variable</code></div>
+                <div class="mindmap-item">• Bare expressions produce no output in modules</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">7. Docstrings</div>
+                <div class="mindmap-item">• Triple-quoted strings: <code>"""..."""</code> or <code>'''...'''</code></div>
+                <div class="mindmap-item">• First statement in module/function/class</div>
+                <div class="mindmap-item">• Preserved by Python; accessible via <code>help()</code></div>
+                <div class="mindmap-item">• Follow PEP 257 conventions</div>
+                <div class="mindmap-item">• Essential for professional code documentation</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">8. User Input</div>
+                <div class="mindmap-item">• Function: <code>input("prompt")</code></div>
+                <div class="mindmap-item">• Always returns string type</div>
+                <div class="mindmap-item">• Convert with: <code>int()</code>, <code>float()</code>, etc.</div>
+                <div class="mindmap-item">• Creates interactive programs</div>
+                <div class="mindmap-item">• Forgetting to convert is a common error</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">9. Modules vs Scripts</div>
+                <div class="mindmap-item">• Module: provides reusable functions</div>
+                <div class="mindmap-item">• Script: complete application</div>
+                <div class="mindmap-item">• Module: imported, returns values</div>
+                <div class="mindmap-item">• Script: executed, uses print()</div>
+                <div class="mindmap-item">• Same file structure, different purpose</div>
+            </div>
+            
+            <div class="mindmap-branch">
+                <div class="mindmap-branch-title">10. Working Directory</div>
+                <div class="mindmap-item">• Python searches working directory for modules</div>
+                <div class="mindmap-item">• Module and script should be in same directory</div>
+                <div class="mindmap-item">• Must navigate before running Python</div>
+                <div class="mindmap-item">• Check with: <code>os.getcwd()</code></div>
+                <div class="mindmap-item">• Most common import errors due to wrong directory</div>
+            </div>
+        </div>
+        
+        <h3>Key Concepts Summary</h3>
+        
+        <p>
+            This lecture has covered one of the most fundamental and powerful concepts in Python programming: <strong>functions and modules</strong>. These concepts form the foundation of professional software development and are essential for writing clean, reusable, and maintainable code.
+        </p>
+        
+        <p>
+            We started by understanding the basic concept of procedures and how operations can be layered and combined to create more complex functionality. Then we explored function calls, the syntax, and how arguments are expressions that get evaluated before being passed to functions. We learned about built-in functions that Python provides without requiring any imports.
+        </p>
+        
+        <p>
+            A crucial realization was that Python keeps its built-in functions limited by design. Instead, functionality is provided through modules—files containing related functions and variables. We explored how to import modules using the standard approach, and how to work with the math module for mathematical operations.
+        </p>
+        
+        <p>
+            We then learned the important skill of creating our own modules, understanding docstrings for documentation, and how to take user input through the <code>input()</code> function. We discovered the critical distinction between modules (reusable libraries) and scripts (complete applications), and we learned about the importance of working directories when importing modules.
+        </p>
+        
+        <p>
+            As you continue your programming journey, remember these key principles: organize your code into reusable modules, document your code with docstrings, always be aware of your working directory, and follow Python's conventions and best practices. These habits, developed now, will serve you well as you tackle more complex programming challenges.
+        </p>
+        
+        <div class="key-takeaways">
+            <h4>Comprehensive Key Takeaways</h4>
+            <ul>
+                <li>Functions and procedures are fundamental to modern programming—learn to use them well</li>
+                <li>Function calls follow the syntax: <code>name(arg1, arg2, ...)</code> where arguments are expressions</li>
+                <li>Built-in functions are always available without imports; use them for common operations</li>
+                <li>Modules are files containing functions and variables; import them to access extended functionality</li>
+                <li>The math module provides essential mathematical functions and constants</li>
+                <li>Import using the standard form <code>import module_name</code> for clarity and to prevent namespace conflicts</li>
+                <li>Create your own modules to organize and reuse code effectively</li>
+                <li>Use docstrings (triple-quoted strings) to document your modules, functions, and classes</li>
+                <li>The <code>input()</code> function gets user input but always returns strings—convert as needed</li>
+                <li>Distinguish between modules (reusable libraries) and scripts (complete applications)</li>
+                <li>Always ensure your working directory is correct before importing modules</li>
+                <li>Professional code is clean, well-documented, well-organized, and follows conventions</li>
+                <li>Learning these concepts now will accelerate your growth as a programmer</li>
+            </ul>
+        </div>
+        
+        <!-- ============================================================ -->
+        <!-- Hinglish Summary of the Entire Lecture -->
+        <!-- ============================================================ -->
+        
+        <div class="hinglish-summary">
+            <h4>पूरे Lecture का Hinglish Summary (Complete Lecture Summary)</h4>
+            <p>
+                Ab tak hum ne Python mein functions aur modules ke baare mein seekha hai, jo programming ke sabse important concepts hain. Procedure concept se shuru karke, humne dekha ki operations ko layers mein organize kar sakte hain aur basic operations ko combine karke complex functionality ban sakte hain.
+            </p>
+            <p>
+                Function calls ka pattern simple hai: <code>name(argument1, argument2)</code>. Arguments expressions ho sakte hain, sirf values nahi. Python ke pass bohot saare built-in functions hain jaise <code>round()</code>, <code>max()</code>, <code>type()</code> jo directly available hain. Lekin extra functionality modules ke through milti hai.
+            </p>
+            <p>
+                Module basically ek Python file hai jo related functions ka collection hota hai. <code>import math</code> se humne dekha ki kaise mathematical functions aur constants jaise <code>math.pi</code> use karte hain. <code>import module_name</code> standard tarika hai aur best practice bhi hai.
+            </p>
+            <p>
+                Apne module banana seekha - bas ek .py file banao aur Python code likho. Module ke starting mein docstring likhnaa zaroori hai jo module ke purpose ko explain kare. User input <code>input()</code> function se lete hain, lekin hamesha string return hota hai, to conversion karnaa padta hai.
+            </p>
+            <p>
+                Module aur script dono .py files hain lekin unka purpose alag hain. Module reusable functions provide karta hai, script complete application hai jo print() se output display karta hai. Working directory bohat important hai - module aur script same folder mein hone chahiye.
+            </p>
+            <p>
+                Ye concepts Python programming ki foundation hain. Inhe acche se samajhne se aap professional quality code likh sakte ho. Hamesha documentation likho, code ko organize rakho, aur conventions follow karo!
+            </p>
+        </div>
+              <!-- Footer -->
+      <div
+        style="
+          text-align: center;
+          padding: 40px 20px;
+          background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+          color: rgb(0, 0, 0);
+          border-radius: 10px;
+          margin-top: 50px;
+        "
+      >
+        <h3>
+          I created this knowledge during my first semester of BSc in Applied AI
+          and Data Science.
+        </h3>
+        <h3>~ Armaan Kachhawa</h3>
+      </div>
+    
+    </div>
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

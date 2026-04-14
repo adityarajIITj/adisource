@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 6: Conjugate Gradient Method - Numerical Optimization</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+        }
+        
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 10px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #495057;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .key-term {
+            font-weight: bold;
+            color: #667eea;
+            background: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .important {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class: ";
+            font-weight: bold;
+            color: #155724;
+        }
+        
+        .hinglish-summary {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary h4 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .equation-box {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .example {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example h4 {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .practice-questions {
+            background: #fff8e1;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 5px;
+            border: 2px solid #ffc107;
+        }
+        
+        .practice-questions h4 {
+            color: #ff6f00;
+            margin-bottom: 15px;
+        }
+        
+        .practice-questions ol {
+            margin-left: 20px;
+        }
+        
+        .practice-questions li {
+            margin: 15px 0;
+        }
+        
+        .answer {
+            background: white;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .answer strong {
+            color: #4caf50;
+        }
+        
+        .key-takeaways {
+            background: #e8f5e9;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 5px;
+            border: 2px solid #4caf50;
+        }
+        
+        .key-takeaways h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+        }
+        
+        .algorithm {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 5px solid #9c27b0;
+        }
+        
+        .algorithm h4 {
+            color: #9c27b0;
+            margin-bottom: 15px;
+        }
+        
+        .algorithm ol {
+            margin-left: 20px;
+        }
+        
+        .algorithm li {
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .branch h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .branch ul {
+            list-style: none;
+        }
+        
+        .branch li {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .branch li:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(5px);
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Numerical Optimization</h1>
+            <p>Lecture 6: Conjugate Gradient Method</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Originally developed by Hestenes and Stiefel (1950s)</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#review">1. Review of Previous Methods</a></li>
+                <li><a href="#conjugate-direction">2. Conjugate Direction Method</a>
+                    <ul style="margin-left: 20px;">
+                        <li><a href="#conjugacy-definition">2.1 Definition of Conjugacy</a></li>
+                        <li><a href="#conjugacy-examples">2.2 Examples of Conjugate Directions</a></li>
+                    </ul>
+                </li>
+                <li><a href="#quadratic-functions">3. Quadratic Functions and Exact Minimizers</a></li>
+                <li><a href="#conjugate-direction-algorithm">4. Conjugate Direction Algorithm</a></li>
+                <li><a href="#conjugate-gradient-algorithm">5. Conjugate Gradient Algorithm</a></li>
+                <li><a href="#nonlinear-cg">6. Fletcher-Reeves Nonlinear Conjugate Gradient</a></li>
+                <li><a href="#examples">7. Detailed Examples</a></li>
+                <li><a href="#mind-map">8. Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Review -->
+        <section id="review">
+            <h2>1. Review of Previous Methods</h2>
+            
+            <p>Before diving into the <span class="key-term">Conjugate Gradient Method</span>, let's recall the optimization methods we have covered so far in this course.</p>
+
+            <h3>Methods Covered Previously</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method Category</th>
+                        <th>Specific Methods</th>
+                        <th>Key Characteristics</th>
+                        <th>Limitations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>First-Order Methods</strong></td>
+                        <td>
+                            • Gradient Descent<br>
+                            • Accelerated Gradient Descent<br>
+                            • Batch Gradient Descent<br>
+                            • RMSPROP, Adagrad, Adam
+                        </td>
+                        <td>
+                            Uses only first derivatives (gradients)
+                        </td>
+                        <td>
+                            Slow convergence, especially near optimum
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Second-Order Methods</strong></td>
+                        <td>
+                            • Pure Newton Method<br>
+                            • Damped Newton Method
+                        </td>
+                        <td>
+                            Faster convergence using Hessian information
+                        </td>
+                        <td>
+                            Requires twice-differentiable functions; computationally expensive
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quasi-Newton Methods</strong></td>
+                        <td>
+                            • DFP<br>
+                            • BFGS<br>
+                            • Broyden Family<br>
+                            • L-BFGS
+                        </td>
+                        <td>
+                            Approximates Hessian using only first-order information; converges in n steps for n-dimensional quadratic problems
+                        </td>
+                        <td>
+                            More complex implementation
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                The quasi-Newton methods are based on the <span class="key-term">secant equation</span>, which is very vital for these methods. All quasi-Newton methods build upon this fundamental equation to approximate the Hessian matrix efficiently.
+            </div>
+
+            <div class="important">
+                <strong>⚠️ Important Observation:</strong> For <span class="key-term">quadratic functions</span>, quasi-Newton methods converge in exactly <strong>n steps</strong> for an n-dimensional problem. This is a property that gradient descent cannot achieve, making quasi-Newton methods particularly attractive for certain applications.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Hum pehle gradient descent seekhe the jo first-order method hai, phir Newton method dekha jo quadratic method hai aur faster convergence deta hai lekin twice differentiable functions ke liye hi kaam karta hai. Iske baad humne quasi-Newton methods dekhe (DFP, BFGS) jo first-order information se second-order Hessian ko approximate karte hain. Aaj hum <strong>Conjugate Gradient Method</strong> seekhenge jo linear equations solve karne ke liye originally develop hua tha aur ye n-dimensional problem ko n steps mein solve kar sakta hai!
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Conjugate Direction Method -->
+        <section id="conjugate-direction">
+            <h2>2. Conjugate Direction Method</h2>
+
+            <h3>Historical Background</h3>
+            <p>
+                The <span class="key-term">Conjugate Direction Method</span> was originally developed by <strong>Hestenes and Stiefel in the 1950s</strong> for solving systems of linear equations involving a positive definite matrix. Instead of directly solving the system or using Gaussian elimination, this method optimizes along specially chosen directions.
+            </p>
+
+            <div class="professor-note">
+                Instead of calculating the inverse of matrix A (which is computationally expensive) or using Gauss elimination to get an upper triangular system and then back substitution, we can solve the system by <strong>optimizing along different directions</strong>. If we have an n-dimensional problem and can optimize along n conjugate directions, we will reach the solution exactly!
+            </div>
+
+            <h3 id="conjugacy-definition">2.1 Definition of Conjugacy</h3>
+
+            <div class="equation-box">
+                <p><strong>Definition:</strong> Given a positive definite matrix $A \in \mathbb{R}^{n \times n}$, a set of vectors $\{x^1, x^2, \ldots, x^p\}$ are called <span class="key-term">conjugate with respect to A</span> if:</p>
+                <p>$$(x^i)^T A x^j = 0, \quad \forall i, j \in \{1, 2, \ldots, p\}, \; i \neq j$$</p>
+            </div>
+
+            <div class="important">
+                <strong>🔑 Key Insight:</strong> Conjugacy is a <strong>generalization of perpendicularity</strong>. 
+                <ul>
+                    <li><strong>Perpendicular vectors:</strong> $(x^i)^T x^j = 0$</li>
+                    <li><strong>Conjugate vectors:</strong> $(x^i)^T A x^j = 0$</li>
+                </ul>
+                When $A = I$ (identity matrix), conjugacy reduces to perpendicularity!
+            </div>
+
+            <h3 id="conjugacy-examples">2.2 Examples of Conjugate Directions</h3>
+
+            <div class="example">
+                <h4>Example 1: Diagonal Matrix</h4>
+                <p>Consider the matrix:</p>
+                <div class="equation-box">
+
+                    $$A = \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}$$
+                </div>
+                
+                <p><strong>Case 1:</strong> Vectors $v_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $v_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$</p>
+                
+                <p>Let's verify conjugacy:</p>
+                <div class="equation-box">
+
+                    $$v_1^T A v_2 = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix}$$
+
+                    $$= \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix} = 0 \quad \checkmark$$
+                </div>
+                
+                <p><strong>Result:</strong> These vectors are conjugate! They are also perpendicular since their regular dot product is zero.</p>
+            </div>
+
+            <div class="example">
+                <h4>Example 2: Non-Perpendicular Conjugate Vectors</h4>
+                <p>Using the same matrix $A = \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}$</p>
+                
+                <p>Consider vectors $v_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$ and $v_2 = \begin{bmatrix} 1 \\ -2 \end{bmatrix}$</p>
+                
+                <p><strong>Step 1:</strong> Calculate $Av_1$</p>
+                <div class="equation-box">
+
+                    $$A v_1 = \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$$
+                </div>
+                
+                <p><strong>Step 2:</strong> Check conjugacy</p>
+                <div class="equation-box">
+
+                    $$v_2^T (A v_1) = \begin{bmatrix} 1 & -2 \end{bmatrix} \begin{bmatrix} 2 \\ 1 \end{bmatrix} = 2 - 2 = 0 \quad \checkmark$$
+                </div>
+                
+                <p><strong>Step 3:</strong> Check perpendicularity</p>
+                <div class="equation-box">
+
+                    $$v_1^T v_2 = 1 \times 1 + 1 \times (-2) = -1 \neq 0$$
+                </div>
+                
+                <p><strong>Conclusion:</strong> These vectors are <strong>conjugate but NOT perpendicular</strong>! This demonstrates that conjugacy generalizes the concept of perpendicularity.</p>
+            </div>
+
+            <div class="professor-note">
+                To construct a conjugate vector to a given vector, you can use this trick: After computing $Av = \begin{bmatrix} a \\ b \end{bmatrix}$, a conjugate vector can be formed as $\begin{bmatrix} b \\ -a \end{bmatrix}$ or $\begin{bmatrix} -b \\ a \end{bmatrix}$ (swap components and negate one). This ensures the dot product equals zero!
+            </div>
+
+            <h3>Common Sources of Conjugate Directions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Description</th>
+                        <th>When to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Coordinate Directions</strong></td>
+                        <td>Standard basis vectors (e.g., $[1,0,0]^T$, $[0,1,0]^T$, $[0,0,1]^T$)</td>
+                        <td>When A is a diagonal matrix</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eigenvectors</strong></td>
+                        <td>Eigenvectors of positive definite or semi-definite matrices</td>
+                        <td>When A is symmetric; eigenvectors are automatically conjugate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gradient-Based</strong></td>
+                        <td>Constructed iteratively using gradient information</td>
+                        <td>Conjugate Gradient Method (when eigenvectors are unknown)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    <strong>Conjugate directions</strong> perpendicularity ka ek generalization hai. Do vectors conjugate hote hain agar unka product ek matrix A ke saath 0 ho. Jaise perpendicular vectors ka angle 90° hota hai, conjugate vectors ka "A-weighted angle" ek special relationship rakhta hai. Diagonal matrices ke liye standard basis vectors conjugate hoti hain, aur general matrices ke liye eigenvectors conjugate directions dete hain. Ye concept linear systems solve karne mein bahut useful hai!
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Conjugacy generalizes perpendicularity using a positive definite matrix A</li>
+                    <li>For diagonal matrices, coordinate directions are naturally conjugate</li>
+                    <li>Eigenvectors of symmetric positive definite matrices form conjugate directions</li>
+                    <li>Conjugate vectors that are not perpendicular still satisfy $(x^i)^T A x^j = 0$</li>
+                    <li>Finding conjugate directions is key to efficient optimization</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                <ol>
+                    <li>
+                        <strong>Q1:</strong> Given $A = \begin{bmatrix} 3 & 0 \\ 0 & 2 \end{bmatrix}$, verify that $v_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $v_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$ are conjugate.
+                        <div class="answer">
+                            <strong>Answer:</strong> 
+
+                            $$v_1^T A v_2 = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 3 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 0 \\ 2 \end{bmatrix} = 0$$
+                            Yes, they are conjugate!
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q2:</strong> Explain why perpendicular vectors are always conjugate with respect to the identity matrix.
+                        <div class="answer">
+                            <strong>Answer:</strong> If $x^T y = 0$ (perpendicular), then $x^T I y = x^T y = 0$. Since $I$ is the identity matrix, conjugacy with respect to $I$ is exactly the same as perpendicularity.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q3:</strong> For $A = \begin{bmatrix} 4 & 0 \\ 0 & 1 \end{bmatrix}$ and $v_1 = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$, construct a vector $v_2$ that is conjugate to $v_1$.
+                        <div class="answer">
+                            <strong>Answer:</strong> 
+                            First compute $Av_1 = \begin{bmatrix} 8 \\ 1 \end{bmatrix}$. 
+                            A conjugate vector can be $v_2 = \begin{bmatrix} 1 \\ -8 \end{bmatrix}$. 
+                            Verify: $v_2^T(Av_1) = 1(8) + (-8)(1) = 0$ ✓
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 3: Quadratic Functions -->
+        <section id="quadratic-functions">
+            <h2>3. Quadratic Functions and Exact Minimizers</h2>
+
+            <h3>Connection Between Optimization and Linear Systems</h3>
+            
+            <p>Consider the following <span class="key-term">quadratic function</span>:</p>
+            <div class="equation-box">
+
+                $$f(x) = \frac{1}{2}x^T A x + b^T x + c$$
+            </div>
+            
+            <p>where $A \in \mathbb{R}^{n \times n}$ is a <span class="key-term">symmetric positive definite matrix</span>.</p>
+
+            <div class="note">
+                <strong>📌 Note:</strong> We only consider <strong>symmetric</strong> matrices because:
+                <ul>
+                    <li>For any matrix $M$, the symmetric part is $\frac{1}{2}(M + M^T)$</li>
+                    <li>The antisymmetric part $\frac{1}{2}(M - M^T)$ contributes zero to the quadratic form</li>
+                    <li>Therefore, only the symmetric part matters for optimization</li>
+                </ul>
+            </div>
+
+            <h3>Finding the Minimizer</h3>
+            
+            <p>To find the minimizer of $f(x)$, we set the gradient to zero:</p>
+            <div class="equation-box">
+
+                $$\nabla f(x) = Ax + b = 0$$
+
+                $$\Rightarrow Ax = -b$$
+            </div>
+
+            <div class="important">
+                <strong>🔑 Key Connection:</strong> 
+                <p>Minimizing the quadratic function $f(x) = \frac{1}{2}x^T A x + b^T x + c$ is <strong>equivalent</strong> to solving the linear system $Ax = -b$!</p>
+                <p>This connection appears frequently in:</p>
+                <ul>
+                    <li>Least squares problems</li>
+                    <li>Normal equations in regression</li>
+                    <li>Many optimization formulations</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                When A is positive definite, the function looks like a bowl (convex, curving upward). The level curves are ellipses centered at the minimizer. In 2D, we visualize level curves; in 3D, we see the actual surface. The positive definiteness guarantees a unique global minimum.
+            </div>
+
+            <h3>Exact Line Search for Quadratic Functions</h3>
+
+            <p>In general optimization, finding the exact minimizer along a direction is difficult. However, for <span class="key-term">quadratic functions</span>, we can calculate it explicitly!</p>
+
+            <div class="equation-box">
+                <strong>Proposition:</strong> Let $f(x) = \frac{1}{2}x^T A x + b^T x + c$ where $A$ is positive definite. 
+                <p>For a point $x$ and direction $d$, define the <span class="key-term">one-dimensional function</span>:</p>
+
+                $$g(\alpha) = f(x + \alpha d), \quad \alpha > 0$$
+                <p>The <strong>exact minimizer</strong> is:</p>
+
+                $$\alpha^* = -\frac{d^T(Ax + b)}{d^T A d} = -\frac{d^T \nabla f(x)}{d^T A d}$$
+            </div>
+
+            <div class="professor-note">
+                Notice that $Ax + b$ is exactly the gradient $\nabla f(x)$ at point $x$! So the exact minimizer formula becomes:
+
+                $$\alpha^* = -\frac{d^T g_k}{d^T A d}$$
+                where $g_k = \nabla f(x_k)$ is the gradient at step $k$.
+            </div>
+
+            <h3>Why Exact Minimizers Matter for Conjugate Gradient</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Convergence for Quadratic</th>
+                        <th>Line Search Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gradient Descent</strong></td>
+                        <td>Many iterations (even with exact line search)</td>
+                        <td>Can use exact, but often slow</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Newton's Method</strong></td>
+                        <td>1 step (for positive definite Hessian)</td>
+                        <td>Uses full Hessian</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conjugate Gradient</strong></td>
+                        <td><strong>At most n steps</strong> (n = dimension)</td>
+                        <td><strong>Requires exact line search</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important">
+                <strong>⚠️ Critical Point:</strong> The Conjugate Gradient method <strong>must use exact line search</strong> to guarantee convergence in n steps for an n-dimensional quadratic problem. This is why the explicit formula is so important!
+            </div>
+
+            <div class="example">
+                <h4>Example: Computing Exact Step Length</h4>
+                <p>Suppose we have:</p>
+                <ul>
+                    <li>Current point: $x_k = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$</li>
+                    <li>Matrix: $A = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}$</li>
+                    <li>Vector: $b = \begin{bmatrix} -6 \\ -8 \end{bmatrix}$</li>
+                    <li>Direction: $d = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$</li>
+                </ul>
+                
+                <p><strong>Step 1:</strong> Calculate gradient</p>
+                <div class="equation-box">
+
+                    $$\nabla f(x_k) = Ax_k + b = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}\begin{bmatrix} 1 \\ 1 \end{bmatrix} + \begin{bmatrix} -6 \\ -8 \end{bmatrix} = \begin{bmatrix} -4 \\ -4 \end{bmatrix}$$
+                </div>
+                
+                <p><strong>Step 2:</strong> Calculate numerator</p>
+                <div class="equation-box">
+
+                    $$d^T \nabla f(x_k) = \begin{bmatrix} 1 & 0 \end{bmatrix}\begin{bmatrix} -4 \\ -4 \end{bmatrix} = -4$$
+                </div>
+                
+                <p><strong>Step 3:</strong> Calculate denominator</p>
+                <div class="equation-box">
+
+                    $$d^T A d = \begin{bmatrix} 1 & 0 \end{bmatrix}\begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}\begin{bmatrix} 1 \\ 0 \end{bmatrix} = 2$$
+                </div>
+                
+                <p><strong>Step 4:</strong> Compute exact step length</p>
+                <div class="equation-box">
+
+                    $$\alpha^* = -\frac{-4}{2} = 2$$
+                </div>
+                
+                <p><strong>Result:</strong> Move exactly 2 units along direction $d$ to reach the minimum in that direction!</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Quadratic functions ko minimize karna matlab ek linear system $Ax = -b$ solve karna hai. Jab A positive definite ho, tab function convex hota hai (bowl shape) aur ek unique minimum hota hai. Conjugate Gradient method ki speciality ye hai ki quadratic functions ke liye hum <strong>exact minimizer</strong> calculate kar sakte hain using formula $\alpha^* = -\frac{d^T \nabla f(x)}{d^T A d}$. Ye exact step length use karke hum guarantee kar sakte hain ki n-dimensional problem n steps mein solve ho jayega!
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Minimizing quadratic functions is equivalent to solving linear systems</li>
+                    <li>Only the symmetric part of matrix A matters in quadratic forms</li>
+                    <li>Positive definiteness guarantees a unique global minimum</li>
+                    <li>Exact line search has a closed-form solution for quadratic functions</li>
+                    <li>The formula $\alpha^* = -\frac{d^T \nabla f(x)}{d^T A d}$ is fundamental to conjugate gradient</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                <ol>
+                    <li>
+                        <strong>Q1:</strong> For $f(x) = x_1^2 + 2x_2^2 - 4x_1 - 8x_2 + 10$, write it in the form $\frac{1}{2}x^TAx + b^Tx + c$ and identify A, b, and c.
+                        <div class="answer">
+                            <strong>Answer:</strong> 
+
+                            $$A = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}, \quad b = \begin{bmatrix} -4 \\ -8 \end{bmatrix}, \quad c = 10$$
+                            Note: The coefficient of $x_i^2$ becomes $2a_{ii}$ in matrix A.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q2:</strong> Explain why gradient descent can be slow for quadratic functions even with exact line search.
+                        <div class="answer">
+                            <strong>Answer:</strong> Gradient descent always moves perpendicular to level curves. For elongated elliptical level curves (when eigenvalues of A differ greatly), the path zigzags, leading to many iterations. Conjugate gradient avoids this by using conjugate directions instead of just the gradient.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q3:</strong> If Newton's method converges in 1 step for quadratic functions, why use conjugate gradient?
+                        <div class="answer">
+                            <strong>Answer:</strong> Newton's method requires computing and inverting the full Hessian matrix (costly for large n). Conjugate gradient only needs gradient evaluations and matrix-vector products, making it more efficient for large-scale problems despite taking n steps instead of 1.
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 4: Conjugate Direction Algorithm -->
+        <section id="conjugate-direction-algorithm">
+            <h2>4. Conjugate Direction Algorithm</h2>
+
+            <h3>The Main Idea</h3>
+            
+            <p>If we are given a set of <strong>n conjugate directions</strong> for an n-dimensional quadratic problem, we can find the minimizer by <span class="key-term">successively minimizing</span> along each direction using exact line search.</p>
+
+            <div class="important">
+                <strong>🎯 Guarantee:</strong> For an n-dimensional quadratic problem with positive definite matrix A, if we have n conjugate directions $\{p_0, p_1, \ldots, p_{n-1}\}$, the algorithm will converge to the exact solution in <strong>at most n steps</strong>!
+            </div>
+
+            <div class="professor-note">
+                It can happen that you converge in fewer than n steps sometimes, but you are <strong>guaranteed</strong> to converge within n steps. This is much better than gradient descent, which may take hundreds of iterations!
+            </div>
+
+            <div class="algorithm">
+                <h4>Algorithm: Conjugate Direction Method</h4>
+                <ol>
+                    <li><strong>Initialize:</strong> Choose starting point $x_0 \in \mathbb{R}^n$ and conjugate directions $\{p_0, p_1, \ldots, p_{n-1}\}$</li>
+                    <li><strong>Set:</strong> $g_0 = Ax_0 + b$ (gradient at $x_0$), $k = 0$</li>
+                    <li><strong>While</strong> $g_k \neq 0$ <strong>do:</strong></li>
+                    <li style="margin-left: 30px;"><strong>Step-size:</strong> Compute $$\alpha_k = -\frac{(g_k)^T p_k}{(p_k)^T A p_k}$$ (exact minimizer along $p_k$)</li>
+                    <li style="margin-left: 30px;"><strong>Update:</strong> $$x_{k+1} = x_k + \alpha_k p_k$$</li>
+                    <li style="margin-left: 30px;"><strong>Gradient:</strong> $$g_{k+1} = Ax_{k+1} + b$$</li>
+                    <li style="margin-left: 30px;"><strong>Increment:</strong> $k = k + 1$</li>
+                    <li><strong>End while</strong></li>
+                    <li><strong>Output:</strong> $x_k$ as the minimizer</li>
+                </ol>
+            </div>
+
+            <h3>How the Algorithm Works Geometrically</h3>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: 2D visualization showing starting point, conjugate directions p₀ and p₁, and convergence to minimum in 2 steps with elliptical level curves]
+            </div>
+
+            <p>In a 2D example:</p>
+            <ol>
+                <li><strong>Start</strong> at some point $x_0$ (e.g., $(1, 1)$)</li>
+                <li><strong>Minimize</strong> along first conjugate direction $p_0$ → reach $x_1$ (e.g., $(3, 1)$)</li>
+                <li><strong>Minimize</strong> along second conjugate direction $p_1$ → reach $x_2$ = minimizer (e.g., $(3, 2)$)</li>
+            </ol>
+
+            <p>The key is that conjugate directions are chosen so that minimizing along one direction doesn't "undo" progress made in previous directions!</p>
+
+            <div class="note">
+                <strong>📌 Important Difference from Gradient Descent:</strong>
+                <ul>
+                    <li><strong>Gradient Descent:</strong> Each step may undo some progress from previous steps (zigzagging)</li>
+                    <li><strong>Conjugate Direction:</strong> Progress along conjugate directions is preserved due to the property $(p_i)^T A p_j = 0$</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Example: Using Pre-given Conjugate Directions</h4>
+                <p><strong>Problem:</strong> Minimize $f(x) = (x_1 - 3)^2 + 2(x_2 - 2)^2$</p>
+                
+                <p><strong>Standard form:</strong> $f(x) = \frac{1}{2}x^TAx + b^Tx + c$ where</p>
+                <div class="equation-box">
+
+                    $$A = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}, \quad b = \begin{bmatrix} -6 \\ -8 \end{bmatrix}, \quad c = 17$$
+                </div>
+                
+                <p><strong>Conjugate directions:</strong> Since A is diagonal, use $p_0 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $p_1 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$</p>
+                
+                <p><strong>Start:</strong> $x_0 = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$</p>
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Iteration 1:</strong></p>
+                <ul>
+                    <li>Gradient: $g_0 = Ax_0 + b = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}\begin{bmatrix} 1 \\ 1 \end{bmatrix} + \begin{bmatrix} -6 \\ -8 \end{bmatrix} = \begin{bmatrix} -4 \\ -4 \end{bmatrix}$</li>
+                    <li>Step size: $\alpha_0 = -\frac{(-4, -4) \cdot (1, 0)}{(1, 0) \cdot \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix} (1, 0)} = -\frac{-4}{2} = 2$</li>
+                    <li>Update: $x_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix} + 2\begin{bmatrix} 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 3 \\ 1 \end{bmatrix}$</li>
+                </ul>
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Iteration 2:</strong></p>
+                <ul>
+                    <li>Gradient: $g_1 = Ax_1 + b = \begin{bmatrix} 0 \\ -4 \end{bmatrix}$</li>
+                    <li>Step size: $\alpha_1 = -\frac{(0, -4) \cdot (0, 1)}{(0, 1) \cdot A (0, 1)} = -\frac{-4}{4} = 1$</li>
+                    <li>Update: $x_2 = \begin{bmatrix} 3 \\ 1 \end{bmatrix} + 1\begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$ ✓</li>
+                </ul>
+                
+                <p><strong>Result:</strong> Converged to exact solution $(3, 2)$ in 2 steps as guaranteed!</p>
+            </div>
+
+            <div class="important">
+                <strong>⚠️ The Challenge:</strong> What if conjugate directions are <strong>NOT pre-given</strong>?
+                <ul>
+                    <li><strong>Option 1:</strong> Compute eigenvectors of A (expensive for large matrices)</li>
+                    <li><strong>Option 2:</strong> Use <span class="key-term">Conjugate Gradient Method</span> to generate them on-the-fly using gradient information! ✓</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Conjugate Direction algorithm mein agar humein <strong>n conjugate directions pehle se mil jaaye</strong>, toh hum successively unme minimize karke exactly n steps mein solution tak pahunch sakte hain. Har step mein hum exact minimizer calculate karte hain formula $\alpha_k = -\frac{g_k^T p_k}{p_k^T A p_k}$ se. Lekin problem ye hai ki conjugate directions pehle se milna mushkil hai. Solution? <strong>Conjugate Gradient Method</strong> jo gradient information use karke khud se conjugate directions generate karta hai!
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Conjugate Direction method requires n pre-given conjugate directions</li>
+                    <li>Guarantees convergence in at most n steps for n-dimensional quadratic problems</li>
+                    <li>Uses exact line search at each step with closed-form formula</li>
+                    <li>Preserves progress along previous conjugate directions (no zigzagging)</li>
+                    <li>Main limitation: obtaining conjugate directions beforehand is difficult</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 5: Conjugate Gradient Algorithm -->
+        <section id="conjugate-gradient-algorithm">
+            <h2>5. Conjugate Gradient Algorithm</h2>
+
+            <h3>The Key Innovation</h3>
+            
+            <p>The <span class="key-term">Conjugate Gradient Method</span> is a special case of the Conjugate Direction Method where we <strong>generate conjugate directions on-the-fly</strong> using gradient information, rather than requiring them to be pre-specified.</p>
+
+            <div class="important">
+                <strong>🎯 Main Difference:</strong>
+                <table>
+                    <tr>
+                        <th>Conjugate Direction Method</th>
+                        <th>Conjugate Gradient Method</th>
+                    </tr>
+                    <tr>
+                        <td>Conjugate directions pre-given</td>
+                        <td>Conjugate directions <strong>generated iteratively</strong> using gradients</td>
+                    </tr>
+                    <tr>
+                        <td>Only choose step length</td>
+                        <td>Choose both step length AND next direction</td>
+                    </tr>
+                    <tr>
+                        <td>General framework</td>
+                        <td>Specific implementation using gradient info</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="professor-note">
+                We use gradient information to calculate conjugate directions. This is why it's called "Conjugate <strong>Gradient</strong>" method. At each step, we're using the current gradient and the previous direction to construct a new direction that is conjugate to all previous directions!
+            </div>
+
+            <div class="algorithm">
+                <h4>Algorithm: Conjugate Gradient Method (for Quadratic Functions)</h4>
+                <ol>
+                    <li><strong>Initialize:</strong> Choose starting point $x_0 \in \mathbb{R}^n$</li>
+                    <li><strong>Set:</strong> $g_0 = Ax_0 + b$ (gradient), $p_0 = -g_0$ (first direction = negative gradient), $k = 0$</li>
+                    <li><strong>While</strong> $g_k \neq 0$ <strong>do:</strong></li>
+                    <li style="margin-left: 30px;"><strong>Step-size:</strong> $$\alpha_k = -\frac{(g_k)^T p_k}{(p_k)^T A p_k}$$ (exact minimizer)</li>
+                    <li style="margin-left: 30px;"><strong>Update position:</strong> $$x_{k+1} = x_k + \alpha_k p_k$$</li>
+                    <li style="margin-left: 30px;"><strong>Update gradient:</strong> $$g_{k+1} = Ax_{k+1} + b$$</li>
+                    <li style="margin-left: 30px;"><strong>Compute β:</strong> $$\beta_{k+1} = \frac{(g_{k+1})^T g_{k+1}}{(g_k)^T g_k}$$ (Fletcher-Reeves formula)</li>
+                    <li style="margin-left: 30px;"><strong>Update direction:</strong> $$p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$$ (new conjugate direction)</li>
+                    <li style="margin-left: 30px;"><strong>Increment:</strong> $k = k + 1$</li>
+                    <li><strong>End while</strong></li>
+                    <li><strong>Output:</strong> $x_k$ as the minimizer</li>
+                </ol>
+            </div>
+
+            <h3>Understanding the Direction Update</h3>
+
+            <p>The magic happens in the direction update formula:</p>
+            <div class="equation-box">
+
+                $$p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$$
+            </div>
+
+            <p>This formula ensures:</p>
+            <ul>
+                <li>$p_{k+1}$ incorporates the current gradient $-g_{k+1}$ (steepest descent component)</li>
+                <li>$p_{k+1}$ includes memory of the previous direction $p_k$ (weighted by $\beta_{k+1}$)</li>
+                <li>$p_{k+1}$ is <strong>conjugate to all previous directions</strong> $p_0, p_1, \ldots, p_k$</li>
+            </ul>
+
+            <div class="note">
+                <strong>📌 The β Formula:</strong> The coefficient $\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$ is called the <span class="key-term">Fletcher-Reeves formula</span>. It ensures the conjugacy property is maintained. There are other formulas for β (Polak-Ribière, etc.), but Fletcher-Reeves is the classic choice for quadratic functions.
+            </div>
+
+            <div class="example">
+                <h4>Example: Conjugate Gradient Method in Action</h4>
+                <p><strong>Problem:</strong> Minimize $f(x) = (x_1 - 3)^2 + 2(x_2 - 2)^2$</p>
+                
+                <p><strong>Setup:</strong></p>
+                <ul>
+                    <li>$A = \begin{bmatrix} 2 & 0 \\ 0 & 4 \end{bmatrix}$, $b = \begin{bmatrix} -6 \\ -8 \end{bmatrix}$, $c = 17$</li>
+                    <li>Start: $x_0 = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$</li>
+                    <li>True solution: $x^* = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$</li>
+                </ul>
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Iteration 0 (Initialization):</strong></p>
+                <ul>
+                    <li>Gradient: $g_0 = Ax_0 + b = \begin{bmatrix} -4 \\ -4 \end{bmatrix}$</li>
+                    <li>First direction: $p_0 = -g_0 = \begin{bmatrix} 4 \\ 4 \end{bmatrix}$ (negative gradient)</li>
+                </ul>
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Iteration 1:</strong></p>
+                <ul>
+                    <li>Numerator: $(g_0)^T p_0 = (-4, -4) \cdot (4, 4) = -16 - 16 = -32$</li>
+                    <li>Denominator: $(p_0)^T A p_0 = (4, 4) \cdot \begin{bmatrix} 8 \\ 16 \end{bmatrix} = 32 + 64 = 96$</li>
+                    <li>Step size: $\alpha_0 = -\frac{-32}{96} = \frac{1}{3}$</li>
+                    <li>Update: $x_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix} + \frac{1}{3}\begin{bmatrix} 4 \\ 4 \end{bmatrix} = \begin{bmatrix} 7/3 \\ 7/3 \end{bmatrix}$</li>
+                    <li>New gradient: $g_1 = Ax_1 + b = \begin{bmatrix} -4/3 \\ 4/3 \end{bmatrix}$</li>
+                    <li>Compute β: $\beta_1 = \frac{(g_1)^T g_1}{(g_0)^T g_0} = \frac{(-4/3)^2 + (4/3)^2}{(-4)^2 + (-4)^2} = \frac{32/9}{32} = \frac{1}{9}$</li>
+                    <li>New direction: $p_1 = -g_1 + \beta_1 p_0 = \begin{bmatrix} 4/3 \\ -4/3 \end{bmatrix} + \frac{1}{9}\begin{bmatrix} 4 \\ 4 \end{bmatrix} = \begin{bmatrix} 16/9 \\ -8/9 \end{bmatrix}$</li>
+                </ul>
+                
+                <p><strong>Verify Conjugacy:</strong> Let's check if $p_0$ and $p_1$ are conjugate:</p>
+                <div class="equation-box">
+
+                    $$(p_0)^T A p_1 = (4, 4) \cdot A \cdot \begin{bmatrix} 16/9 \\ -8/9 \end{bmatrix}$$
+
+                    $$= (4, 4) \cdot \begin{bmatrix} 32/9 \\ -32/9 \end{bmatrix} = \frac{128}{9} - \frac{128}{9} = 0 \quad \checkmark$$
+                </div>
+                
+                <hr style="margin: 20px 0;">
+                
+                <p><strong>Iteration 2:</strong></p>
+                <ul>
+                    <li>Step size: $\alpha_1 = \frac{3}{8}$ (calculation omitted for brevity)</li>
+                    <li>Update: $x_2 = \begin{bmatrix} 7/3 \\ 7/3 \end{bmatrix} + \frac{3}{8}\begin{bmatrix} 16/9 \\ -8/9 \end{bmatrix} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$ ✓</li>
+                </ul>
+                
+                <p><strong>Result:</strong> Reached exact solution in 2 steps!</p>
+            </div>
+
+            <div class="professor-note">
+                Notice that $p_0 = (4, 4)$ and $p_1 = (16/9, -8/9)$ are <strong>conjugate but not perpendicular</strong>! 
+                <ul>
+                    <li>Regular dot product: $(4)(16/9) + (4)(-8/9) = 64/9 - 32/9 \neq 0$</li>
+                    <li>Conjugate product: $(p_0)^T A p_1 = 0$ ✓</li>
+                </ul>
+                This demonstrates the power of the conjugate gradient formula in automatically generating the right directions!
+            </div>
+
+            <h3>Why Conjugate Gradient Works</h3>
+
+            <div class="important">
+                <strong>Mathematical Guarantee:</strong>
+                <p>For an n-dimensional quadratic function with positive definite matrix A, the Conjugate Gradient method:</p>
+                <ol>
+                    <li>Generates directions $\{p_0, p_1, \ldots, p_{k}\}$ that are mutually conjugate</li>
+                    <li>Each $p_k$ can be proven to satisfy $(p_i)^T A p_j = 0$ for $i \neq j$</li>
+                    <li>Converges to the exact solution in <strong>at most n iterations</strong></li>
+                    <li>May converge earlier if the eigenvalue spectrum is favorable</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <strong>📌 Computational Advantage:</strong>
+                <ul>
+                    <li><strong>Storage:</strong> Only need to store current $x_k$, $g_k$, and $p_k$ (not all previous directions)</li>
+                    <li><strong>Computation:</strong> Only requires matrix-vector products $Ap_k$, no matrix inversions</li>
+                    <li><strong>Scalability:</strong> Excellent for large sparse matrices where matrix-vector products are cheap</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Conjugate Gradient method ka main innovation ye hai ki ye conjugate directions khud se generate karta hai! Pehla direction negative gradient hota hai ($p_0 = -g_0$), phir har step mein naya direction banate hain formula $p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$ se. Ye $\beta$ coefficient ensure karta hai ki nayi direction purani sabhi directions ke saath conjugate ho. Result: n-dimensional quadratic problem n steps mein solve! Aur sabse best baat - sirf matrix-vector multiplication chahiye, matrix inversion nahi!
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Conjugate Gradient generates conjugate directions using gradient information</li>
+                    <li>First direction is always the negative gradient: $p_0 = -g_0$</li>
+                    <li>Subsequent directions combine gradient and previous direction: $p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$</li>
+                    <li>Fletcher-Reeves formula: $\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$ ensures conjugacy</li>
+                    <li>Converges in at most n steps for n-dimensional quadratic problems</li>
+                    <li>Requires only gradient evaluations and matrix-vector products</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                <ol>
+                    <li>
+                        <strong>Q1:</strong> Why is the first direction $p_0$ set to $-g_0$ (negative gradient)?
+                        <div class="answer">
+                            <strong>Answer:</strong> The negative gradient is the steepest descent direction. Since we don't have any previous direction to be conjugate to, we start with the best local choice. Subsequent directions will then be made conjugate to this first direction.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q2:</strong> What happens if $\beta_{k+1} = 0$?
+                        <div class="answer">
+                            <strong>Answer:</strong> If $\beta_{k+1} = 0$, then $g_{k+1} = 0$, meaning we've already reached the minimum! The algorithm would terminate because the gradient is zero.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q3:</strong> How does memory usage of CG compare to storing eigenvectors?
+                        <div class="answer">
+                            <strong>Answer:</strong> CG stores only 3 vectors at a time ($x_k$, $g_k$, $p_k$), requiring $O(n)$ memory. Storing all n eigenvectors would require $O(n^2)$ memory. For large problems (n = millions), this difference is crucial!
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q4:</strong> In a 1000-dimensional quadratic problem, what's the maximum iterations needed?
+                        <div class="answer">
+                            <strong>Answer:</strong> At most 1000 iterations (one per dimension). However, if eigenvalues cluster, convergence can be much faster—sometimes just 10-20 iterations!
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 6: Nonlinear CG -->
+        <section id="nonlinear-cg">
+            <h2>6. Fletcher-Reeves Nonlinear Conjugate Gradient</h2>
+
+            <h3>Extending Beyond Quadratic Functions</h3>
+            
+            <p>The Conjugate Gradient method we discussed so far works perfectly for <span class="key-term">quadratic functions</span>. But what about <strong>general nonlinear functions</strong>? This is where the <span class="key-term">Fletcher-Reeves Conjugate Gradient Method</span> comes in!</p>
+
+            <div class="important">
+                <strong>🎯 Key Idea:</strong> For general (non-quadratic) functions, we <strong>mimic</strong> the conjugate gradient approach:
+                <ul>
+                    <li>Use the same direction update formula: $p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$</li>
+                    <li>Same β calculation: $\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$</li>
+                    <li>But replace exact line search with <strong>inexact line search</strong> (e.g., backtracking)</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                For non-quadratic functions, we cannot interpret the directions as truly "conjugate" because the Hessian matrix keeps changing at different points. There's no single matrix A with respect to which all directions are conjugate. But we're mimicking the idea that worked so well for quadratic functions!
+            </div>
+
+            <h3>Why Can't We Use Exact Line Search?</h3>
+
+            <p>For general functions $f(x)$, the one-dimensional minimization problem:</p>
+            <div class="equation-box">
+
+                $$\min_{\alpha > 0} f(x_k + \alpha p_k)$$
+            </div>
+            <p>typically has <strong>no closed-form solution</strong>. For example, if $f$ contains $e^x$, $\log(x)$, or other nonlinear terms, we cannot solve this analytically.</p>
+
+            <div class="note">
+                <strong>📌 Solution:</strong> Use <span class="key-term">inexact line search</span> methods like:
+                <ul>
+                    <li><strong>Backtracking:</strong> Start with large step, reduce until sufficient decrease</li>
+                    <li><strong>Armijo condition:</strong> Ensure $f(x_k + \alpha p_k) \leq f(x_k) + c_1 \alpha \nabla f(x_k)^T p_k$</li>
+                    <li><strong>Wolfe conditions:</strong> Armijo + curvature condition</li>
+                </ul>
+            </div>
+
+            <div class="algorithm">
+                <h4>Algorithm: Fletcher-Reeves Nonlinear Conjugate Gradient</h4>
+                <ol>
+                    <li><strong>Initialize:</strong> Choose $x_0 \in \mathbb{R}^n$, tolerance $\text{tol}$</li>
+                    <li><strong>Set:</strong> $g_0 = \nabla f(x_0)$, $p_0 = -g_0$, $k = 0$</li>
+                    <li><strong>While</strong> $||g_k|| > \text{tol}$ <strong>do:</strong></li>
+                    <li style="margin-left: 30px;"><strong>Line Search:</strong> Find $\alpha_k$ using backtracking or other inexact method along $p_k$</li>
+                    <li style="margin-left: 30px;"><strong>Update position:</strong> $$x_{k+1} = x_k + \alpha_k p_k$$</li>
+                    <li style="margin-left: 30px;"><strong>Update gradient:</strong> $$g_{k+1} = \nabla f(x_{k+1})$$</li>
+                    <li style="margin-left: 30px;"><strong>Compute β:</strong> $$\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$$ (Fletcher-Reeves)</li>
+                    <li style="margin-left: 30px;"><strong>Update direction:</strong> $$p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$$</li>
+                    <li style="margin-left: 30px;"><strong>Increment:</strong> $k = k + 1$</li>
+                    <li><strong>End while</strong></li>
+                    <li><strong>Output:</strong> $x_k$ as approximate minimizer</li>
+                </ol>
+            </div>
+
+            <h3>Key Differences: Quadratic vs. Nonlinear CG</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Quadratic CG</th>
+                        <th>Nonlinear CG (Fletcher-Reeves)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Function Type</strong></td>
+                        <td>$f(x) = \frac{1}{2}x^TAx + b^Tx + c$</td>
+                        <td>Any differentiable $f(x)$</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gradient Formula</strong></td>
+                        <td>$g_k = Ax_k + b$ (linear)</td>
+                        <td>$g_k = \nabla f(x_k)$ (general)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Line Search</strong></td>
+                        <td>Exact: $\alpha_k = -\frac{g_k^T p_k}{p_k^T A p_k}$</td>
+                        <td>Inexact (backtracking, Wolfe, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conjugacy</strong></td>
+                        <td>True conjugacy: $(p_i)^T A p_j = 0$</td>
+                        <td>Approximate (Hessian changes)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convergence</strong></td>
+                        <td>Exactly n steps</td>
+                        <td>No finite-step guarantee</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Termination</strong></td>
+                        <td>$g_k = 0$ (exact)</td>
+                        <td>$||g_k|| < \text{tol}$ (approximate)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important">
+                <strong>⚠️ Loss of Guarantees:</strong>
+                <p>For nonlinear functions, we <strong>lose</strong> the n-step convergence guarantee. The number of iterations depends on:</p>
+                <ul>
+                    <li>Starting point $x_0$</li>
+                    <li>Function curvature and conditioning</li>
+                    <li>Quality of line search</li>
+                    <li>Even simple 2D problems might need many iterations</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Example: Nonlinear Function Optimization</h4>
+                <p><strong>Problem:</strong> Minimize $f(x_1, x_2) = e^{x_1 + 3x_2 - 0.1} + e^{x_1 - 3x_2 - 0.1} + e^{-x_1 - 0.1}$</p>
+                
+                <p><strong>Known solution:</strong> $x^* = (0, 0)$ (can be verified analytically)</p>
+                
+                <p><strong>Fletcher-Reeves with Backtracking:</strong></p>
+                <ul>
+                    <li>Start: $x_0 = (5, 1)$ (arbitrary starting point)</li>
+                    <li>Backtracking parameters: $c = 0.5$, $\rho = 0.8$</li>
+                    <li>Tolerance: $||g_k|| < 10^{-6}$</li>
+                </ul>
+                
+                <p><strong>Results:</strong></p>
+                <div class="equation-box">
+                    After several iterations (depending on starting point):
+
+                    $$x_k \approx (0.0000, 0.0000)$$
+
+                    $$||g_k|| \approx 10^{-7} < \text{tol} \quad \checkmark$$
+                </div>
+                
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li>Convergence achieved, but number of iterations varies with starting point</li>
+                    <li>From $(5, 1)$ might take 50+ iterations</li>
+                    <li>From $(0.5, 0.5)$ might take only 10-15 iterations</li>
+                    <li>Still much faster than standard gradient descent!</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                In practice, for nonlinear functions, we have more sophisticated methods like <strong>quasi-Newton (BFGS, L-BFGS)</strong> that often perform better than Fletcher-Reeves CG. However, CG is historically important and still useful for specific problems, especially very large-scale linear systems (e.g., solving $Ax = b$ iteratively).
+            </div>
+
+            <h3>Other β Formulas</h3>
+
+            <p>While Fletcher-Reeves uses $\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$, other formulas exist for nonlinear optimization:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Formula</th>
+                        <th>Expression</th>
+                        <th>Properties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Fletcher-Reeves</strong></td>
+                        <td>$\beta_{k+1}^{FR} = \frac{||g_{k+1}||^2}{||g_k||^2}$</td>
+                        <td>Classic; works well for quadratics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Polak-Ribière</strong></td>
+                        <td>$\beta_{k+1}^{PR} = \frac{g_{k+1}^T(g_{k+1} - g_k)}{||g_k||^2}$</td>
+                        <td>Often better for nonlinear; can be negative</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hestenes-Stiefel</strong></td>
+                        <td>$\beta_{k+1}^{HS} = \frac{g_{k+1}^T(g_{k+1} - g_k)}{p_k^T(g_{k+1} - g_k)}$</td>
+                        <td>Equivalent to PR for quadratics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dai-Yuan</strong></td>
+                        <td>$\beta_{k+1}^{DY} = \frac{||g_{k+1}||^2}{p_k^T(g_{k+1} - g_k)}$</td>
+                        <td>Good global convergence properties</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>📌 Choosing β Formula:</strong>
+                <ul>
+                    <li>For <strong>quadratic functions</strong>: Fletcher-Reeves is standard and proven</li>
+                    <li>For <strong>nonlinear functions</strong>: Polak-Ribière often performs better</li>
+                    <li>Modern implementations often use <strong>hybrid approaches</strong> or restarts</li>
+                </ul>
+            </div>
+
+            <h3>When to Use Nonlinear CG?</h3>
+
+            <div class="important">
+                <strong>✅ Good for:</strong>
+                <ul>
+                    <li>Large-scale problems where storing Hessian approximations (like BFGS) is expensive</li>
+                    <li>Problems where function and gradient evaluations are cheap</li>
+                    <li>Solving large sparse linear systems iteratively</li>
+                    <li>When memory is limited (only 3 vectors needed)</li>
+                </ul>
+                
+                <strong>❌ Not ideal for:</strong>
+                <ul>
+                    <li>Small to medium problems (use BFGS or Newton instead)</li>
+                    <li>Highly nonlinear or ill-conditioned problems</li>
+                    <li>When high-accuracy solutions are needed (may need many iterations)</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Fletcher-Reeves method quadratic CG ka extension hai non-quadratic functions ke liye. Same formula use karte hain ($p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$) lekin ab exact line search nahi kar sakte, toh backtracking ya doosre inexact methods use karte hain. Conjugacy ka true guarantee nahi rehta kyunki Hessian har point pe change hota hai. n steps mein convergence ka guarantee bhi nahi hai - iterations starting point aur function ki nature pe depend karti hain. Lekin phir bhi gradient descent se bahut better performance milta hai, especially large-scale problems mein!
+                </p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Fletcher-Reeves extends CG to general nonlinear functions</li>
+                    <li>Same direction update formula but uses inexact line search</li>
+                    <li>No true conjugacy or n-step convergence guarantee for nonlinear case</li>
+                    <li>Multiple β formulas exist; Polak-Ribière often better for nonlinear</li>
+                    <li>Best for large-scale problems with limited memory</li>
+                    <li>Historically important; still used for specialized applications</li>
+                    <li>For general nonlinear optimization, quasi-Newton methods often preferred</li>
+                </ul>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                <ol>
+                    <li>
+                        <strong>Q1:</strong> Why can't we guarantee n-step convergence for nonlinear functions?
+                        <div class="answer">
+                            <strong>Answer:</strong> The conjugate gradient theory relies on directions being conjugate with respect to a fixed matrix A. For nonlinear functions, the Hessian (second derivative matrix) changes at each point, so there's no single A with respect to which all directions are conjugate. The best we can do is approximate the ideal behavior.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q2:</strong> What's the main advantage of nonlinear CG over BFGS?
+                        <div class="answer">
+                            <strong>Answer:</strong> Memory efficiency. BFGS stores an $n \times n$ approximation of the Hessian inverse (or $O(n)$ for L-BFGS with limited memory). Nonlinear CG only stores 3 vectors of length $n$, making it ideal for very large problems where $n$ is in millions.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Q3:</strong> If both Fletcher-Reeves and Polak-Ribière are available, which should you try first for a nonlinear problem?
+                        <div class="answer">
+                            <strong>Answer:</strong> Start with Polak-Ribière. It often converges faster for nonlinear functions and has better global convergence properties. Fletcher-Reeves is more conservative and guaranteed to produce descent directions, but can be slower. Many libraries offer both or hybrid versions.
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 7: Examples -->
+        <section id="examples">
+            <h2>7. Detailed Examples and Illustrations</h2>
+
+            <div class="professor-note">
+                During the lecture, we ran Python implementations to demonstrate how these algorithms work in practice. Let's summarize the key observations from those demonstrations.
+            </div>
+
+            <h3>Example 1: Quadratic Function (4D)</h3>
+
+            <div class="example">
+                <h4>4-Dimensional Quadratic Problem</h4>
+                <p><strong>Setup:</strong></p>
+                <ul>
+                    <li>Dimension: $n = 4$</li>
+                    <li>Quadratic function: $f(x) = \frac{1}{2}x^TAx + b^Tx + c$</li>
+                    <li>A is a randomly generated $4 \times 4$ positive definite matrix</li>
+                    <li>Known exact solution from solving $Ax = -b$</li>
+                </ul>
+                
+                <p><strong>Results:</strong></p>
+                <div class="equation-box">
+                    <strong>Iteration 0:</strong> $x_0$ (starting point)<br>
+                    <strong>Iteration 1:</strong> Moved along $p_0$<br>
+                    <strong>Iteration 2:</strong> Moved along $p_1$<br>
+                    <strong>Iteration 3:</strong> Moved along $p_2$<br>
+                    <strong>Iteration 4:</strong> $x_4 = x^*$ (exact solution!) ✓
+                </div>
+                
+                <p><strong>Observations:</strong></p>
+                <ul>
+                    <li>Converged in <strong>exactly 4 steps</strong> as guaranteed (n = 4)</li>
+                    <li>Final solution matches the true solution to machine precision</li>
+                    <li>Each iteration uses exact line search formula</li>
+                    <li>Minor floating-point errors possible but negligible</li>
+                </ul>
+            </div>
+
+            <h3>Example 2: Nonlinear Function</h3>
+
+            <div class="example">
+                <h4>Exponential Sum Function</h4>
+                <p><strong>Function:</strong></p>
+                <div class="equation-box">
+
+                    $$f(x_1, x_2) = e^{x_1 + 3x_2 - 0.1} + e^{x_1 - 3x_2 - 0.1} + e^{-x_1 - 0.1}$$
+                </div>
+                
+                <p><strong>Known minimum:</strong> $x^* = (0, 0)$</p>
+                
+                <p><strong>Fletcher-Reeves with Backtracking:</strong></p>
+                <ul>
+                    <li>Starting point: $x_0 = (5, 1)$</li>
+                    <li>Backtracking: $\alpha_{\text{init}} = 1$, $c = 0.5$, $\rho = 0.8$</li>
+                    <li>Tolerance: $||g_k|| < 10^{-6}$</li>
+                </ul>
+                
+                <p><strong>Results:</strong></p>
+                <div class="equation-box">
+                    After 50+ iterations:<br>
+                    $x_{\text{final}} \approx (0.00000, 0.00000)$<br>
+                    $||g_{\text{final}}|| \approx 10^{-7}$ ✓
+                </div>
+                
+                <p><strong>Comparison with Different Starting Points:</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Starting Point</th>
+                            <th>Iterations</th>
+                            <th>Final Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>$(5, 5)$</td>
+                            <td>~60</td>
+                            <td>$< 10^{-6}$</td>
+                        </tr>
+                        <tr>
+                            <td>$(5, 1)$</td>
+                            <td>~52</td>
+                            <td>$< 10^{-6}$</td>
+                        </tr>
+                        <tr>
+                            <td>$(1, 1)$</td>
+                            <td>~30</td>
+                            <td>$< 10^{-6}$</td>
+                        </tr>
+                        <tr>
+                            <td>$(0.5, 0.5)$</td>
+                            <td>~15</td>
+                            <td>$< 10^{-6}$</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Key Observation:</strong> Number of iterations heavily depends on starting point! Closer starts converge faster.</p>
+            </div>
+
+            <h3>Visual Understanding</h3>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Comparison of paths taken by different methods on 2D quadratic function]
+                <ul style="list-style: none; margin-top: 20px;">
+                    <li>🔵 <strong>Gradient Descent:</strong> Zigzag pattern, many iterations</li>
+                    <li>🔴 <strong>Newton's Method:</strong> Direct to solution in 1 step</li>
+                    <li>🟢 <strong>Conjugate Gradient:</strong> 2 steps for 2D, following conjugate directions</li>
+                </ul>
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: 3D surface plot showing bowl-shaped quadratic function with conjugate gradient path]
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary</h4>
+                <p>
+                    Examples se dekha ki quadratic functions ke liye CG exactly n steps mein converge karta hai—4D problem 4 steps mein solve! Nonlinear functions ke liye guarantee nahi hai, lekin phir bhi gradient descent se bahut faster hai. Starting point ka bahut farak padta hai nonlinear case mein—paas se start karo toh jaldi converge hota hai. Practical implementation mein floating point errors ho sakti hain lekin negligible hoti hain.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mind Map Section -->
+        <section id="mind-map">
+            <div class="mind-map">
+                <h2>🧠 Comprehensive Mind Map: Conjugate Gradient Method</h2>
+                
+                <div class="mind-map-container">
+                    <div class="central-topic">
+                        Conjugate Gradient Method
+                    </div>
+                    
+                    <div class="branches">
+                        <div class="branch">
+                            <h4>📚 Historical Context</h4>
+                            <ul>
+                                <li>Developed by Hestenes & Stiefel (1950s)</li>
+                                <li>Originally for linear systems</li>
+                                <li>Evolved to optimization</li>
+                                <li>Extended to nonlinear (Fletcher-Reeves)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🔑 Core Concept: Conjugacy</h4>
+                            <ul>
+                                <li>Definition: $(x^i)^T A x^j = 0$</li>
+                                <li>Generalizes perpendicularity</li>
+                                <li>Diagonal matrix → coordinate directions</li>
+                                <li>General matrix → eigenvectors</li>
+                                <li>Generated via gradients in CG</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>📐 Quadratic Functions</h4>
+                            <ul>
+                                <li>Form: $f(x) = \frac{1}{2}x^TAx + b^Tx + c$</li>
+                                <li>Equivalent to solving $Ax = -b$</li>
+                                <li>Positive definite A required</li>
+                                <li>Exact line search available</li>
+                                <li>Formula: $\alpha^* = -\frac{d^T g}{d^T A d}$</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>⚙️ Conjugate Direction Algorithm</h4>
+                            <ul>
+                                <li>Requires pre-given conjugate directions</li>
+                                <li>Exact minimization along each</li>
+                                <li>Converges in n steps (n-D)</li>
+                                <li>Limitation: obtaining directions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🚀 Conjugate Gradient Algorithm</h4>
+                            <ul>
+                                <li>Generates directions on-the-fly</li>
+                                <li>$p_0 = -g_0$ (first direction)</li>
+                                <li>$p_{k+1} = -g_{k+1} + \beta_{k+1} p_k$</li>
+                                <li>$\beta_{k+1} = \frac{||g_{k+1}||^2}{||g_k||^2}$ (FR)</li>
+                                <li>Memory: only 3 vectors</li>
+                                <li>Converges: n steps for quadratic</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🌐 Nonlinear Extension</h4>
+                            <ul>
+                                <li>Fletcher-Reeves method</li>
+                                <li>Same formulas, inexact line search</li>
+                                <li>No conjugacy guarantee</li>
+                                <li>No n-step convergence</li>
+                                <li>Alternative β: Polak-Ribière</li>
+                                <li>Use: large-scale problems</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>📊 Comparisons</h4>
+                            <ul>
+                                <li>vs Gradient Descent: Much faster</li>
+                                <li>vs Newton: Cheaper per iteration</li>
+                                <li>vs Quasi-Newton: Less memory</li>
+                                <li>Best for: Large sparse systems</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>✅ Advantages</h4>
+                            <ul>
+                                <li>Finite convergence (quadratic)</li>
+                                <li>Low memory ($O(n)$)</li>
+                                <li>No Hessian needed</li>
+                                <li>Scalable to large problems</li>
+                                <li>Simple implementation</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>⚠️ Limitations</h4>
+                            <ul>
+                                <li>Nonlinear: no guarantees</li>
+                                <li>Sensitive to starting point</li>
+                                <li>Exact line search needed (quadratic)</li>
+                                <li>Can be slow for ill-conditioned</li>
+                                <li>Better methods exist (BFGS, etc.)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Summary -->
+        <section style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px; margin-top: 50px;">
+            <h2 style="color: white; border: none;">🎓 Course Progress: Unconstrained Optimization Methods</h2>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 5px; margin-top: 20px;">
+                <p style="font-size: 1.1em; line-height: 2;">
+                    We have now covered most of the major algorithms for <strong>unconstrained optimization</strong>:
+                </p>
+                <ul style="font-size: 1.1em; line-height: 2;">
+                    <li>✅ <strong>Gradient Descent</strong> and variants</li>
+                    <li>✅ <strong>Newton's Method</strong> (pure and damped)</li>
+                    <li>✅ <strong>Quasi-Newton Methods</strong> (DFP, BFGS, L-BFGS)</li>
+                    <li>✅ <strong>Conjugate Gradient Method</strong></li>
+                </ul>
+                
+                <p style="font-size: 1.1em; margin-top: 20px;">
+                    <strong>Next Topics:</strong> We will move on to <strong>constrained optimization</strong> problems, where additional equality or inequality constraints must be satisfied!
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; font-size: 1.2em;">
+                <p>📚 Keep learning and exploring the beautiful world of optimization!</p>
+                <p style="margin-top: 10px;">🙏 Thank you for studying these lecture notes!</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

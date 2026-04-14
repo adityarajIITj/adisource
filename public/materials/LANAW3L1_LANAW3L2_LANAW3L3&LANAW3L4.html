@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra and Numerical Analysis - Comprehensive Lecture Notes</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+        .toc {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+        .key-term {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #856404;
+        }
+        .hinglish-summary {
+            background-color: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .hinglish-summary h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        .professor-note {
+            background-color: #f0f8ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        .practice-questions {
+            background-color: #fff5f5;
+            border: 1px solid #feb2b2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .key-takeaways {
+            background-color: #f7fafc;
+            border: 1px solid #cbd5e0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .diagram-placeholder {
+            background-color: #e9ecef;
+            border: 2px dashed #6c757d;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .math-example {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        /* Code block styling + Prism-friendly wrapper */
+        .code-block {
+            background-color: #0b1220; /* dark slate base for good contrast */
+            border: 1px solid #1f2d3d;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre; /* keep formatting intact */
+            tab-size: 4;
+            line-height: 1.45;
+            color: #d6deff;
+        }
+
+        /* Improve <pre><code> inside code-block for Prism */
+        .code-block pre {
+            margin: 0;
+            background: transparent;
+            padding: 0;
+            overflow: visible;
+        }
+
+        .code-block code {
+            font-size: 0.95rem;
+            color: inherit;
+            display: block;
+            padding: 6px 0;
+        }
+
+        /* Light theme alternative (use by adding .light on .code-block) */
+        .code-block.light {
+            background-color: #f6f8fb;
+            border-color: #e1e8f0;
+            color: #1f2d3d;
+        }
+
+        .mind-map {
+            background-color: #fafafa;
+            border: 2px solid #ddd;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .mind-map-node {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .mind-map-subnode {
+            display: inline-block;
+            background-color: #95a5a6;
+            color: white;
+            padding: 8px 12px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Linear Algebra and Numerical Analysis</h1>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#learning-objectives">Learning Objectives</a></li>
+                <li><a href="#scalar-vector-multiplication">1. Scalar and Vector Multiplication</a></li>
+                <li><a href="#vector-magnitude">2. Vector Magnitude and Norm</a></li>
+                <li><a href="#linear-equations-systems">3. Linear Equations and Systems</a></li>
+                <li><a href="#real-world-applications">4. Real-world Applications of Linear Equations</a></li>
+                <li><a href="#linear-equations-2d-3d">5. Linear Equations in 2D and 3D</a></li>
+                <li><a href="#linear-combinations">6. Linear Weighted Combinations</a></li>
+                <li><a href="#matrices-introduction">7. Introduction to Matrices</a></li>
+                <li><a href="#matrix-operations">8. Matrix Operations and Types</a></li>
+                <li><a href="#matrix-applications">9. Matrix Applications in Real World</a></li>
+                <li><a href="#mind-map">Comprehensive Mind Map</a></li>
+            </ul>
+        </div>
+
+        <section id="learning-objectives">
+            <h2>Learning Objectives</h2>
+            <table>
+                <tr>
+                    <th>Objective</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><strong>Basics of Linear Equations</strong></td>
+                    <td>Understand the basics of linear system of equations for various applications</td>
+                </tr>
+                <tr>
+                    <td><strong>Everyday Examples</strong></td>
+                    <td>Recognize application of linear equations in everyday life</td>
+                </tr>
+                <tr>
+                    <td><strong>Python Codes</strong></td>
+                    <td>Understand Python code and syntax to solve linear system of equations</td>
+                </tr>
+                <tr>
+                    <td><strong>Hands-on Experience</strong></td>
+                    <td>Gain hands-on experience on solving simple linear equations</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="scalar-vector-multiplication">
+            <h2>1. Scalar and Vector Multiplication</h2>
+            
+            <h3>What is Scalar-Vector Multiplication?</h3>
+            <p>When we multiply a <span class="key-term">vector</span> of certain dimensionality by a <span class="key-term">scalar</span> (a single number), each element in the vector gets multiplied by that scalar value.</p>
+
+            <div class="math-example">
+                <h4>Mathematical Representation:</h4>
+                <p>For a vector $\mathbf{A} = \begin{bmatrix} A_1 \\ A_2 \\ A_3 \\ \vdots \\ A_N \end{bmatrix}$ and scalar $\beta$:</p>
+                
+                <p>$$\beta \mathbf{A} = \begin{bmatrix} \beta A_1 \\ \beta A_2 \\ \beta A_3 \\ \vdots \\ \beta A_N \end{bmatrix}$$</p>
+            </div>
+
+            <h4>Example:</h4>
+            <div class="math-example">
+                <p>Let scalar = -2 and vector = $\begin{bmatrix} 9 \\ 1 \\ 6 \end{bmatrix}$</p>
+                <p>Result: $-2 \times \begin{bmatrix} 9 \\ 1 \\ 6 \end{bmatrix} = \begin{bmatrix} -18 \\ -2 \\ -12 \end{bmatrix}$</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Adding a scalar to a vector is not formally defined in linear algebra as they are two separate mathematical objects. However, numerical processing programs like Python allow this operation, where the scalar is added to each vector element.
+            </div>
+
+            <div class="code-block">
+                <pre><code class="language-python"># Python NumPy Example
+import numpy as np
+
+s = 2  # scalar
+v = np.array([3, 6])  # vector
+
+# Scalar addition (not formal but allowed in NumPy)
+result = s + v  # Result: [5, 8]</code></pre>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Scalar aur vector ka multiplication bahut simple hai - bas har element ko us number se multiply kar do. Python mein ye operations easily ho jaate hain NumPy use karke. Scalar addition technically allowed nahi hai mathematics mein, lekin programming mein kaam aata hai.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>If scalar k = 3 and vector v = [2, -4, 1], what is k × v?</li>
+                    <li>Calculate: -5 × [1, -2, 3, 0]</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>[6, -12, 3]</li>
+                    <li>[-5, 10, -15, 0]</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Scalar multiplication affects every element of a vector equally</li>
+                    <li>Negative scalars reverse the direction of vectors</li>
+                    <li>Python NumPy makes vector operations straightforward</li>
+                    <li>Scalar-vector addition is a computational convenience, not mathematically formal</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="vector-magnitude">
+            <h2>2. Vector Magnitude and Norm</h2>
+            
+            <h3>Understanding Vector Magnitude</h3>
+            <p>The <span class="key-term">magnitude</span> of a vector represents its length or geometric distance. It's also referred to as the <span class="key-term">norm</span> of the vector.</p>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Vector magnitude visualization in 2D and 3D space]
+            </div>
+
+            <div class="math-example">
+                <h4>Formula for Vector Magnitude:</h4>
+                <p>For vector $\mathbf{V} = \begin{bmatrix} V_1 \\ V_2 \\ V_3 \\ \vdots \\ V_N \end{bmatrix}$:</p>
+                
+                <p>$$||\mathbf{V}|| = \sqrt{V_1^2 + V_2^2 + V_3^2 + \cdots + V_N^2}$$</p>
+            </div>
+
+            <h4>Examples:</h4>
+            <div class="math-example">
+                <h5>Example 1:</h5>
+                <p>Vector $\mathbf{V} = \begin{bmatrix} 3 \\ 2 \\ 4 \end{bmatrix}$</p>
+                <p>Magnitude: $||\mathbf{V}|| = \sqrt{3^2 + 2^2 + 4^2} = \sqrt{9 + 4 + 16} = \sqrt{29} \approx 5.4$</p>
+
+                <h5>Example 2:</h5>
+                <p>Vector $\mathbf{W} = \begin{bmatrix} 1 \\ -4 \\ -2 \\ 2 \end{bmatrix}$</p>
+                <p>Magnitude: $||\mathbf{W}|| = \sqrt{1^2 + (-4)^2 + (-2)^2 + 2^2} = \sqrt{1 + 16 + 4 + 4} = \sqrt{25} = 5$</p>
+            </div>
+
+            <h3>Magnitude of Scalar-Vector Product</h3>
+            <div class="math-example">
+                <p>For scalar $k$ and vector $\mathbf{V}$:</p>
+                <p>$$||k\mathbf{V}|| = |k| \cdot ||\mathbf{V}||$$</p>
+                <p>The magnitude of the product equals the absolute value of the scalar times the original vector's magnitude.</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> In Python, there's an important distinction between mathematical and programming terminology. The len() function returns the dimensionality (number of elements), while np.linalg.norm() returns the geometric length or magnitude.
+            </div>
+
+            <div class="code-block">
+                <pre><code class="language-python"># Python Implementation
+import numpy as np
+
+v = np.array([3, 2, 4])
+
+# Mathematical dimensionality
+dimension = len(v)  # Returns: 3
+
+# Geometric magnitude
+magnitude = np.linalg.norm(v)  # Returns: 5.385...</code></pre>
+            </div>
+
+            <h3>Unit Vectors</h3>
+            <p>A <span class="key-term">unit vector</span> has a magnitude of exactly 1. Unit vectors are used in applications like orthogonal matrices, rotational matrices, eigenvectors, and singular vectors.</p>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Vector ka magnitude matlab uski length hai - bilkul ruler se measure karne jaisa. Formula simple hai: sabhi elements ka square karke add karo, phir square root le lo. Python mein len() sirf counting karta hai, magnitude ke liye np.linalg.norm() use karna padta hai. Unit vector ka magnitude hamesha 1 hota hai.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>Calculate the magnitude of vector [0, 3, 4]</li>
+                    <li>If ||v|| = 6 and k = -2, what is ||kv||?</li>
+                    <li>Find a unit vector in the direction of [1, 2, 2]</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>5 (using 3-4-5 triangle)</li>
+                    <li>12 (|-2| × 6 = 12)</li>
+                    <li>[1/3, 2/3, 2/3] (original vector divided by its magnitude 3)</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Vector magnitude represents geometric distance from origin</li>
+                    <li>Magnitude formula involves sum of squares and square root</li>
+                    <li>Scalar multiplication scales magnitude by absolute value of scalar</li>
+                    <li>Unit vectors have magnitude 1 and are crucial in many applications</li>
+                    <li>Python distinguishes between dimensionality (len) and magnitude (norm)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="linear-equations-systems">
+            <h2>3. Linear Equations and Systems</h2>
+            
+            <h3>What is a Linear System of Equations?</h3>
+            <p>A <span class="key-term">linear equation</span> is a mathematical statement where variables appear only to the first power and are combined using addition, subtraction, and multiplication by constants.</p>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Did you know that your daily schedule and calendar is also a linear system of equations with many variables? This realization shows how algorithms for scheduling and calendar applications use linear systems as their backbone.
+            </div>
+
+            <div class="math-example">
+                <h4>General Form of Linear Equation:</h4>
+                <p>$$A_1X_1 + A_2X_2 + A_3X_3 + \cdots + A_NX_N = b$$</p>
+                <p>Where:</p>
+                <ul>
+                    <li>$A_1, A_2, \ldots, A_N, b$ are <span class="key-term">coefficients</span></li>
+                    <li>$X_1, X_2, \ldots, X_N$ are <span class="key-term">variables</span> or unknowns</li>
+                    <li>$N$ is the <span class="key-term">dimension</span> of the system</li>
+                </ul>
+            </div>
+
+            <h4>Examples by Dimension:</h4>
+            <table>
+                <tr>
+                    <th>Dimension</th>
+                    <th>Example</th>
+                    <th>Geometric Interpretation</th>
+                </tr>
+                <tr>
+                    <td>2D</td>
+                    <td>$2X_1 + 4X_2 = 4$</td>
+                    <td>Line in 2D space</td>
+                </tr>
+                <tr>
+                    <td>3D</td>
+                    <td>$3X_1 + 2X_2 + X_3 = 6$</td>
+                    <td>Plane in 3D space</td>
+                </tr>
+            </table>
+
+            <h3>System of Linear Equations</h3>
+            <p>When we have multiple linear equations working together, we call it a <span class="key-term">system of linear equations</span>.</p>
+
+            <div class="math-example">
+                <h4>Example System:</h4>
+                <p>$$\begin{align}
+                X_1 + 1.5X_2 + \pi X_3 &= 4 \\
+                5X_1 + 0X_2 + 7X_3 &= 5
+                \end{align}$$</p>
+                <p>Note: The coefficient of $X_2$ in the second equation is 0, effectively eliminating that variable from the equation.</p>
+            </div>
+
+            <h3>Types of Solutions</h3>
+            <table>
+                <tr>
+                    <th>Solution Type</th>
+                    <th>Description</th>
+                    <th>Geometric Interpretation</th>
+                </tr>
+                <tr>
+                    <td><strong>Unique Solution</strong></td>
+                    <td>Exactly one set of values satisfies all equations</td>
+                    <td>Lines/planes intersect at one point</td>
+                </tr>
+                <tr>
+                    <td><strong>No Solution</strong></td>
+                    <td>No set of values satisfies all equations</td>
+                    <td>Parallel lines/planes that never meet</td>
+                </tr>
+                <tr>
+                    <td><strong>Infinite Solutions</strong></td>
+                    <td>Multiple sets of values satisfy the equations</td>
+                    <td>Identical or intersecting along a line</td>
+                </tr>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Linear equations matlab simple equations jisme variables ki power 1 hi hoti hai. Ye equations daily life mein har jagah use hote hain - scheduling se lekar travel calculations tak. System of equations matlab multiple equations ek saath solve karna. Solutions teen tarah ke hote hain: ek unique, koi nahi, ya infinite.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>Identify which of these is linear: a) $2x + 3y = 5$, b) $x^2 + y = 4$, c) $3x - 2y + z = 0$</li>
+                    <li>What is the dimension of the equation $5x - 2y + 3z - w = 10$?</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>a) and c) are linear; b) is not linear due to $x^2$</li>
+                    <li>4-dimensional (four variables: x, y, z, w)</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Linear equations form the foundation of many real-world algorithms</li>
+                    <li>Variables in linear equations appear only to the first power</li>
+                    <li>Systems can have unique, no, or infinite solutions</li>
+                    <li>Geometric interpretation helps understand solution types</li>
+                    <li>Dimension equals the number of variables in the system</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="real-world-applications">
+            <h2>4. Real-world Applications of Linear Equations</h2>
+            
+            <h3>"Linear Equations Are Everywhere! 🌍"</h3>
+            <p>Linear equations have widespread applications in our daily lives, often working behind the scenes in systems we use every day.</p>
+
+            <h4>Major Application Areas:</h4>
+            
+            <h5>1. Spreading of Viruses 🦠</h5>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Linear equations can be used to model the spreading of viruses in a given network of daily life human networks. This became the go-to approach during COVID-19, where many people developed different models based on linear systems to predict virus spread.
+            </div>
+
+            <h5>2. Sports Applications ⚽</h5>
+            <p>Geometrical problems in sports like football, cricket, and basketball require:</p>
+            <ul>
+                <li>Drawing lines and parabolas</li>
+                <li>Solving geometric objects (line equations, parabola equations)</li>
+                <li>Estimating position, velocities, and acceleration</li>
+                <li>Applying Newton's laws of motion</li>
+            </ul>
+
+            <h5>3. Travel and Transportation 🚗</h5>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> You are using linear equations almost every day to calculate speed, distance, and time of moving vehicles. You've been doing this all the time without realizing you're using linear equations in your daily life.
+            </div>
+
+            <div class="math-example">
+                <h4>Speed-Distance-Time Relationships:</h4>
+                <p>$$\text{Distance} = \text{Speed} \times \text{Time}$$</p>
+                <p>$$\text{Speed} = \frac{\text{Distance}}{\text{Time}}$$</p>
+                <p>$$\text{Time} = \frac{\text{Distance}}{\text{Speed}}$$</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Linear equations har jagah hain - virus spread se lekar sports aur travel tak. COVID ke time pe sabne dekha ki kaise mathematical models use karke predictions karte hain. Speed-distance-time calculations toh daily karte rehte hain, bas realize nahi karte ki ye linear algebra hai.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>A car travels 240 km in 4 hours. What is its average speed?</li>
+                    <li>If a virus spreads to 50 new people per day, how many people will be infected after 7 days (starting with 1 infected person)?</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>60 km/h (240 ÷ 4 = 60)</li>
+                    <li>351 people (1 + 50×7 = 351, assuming linear spread)</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Linear equations model real-world phenomena effectively</li>
+                    <li>Epidemic modeling relies heavily on linear systems</li>
+                    <li>Sports analytics uses geometric linear equations</li>
+                    <li>Transportation calculations are linear equation applications</li>
+                    <li>We use linear equations daily, often unconsciously</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="linear-equations-2d-3d">
+            <h2>5. Linear Equations in 2D and 3D</h2>
+            
+            <h3>Linear Equations in 2D - Geometric Interpretation</h3>
+            <p>Linear equations in 2D represent <span class="key-term">straight lines</span> on a coordinate plane.</p>
+
+            <div class="math-example">
+                <h4>Standard Form Conversion:</h4>
+                <p>Given: $X_1 - 2X_2 = -1$</p>
+                <p>Rearranging: $X_1 = 2X_2 - 1$</p>
+                <p>This matches the standard line equation: $y = mx + c$</p>
+                <ul>
+                    <li>Slope (m) = 2</li>
+                    <li>Y-intercept (c) = -1</li>
+                </ul>
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Three scenarios of line intersections in 2D]
+            </div>
+
+            <h4>Three Scenarios for Two Linear Equations:</h4>
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Geometric Description</th>
+                    <th>Solution Type</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Non-parallel intersecting lines</td>
+                    <td>Unique solution</td>
+                    <td>$X_1 - 2X_2 = -1$ and $-X_1 + 3X_2 = 3$</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Parallel lines</td>
+                    <td>No solution</td>
+                    <td>$X_1 - 2X_2 = -1$ and $-X_1 + 2X_2 = 3$</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Identical lines</td>
+                    <td>Infinite solutions</td>
+                    <td>$X_1 - 2X_2 = -1$ and $-X_1 + 2X_2 = 1$</td>
+                </tr>
+            </table>
+
+            <h3>Linear Equations in 3D - Planes</h3>
+            <p>In three dimensions, linear equations represent <span class="key-term">planes</span>.</p>
+
+            <div class="math-example">
+                <h4>3D Linear Equation:</h4>
+                <p>$$A_1X_1 + A_2X_2 + A_3X_3 = B$$</p>
+                <p>This defines a plane in $\mathbb{R}^3$ (3-dimensional real space).</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> $\mathbb{R}^3$ is a mathematical notation for real numbers in 3 dimensions. The superscript 3 means the equation has 3 variables. For 4 variables, we write $\mathbb{R}^4$. For n variables, we write $\mathbb{R}^n$.
+            </div>
+
+            <h4>Three Planes Intersection Scenarios:</h4>
+            <div class="diagram-placeholder">
+                [Insert diagram: Three planes intersecting in different ways]
+            </div>
+
+            <table>
+                <tr>
+                    <th>Intersection Type</th>
+                    <th>Description</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td>Point Intersection</td>
+                    <td>All three planes meet at origin</td>
+                    <td>Unique solution</td>
+                </tr>
+                <tr>
+                    <td>Line Intersection</td>
+                    <td>Planes intersect along a line</td>
+                    <td>Infinite solutions</td>
+                </tr>
+                <tr>
+                    <td>Parallel Planes</td>
+                    <td>Planes never intersect</td>
+                    <td>No solution</td>
+                </tr>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>2D mein linear equations straight lines banate hain, 3D mein planes. Do lines ya teen planes kaise intersect karte hain, usse pata chalta hai solution kya hoga - unique, infinite, ya koi nahi. Geometry aur algebra ka connection bahut beautiful hai - same mathematics, different visualization.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>Convert $3x + 2y = 6$ to slope-intercept form</li>
+                    <li>What does the equation $x + y + z = 5$ represent in 3D space?</li>
+                    <li>Two lines: $y = 2x + 1$ and $y = 2x - 3$. What type of solution?</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>$y = -\frac{3}{2}x + 3$ (slope = -3/2, intercept = 3)</li>
+                    <li>A plane in 3D space</li>
+                    <li>No solution (parallel lines with same slope, different intercepts)</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>2D linear equations represent lines; 3D equations represent planes</li>
+                    <li>Intersection patterns determine solution types</li>
+                    <li>Geometric visualization helps understand algebraic solutions</li>
+                    <li>Mathematical notation $\mathbb{R}^n$ indicates dimensionality</li>
+                    <li>Same principles apply regardless of dimension</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="linear-combinations">
+            <h2>6. Linear Weighted Combinations and Vectors</h2>
+            
+            <h3>What is a Linear Weighted Combination?</h3>
+            <p>A <span class="key-term">linear weighted combination</span> is a way of mixing information from multiple variables, with some variables contributing more than others. It's also called a <span class="key-term">linear mixture</span>.</p>
+
+            <div class="math-example">
+                <h4>General Form:</h4>
+                <p>$$\mathbf{W} = \lambda_1\mathbf{V_1} + \lambda_2\mathbf{V_2} + \lambda_3\mathbf{V_3} + \cdots + \lambda_n\mathbf{V_n}$$</p>
+                <p>Where:</p>
+                <ul>
+                    <li>$\lambda_1, \lambda_2, \ldots, \lambda_n$ are <span class="key-term">coefficients</span> or <span class="key-term">weights</span></li>
+                    <li>$\mathbf{V_1}, \mathbf{V_2}, \ldots, \mathbf{V_n}$ are <span class="key-term">vectors</span></li>
+                    <li>$\mathbf{W}$ is the resulting vector</li>
+                </ul>
+            </div>
+
+            <h4>Practical Example:</h4>
+            <div class="math-example">
+                <p>Given coefficients: $\lambda_1 = 1$, $\lambda_2 = 2$, $\lambda_3 = -3$</p>
+                <p>And vectors: $\mathbf{V_1} = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix}$, $\mathbf{V_2} = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$, $\mathbf{V_3} = \begin{bmatrix} 1 \\ 0 \\ 2 \end{bmatrix}$</p>
+                
+                <p>$$\mathbf{W} = 1 \cdot \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix} + 2 \cdot \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} + (-3) \cdot \begin{bmatrix} 1 \\ 0 \\ 2 \end{bmatrix}$$</p>
+                
+                <p>$$\mathbf{W} = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix} + \begin{bmatrix} 0 \\ 2 \\ 2 \end{bmatrix} + \begin{bmatrix} -3 \\ 0 \\ -6 \end{bmatrix} = \begin{bmatrix} -2 \\ 4 \\ -4 \end{bmatrix}$$</p>
+            </div>
+
+            <h3>Python Implementation</h3>
+            <div class="code-block">
+                <pre><code class="language-python">import numpy as np
+
+# Define coefficients
+L1, L2, L3 = 1, 2, -3
+
+# Define vectors
+V1 = np.array([1, 2, 0])
+V2 = np.array([0, 1, 1])
+V3 = np.array([1, 0, 2])
+
+# Linear combination
+W = L1*V1 + L2*V2 + L3*V3
+print("Result:", W)  # Output: [-2  4 -4]</code></pre>
+            </div>
+
+            <h3>Real-world Application</h3>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "How do we add a car moving with three different velocities in different parts of the city?" This can be solved using linear mixing of vectors, where each velocity vector is weighted by time or distance factors.
+            </div>
+
+            <div class="math-example">
+                <h4>Car Velocity Example:</h4>
+                <p>A car moves with different velocities in different parts of the city:</p>
+                <ul>
+                    <li>Highway: $\mathbf{v_1} = [60, 0]$ km/h for 0.5 hours</li>
+                    <li>City streets: $\mathbf{v_2} = [30, 20]$ km/h for 1 hour</li>
+                    <li>Parking: $\mathbf{v_3} = [5, -5]$ km/h for 0.2 hours</li>
+                </ul>
+                <p>Net displacement: $\mathbf{d} = 0.5\mathbf{v_1} + 1.0\mathbf{v_2} + 0.2\mathbf{v_3}$</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Linear combination matlab different vectors ko alag-alag weights ke saath mix karna. Ye real life mein bahut kaam aata hai - jaise car different speeds mein different directions mein ja rahi ho toh overall displacement calculate karna. NumPy mein ye operations bilkul simple hain, bas multiply aur add karte jao.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>Calculate: $2[1, 0] + 3[0, 1] + (-1)[1, 1]$</li>
+                    <li>If $\mathbf{u} = [2, -1]$ and $\mathbf{v} = [1, 3]$, find $3\mathbf{u} - 2\mathbf{v}$</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>[1, 2] (step: [2,0] + [0,3] + [-1,-1] = [1,2])</li>
+                    <li>[4, -9] (step: 3[2,-1] - 2[1,3] = [6,-3] - [2,6] = [4,-9])</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Linear combinations allow mixing of vector information with different weights</li>
+                    <li>Coefficients determine the contribution of each vector</li>
+                    <li>Applications include velocity addition, signal processing, and data analysis</li>
+                    <li>Python NumPy makes vector operations straightforward</li>
+                    <li>Linear combinations connect algebra with real-world physics problems</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="matrices-introduction">
+            <h2>7. Introduction to Matrices</h2>
+            
+            <h3>What are Matrices?</h3>
+            <p><span class="key-term">Matrices</span> are vectors taken to the next level - highly versatile mathematical objects that can store sets of linear equations, perform geometrical transformations, and track complex data over time.</p>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> In data science, matrices are sometimes called data tables, where rows correspond to observations (like customers) and columns correspond to features (like purchases).
+            </div>
+
+            <h3>Brief History of Matrices</h3>
+            <div class="math-example">
+                <h4>Historical Context:</h4>
+                <ul>
+                    <li>The concept goes back to <span class="key-term">ancient times</span></li>
+                    <li>The term "Matrix" was applied around <span class="key-term">1850s</span></li>
+                    <li><span class="key-term">Matrix</span> is the Latin word for "womb"</li>
+                    <li>It means "any place where something is formed or produced"</li>
+                </ul>
+            </div>
+
+            <h3>Matrix Representation and Dimensions</h3>
+            <div class="math-example">
+                <h4>Examples of Different Matrix Sizes:</h4>
+                <p><strong>Matrix A (2×2):</strong> $A = \begin{bmatrix} 2 & 3 \\ 2 & 6 \end{bmatrix}$</p>
+                
+                <p><strong>Matrix B (3×4):</strong> $B = \begin{bmatrix} 1 & 2 & 3 & 4 \\ 5 & 6 & 7 & 8 \\ 9 & 10 & 11 & 12 \end{bmatrix}$</p>
+                
+                <p><strong>Matrix C (4×1) - Column Vector:</strong> $C = \begin{bmatrix} 1 \\ 2 \\ 3 \\ 4 \end{bmatrix}$</p>
+                
+                <p><strong>Matrix C^T (1×4) - Row Vector:</strong> $C^T = \begin{bmatrix} 1 & 2 & 3 & 4 \end{bmatrix}$</p>
+            </table>
+
+            <h4>Matrix Dimensions</h4>
+            <p>A matrix with <span class="key-term">M rows</span> and <span class="key-term">N columns</span> is called an <span class="key-term">M × N matrix</span>.</p>
+
+            <div class="math-example">
+                <h4>Generic Matrix Element Notation:</h4>
+                <p>For matrix $A$ with elements $a_{ij}$ where $i$ is row and $j$ is column:</p>
+                <p>$$A = \begin{bmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{bmatrix}$$</p>
+            </div>
+
+            <h3>Matrix Transpose</h3>
+            <p>The <span class="key-term">transpose</span> of a matrix switches rows and columns.</p>
+
+            <div class="math-example">
+                <p>If $A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{bmatrix}$ then $A^T = \begin{bmatrix} 1 & 3 & 5 \\ 2 & 4 & 6 \end{bmatrix}$</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Matrix matlab advanced vector - isme data ko rows aur columns mein organize karte hain. History bhi interesting hai - Latin word "womb" se aaya hai matlab "jahan kuch create hota hai". Data science mein toh matrices ka bhayankar use hai - customers aur unke features store karne ke liye.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>What are the dimensions of matrix $\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$?</li>
+                    <li>Find the transpose of $\begin{bmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{bmatrix}$</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>2×3 (2 rows, 3 columns)</li>
+                    <li>$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Matrices are advanced data structures for organizing information</li>
+                    <li>Dimensions are described as M×N (rows × columns)</li>
+                    <li>Transpose operation switches rows and columns</li>
+                    <li>Historical significance shows mathematical evolution</li>
+                    <li>Data science heavily relies on matrix representations</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="matrix-operations">
+            <h2>8. Matrix Operations and Special Types</h2>
+            
+            <h3>Basic Matrix Operations</h3>
+            <p>Just like numbers, we can perform <span class="key-term">addition</span>, <span class="key-term">subtraction</span>, and <span class="key-term">multiplication</span> operations with matrices.</p>
+
+            <div class="math-example">
+                <h4>Constructing a Matrix with Pattern:</h4>
+                <p>Create a 3×4 matrix where $a_{ij} = i + j$:</p>
+                <p>$$A = \begin{bmatrix} 
+                1+1 & 1+2 & 1+3 & 1+4 \\
+                2+1 & 2+2 & 2+3 & 2+4 \\
+                3+1 & 3+2 & 3+3 & 3+4
+                \end{bmatrix} = \begin{bmatrix} 
+                2 & 3 & 4 & 5 \\
+                3 & 4 & 5 & 6 \\
+                4 & 5 & 6 & 7
+                \end{bmatrix}$$</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> These patterns you see are like pixel values in pictures taken with your camera. Images and videos are essentially matrices containing numbers that represent color and intensity values.
+            </div>
+
+            <h3>Special Types of Matrices</h3>
+            <p>Matrices can be categorized into families based on their characteristics and properties.</p>
+
+            <table>
+                <tr>
+                    <th>Matrix Type</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                    <th>Properties</th>
+                </tr>
+                <tr>
+                    <td><strong>Square Matrix</strong></td>
+                    <td>Equal number of rows and columns</td>
+                    <td>$\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}$</td>
+                    <td>M = N</td>
+                </tr>
+                <tr>
+                    <td><strong>Identity Matrix</strong></td>
+                    <td>Diagonal elements are 1, others are 0</td>
+                    <td>$\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$</td>
+                    <td>$a_{ij} = 1$ if $i=j$, else 0</td>
+                </tr>
+                <tr>
+                    <td><strong>Zero Matrix</strong></td>
+                    <td>All elements are zero</td>
+                    <td>$\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$</td>
+                    <td>$a_{ij} = 0$ for all $i,j$</td>
+                </tr>
+                <tr>
+                    <td><strong>Diagonal Matrix</strong></td>
+                    <td>Non-zero elements only on diagonal</td>
+                    <td>$\begin{bmatrix} 2 & 0 & 0 \\ 0 & 5 & 0 \\ 0 & 0 & 3 \end{bmatrix}$</td>
+                    <td>$a_{ij} = 0$ if $i \neq j$</td>
+                </tr>
+                <tr>
+                    <td><strong>Symmetric Matrix</strong></td>
+                    <td>$a_{ij} = a_{ji}$ for all elements</td>
+                    <td>$\begin{bmatrix} 1 & 2 & 3 \\ 2 & 4 & 5 \\ 3 & 5 & 6 \end{bmatrix}$</td>
+                    <td>$A = A^T$</td>
+                </tr>
+                <tr>
+                    <td><strong>Upper Triangular</strong></td>
+                    <td>All elements below diagonal are zero</td>
+                    <td>$\begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{bmatrix}$</td>
+                    <td>$a_{ij} = 0$ if $i > j$</td>
+                </tr>
+                <tr>
+                    <td><strong>Lower Triangular</strong></td>
+                    <td>All elements above diagonal are zero</td>
+                    <td>$\begin{bmatrix} 1 & 0 & 0 \\ 2 & 4 & 0 \\ 3 & 5 & 6 \end{bmatrix}$</td>
+                    <td>$a_{ij} = 0$ if $i < j$</td>
+                </tr>
+            </table>
+
+            <h4>Importance of Special Matrices</h4>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> These categories are important because they appear in certain operations and have useful properties, such as in finding matrix inverses or matrix diagonalization.
+            </div>
+
+            <h3>Exercise: Sales Data Matrix</h3>
+            <div class="math-example">
+                <h4>Real-world Matrix Example:</h4>
+                <p>A company's sales figures for 3 products (I, II, III) over a week can be arranged as:</p>
+                <p>$$\text{Sales Matrix} = \begin{bmatrix}
+                \text{Mon} & \text{Tue} & \text{Wed} & \text{Thu} & \text{Fri} & \text{Sat} & \text{Sun} \\
+                s_{11} & s_{12} & s_{13} & s_{14} & s_{15} & s_{16} & s_{17} \\
+                s_{21} & s_{22} & s_{23} & s_{24} & s_{25} & s_{26} & s_{27} \\
+                s_{31} & s_{32} & s_{33} & s_{34} & s_{35} & s_{36} & s_{37}
+                \end{bmatrix}$$</p>
+                <p>Where rows represent products and columns represent days.</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> If the company has 10 stores, we can create 10 such matrices and add corresponding entries to get total sales of each product on each day.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Matrix operations numbers ki tarah hi hote hain - add, subtract, multiply kar sakte hain. Special matrices ke different categories hain jo specific properties rakhti hain. Identity matrix sabse important hai - inverse aur determinant calculations mein use hoti hai. Real world mein sales data, image pixels sab matrices mein store karte hain.</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>Identify the type: $\begin{bmatrix} 2 & 0 & 0 \\ 0 & 3 & 0 \\ 0 & 0 & 1 \end{bmatrix}$</li>
+                    <li>Is $\begin{bmatrix} 1 & 2 \\ 2 & 3 \end{bmatrix}$ symmetric?</li>
+                    <li>Create a 2×2 identity matrix</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>Diagonal matrix (non-zero elements only on diagonal)</li>
+                    <li>Yes (element at position (1,2) equals element at position (2,1))</li>
+                    <li>$\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Matrix operations follow specific rules similar to number operations</li>
+                    <li>Special matrix types have unique properties useful in applications</li>
+                    <li>Identity matrices are crucial for advanced operations</li>
+                    <li>Real-world data naturally fits matrix representations</li>
+                    <li>Matrix patterns appear in image processing and data storage</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="matrix-applications">
+            <h2>9. Matrix Applications in Real World</h2>
+            
+            <h3>Instagram and Image Processing</h3>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Are you on Instagram? Instagram's core functionality is matrix operations! Image filtering involves understanding matrix operations and geometric transformations."
+            </div>
+
+            <h4>Content Marketing Matrix (2×2)</h4>
+            <p>Instagram uses a content marketing matrix based on buyer readiness aspects:</p>
+            
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Emotional</th>
+                    <th>Rational</th>
+                </tr>
+                <tr>
+                    <td><strong>Awareness</strong></td>
+                    <td>Entertainment, Games, Quizzes, Branded Videos</td>
+                    <td>Press Releases, Statistics, Trend Reports, Infographics</td>
+                </tr>
+                <tr>
+                    <td><strong>Purchase</strong></td>
+                    <td>Celebrity Influencers, Reviews, Community Forums</td>
+                    <td>Case Studies, Price Guides, Webinars, E-news</td>
+                </tr>
+            </table>
+
+            <h3>Social Networks and Graph Theory</h3>
+            <p>Matrices are used to represent social networks, like connections between actors in Hollywood or Bollywood.</p>
+
+            <div class="math-example">
+                <h4>Friends Network Matrix Example:</h4>
+                <p>For 6 characters from the TV show "Friends", we can create a connection matrix:</p>
+                <p>$$\text{Friends Matrix} = \begin{bmatrix}
+                & \text{Rachel} & \text{Monica} & \text{Phoebe} & \text{Ross} & \text{Chandler} & \text{Joey} \\
+                \text{Rachel} & 0 & 1 & 1 & 1 & 1 & 1 \\
+                \text{Monica} & 1 & 0 & 1 & 1 & 1 & 1 \\
+                \text{Phoebe} & 1 & 1 & 0 & 0 & 1 & 1 \\
+                \text{Ross} & 1 & 1 & 0 & 0 & 1 & 1 \\
+                \text{Chandler} & 1 & 1 & 1 & 1 & 0 & 1 \\
+                \text{Joey} & 1 & 1 & 1 & 1 & 1 & 0
+                \end{bmatrix}$$</p>
+                <p>Where 1 = connected, 0 = not connected (or disconnected)</p>
+            </div>
+
+            <h4>Applications in Recommendation Systems</h4>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> From these connections, we can determine the most popular person in a network versus the least popular person. This uses social network theory, which heavily relies on linear algebra and matrices.
+            </div>
+
+            <h3>Age Problem Using Matrix Formulation</h3>
+            <div class="math-example">
+                <h4>Exercise Problem:</h4>
+                <p><strong>Problem:</strong> Anil's age is twice that of Sunil. Ten years ago, Anil's age was three times Sunil's age. Determine their current ages.</p>
+                
+                <p><strong>Setting up equations:</strong></p>
+                <p>Let Anil's current age = A, Sunil's current age = S</p>
+                <ul>
+                    <li>Equation 1: A = 2S</li>
+                    <li>Equation 2: A - 10 = 3(S - 10)</li>
+                </ul>
+                
+                <p><strong>Matrix form:</strong></p>
+                <p>$$\begin{bmatrix} 1 & -2 \\ 1 & -3 \end{bmatrix} \begin{bmatrix} A \\ S \end{bmatrix} = \begin{bmatrix} 0 \\ -20 \end{bmatrix}$$</p>
+                
+                <p><strong>Solution:</strong> A = 40 years, S = 20 years</p>
+            </div>
+
+            <h3>Other Data Types for Matrix Storage</h3>
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> Besides sales figures, other data types that can be stored in matrix form include: financial records, stock market prices, particle positions over time, customer-product relationships, and sensor measurements.
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>Hinglish Summary:</h4>
+                <p>Matrix applications har jagah hain - Instagram ke filters se lekar social media recommendations tak. Friends ka network bhi matrix mein represent kar sakte hain binary form mein (0 aur 1 use karke). Age problems solve karne se lekar stock market analysis tak, matrices ka bharpur use hai. Data science mein toh matrices without matrices impossible hai!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions:</h4>
+                <ol>
+                    <li>In the age problem, verify: If Anil = 40 and Sunil = 20, do both conditions satisfy?</li>
+                    <li>Create a 3×3 binary matrix representing connections in a small social network</li>
+                    <li>List 3 other real-world data types that can be stored as matrices</li>
+                </ol>
+                <h5>Answers:</h5>
+                <ol>
+                    <li>Yes: 40 = 2×20 ✓ and 30 = 3×10 ✓</li>
+                    <li>Example: $\begin{bmatrix} 0 & 1 & 1 \\ 1 & 0 & 0 \\ 1 & 0 & 0 \end{bmatrix}$ (Person 1 connected to 2&3, etc.)</li>
+                    <li>Possible answers: Student grades, weather data, image pixels, financial transactions, game scores, etc.</li>
+                </ol>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>Key Takeaways:</h4>
+                <ul>
+                    <li>Social media platforms heavily rely on matrix operations</li>
+                    <li>Network analysis uses binary matrices for connections</li>
+                    <li>Real-world problems can be formulated as matrix equations</li>
+                    <li>Recommendation systems use matrix algebra for predictions</li>
+                    <li>Image processing is fundamentally matrix manipulation</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mind-map">
+            <div class="mind-map">
+                <h2>Comprehensive Mind Map</h2>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div class="mind-map-node">LINEAR ALGEBRA & NUMERICAL ANALYSIS</div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <div class="mind-map-node">VECTORS</div><br>
+                    <div class="mind-map-subnode">Scalar Multiplication</div>
+                    <div class="mind-map-subnode">Vector Addition</div>
+                    <div class="mind-map-subnode">Magnitude/Norm</div>
+                    <div class="mind-map-subnode">Unit Vectors</div>
+                    <div class="mind-map-subnode">Linear Combinations</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="mind-map-node">LINEAR EQUATIONS</div><br>
+                    <div class="mind-map-subnode">2D Lines</div>
+                    <div class="mind-map-subnode">3D Planes</div>
+                    <div class="mind-map-subnode">Systems of Equations</div>
+                    <div class="mind-map-subnode">Solution Types</div>
+                    <div class="mind-map-subnode">Real-world Applications</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="mind-map-node">MATRICES</div><br>
+                    <div class="mind-map-subnode">Basic Operations</div>
+                    <div class="mind-map-subnode">Special Types</div>
+                    <div class="mind-map-subnode">Transpose</div>
+                    <div class="mind-map-subnode">Data Tables</div>
+                    <div class="mind-map-subnode">Image Processing</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="mind-map-node">APPLICATIONS</div><br>
+                    <div class="mind-map-subnode">Virus Modeling</div>
+                    <div class="mind-map-subnode">Sports Analytics</div>
+                    <div class="mind-map-subnode">Travel Calculations</div>
+                    <div class="mind-map-subnode">Social Networks</div>
+                    <div class="mind-map-subnode">Instagram Filters</div>
+                    <div class="mind-map-subnode">Recommendation Systems</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div class="mind-map-node">PYTHON IMPLEMENTATION</div><br>
+                    <div class="mind-map-subnode">NumPy Arrays</div>
+                    <div class="mind-map-subnode">len() vs norm()</div>
+                    <div class="mind-map-subnode">Vector Operations</div>
+                    <div class="mind-map-subnode">Matrix Manipulation</div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background-color: #e8f4f8; border-radius: 10px;">
+                    <h3 style="color: #2c3e50; text-align: center;">Connections & Flow</h3>
+                    <p style="text-align: center; font-size: 0.9em; color: #34495e;">
+                        <strong>Scalars → Vectors → Linear Equations → Systems → Matrices → Real Applications</strong><br>
+                        <em>Each concept builds upon the previous, creating a comprehensive foundation for data science and AI applications.</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="margin-top: 50px; padding: 20px; background-color: #2c3e50; color: white; border-radius: 10px; text-align: center;">
+            <h3 style= "color:#f8f9fa ">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</h3>
+            <h3 style= "color:#f8f9fa ">~ Armaan Kachhawa </h3>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

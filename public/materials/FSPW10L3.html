@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/fsp/">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Central Limit Theorem (CLT) – Lecture Notes</title>
+
+  <!-- MathJax for LaTeX -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+  </script>
+
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --accent: #4895ef;
+      --success: #06d6a0;
+      --warning: #ffd60a;
+      --danger: #ef476f;
+      --light: #f8f9fa;
+      --dark: #2c3e50;
+      --gray: #6c757d;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.7;
+      background: linear-gradient(to bottom, #f0f2ff 0%, #e6e9ff 100%);
+      color: #2d3748;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      margin-bottom: 35px;
+    }
+
+    .header h1 {
+      font-size: 2.4rem;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin: 8px 0;
+    }
+
+    .toc {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .toc {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 40px;
+    }
+
+    .toc h2 {
+      color: var(--primary);
+      border-bottom: 3px solid var(--accent);
+      padding-bottom: 10px;
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+
+    .toc ol {
+      padding-left: 20px;
+    }
+
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .toc a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+
+    h2 {
+      color: var(--dark);
+      font-size: 1.7rem;
+      margin: 40px 0 20px 0;
+      border-left: 5px solid var(--primary);
+      padding-left: 15px;
+    }
+
+    h3 {
+      color: #2c3e50;
+      font-size: 1.35rem;
+      margin: 30px 0 15px 0;
+    }
+
+    .key-term {
+      background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+      color: #2d3748;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.95em;
+    }
+
+    .highlight-box {
+      background: linear-gradient(to right, #e0f2fe, #dbeafe);
+      border-left: 5px solid var(--primary);
+      padding: 18px 22px;
+      border-radius: 0 10px 10px 0;
+      margin: 20px 0;
+      font-size: 1.02rem;
+      box-shadow: 0 2px 8px rgba(67,97,238,0.15);
+    }
+
+    .formula-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      font-size: 1.05rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .professor-note {
+      background: #fff8e1;
+      border-left: 5px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-style: italic;
+      position: relative;
+    }
+
+    .professor-note::before {
+      content: "Professor mentioned in class:";
+      font-weight: bold;
+      color: #d97706;
+      display: block;
+      margin-bottom: 6px;
+      font-style: normal;
+    }
+
+    .hinglish-summary {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      border-radius: 12px;
+      padding: 22px;
+      margin: 30px 0;
+      border-left: 6px solid #ff6b6b;
+      box-shadow: 0 4px 15px rgba(255,107,107,0.2);
+    }
+
+    .hinglish-summary h3 {
+      color: #c92a2a;
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    .practice-questions {
+      background: #e3f2fd;
+      border-radius: 12px;
+      padding: 22px;
+      margin: 30px 0;
+      border-left: 6px solid #1976d2;
+    }
+
+    .practice-questions h3 {
+      color: #1565c0;
+      margin-top: 0;
+    }
+
+    .practice-questions details {
+      background: white;
+      margin: 12px 0;
+      padding: 14px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      cursor: pointer;
+    }
+
+    .practice-questions summary {
+      font-weight: 600;
+      color: #1565c0;
+    }
+
+    .key-takeaways {
+      background: linear-gradient(to right, #f0fdf4, #dcfce7);
+      border-radius: 12px;
+      padding: 22px;
+      margin: 30px 0;
+      border-left: 6px solid #16a34a;
+    }
+
+    .key-takeaways h3 {
+      color: #166534;
+      margin-top: 0;
+    }
+
+    .key-takeaways ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .key-takeaways li {
+      background: white;
+      margin: 10px 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border-left: 4px solid #22c55e;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+
+    .key-takeaways li::before {
+      content: "Key Point";
+      font-weight: bold;
+      color: #16a34a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: linear-gradient(to right, #e0e7ff, #c7d2fe);
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .diagram-placeholder {
+      background: #f1f5f9;
+      border: 2px dashed #94a3b8;
+      border-radius: 12px;
+      padding: 50px 20px;
+      text-align: center;
+      color: #64748b;
+      font-style: italic;
+      margin: 30px 0;
+      font-size: 1.1rem;
+    }
+
+    .back-to-top {
+      display: inline-block;
+      margin: 30px 0 10px;
+      color: var(--primary);
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .back-to-top:hover {
+      text-decoration: underline;
+    }
+
+    hr.section-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #cbd5e1, transparent);
+      margin: 50px 0 30px 0;
+    }
+
+    /* Mind Map Styling */
+    .mindmap-container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      margin: 40px 0;
+    }
+
+    .mindmap-container h3 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+    }
+
+    svg text {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      fill: #1e293b;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-top: 60px;
+    }
+
+    .footer-inner p {
+      margin: 5px 0;
+    }
+
+    .footer-author {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 0 15px; }
+      .header h1 { font-size: 2rem; }
+      table { font-size: 0.9rem; }
+      .toc, .section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>Central Limit Theorem (CLT)</h1>
+      <p>Lecture Notes • BSc Applied AI & Data Science</p>
+      <p>Comprehensive, student-friendly explanation with intuition, formulas, examples & practice</p>
+    </div>
+
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#intro">Introduction & Learning Goals</a></li>
+        <li><a href="#intuitive">Intuitive Idea of CLT</a></li>
+        <li><a href="#formal-clt">Formal Statement & Notation</a></li>
+        <li><a href="#sampling-distribution">Sampling Distribution & Standard Error</a></li>
+        <li><a href="#conditions">Conditions for Applying CLT</a></li>
+        <li><a href="#significance">Significance in Statistics</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#misconceptions">Common Misconceptions</a></li>
+        <li><a href="#sample-size">Choosing Sufficient Sample Size</a></li>
+        <li><a href="#concept-checks">Concept Check Questions</a></li>
+        <li><a href="#mindmap">Visual Mind Map</a></li>
+      </ol>
+    </nav>
+    <!-- 1. INTRODUCTION -->
+    <h2 id="intro">1. Introduction & Learning Goals</h2>
+
+    <p>
+      In this lecture, we study the <span class="key-term">Central Limit Theorem (CLT)</span>, one
+      of the most important results in probability and statistics. The theorem explains why
+      averages (or means) from random samples tend to follow a normal (Gaussian) distribution,
+      even when the original population is not normal.
+    </p>
+
+    <div class="highlight-box">
+      By the end of this topic, you should be able to:
+      <ul>
+        <li>Explain the statement and intuition behind the <span class="key-term">central limit theorem</span>.</li>
+        <li>Describe how and why the <span class="key-term">sampling distribution</span> of the sample mean becomes approximately normal.</li>
+        <li>Compute the <span class="key-term">standard error</span> for sample means.</li>
+        <li>Apply CLT to solve problems involving sample means, even when the population is not normal.</li>
+      </ul>
+    </div>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Overview of population → random samples → sampling distribution of sample mean]
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Is chapter mein hum <span class="key-term">Central Limit Theorem</span> ka basic overview dekh rahe hain.  
+        Idea simple hai: agar hum population se random samples lete hain aur unka mean nikalte hain,  
+        to in means ka distribution dheere-dheere normal ban jaata hai, chahe original population normal na ho.  
+        Ye theorem hypothesis testing, confidence interval, sab jagah use hoti hai.  
+        Isliye CLT ko statistics ka “heart” bhi bol sakte ho – iske bina inference karna bahut mushkil ho jaata.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          Why is the central limit theorem considered a “foundational” result in statistics?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Because it explains why sample means behave in a predictable (approximately normal)
+              way, which allows us to use powerful normal-distribution tools (like z-scores,
+              confidence intervals, and hypothesis tests) even when the underlying population
+              distribution is not normal.
+            </p>
+          </details>
+        </li>
+        <li>
+          What is the main object whose distribution CLT talks about: the population, the
+          sample, or the sampling distribution of the sample mean?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              CLT is about the <strong>sampling distribution of the sample mean</strong>, not the
+              population itself or just one sample.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT describes the behavior of averages (sample means), not individual data points.</li>
+        <li>It connects real-world messy data to the clean, mathematical normal distribution.</li>
+        <li>CLT is the backbone of many statistical inference techniques.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 2. INTUITIVE IDEA -->
+    <h2 id="intuitive">2. Intuitive Idea of the Central Limit Theorem</h2>
+
+    <p>
+      Informally, the <span class="key-term">central limit theorem</span> says:
+    </p>
+
+    <div class="highlight-box">
+      <strong>Informal statement:</strong>  
+      If we take many random samples of a sufficiently large size from any population with
+      finite mean and finite variance, then the distribution of the <strong>sample means</strong>
+      will be approximately normal (bell-shaped), regardless of the shape of the original
+      population.
+    </div>
+
+    <p>
+      This means that even if the population is skewed, uniform, exponential, or something
+      unusual, the <span class="key-term">distribution of the averages</span> of large samples
+      looks more and more like a normal distribution.
+    </p>
+
+    <p>
+      Think of it like this:
+    </p>
+    <ul>
+      <li>You have a big population with an unknown or messy distribution.</li>
+      <li>You repeatedly draw samples of size \(n\) (say \(n = 40\)) from this population.</li>
+      <li>For each sample, you calculate the mean \(\bar{X}\).</li>
+      <li>You then plot all these means as a histogram.</li>
+    </ul>
+    <p>
+      As the sample size \(n\) (and the number of repeated samples) increases, the histogram of
+      these means becomes more symmetric and bell-shaped.
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Different population shapes (skewed, uniform, exponential) all leading to a normal-shaped sampling distribution of the mean]
+    </p>
+
+    <p>
+      Professor mentioned in class: Even if the original distribution is <em>heavily skewed</em>,
+      the sampling distribution of the mean will tend to normality as the sample size becomes
+      large enough.
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Intuition ye hai ki chahe population ka shape kaisa bhi ho – skewed, weird, exponential –
+        agar aap bade size ke random samples baar-baar lete ho aur unka mean plot karte ho,  
+        to ye means ek <span class="key-term">normal bell-shaped curve</span> jaise dikhne lagte hain.  
+        Matlab individual data messy ho sakta hai, lekin averages bahut disciplined hote hain.  
+        Isi behavior ko mathematically explain karta hai CLT.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          Does the central limit theorem require the original population to be normal?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              No. The original population does <strong>not</strong> need to be normal. CLT works
+              for any population with a finite mean and variance, as long as the sample size is
+              sufficiently large.
+            </p>
+          </details>
+        </li>
+        <li>
+          What happens to the distribution of sample means as we increase the sample size?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              The distribution of sample means becomes more and more approximately normal
+              and its spread (standard error) becomes smaller.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT focuses on the behavior of averages from repeated random samples.</li>
+        <li>The shape of the population can be very non-normal, but sample means still become normal.</li>
+        <li>Large sample size makes the normal approximation better.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 3. FORMAL STATEMENT -->
+    <h2 id="formal-clt">3. Formal Statement & Notation</h2>
+
+    <h3>3.1 Setup and Notation</h3>
+    <p>
+      Suppose we have a population with:
+    </p>
+    <ul>
+      <li>Population mean: \( \mu \)</li>
+      <li>Population standard deviation: \( \sigma \)</li>
+      <li>Finite mean and finite variance \( \sigma^2 \)</li>
+    </ul>
+
+    <p>
+      We draw a <span class="key-term">random sample</span> of size \(n\):
+      \[
+        X_1, X_2, \dots, X_n
+      \]
+      where each \(X_i\) is an <span class="key-term">independent and identically distributed (i.i.d.)</span>
+      random variable from the population.
+    </p>
+
+    <p>
+      The <span class="key-term">sample mean</span> is:
+      \[
+        \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i
+      \]
+    </p>
+
+    <h3>3.2 Standardized Sample Mean</h3>
+    <p>
+      We define the <span class="key-term">standardized sample mean</span> (z-score of the mean) as:
+      \[
+        Z = \frac{\bar{X} - \mu}{\sigma / \sqrt{n}}
+      \]
+    </p>
+
+    <div class="highlight-box">
+      <strong>Interpretation:</strong>  
+      The quantity \(Z\) tells us how many standard errors the sample mean \(\bar{X}\) is away from
+      the population mean \(\mu\).
+    </div>
+
+    <h3>3.3 Formal Statement of CLT</h3>
+    <p>
+      The <span class="key-term">central limit theorem</span> states that:
+    </p>
+    <div class="formula-box">
+      As the sample size \(n \to \infty\),
+      \[
+        Z = \frac{\bar{X} - \mu}{\sigma / \sqrt{n}} \xrightarrow{d} N(0,1)
+      \]
+      which means the distribution of \(Z\) converges to the
+      <span class="key-term">standard normal distribution</span> with mean \(0\) and standard deviation \(1\).
+    </div>
+
+    <p>
+      Equivalently, we can say:
+      \[
+        \bar{X} \approx N\left( \mu,\; \frac{\sigma^2}{n} \right)
+      \]
+      for sufficiently large \(n\).
+    </p>
+
+    <p>
+      Professor mentioned in class: In practical applications, we don’t actually need \(n\) to go
+      to infinity; we just need \(n\) to be “large enough” so that the normal approximation works
+      well for our purposes.
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Distribution of Z approaching standard normal as n increases]
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Formal language mein CLT kehta hai ki agar \(X_1, X_2, \dots, X_n\) ek hi population se  
+        i.i.d. samples hain jiska mean \(\mu\) aur standard deviation \(\sigma\) hai,  
+        to sample mean \(\bar{X}\) ka standardized version  
+        \(Z = \dfrac{\bar{X} - \mu}{\sigma / \sqrt{n}}\) large \(n\) par  
+        <span class="key-term">standard normal</span> ban jaata hai.  
+        Simple shabdon mein: bade sample size ke saath sample mean normal distribution jaisa behave karta hai.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          Write the formula for the sample mean \(\bar{X}\) for a sample of size \(n\).
+          <details>
+            <summary>View answer</summary>
+            <p>
+              \[
+                \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i
+              \]
+            </p>
+          </details>
+        </li>
+        <li>
+          What does \(Z = \dfrac{\bar{X} - \mu}{\sigma / \sqrt{n}}\) represent?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              It represents the <strong>standardized sample mean</strong>, i.e., how many standard
+              errors the sample mean is away from the population mean. For large \(n\), this follows
+              approximately a standard normal distribution.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT is a limit theorem: it talks about the behavior as \(n\) becomes large.</li>
+        <li>The standardized sample mean converges to a standard normal distribution.</li>
+        <li>For large \(n\), we can model \(\bar{X}\) using a normal distribution with mean \(\mu\) and variance \(\sigma^2/n\).</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 4. SAMPLING DISTRIBUTION -->
+    <h2 id="sampling-distribution">4. Sampling Distribution & Standard Error</h2>
+
+    <h3>4.1 What is a Sampling Distribution?</h3>
+    <p>
+      The <span class="key-term">sampling distribution</span> of the sample mean is the distribution
+      you get if you:
+    </p>
+    <ol>
+      <li>Take many samples (each of size \(n\)) from the same population.</li>
+      <li>Compute the mean \(\bar{X}\) for each sample.</li>
+      <li>Plot all these means in a histogram.</li>
+    </ol>
+    <p>
+      That histogram of means is the sampling distribution of \(\bar{X}\).
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>What it is</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Population</td>
+          <td>All units we care about.</td>
+          <td>All students in a university.</td>
+        </tr>
+        <tr>
+          <td>Sample</td>
+          <td>One subset of the population.</td>
+          <td>40 randomly selected students.</td>
+        </tr>
+        <tr>
+          <td>Sampling Distribution</td>
+          <td>Distribution of a statistic (e.g. mean) calculated from many samples.</td>
+          <td>Distribution of mean scores from many different samples of 40 students each.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>4.2 Standard Error as the Spread of the Sampling Distribution</h3>
+    <p>
+      The <span class="key-term">standard error (SE)</span> of the sample mean is the standard
+      deviation of its sampling distribution:
+      \[
+        \text{SE}_{\bar{X}} = \frac{\sigma}{\sqrt{n}}
+      \]
+    </p>
+    <p>
+      Here:
+    </p>
+    <ul>
+      <li>\(\sigma\) = population standard deviation.</li>
+      <li>\(n\) = sample size.</li>
+    </ul>
+    <p>
+      Notice that \(n\) appears in the denominator under a square root. As \(n\) increases,
+      \(\text{SE}_{\bar{X}}\) <strong>decreases</strong>. So larger sample sizes give more stable,
+      less variable sample means.
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Standard error decreasing as sample size increases (curve going down as n grows)]
+    </p>
+
+    <p>
+      Professor mentioned in class: As we increase the number of samples or the sample size,
+      the <span class="key-term">sample mean</span> becomes a more reliable estimate of the
+      population mean because the standard error shrinks.
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Sampling distribution matlab: aap same population se bohot saare samples lete ho,  
+        har sample ka mean nikalte ho, aur in means ka histogram banate ho – ye hi sampling distribution.  
+        Is distribution ka spread hota hai <span class="key-term">standard error</span>,  
+        jo formula se \(\sigma / \sqrt{n}\) hai.  
+        Jaise-jaise \(n\) badhta hai, SE kam hota hai, isliye bada sample mean zyada reliable estimate deta hai.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          If the population standard deviation is \(\sigma = 12\) and the sample size is \(n = 36\),
+          what is the standard error of the sample mean?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              \[
+                \text{SE}_{\bar{X}} = \frac{\sigma}{\sqrt{n}} = \frac{12}{\sqrt{36}} = \frac{12}{6} = 2
+              \]
+            </p>
+          </details>
+        </li>
+        <li>
+          If we double the sample size from \(n = 25\) to \(n = 100\), what happens to the standard error?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Original SE: \( \sigma / \sqrt{25} = \sigma / 5 \).  
+              New SE: \( \sigma / \sqrt{100} = \sigma / 10 \).  
+              The standard error becomes half, so the sampling distribution becomes narrower.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>Sampling distribution is about the distribution of sample statistics (like means), not individual data points.</li>
+        <li>Standard error quantifies the variability of the sample mean across different samples.</li>
+        <li>Larger sample size → smaller standard error → more precise estimates of the population mean.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 5. CONDITIONS FOR CLT -->
+    <h2 id="conditions">5. Conditions for Applying CLT</h2>
+
+    <h3>5.1 Key Conditions</h3>
+    <p>
+      For the <span class="key-term">central limit theorem</span> to hold in practice, we generally
+      need these conditions:
+    </p>
+    <ul>
+      <li>
+        <strong>Independence and identical distribution (i.i.d.):</strong>  
+        The sampled observations \(X_1, X_2, \dots, X_n\) should be independent and come from
+        the same distribution.
+      </li>
+      <li>
+        <strong>Finite mean and variance:</strong>  
+        The population should have a finite mean \(\mu\) and finite variance \(\sigma^2\).
+      </li>
+      <li>
+        <strong>Sufficiently large sample size:</strong>  
+        \(n\) should be “large enough” for the sampling distribution of \(\bar{X}\) to be close
+        to normal.
+      </li>
+      <li>
+        <strong>Sampling from a large population or with replacement:</strong>  
+        If the population is small, we either sample with replacement, or we ensure the population
+        size is at least about 10 times larger than the sample size.
+      </li>
+    </ul>
+
+    <p>
+      Professor mentioned in class: A common rule of thumb is that
+      <span class="key-term">sample size \(n &gt; 30\)</span> is often considered “large enough.”
+      But if the population is heavily skewed, we may need even larger samples.
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Flowchart checking IID, finite variance, large n before applying CLT]
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        CLT apply karne ke liye kuch basic conditions zaroori hain:  
+        samples <span class="key-term">i.i.d.</span> hone chahiye, population ka mean aur variance finite hona chahiye,  
+        aur sample size <span class="key-term">kaafi bada</span> hona chahiye (usually \(n &gt; 30\)).  
+        Agar population bohot skewed hai, to aur bada sample chahiye hota hai.  
+        Chhoti population ke case mein ya to sampling with replacement karein, ya population sample se lagbhag 10x badi ho.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          Which of the following is the most essential condition for CLT?  
+          (a) Population must be normal  
+          (b) Sample size must be less than 10  
+          (c) Sampling must be with replacement  
+          (d) Sample size must be sufficiently large
+          <details>
+            <summary>View answer</summary>
+            <p>
+              The correct answer is <strong>(d) Sample size must be sufficiently large</strong>.
+            </p>
+          </details>
+        </li>
+        <li>
+          If the population is very small (say only 100 elements) and you want to draw a sample
+          of size 30 without replacement, what rule-of-thumb should you check?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Check whether the population is at least about 10 times the sample size.  
+              Here, 100 is only about 3.3 times 30, so this rule is not satisfied. You may need
+              sampling with replacement or a different design.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT needs i.i.d. observations from a population with finite mean and variance.</li>
+        <li>“Large enough” sample size depends on how skewed the population is.</li>
+        <li>For small populations, use sampling with replacement or ensure population ≈ 10× sample size.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 6. SIGNIFICANCE -->
+    <h2 id="significance">6. Significance of CLT in Statistics & Data Analysis</h2>
+
+    <h3>6.1 Why is CLT So Important?</h3>
+    <p>
+      The <span class="key-term">central limit theorem</span> allows us to use
+      <span class="key-term">normal probability models</span> for sample means even when the
+      underlying population is not normal. This is crucial because:
+    </p>
+    <ul>
+      <li>
+        Many statistical tools (z-scores, p-values, confidence intervals) are derived assuming
+        normality of the sampling distribution.
+      </li>
+      <li>
+        Real-world data is often skewed or irregular, but CLT bridges this gap.
+      </li>
+    </ul>
+
+    <h3>6.2 Applications Enabled by CLT</h3>
+    <ul>
+      <li>
+        <strong>Confidence intervals:</strong>  
+        Interval estimates for population means are built assuming that the sampling distribution
+        of \(\bar{X}\) is approximately normal.
+      </li>
+      <li>
+        <strong>Hypothesis testing:</strong>  
+        z-tests and many t-tests rely on normality of sample mean under the null hypothesis.
+      </li>
+      <li>
+        <strong>Quality control and control charts:</strong>  
+        Industrial processes are monitored using averages plotted over time, assuming CLT so that
+        these averages are approximately normal.
+      </li>
+      <li>
+        <strong>Polling and survey analysis:</strong>  
+        Pollsters use CLT to compute margins of error and to quantify uncertainty in sample
+        proportions and means.
+      </li>
+    </ul>
+
+    <p>
+      Professor mentioned in class: CLT essentially <em>justifies sampling</em>, because it lets us
+      use information from a relatively small sample to make inferences about a very large population.
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Chain – Population → Sample → Sample mean → Normal model → Inference (CI, tests)]
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        CLT important isliye hai kyunki ye hume normal distribution ke tools use karne ka license deta hai,  
+        chahe population normal na ho. Hypothesis testing, confidence interval, quality control charts,  
+        polling – sab jagah hum sample mean ke normal hone ka assumption lete hain.  
+        Simple mein: CLT bolta hai “sample ke averages pe bharosa kar sakte ho”,  
+        isliye hum chhote sample se bhi bade population ke baare mein baat kar paate hain.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          Name two statistical procedures that rely heavily on the central limit theorem.
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Examples: (1) Confidence intervals for population means,  
+              (2) Hypothesis testing using z-scores or t-scores.  
+              Also, control charts and polling margin-of-error calculations.
+            </p>
+          </details>
+        </li>
+        <li>
+          How does CLT “justify” studying samples instead of entire populations?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Because CLT guarantees that the distribution of sample means will be predictable
+              (approximately normal) for large samples, allowing us to use those sample means to
+              infer properties of the entire population.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT is the theoretical basis for many inferential methods.</li>
+        <li>It lets us use normal-based models even with non-normal populations.</li>
+        <li>It provides the foundation for sampling-based decision making in science and industry.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 7. REAL-WORLD EXAMPLES -->
+    <h2 id="examples">7. Real-World Examples of CLT</h2>
+
+    <h3>7.1 Exam Scores</h3>
+    <p>
+      Suppose exam scores of students are <strong>skewed to the right</strong>, i.e., many low
+      scores and a long tail of high scores. This distribution is not normal.
+    </p>
+    <p>
+      If we repeatedly:
+    </p>
+    <ul>
+      <li>Select random samples of 40 students.</li>
+      <li>Compute the average score of each sample.</li>
+      <li>Plot all these averages.</li>
+    </ul>
+    <p>
+      Then, by CLT, the distribution of these sample means will be approximately normal because
+      \(n = 40 &gt; 30\).
+    </p>
+
+    <h3>7.2 Delivery Times</h3>
+    <p>
+      Consider a courier company where delivery times are very irregular, sometimes with long
+      delays (long right tail). The distribution of individual delivery times is not normal.
+    </p>
+    <p>
+      But if each week the company:
+    </p>
+    <ul>
+      <li>Takes a sample of 50 deliveries,</li>
+      <li>Computes the average delivery time, and</li>
+      <li>Plots the distribution of these weekly averages,</li>
+    </ul>
+    <p>
+      those averages will be approximately normally distributed by CLT.
+    </p>
+
+    <h3>7.3 Factory Weights</h3>
+    <p>
+      In a factory, packet weights (e.g., flour packets) may slightly vary and may not exactly
+      follow a normal distribution.
+    </p>
+    <p>
+      If the company samples 30 packets every day and calculates the average weight, then the
+      distribution of these daily averages is approximately normal. This helps in building
+      <span class="key-term">control charts</span> to monitor the packaging process.
+    </p>
+
+    <h3>7.4 Polling / Voting Preferences</h3>
+    <p>
+      Pollsters may sample 1000 voters and calculate the proportion supporting a candidate
+      (support vs not support is a binary variable).
+    </p>
+    <p>
+      The sampling distribution of this proportion (which is related to the mean of 0/1 variables)
+      is approximately normal for large sample sizes. This is why poll results are reported with
+      a <span class="key-term">margin of error</span>, assuming a normal (or near-normal)
+      distribution of the sample proportion.
+    </p>
+
+    <h3>7.5 Waiting Times in Emergency Rooms</h3>
+    <p>
+      Waiting times in an emergency room might be right-skewed (most people wait a short time, but
+      a few wait a very long time).
+    </p>
+    <p>
+      If we take daily samples of 40 patients and compute the average waiting time, the distribution
+      of these averages over many days will tend to normal. Hospitals can use this to detect
+      abnormal days (e.g., unusually high average waiting time).
+    </p>
+
+    <p class="diagram-placeholder">
+      [Insert diagram: Multiple application icons (exam, truck, factory, poll, hospital) all pointing to a bell curve]
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Real life mein CLT har jagah chhupa hua hai: exam scores skewed hote hue bhi sample means
+        normal ban jaate hain, courier delivery times ka average har week normal dikhne lagta hai,  
+        factory packets ka average weight, polling ke results ka proportion, hospital waiting times ke averages –  
+        sab CLT ki wajah se normal curve ke kareeb aa jaate hain.  
+        Matlab practical duniya ka “messy data” bhi averages ki world mein bahut predictable ho jaata hai.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          In the exam scores example, if each sample consists of 40 students, why can we use CLT?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Because the sample size \(n = 40\) is greater than 30, which is a common rule-of-thumb
+              for CLT, especially for moderately skewed distributions. So the distribution of sample
+              means will be approximately normal.
+            </p>
+          </details>
+        </li>
+        <li>
+          In polling, why can we treat the sample proportion as approximately normal?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Because the proportion is the average of many 0/1 (support / not support) variables.
+              For large samples (like 1000), CLT implies that the distribution of this average is
+              approximately normal.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT appears in many practical contexts: exams, delivery times, factory processes, polls, and hospitals.</li>
+        <li>In all these cases, averages over sufficiently large samples behave approximately normally.</li>
+        <li>Normal modeling of averages makes monitoring, prediction, and decision-making easier.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 8. MISCONCEPTIONS -->
+    <h2 id="misconceptions">8. Common Misconceptions about the Central Limit Theorem</h2>
+
+    <p>Some typical misunderstandings about CLT include:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Misconception</th>
+          <th>Reality</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CLT says the <strong>population</strong> becomes normal.</td>
+          <td>
+            CLT says the <strong>sampling distribution of the sample mean</strong> becomes normal,
+            not the original population.
+          </td>
+        </tr>
+        <tr>
+          <td>CLT works only if the population is already normal.</td>
+          <td>
+            CLT actually works for <strong>any</strong> population with finite mean and variance,
+            given a sufficiently large sample size.
+          </td>
+        </tr>
+        <tr>
+          <td>CLT applies to all possible statistics.</td>
+          <td>
+            CLT is primarily about <strong>sample means</strong> (and related averages /
+            proportions), not every possible statistic.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Professor mentioned in class: We must be careful not to confuse “population becoming
+      normal” with “sampling distribution of the mean becoming normal” — they are very
+      different statements.
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Sabse common galti ye hoti hai ki log soch lete hain CLT ke baad population hi normal ho jaati hai –  
+        ye <strong>galat</strong> hai. Normal banta hai <span class="key-term">sampling distribution of the mean</span>,  
+        population ka shape waise ka waisa reh sakta hai.  
+        Doosri galti: CLT sirf normal population pe kaam karta hai – actually ye toh non-normal cases mein aur bhi useful hai.  
+        Aur CLT sab statistics pe apply nahi hota, mainly means (ya proportions) pe apply hota hai.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          True or False: “By the central limit theorem, any population becomes normally distributed
+          if we take large enough samples.”
+          <details>
+            <summary>View answer</summary>
+            <p>
+              <strong>False.</strong> The population does not become normal; the
+              <strong>sampling distribution of the sample mean</strong> becomes approximately
+              normal for large samples.
+            </p>
+          </details>
+        </li>
+        <li>
+          True or False: “CLT can be applied only when the population is normal.”
+          <details>
+            <summary>View answer</summary>
+            <p>
+              <strong>False.</strong> CLT is especially useful when the population is not normal;
+              it only requires finite mean and variance and a sufficiently large sample size.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>CLT is about the sampling distribution of the mean, not about the population.</li>
+        <li>CLT does not require the population to be normal.</li>
+        <li>CLT applies mainly to means and related averages/proportions, not arbitrary statistics.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 9. CHOOSING SAMPLE SIZE -->
+    <h2 id="sample-size">9. Choosing a “Sufficiently Large” Sample Size</h2>
+
+    <p>
+      There is no single magic number for “large enough,” but the lecture suggests some
+      practical guidelines:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Population Shape</th>
+          <th>Suggested Sample Size \(n\)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Population is normal</td>
+          <td>Even small \(n\) (e.g. &gt; 1) can work.</td>
+        </tr>
+        <tr>
+          <td>Mildly skewed</td>
+          <td>\(n &gt; 30\) is often enough.</td>
+        </tr>
+        <tr>
+          <td>Moderately skewed</td>
+          <td>\(n &gt; 50\) is safer.</td>
+        </tr>
+        <tr>
+          <td>Heavily skewed with many outliers</td>
+          <td>\(n \geq 100\) or more may be needed.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      These are rules-of-thumb, not strict laws. In practice, statisticians also check shape using
+      plots (like histograms or Q–Q plots) and may use simulation to verify normal approximation.
+    </p>
+
+    <p>
+      Professor mentioned in class: For many common situations, \(n \geq 30\) works reasonably
+      well, but for heavily skewed distributions, we should be more conservative and use larger
+      sample sizes.
+    </p>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        “Sufficiently large” ka matlab situation-dependent hai.  
+        Agar population normal hai to chhota sample bhi kaam kar jaata hai.  
+        Thoda skewed ho to \(n &gt; 30\) theek, zyada skewed ho to \(n &gt; 50\),  
+        aur agar bahut heavy skewed hai with outliers, to \(n \geq 100\) jaise bade samples chahiye.  
+        Ye sirf thumb rules hain, lekin exams ya basic problems ke liye ye guidance kaafi useful hai.
+      </p>
+    </div>
+
+    <div class="practice-questions">
+      <h3>Practice Questions</h3>
+      <ol>
+        <li>
+          For a heavily skewed population with many outliers, which of the following is a
+          reasonable sample size for CLT-based approximations?  
+          (a) \(n = 15\)  
+          (b) \(n = 30\)  
+          (c) \(n = 60\)  
+          (d) \(n = 120\)
+          <details>
+            <summary>View answer</summary>
+            <p>
+              <strong>(d) \(n = 120\)</strong> is the safest choice among these for a heavily
+              skewed distribution, since such cases may require \(n \geq 100\).
+            </p>
+          </details>
+        </li>
+        <li>
+          If the population is exactly normal, why is CLT almost automatically satisfied?
+          <details>
+            <summary>View answer</summary>
+            <p>
+              Because the mean of a normal population is exactly normally distributed for any
+              sample size \(n\). So the sampling distribution of \(\bar{X}\) is normal even
+              without needing a large sample.
+            </p>
+          </details>
+        </li>
+      </ol>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>“Large enough” sample size depends on how non-normal or skewed the population is.</li>
+        <li>Rules like \(n &gt; 30\), \(n &gt; 50\), or \(n \geq 100\) are practical guidelines, not strict laws.</li>
+        <li>Heavier skew → need larger sample size to trust the normal approximation.</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 10. CONCEPT CHECKS -->
+    <h2 id="concept-checks">10. Concept Check Questions (With Answers)</h2>
+
+    <h3>10.1 Multiple-Choice Concept Checks</h3>
+
+    <ol>
+      <li>
+        <strong>Condition for CLT</strong>  
+        Which of the following conditions must generally be met for the central limit theorem to apply?<br/>
+        (a) Population must be normally distributed.  
+        (b) Sample size must be less than 10.  
+        (c) Sampling must be with replacement.  
+        (d) Sample size must be sufficiently large.
+        <details>
+          <summary>View answer</summary>
+          <p>
+            Correct answer: <strong>(d)</strong>. The key requirement is a sufficiently large
+            sample size (along with i.i.d. and finite variance). The population need not be normal,
+            and sampling with replacement is helpful but not strictly required if the population is
+            much larger than the sample.
+          </p>
+        </details>
+      </li>
+
+      <li>
+        <strong>Small sample from highly skewed population</strong>  
+        A population is highly skewed, and a student draws repeated samples of size \(n = 10\)
+        and plots the sample means. What is likely to be true about the sampling distribution?<br/>
+        (a) It will be normal.  
+        (b) It will mirror the population distribution.  
+        (c) It will be uniform.  
+        (d) It will be bimodal.
+        <details>
+          <summary>View answer</summary>
+          <p>
+            Correct answer: <strong>(b)</strong>. For a highly skewed population and a small
+            sample size (\(n = 10\)), CLT has not really “kicked in,” so the sampling distribution
+            will still look similar to the original skewed population.
+          </p>
+        </details>
+      </li>
+
+      <li>
+        <strong>Standard error calculation</strong>  
+        If a population has standard deviation \(\sigma = 12\) and we take samples of size
+        \(n = 36\), what is the standard deviation of the sampling distribution of the sample mean?<br/>
+        Options: 12, 2, 3, 6
+        <details>
+          <summary>View answer</summary>
+          <p>
+            The standard error is:
+            \[
+              \text{SE}_{\bar{X}} = \frac{\sigma}{\sqrt{n}} = \frac{12}{\sqrt{36}} = \frac{12}{6} = 2
+            \]
+            So the correct answer is <strong>2</strong>.
+          </p>
+        </details>
+      </li>
+    </ol>
+
+    <div class="hinglish-summary">
+      <h3>Section Summary (Hinglish)</h3>
+      <p>
+        Concept check questions se ye clear hua ki CLT ke liye sample size kaafi bada hona chahiye,  
+        chhote sample aur highly skewed population mein sampling distribution population jaisa hi dikhega,  
+        aur standard error ka formula \(\sigma / \sqrt{n}\) hai – isse hum z-scores aur inference karte hain.  
+        Ye questions aapko exam style practice bhi dete hain aur theory ko solidify bhi karte hain.
+      </p>
+    </div>
+
+    <div class="key-takeaways">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>MCQs help test understanding of CLT conditions and implications.</li>
+        <li>Standard error questions are common and rely directly on CLT.</li>
+        <li>Always connect formulas back to their conceptual meaning (spread of sample means).</li>
+      </ul>
+    </div>
+
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <hr class="section-divider" />
+
+    <!-- 11. MIND MAP -->
+    <h2 id="mindmap">11. Visual Mind Map of the Central Limit Theorem</h2>
+
+    <div class="mindmap-container">
+      <h3 class="mindmap-title">Central Limit Theorem – Concept Map</h3>
+      <p class="diagram-placeholder">
+        [Insert detailed hand-drawn or digital mind map in final notes if desired.  
+        Below is an SVG-based schematic mind map.]
+      </p>
+
+      <!-- Simple SVG Mind Map -->
+      <svg width="680" height="360" xmlns="http://www.w3.org/2000/svg">
+        <!-- Central node -->
+        <circle cx="340" cy="60" r="40" fill="#eef2ff" stroke="#2457a7" stroke-width="1.5" />
+        <text x="340" y="55" text-anchor="middle">Central</text>
+        <text x="340" y="70" text-anchor="middle">Limit</text>
+        <text x="340" y="85" text-anchor="middle">Theorem</text>
+
+        <!-- Node: Sampling Distribution -->
+        <rect x="60" y="140" width="150" height="60" rx="10" ry="10"
+              fill="#f7f9ff" stroke="#2457a7" stroke-width="1" />
+        <text x="135" y="165" text-anchor="middle">Sampling</text>
+        <text x="135" y="180" text-anchor="middle">Distribution of 𝑋̄</text>
+
+        <!-- Node: Standard Error -->
+        <rect x="260" y="140" width="160" height="60" rx="10" ry="10"
+              fill="#fbfcff" stroke="#2457a7" stroke-width="1" />
+        <text x="340" y="165" text-anchor="middle">Standard Error</text>
+        <text x="340" y="180" text-anchor="middle">σ / √n</text>
+
+        <!-- Node: Conditions -->
+        <rect x="480" y="140" width="150" height="60" rx="10" ry="10"
+              fill="#f7fff8" stroke="#2e7d32" stroke-width="1" />
+        <text x="555" y="163" text-anchor="middle">Conditions</text>
+        <text x="555" y="178" text-anchor="middle">IID, finite σ²,</text>
+        <text x="555" y="193" text-anchor="middle">large n</text>
+
+        <!-- Node: Applications -->
+        <rect x="90" y="250" width="160" height="70" rx="10" ry="10"
+              fill="#fff9e6" stroke="#e6a800" stroke-width="1" />
+        <text x="170" y="270" text-anchor="middle">Applications</text>
+        <text x="170" y="285" text-anchor="middle">CI, tests, control</text>
+        <text x="170" y="300" text-anchor="middle">charts, polling</text>
+
+        <!-- Node: Misconceptions -->
+        <rect x="430" y="250" width="170" height="70" rx="10" ry="10"
+              fill="#ffecec" stroke="#c62828" stroke-width="1" />
+        <text x="515" y="270" text-anchor="middle">Misconceptions</text>
+        <text x="515" y="285" text-anchor="middle">population normal?</text>
+        <text x="515" y="300" text-anchor="middle">all statistics?</text>
+
+        <!-- Connecting lines -->
+        <line x1="340" y1="100" x2="135" y2="140" stroke="#999" stroke-width="1.5" />
+        <line x1="340" y1="100" x2="340" y2="140" stroke="#999" stroke-width="1.5" />
+        <line x1="340" y1="100" x2="555" y2="140" stroke="#999" stroke-width="1.5" />
+
+        <line x1="135" y1="200" x2="170" y2="250" stroke="#999" stroke-width="1.5" />
+        <line x1="340" y1="200" x2="170" y2="250" stroke="#999" stroke-width="1.5" />
+        <line x1="555" y1="200" x2="515" y2="250" stroke="#999" stroke-width="1.5" />
+      </svg>
+    </div>
+
+    <div class="hinglish-summary">
+      <h3>Overall Hinglish Wrap-Up</h3>
+      <p>
+        Pura topic mila-jula message ye hai:  
+        <span class="key-term">Central Limit Theorem</span> batata hai ki averages (sample means) ka behavior  
+        large samples ke saath normal curve jaisa ho jaata hai, chahe original data kitna bhi messy ho.  
+        Iski wajah se hum z-scores, confidence intervals, hypothesis tests, control charts,  
+        polling margins – sab confidently use kar sakte hain.  
+        Agar aapko population ka distribution exact na bhi pata ho, CLT ke sahare  
+        aap sample ke basis pe strong statistical decisions le sakte ho.
+      </p>
+    </div>
+<footer>
+      <div class="footer-inner">
+        <p>I created these lecture notes during my first semester of</p>
+        <p><strong>BSc Applied AI & Data Science</strong></p>
+        <p class="footer-author">~ Armaan Kachhawa</p>
+      </div>
+    </footer>
+  </div>
+
+
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

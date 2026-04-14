@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/no/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Numerical Optimization - Lecture 3: Unconstrained Optimization
+    </title>
+    <style>
+      body {
+        font-family: "Georgia", serif;
+        line-height: 1.6;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        color: #333;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        margin-top: 10px;
+        font-size: 1.2em;
+        opacity: 0.9;
+      }
+
+      .toc {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .toc h2 {
+        color: #667eea;
+        margin-top: 0;
+      }
+
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .toc li {
+        margin: 8px 0;
+      }
+
+      .toc a {
+        color: #667eea;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        display: block;
+        transition: background-color 0.3s;
+      }
+
+      .toc a:hover {
+        background-color: #f0f2ff;
+      }
+
+      .section {
+        background: white;
+        padding: 30px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        color: #667eea;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+      }
+
+      h3 {
+        color: #764ba2;
+        margin-top: 25px;
+      }
+
+      .key-term {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      .formula {
+        background-color: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin: 15px 0;
+        font-family: "Times New Roman", serif;
+        font-size: 1.1em;
+      }
+
+      .professor-note {
+        background-color: #e8f4fd;
+        border-left: 4px solid #17a2b8;
+        padding: 15px;
+        margin: 15px 0;
+        font-style: italic;
+      }
+
+      .responsive-img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: auto;
+      }
+
+      .diagram-placeholder {
+        background-color: #e9ecef;
+        border: 2px dashed #6c757d;
+        padding: 30px;
+        text-align: center;
+        margin: 20px 0;
+        border-radius: 8px;
+        color: #6c757d;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #667eea;
+        color: white;
+      }
+
+      .hinglish-summary {
+        background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 25px 0;
+        border-left: 5px solid #e17055;
+      }
+
+      .practice-questions {
+        background-color: #f1f8e9;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 25px 0;
+      }
+
+      .key-takeaways {
+        background-color: #fff8e1;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 25px 0;
+      }
+
+      .mind-map {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      .mind-map svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .example-box {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+    </style>
+    <!-- MathJax v3 configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"],
+          ],
+          displayMath: [
+            ["\\[", "\\]"],
+            ["$$", "$$"],
+          ],
+          processEscapes: true,
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Numerical Optimization</h1>
+      <div class="subtitle">
+        Lecture 3: Univariate and Multivariate Unconstrained Optimization
+      </div>
+    </div>
+
+    <div class="toc">
+      <h2>📚 Table of Contents</h2>
+      <ul>
+        <li><a href="#overview">🎯 Overview</a></li>
+        <li><a href="#review">🔄 Review</a></li>
+        <li>
+          <a href="#univariate">📈 Univariate Unconstrained Optimization</a>
+        </li>
+        <li><a href="#fermat-1d">🎲 Fermat's Rule (1D)</a></li>
+        <li><a href="#second-order-1d">🔬 Second-Order Sufficiency (1D)</a></li>
+        <li>
+          <a href="#multivariate">📊 Multivariate Unconstrained Optimization</a>
+        </li>
+        <li><a href="#fermat-nd">🌐 Fermat's Rule (Multivariable)</a></li>
+        <li><a href="#hessian">🎯 Hessian and Second-Order Conditions</a></li>
+        <li><a href="#convex">🏔️ Convex Functions</a></li>
+        <li><a href="#mind-map">🧠 Mind Map</a></li>
+      </ul>
+    </div>
+
+    <div id="overview" class="section">
+      <h2>🎯 Overview</h2>
+
+      <p>
+        Welcome to the third lecture on
+        <span class="key-term">numerical optimization</span>. In this session,
+        we will explore both univariate and multivariate unconstrained
+        optimization problems, covering essential theoretical foundations that
+        are crucial for understanding machine learning algorithms.
+      </p>
+
+      <h3>Topics Covered:</h3>
+      <ul>
+        <li>
+          <span class="key-term">Univariate unconstrained optimization</span> -
+          necessary and sufficient conditions
+        </li>
+        <li>
+          <span class="key-term">Multivariate unconstrained optimization</span>
+          - extending concepts to higher dimensions
+        </li>
+        <li>
+          <span class="key-term">Fermat's Rule</span> - a fundamental result in
+          optimization theory
+        </li>
+        <li>
+          <span class="key-term">Hessian matrix</span> and sufficiency criteria
+        </li>
+        <li>
+          <span class="key-term">Convex functions</span> and their special
+          properties
+        </li>
+      </ul>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Aaj hum optimization ke baare mein padhenge jo machine learning ka heart
+        hai. Pehle single variable functions ke liye rules seekhenge, phir
+        multiple variables ke liye extend karenge. Fermat's rule samjhenge jo
+        batata hai ki minimum/maximum points pe derivative zero hota hai. Ye sab
+        ML algorithms ke foundation hai bhai!
+      </div>
+    </div>
+
+    <div id="review" class="section">
+      <h2>🔄 Review</h2>
+
+      <p>
+        Before diving into new concepts, let's recall what we've studied so far
+        about <span class="key-term">data science problems</span> and how
+        <span class="key-term">optimization</span> is inherent in them.
+      </p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Most machine learning
+        problems can be classified into two broad categories. For example, when
+        you give an image and it's recognized, or your email is automatically
+        classified as spam or not spam, or determining if a cell is cancerous
+        based on tumor size - all these are machine learning problems that
+        fundamentally rely on optimization algorithms.
+      </div>
+
+      <h3>Machine Learning and Optimization Connection</h3>
+      <p>
+        Machine learning algorithms are fundamentally based on optimization
+        techniques. The two main types of problems are:
+      </p>
+
+      <table>
+        <tr>
+          <th>Problem Type</th>
+          <th>Description</th>
+          <th>Optimization Role</th>
+        </tr>
+        <tr>
+          <td><span class="key-term">Model Fitting</span></td>
+          <td>Finding parameters that best fit the data</td>
+          <td>Minimize misfit/error</td>
+        </tr>
+        <tr>
+          <td><span class="key-term">Classification</span></td>
+          <td>Choosing the best classifier among multiple options</td>
+          <td>Minimize misclassification rate</td>
+        </tr>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> We'll focus mainly on
+        continuous variable problems, where the domain allows continuous values
+        rather than discrete ones (like 0, 1, 2, 3). Even classification
+        problems with discrete outputs can be formulated in a continuous setup.
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Review mein humne dekha ki ML problems basically optimization problems
+        hain. Chahe image recognition ho ya spam detection, sab minimum error
+        dhundne ka khel hai. Continuous variables pe focus karenge kyunki
+        discrete problems bhi continuous setup mein convert kar sakte hain.
+      </div>
+    </div>
+
+    <div id="univariate" class="section">
+      <h2>📈 Univariate Unconstrained Optimization</h2>
+
+      <h3>Problem Setup</h3>
+      <div class="formula">
+        \[ \textbf{Unconstrained Optimization:} \quad \text{minimize } f(x)
+        \quad\text{subject to } x \in \mathbb{R}^n \] \[ \text{where }
+        f:\mathbb{R}^n\to\mathbb{R} \text{ and } f \text{ is differentiable near
+        candidate } x^* \]
+      </div>
+
+      <h3>Illustrative Examples</h3>
+      <p>
+        Consider two functions to understand the difference between
+        differentiable and non-differentiable cases:
+      </p>
+
+      <div class="example-box">
+        <strong>Function 1:</strong> f(x) = |x| (absolute value)<br />
+        <strong>Function 2:</strong> f(x) = x²<br /><br />
+        Both have their minimum at x = 0, but there's a crucial difference in
+        differentiability at the minimizer.
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In the left function
+        (|x|), the minimum occurs at 0, but the function is not differentiable
+        at that point. In the right function (x²), the minimum also occurs at 0,
+        and the function is differentiable everywhere. This distinction is
+        important because when functions are not differentiable at the
+        minimizer, we need special techniques to handle them.
+      </div>
+
+      <div class="diagram-placeholder">
+        <img
+          src="https://copilot.microsoft.com/th/id/BCO.033bd2c3-6525-47d4-b981-3c8152b7c05b.png"
+          alt="Comparison of |x| and x² showing differentiability at minimum"
+          class="responsive-img"
+        />
+      </div>
+
+      <h3>Standing Assumptions</h3>
+      <p>For the upcoming lectures, we make the following assumptions:</p>
+      <ul>
+        <li>
+          Functions are <span class="key-term">differentiable</span> everywhere
+        </li>
+        <li>
+          Functions are
+          <span class="key-term">continuously differentiable</span> (f' is
+          continuous)
+        </li>
+        <li>
+          We focus on <span class="key-term">local properties</span> rather than
+          global ones
+        </li>
+      </ul>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Univariate optimization matlab single variable wala function minimize
+        karna. Do examples dekhe - |x| aur x². Dono ka minimum zero pe hai,
+        lekin |x| differentiable nahi hai zero pe. Hum assume karenge ki
+        functions differentiable hain taaki calculation easy ho jaye.
+      </div>
+    </div>
+
+    <div id="fermat-1d" class="section">
+      <h2>🎲 Fermat's Rule (1D)</h2>
+
+      <div class="formula">
+        <strong>Fermat's Theorem (1D):</strong><br />
+        If f is differentiable at x* and x* is a local minimizer or maximizer
+        (interior point), then<br />
+        <strong>f'(x*) = 0</strong>
+      </div>
+
+      <h3>Intuition and Geometric Interpretation</h3>
+      <p>The derivative provides information about the function's behavior:</p>
+      <ul>
+        <li>
+          <strong>f'(x) > 0</strong> means f is
+          <span class="key-term">increasing</span>
+        </li>
+        <li>
+          <strong>f'(x) < 0</strong> means f is
+          <span class="key-term">decreasing</span>
+        </li>
+        <li>
+          <strong>f'(x) = 0</strong> means the function has a
+          <span class="key-term">horizontal tangent</span>
+        </li>
+      </ul>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Think of f'(x) = 2x for
+        f(x) = x². When x < 0, f'(x) is negative (function decreasing). When x >
+        0, f'(x) is positive (function increasing). At x = 0, f'(x) = 0, which
+        corresponds to the minimum point.
+      </div>
+
+      <h3>Proof Sketch</h3>
+      <div class="formula">
+        \[ f'(x^*) = \lim_{t\to 0} \frac{f(x^*+t)-f(x^*)}{t} \]
+      </div>
+
+      <p>
+        The proof relies on the fact that both left-hand and right-hand limits
+        must exist and be equal:
+      </p>
+      <ul>
+        <li>
+          <strong>Right-hand limit:</strong> t > 0, f(x* + t) ≥ f(x*) → limit ≥
+          0
+        </li>
+        <li>
+          <strong>Left-hand limit:</strong> t < 0, f(x* + t) ≥ f(x*) → limit ≤ 0
+        </li>
+        <li><strong>Conclusion:</strong> Both limits equal 0, so f'(x*) = 0</li>
+      </ul>
+
+      <h3>Important: Necessary but NOT Sufficient</h3>
+      <p>
+        Fermat's rule is a <span class="key-term">necessary condition</span> but
+        <strong>not sufficient</strong>. Consider these examples:
+      </p>
+
+      <table>
+        <tr>
+          <th>Function</th>
+          <th>Point</th>
+          <th>f'(x*)</th>
+          <th>Type</th>
+        </tr>
+        <tr>
+          <td>f(x) = (x-1)²</td>
+          <td>x = 1</td>
+          <td>0</td>
+          <td>Local minimum</td>
+        </tr>
+        <tr>
+          <td>g(x) = -(x+1)²</td>
+          <td>x = -1</td>
+          <td>0</td>
+          <td>Local maximum</td>
+        </tr>
+        <tr>
+          <td>h(x) = x³</td>
+          <td>x = 0</td>
+          <td>0</td>
+          <td>Inflection point (saddle)</td>
+        </tr>
+      </table>
+
+      <h3>Critical Point Terminology</h3>
+      <div class="example-box">
+        <strong>Critical Point (Stationary Point):</strong> A point x* where
+        f'(x*) = 0<br /><br />
+        <strong>Types of Critical Points:</strong>
+        <ul>
+          <li><span class="key-term">Local Minimum</span></li>
+          <li><span class="key-term">Local Maximum</span></li>
+          <li>
+            <span class="key-term">Saddle Point</span> (Point of inflection)
+          </li>
+        </ul>
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> This is very important
+        because most optimization algorithms will conclude at a point where the
+        derivative is 0. But we cannot infer whether it's a minimum, maximum, or
+        saddle point from the first-order condition alone.
+      </div>
+
+      <div class="practice-questions">
+        <h3>🎯 Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Find all critical points of f(x) = x³ - 3x +
+            1<br />
+            <strong>A:</strong> f'(x) = 3x² - 3 = 0 → x = ±1
+          </li>
+          <li>
+            <strong>Q:</strong> Why can't we conclude the nature of critical
+            points from f'(x) = 0 alone?<br />
+            <strong>A:</strong> Because f'(x) = 0 is only a necessary condition,
+            not sufficient. We need second-order conditions.
+          </li>
+        </ol>
+      </div>
+
+      <div class="key-takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>
+            Fermat's rule: f'(x*) = 0 at local extrema (necessary condition)
+          </li>
+          <li>Not sufficient: f'(x*) = 0 doesn't guarantee minimum/maximum</li>
+          <li>Critical points can be minima, maxima, or saddle points</li>
+          <li>Need second-order conditions for classification</li>
+        </ul>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Fermat's rule kehta hai ki agar koi point minimum ya maximum hai to
+        wahan derivative zero hoga. Lekin ulta true nahi hai - derivative zero
+        hai matlab minimum/maximum ho, ye zaruri nahi. Critical points teen type
+        ke hote hain: minimum, maximum, aur saddle point. Pehli condition sirf
+        necessary hai, sufficient nahi.
+      </div>
+    </div>
+
+    <div id="second-order-1d" class="section">
+      <h2>🔬 Second-Order Sufficiency (1D)</h2>
+
+      <p>
+        Since first-order conditions are not sufficient, we need
+        <span class="key-term">second-order conditions</span> to classify
+        critical points.
+      </p>
+
+      <div class="formula">
+        \[ \textbf{Second-Order Sufficiency Test:} \] \[ \text{At a critical
+        point } x^* \text{ where } f'(x^*) = 0:\] \[ \text{If } f''(x^*) > 0
+        \Rightarrow \text{strict local minimum} \] \[ \text{If } f''(x^*) < 0
+        \Rightarrow \text{strict local maximum} \] \[ \text{If } f''(x^*) = 0
+        \Rightarrow \text{inconclusive (check higher derivatives)} \]
+      </div>
+
+      <h3>Understanding Curvature</h3>
+      <p>
+        The second derivative f''(x) represents the
+        <span class="key-term">curvature</span> of the function:
+      </p>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Think of curvature like
+        driving on a road. A "blind curve" means the road is bending - not
+        straight. Positive curvature means the function is "bowl-shaped"
+        (curving upward), while negative curvature means it's "cap-shaped"
+        (curving downward).
+      </div>
+
+      <table>
+        <tr>
+          <th>Function</th>
+          <th>f'(x)</th>
+          <th>f''(x)</th>
+          <th>Curvature</th>
+          <th>Shape</th>
+        </tr>
+        <tr>
+          <td>f(x) = x</td>
+          <td>1</td>
+          <td>0</td>
+          <td>No curvature</td>
+          <td>Straight line</td>
+        </tr>
+        <tr>
+          <td>f(x) = x²</td>
+          <td>2x</td>
+          <td>2</td>
+          <td>Positive curvature</td>
+          <td>Bowl up (∪)</td>
+        </tr>
+        <tr>
+          <td>f(x) = -x²</td>
+          <td>-2x</td>
+          <td>-2</td>
+          <td>Negative curvature</td>
+          <td>Cap down (∩)</td>
+        </tr>
+        <tr>
+          <td>f(x) = x³</td>
+          <td>3x²</td>
+          <td>6x</td>
+          <td>Variable</td>
+          <td>S-shaped</td>
+        </tr>
+      </table>
+
+      <div class="diagram-placeholder">
+      <img src="https://i.ibb.co/F4rwT9d8/image.png" alt="Visual representation of positive and negative curvature with bowl and cap shapes" border="0"></a>
+      </div>
+
+      <h3>Mathematical Foundation</h3>
+      <p>
+        The second-order test is based on the
+        <span class="key-term">Taylor series expansion</span>:
+      </p>
+
+      <div class="formula">
+        \[ f(x) \approx f(x^*) + f'(x^*)(x-x^*) + \tfrac{1}{2} f''(x^*)(x-x^*)^2
+        \]
+      </div>
+
+      <p>Since f'(x*) = 0 at critical points:</p>
+      <div class="formula">
+        \[ f(x) \approx f(x^*) + \tfrac{1}{2} f''(x^*)(x-x^*)^2 \]
+      </div>
+
+      <h3>Strict Local Minimum/Maximum</h3>
+      <div class="example-box">
+        <strong>Strict Local Minimum:</strong> f(x*) < f(x) for all x ≠ x* in
+        some neighborhood<br />
+        <strong>Strict Local Maximum:</strong> f(x*) > f(x) for all x ≠ x* in
+        some neighborhood
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> The word "strict" means
+        the inequality is strict - not just ≤ or ≥, but < or >. This ensures the
+        point is truly a minimum/maximum, not just a flat region.
+      </div>
+
+      <div class="practice-questions">
+        <h3>🎯 Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Classify the critical points of f(x) = x⁴ - 4x²
+            + 3<br />
+            <strong>A:</strong> f'(x) = 4x³ - 8x = 4x(x² - 2) = 0 → x = 0,
+            ±√2<br />
+            f''(x) = 12x² - 8<br />
+            f''(0) = -8 < 0 → local maximum<br />
+            f''(±√2) = 16 > 0 → local minima
+          </li>
+          <li>
+            <strong>Q:</strong> What happens when f''(x*) = 0?<br />
+            <strong>A:</strong> The test is inconclusive. Need to check
+            higher-order derivatives or use other methods.
+          </li>
+        </ol>
+      </div>
+
+      <div class="key-takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>
+            Second derivative indicates curvature: positive = bowl up, negative
+            = cap down
+          </li>
+          <li>f''(x*) > 0 at critical point ⟹ strict local minimum</li>
+          <li>f''(x*) < 0 at critical point ⟹ strict local maximum</li>
+          <li>f''(x*) = 0 is inconclusive - need higher-order analysis</li>
+        </ul>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Second derivative curvature batata hai - positive matlab upward bowl,
+        negative matlab downward cap. Critical point pe agar f''(x) > 0 hai to
+        minimum, agar < 0 hai to maximum. Zero hai to kuch pata nahi chalta,
+        higher derivatives check karne padte hain. Ye sufficient condition hai
+        classification ke liye.
+      </div>
+    </div>
+
+    <div id="multivariate" class="section">
+      <h2>📊 Multivariate Unconstrained Optimization</h2>
+
+      <p>
+        Now we extend our concepts to functions of multiple variables, where the
+        complexity increases due to multiple possible directions of movement.
+      </p>
+
+      <h3>The Challenge of Multiple Directions</h3>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> In one dimension (ℝ), you
+        can only move left or right - just two directions. But in ℝ², you can
+        move in infinitely many directions: this way, that way, diagonally - so
+        many possibilities! This is what makes multivariate optimization more
+        complex.
+      </div>
+
+      <h3>Directional Derivatives</h3>
+      <p>
+        To understand optimization in multiple dimensions, we first need
+        <span class="key-term">directional derivatives</span>:
+      </p>
+
+      <div class="formula">
+        \[ \textbf{Partial Derivative:}\quad \frac{\partial f}{\partial x_i} =
+        \lim_{t\to 0} \frac{f(x_0 + t e_i)-f(x_0)}{t} \] \[ \textbf{Directional
+        Derivative:}\quad \nabla^d f(x_0) = \lim_{t\to 0^+} \frac{f(x_0 + t
+        d)-f(x_0)}{t} \]
+      </div>
+
+      <p>
+        where <strong>eᵢ</strong> is the i-th coordinate vector and
+        <strong>d</strong> is any direction vector.
+      </p>
+
+      <h3>Key Relationship</h3>
+      <div class="formula">
+        \[ \nabla^d f(x_0) = \nabla f(x_0)^T d = \langle \nabla f(x_0), d
+        \rangle \]
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> This inner product
+        formula is very important. If you have gradient components [a₁, a₂, ...,
+        aₙ] and direction components [d₁, d₂, ..., dₙ], then the directional
+        derivative is a₁d₁ + a₂d₂ + ... + aₙdₙ.
+      </div>
+
+      <h3>Breaking Down to One-Dimensional Problems</h3>
+      <p>
+        The intuition for multivariate optimization comes from thinking of it as
+        multiple one-dimensional problems:
+      </p>
+
+      <div class="example-box">
+        <strong>Key Insight:</strong> If a point is a local minimizer in ℝⁿ,
+        then it must be a local minimizer in <em>every direction</em> you can
+        move from that point. Along any fixed direction, the problem reduces to
+        a one-dimensional optimization problem.
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Multivariate matlab multiple variables wala function. 1D mein sirf
+        left-right ja sakte the, ab infinite directions hain! Directional
+        derivative concept samjhna padta hai - kisi bhi direction mein function
+        ka rate of change. Gradient aur direction ka inner product leta hai
+        directional derivative nikalne ke liye.
+      </div>
+    </div>
+
+    <div id="fermat-nd" class="section">
+      <h2>🌐 Fermat's Rule (Multivariable)</h2>
+
+      <div class="formula">
+        \[ \textbf{Multivariable Fermat's Rule:} \] \[ \text{If }
+        f:\mathbb{R}^n\to\mathbb{R} \text{ is differentiable at an interior
+        local minimizer/maximizer } x^*, \text{ then } \nabla f(x^*) = 0. \]
+      </div>
+
+      <h3>Intuitive Proof</h3>
+      <p>
+        The proof extends the one-dimensional argument using directional
+        derivatives:
+      </p>
+
+      <ol>
+        <li>
+          If x* is a local minimizer, then for any direction d, the function
+          φ(t) = f(x* + td) has a local minimum at t = 0
+        </li>
+        <li>By the 1D Fermat's rule: φ'(0) = 0</li>
+        <li>But φ'(0) = ∇f(x*)ᵀd</li>
+        <li>Since ∇f(x*)ᵀd = 0 for <em>all</em> directions d</li>
+        <li>This is only possible if ∇f(x*) = 0</li>
+      </ol>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Think about it logically:
+        if the gradient vector is not zero, then there exists some direction
+        where the inner product is negative (function decreasing) or positive
+        (function increasing). But at a minimum, the function shouldn't decrease
+        in any direction!
+      </div>
+
+      <h3>Illustrations in ℝ²</h3>
+      <p>Let's examine different types of critical points in two dimensions:</p>
+
+      <table>
+        <tr>
+          <th>Function Type</th>
+          <th>Example</th>
+          <th>Critical Point</th>
+          <th>Nature</th>
+        </tr>
+        <tr>
+          <td>Convex Bowl</td>
+          <td>f(x,y) = (x-1)² + 2(y+0.5)²</td>
+          <td>(1, -0.5)</td>
+          <td>Minimum</td>
+        </tr>
+        <tr>
+          <td>Concave Cap</td>
+          <td>g(x,y) = -(x² + y²)</td>
+          <td>(0, 0)</td>
+          <td>Maximum</td>
+        </tr>
+        <tr>
+          <td>Saddle</td>
+          <td>h(x,y) = x² - y²</td>
+          <td>(0, 0)</td>
+          <td>Saddle Point</td>
+        </tr>
+      </table>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Contour plots showing convex bowl, concave cap, and
+        saddle point in 2D]
+      </div>
+
+      <h3>Example Calculation</h3>
+      <div class="example-box">
+        <strong>Example:</strong> f(x,y) = (x-1)² + 2(y+0.5)²<br /><br />
+        <strong>Step 1:</strong> Calculate gradient<br />
+        \[ \nabla f = \begin{pmatrix} 2(x-1) \\\ 4(y+0.5) \end{pmatrix} \]<br /><br />
+        <strong>Step 2:</strong> Set gradient to zero<br />
+        \[ 2(x-1) = 0 \Rightarrow x = 1 \quad\text{and}\quad 4(y+0.5) = 0
+        \Rightarrow y = -0.5 \]<br /><br />
+        <strong>Result:</strong> Critical point at (1, -0.5)
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> When calculating the
+        gradient, treat other variables as constants. For ∂f/∂x, treat y as
+        fixed. For ∂f/∂y, treat x as fixed. This is the fundamental rule of
+        partial differentiation.
+      </div>
+
+      <h3>Saddle Points in Multivariable Functions</h3>
+      <p>
+        A <span class="key-term">saddle point</span> is unique to multivariable
+        functions:
+      </p>
+
+      <div class="example-box">
+        <strong>Saddle Point Characteristics:</strong>
+        <ul>
+          <li>Function increases in some directions</li>
+          <li>Function decreases in other directions</li>
+          <li>Cannot occur in 1D functions</li>
+          <li>Satisfies ∇f(x*) = 0 but is neither minimum nor maximum</li>
+        </ul>
+      </div>
+
+      <div class="practice-questions">
+        <h3>🎯 Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Find critical points of f(x,y) = x² + xy + y²<br />
+            <strong>A:</strong>
+            \[ \nabla f = \begin{pmatrix} 2x+y \\\ x+2y \end{pmatrix} =
+            \begin{pmatrix} 0 \\\ 0 \end{pmatrix} \Rightarrow \text{System:
+            }2x+y=0,\; x+2y=0 \Rightarrow (0,0) \]
+          </li>
+          <li>
+            <strong>Q:</strong> Why do saddle points exist only in multivariable
+            functions?<br />
+            <strong>A:</strong> In 1D, you can only move left or right. In
+            higher dimensions, you have multiple directions, allowing for mixed
+            behavior.
+          </li>
+        </ol>
+      </div>
+
+      <div class="key-takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>Multivariable Fermat's rule: ∇f(x*) = 0 at local extrema</li>
+          <li>Proof uses directional derivatives and 1D result</li>
+          <li>Critical points can be minima, maxima, or saddle points</li>
+          <li>Saddle points are unique to multivariable functions</li>
+          <li>First-order conditions are necessary but not sufficient</li>
+        </ul>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Multivariable Fermat's rule kehta hai ki critical point pe gradient zero
+        hoga. Proof simple hai - har direction mein 1D problem ban jata hai, aur
+        wahan derivative zero hona chahiye. Agar sabhi directions ke liye zero
+        hai to gradient hi zero hoga. Saddle points sirf multivariable mein hote
+        hain - kuch directions mein increase, kuch mein decrease.
+      </div>
+    </div>
+
+    <div id="hessian" class="section">
+      <h2>🎯 Hessian and Second-Order Conditions</h2>
+
+      <p>
+        Just like in the univariate case, we need second-order conditions to
+        classify critical points in multivariable functions. This is where the
+        <span class="key-term">Hessian matrix</span> comes into play.
+      </p>
+
+      <div class="formula">
+        \[ \textbf{Hessian Matrix:} \quad H = \nabla^2 f(x) =
+        \left[\frac{\partial^2 f}{\partial x_i \partial x_j}\right]_{i,j} \] \[
+        \textbf{Second-Order Sufficiency Test:}\] \[ \text{At a stationary point
+        } x^* \text{ where } \nabla f(x^*) = 0:\] \[ H \succ 0 \Rightarrow
+        \text{strict local minimum};\quad H \prec 0 \Rightarrow \text{strict
+        local maximum};\quad H \text{ indefinite } \Rightarrow \text{saddle
+        point} \] \[ \text{Positive/negative semidefinite } \Rightarrow
+        \text{inconclusive} \]
+      </div>
+
+      <h3>Matrix Definiteness</h3>
+      <p>
+        Understanding matrix definiteness is crucial for the second-order test:
+      </p>
+
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>Definition</th>
+          <th>Condition on xᵀHx</th>
+          <th>Eigenvalues</th>
+        </tr>
+        <tr>
+          <td><span class="key-term">Positive Definite</span></td>
+          <td>H ≻ 0</td>
+          <td>> 0 for all x ≠ 0</td>
+          <td>All > 0</td>
+        </tr>
+        <tr>
+          <td><span class="key-term">Negative Definite</span></td>
+          <td>H ≺ 0</td>
+          <td>< 0 for all x ≠ 0</td>
+          <td>All < 0</td>
+        </tr>
+        <tr>
+          <td><span class="key-term">Positive Semidefinite</span></td>
+          <td>H ⪰ 0</td>
+          <td>≥ 0 for all x</td>
+          <td>All ≥ 0</td>
+        </tr>
+        <tr>
+          <td><span class="key-term">Indefinite</span></td>
+          <td>Mixed</td>
+          <td>Can be > 0 or < 0</td>
+          <td>Mixed signs</td>
+        </tr>
+      </table>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Remember, positive
+        definite doesn't mean all entries are positive! It means the quadratic
+        form xᵀHx is positive for all non-zero vectors x. This is the
+        multivariate generalization of "f''(x) > 0" from the 1D case.
+      </div>
+
+      <h3>Checking Positive Definiteness</h3>
+      <p>
+        Several methods exist to determine if a matrix is positive definite:
+      </p>
+
+      <div class="example-box">
+        <strong>Methods to Check Positive Definiteness:</strong>
+        <ol>
+          <li>
+            <span class="key-term">Eigenvalue Test:</span> All eigenvalues > 0 ⟺
+            positive definite
+          </li>
+          <li>
+            <span class="key-term">Principal Minors:</span> All leading
+            principal minors > 0
+          </li>
+          <li>
+            <span class="key-term">For 2×2 matrices:</span> Trace > 0 and
+            Determinant > 0
+          </li>
+        </ol>
+      </div>
+
+      <h3>Detailed Example</h3>
+      <div class="example-box">
+        <strong>Example:</strong> f(x,y) = x² + xy + y²<br /><br />
+        <strong>Step 1:</strong> Find critical points<br />
+        \[ \nabla f = \begin{pmatrix} 2x+y \\\ x+2y \end{pmatrix} =
+        \begin{pmatrix} 0 \\\ 0 \end{pmatrix} \] \[ \text{System: }2x+y=0,\;
+        x+2y=0 \Rightarrow \text{Solution: }x=0, y=0 \;\text{(critical point at
+        (0,0))} \]<br /><br />
+
+        <strong>Step 2:</strong> Calculate Hessian<br />
+        \[ H = \begin{bmatrix} 2 & 1 \\\ 1 & 2 \end{bmatrix} \]<br /><br />
+        <strong>Step 3:</strong> Check definiteness using eigenvalues<br />
+        \[ \det(H - \lambda I) = (2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 =
+        (\lambda-1)(\lambda-3) \] \[ \text{Eigenvalues: } \lambda_1 = 1, \;
+        \lambda_2 = 3 \] \[ \text{Both } > 0 \Rightarrow H \text{ is positive
+        definite} \]<br /><br />
+        <strong>Conclusion:</strong> (0,0) is a strict local minimum
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> To find eigenvalues,
+        subtract λ from diagonal elements and calculate the determinant. Set it
+        equal to zero and solve for λ. This determinant calculation gives us the
+        characteristic polynomial.
+      </div>
+
+      <h3>Quadratic Model Interpretation</h3>
+      <p>
+        The second-order test is based on the quadratic Taylor approximation:
+      </p>
+
+      <div class="formula">
+        \[ f(x) \approx f(x^*) + \nabla f(x^*)^T (x-x^*) + \tfrac{1}{2}(x-x^*)^T
+        H (x-x^*) \] \[ \text{Since } \nabla f(x^*) = 0:\quad f(x) \approx
+        f(x^*) + \tfrac{1}{2}(x-x^*)^T H (x-x^*) \]
+      </div>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: 3D surface plots showing different Hessian shapes -
+        positive definite (bowl), negative definite (cap), indefinite (saddle)]
+      </div>
+
+      <h3>Alternative Examples for Practice</h3>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Consider these functions
+        for additional practice:
+        <ul>
+          <li>f(x,y) = 8x + 12y + x² - 2y² (mixed curvature)</li>
+          <li>f(x,y) = 100(y - x²)² + (1 - x)² (Rosenbrock function)</li>
+        </ul>
+      </div>
+
+      <div class="practice-questions">
+        <h3>🎯 Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> For \(H = \begin{bmatrix}3 & 1 \\\ 1 &
+            3\end{bmatrix}\), determine the nature of the critical point<br />
+            <strong>A:</strong> \[ \text{Eigenvalues: } \lambda_1 = 2, \;
+            \lambda_2 = 4 \; (\text{both } > 0) \Rightarrow \text{Positive
+            definite} \Rightarrow \text{Strict local minimum} \]
+          </li>
+          <li>
+            <strong>Q:</strong> What does it mean for a matrix to be
+            indefinite?<br />
+            <strong>A:</strong> It has both positive and negative eigenvalues,
+            meaning the quadratic form can be positive or negative depending on
+            the direction.
+          </li>
+        </ol>
+      </div>
+
+      <div class="key-takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>
+            Hessian matrix generalizes second derivative to multivariable case
+          </li>
+          <li>Matrix definiteness determines the nature of critical points</li>
+          <li>
+            Positive definite ⟹ minimum, negative definite ⟹ maximum, indefinite
+            ⟹ saddle
+          </li>
+          <li>Eigenvalues provide the most reliable test for definiteness</li>
+          <li>
+            Second-order conditions are sufficient for local classification
+          </li>
+        </ul>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Hessian matrix second derivatives ka collection hai. Matrix positive
+        definite hai matlab minimum, negative definite hai matlab maximum,
+        indefinite hai matlab saddle point. Eigenvalues check karne se pata chal
+        jata hai - sab positive to minimum, sab negative to maximum, mixed to
+        saddle. Ye sufficient condition hai classification ke liye.
+      </div>
+    </div>
+
+    <div id="convex" class="section">
+      <h2>🏔️ Convex Functions</h2>
+
+      <p>
+        <span class="key-term">Convex functions</span> form a special class
+        where first-order conditions become both necessary and sufficient for
+        global optimality!
+      </p>
+
+      <div class="formula">
+        <strong>Definition of Convex Function:</strong><br />
+        A function f : ℝⁿ → ℝ is convex if for any x, y ∈ ℝⁿ and t ∈ [0,1]:<br />
+        <strong>f(tx + (1-t)y) ≤ tf(x) + (1-t)f(y)</strong>
+      </div>
+
+      <h3>Geometric Interpretation</h3>
+      <div class="example-box">
+        <strong>Geometric Meaning:</strong><br />
+        A function is convex if the line segment connecting any two points on
+        its graph lies above (or on) the graph itself. Think of it as a "bowl"
+        shape that doesn't have any "dents" or concave parts.
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Convexity can also be
+        understood through the epigraph - the set of points above the function's
+        graph. A function is convex if and only if its epigraph is a convex set.
+      </div>
+
+      <h3>Examples of Convex Functions</h3>
+      <table>
+        <tr>
+          <th>Function</th>
+          <th>Domain</th>
+          <th>Conditions</th>
+        </tr>
+        <tr>
+          <td>f(x) = ax² + bx + c</td>
+          <td>ℝ</td>
+          <td>a > 0</td>
+        </tr>
+        <tr>
+          <td>f(x) = xᵀAx + bᵀx + c</td>
+          <td>ℝⁿ</td>
+          <td>A ⪰ 0 (positive semidefinite)</td>
+        </tr>
+        <tr>
+          <td>f(x) = |x|</td>
+          <td>ℝ</td>
+          <td>Always convex</td>
+        </tr>
+        <tr>
+          <td>f(x) = eˣ</td>
+          <td>ℝ</td>
+          <td>Always convex</td>
+        </tr>
+      </table>
+
+      <h3>First-Order Characterization</h3>
+      <div class="formula">
+        <strong>First-Order Condition for Convexity:</strong><br />
+        Let f : ℝⁿ → ℝ be differentiable. Then f is convex if and only if:<br />
+        <strong>f(y) ≥ f(x) + ⟨∇f(x), y-x⟩ for all x, y ∈ ℝⁿ</strong>
+      </div>
+
+      <p>
+        This means the linear approximation (tangent hyperplane) always lies
+        below the function.
+      </p>
+
+      <h3>Second-Order Characterization</h3>
+      <div class="formula">
+        <strong>Second-Order Condition for Convexity:</strong><br />
+        Let f : ℝⁿ → ℝ be twice differentiable. Then f is convex if and only
+        if:<br />
+        <strong>∇²f(x) ⪰ 0 (positive semidefinite) for all x</strong>
+      </div>
+
+      <h3>The Power of Convexity</h3>
+      <div class="formula">
+        <strong>Global Optimality Result:</strong><br />
+        Let f : ℝⁿ → ℝ be a convex function. If x* is a local minimizer, then it
+        is also a <span class="key-term">global minimizer</span>.<br /><br />
+        <strong>Corollary:</strong> For differentiable convex f, x* is a global
+        minimizer if and only if ∇f(x*) = 0.
+      </div>
+
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> This is the power of
+        convexity! For general functions, we can only guarantee local optimality
+        from our conditions. But for convex functions, local optimality
+        automatically implies global optimality.
+      </div>
+
+      <h3>Quadratic Functions - A Special Case</h3>
+      <p>Quadratic functions are particularly important in optimization:</p>
+
+      <div class="formula">
+        <strong>Quadratic Function:</strong><br />
+        f(x) = (1/2)xᵀAx + bᵀx + c<br />
+        where A ∈ ℝⁿˣⁿ is symmetric, b ∈ ℝⁿ, c ∈ ℝ<br /><br />
+        ∇f(x) = Ax + b<br />
+        ∇²f(x) = A
+      </div>
+
+      <h3>Stationary Points of Quadratic Functions</h3>
+      <div class="example-box">
+        <strong>For Quadratic Functions:</strong>
+        <ul>
+          <li>
+            If A is positive semidefinite: any solution to Ax + b = 0 is a
+            global minimizer
+          </li>
+          <li>
+            If A is positive definite: x* = -A⁻¹b is the unique global minimizer
+          </li>
+          <li>Critical point found by solving: Ax = -b</li>
+        </ul>
+      </div>
+
+      <div class="diagram-placeholder">
+        [Insert diagram: Comparison of convex vs non-convex functions showing
+        local vs global minima]
+      </div>
+
+      <h3>Why Convexity Matters in Machine Learning</h3>
+      <div class="professor-note">
+        <strong>Professor mentioned in class:</strong> Many machine learning
+        problems are formulated as convex optimization problems precisely
+        because of this global optimality guarantee. Linear regression, logistic
+        regression, and SVM are all convex optimization problems, which is why
+        we can find their global optimal solutions efficiently.
+      </div>
+
+      <div class="practice-questions">
+        <h3>🎯 Practice Questions</h3>
+        <ol>
+          <li>
+            <strong>Q:</strong> Is f(x,y) = x² + y² convex? Verify using
+            second-order conditions.<br />
+            <strong>A:</strong> \[ \nabla^2 f = \begin{bmatrix} 2 & 0 \\\ 0 & 2
+            \end{bmatrix}, \; \text{eigenvalues } 2,2 > 0 \Rightarrow
+            \text{positive definite} \Rightarrow \text{convex} \]
+          </li>
+          <li>
+            <strong>Q:</strong> Why are local minima of convex functions also
+            global minima?<br />
+            <strong>A:</strong> By the definition of convexity, the function
+            cannot have multiple "valleys" - if there's a local minimum, it must
+            be the lowest point globally.
+          </li>
+        </ol>
+      </div>
+
+      <div class="key-takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>
+            Convex functions have "bowl-like" shape without dents or concavities
+          </li>
+          <li>For convex functions: local minima = global minima</li>
+          <li>
+            First-order condition ∇f(x*) = 0 is sufficient for global optimality
+          </li>
+          <li>Second-order condition: f convex ⟺ ∇²f(x) ⪰ 0 everywhere</li>
+          <li>
+            Quadratic functions with positive semidefinite matrices are convex
+          </li>
+          <li>
+            Many ML problems are designed to be convex for guaranteed global
+            solutions
+          </li>
+        </ul>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>🎭 Hinglish Summary:</strong><br />
+        Convex functions special hote hain - bowl shape ke hote hain without any
+        dents. Inka sabse bada fayda ye hai ki local minimum automatically
+        global minimum ho jata hai. Machine learning mein isliye convex problems
+        banate hain taaki guaranteed global solution mil sake. Quadratic
+        functions with positive semidefinite matrix convex hoti hain.
+      </div>
+    </div>
+
+    <div id="mind-map" class="mind-map">
+      <h2>🧠 Comprehensive Mind Map</h2>
+
+      <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+        <!-- Central Node -->
+        <circle
+          cx="500"
+          cy="350"
+          r="80"
+          fill="#667eea"
+          stroke="#5a6fd8"
+          stroke-width="3"
+        />
+        <text
+          x="500"
+          y="345"
+          text-anchor="middle"
+          fill="white"
+          font-size="14"
+          font-weight="bold"
+        >
+          Numerical
+        </text>
+        <text
+          x="500"
+          y="365"
+          text-anchor="middle"
+          fill="white"
+          font-size="14"
+          font-weight="bold"
+        >
+          Optimization
+        </text>
+
+        <!-- Univariate Branch -->
+        <line
+          x1="420"
+          y1="350"
+          x2="200"
+          y2="200"
+          stroke="#667eea"
+          stroke-width="3"
+        />
+        <circle
+          cx="200"
+          cy="200"
+          r="60"
+          fill="#e74c3c"
+          stroke="#c0392b"
+          stroke-width="2"
+        />
+        <text
+          x="200"
+          y="195"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Univariate
+        </text>
+        <text
+          x="200"
+          y="210"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Optimization
+        </text>
+
+        <!-- Fermat's Rule 1D -->
+        <line
+          x1="160"
+          y1="160"
+          x2="100"
+          y2="100"
+          stroke="#e74c3c"
+          stroke-width="2"
+        />
+        <rect
+          x="20"
+          y="70"
+          width="160"
+          height="60"
+          rx="10"
+          fill="#f39c12"
+          stroke="#e67e22"
+          stroke-width="2"
+        />
+        <text
+          x="100"
+          y="95"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          Fermat's Rule (1D)
+        </text>
+        <text x="100" y="110" text-anchor="middle" fill="white" font-size="10">
+          f'(x*) = 0
+        </text>
+
+        <!-- Second Order 1D -->
+        <line
+          x1="240"
+          y1="160"
+          x2="300"
+          y2="100"
+          stroke="#e74c3c"
+          stroke-width="2"
+        />
+        <rect
+          x="220"
+          y="70"
+          width="160"
+          height="60"
+          rx="10"
+          fill="#9b59b6"
+          stroke="#8e44ad"
+          stroke-width="2"
+        />
+        <text
+          x="300"
+          y="90"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          Second Order (1D)
+        </text>
+        <text x="300" y="105" text-anchor="middle" fill="white" font-size="10">
+          f''(x*) > 0 → min
+        </text>
+        <text x="300" y="120" text-anchor="middle" fill="white" font-size="10">
+          f''(x*) < 0 → max
+        </text>
+
+        <!-- Multivariate Branch -->
+        <line
+          x1="580"
+          y1="350"
+          x2="800"
+          y2="200"
+          stroke="#667eea"
+          stroke-width="3"
+        />
+        <circle
+          cx="800"
+          cy="200"
+          r="60"
+          fill="#27ae60"
+          stroke="#229954"
+          stroke-width="2"
+        />
+        <text
+          x="800"
+          y="195"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Multivariate
+        </text>
+        <text
+          x="800"
+          y="210"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Optimization
+        </text>
+
+        <!-- Gradient -->
+        <line
+          x1="760"
+          y1="160"
+          x2="700"
+          y2="100"
+          stroke="#27ae60"
+          stroke-width="2"
+        />
+        <rect
+          x="620"
+          y="70"
+          width="160"
+          height="60"
+          rx="10"
+          fill="#f39c12"
+          stroke="#e67e22"
+          stroke-width="2"
+        />
+        <text
+          x="700"
+          y="95"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          Fermat's Rule (nD)
+        </text>
+        <text x="700" y="110" text-anchor="middle" fill="white" font-size="10">
+          ∇f(x*) = 0
+        </text>
+
+        <!-- Hessian -->
+        <line
+          x1="840"
+          y1="160"
+          x2="900"
+          y2="100"
+          stroke="#27ae60"
+          stroke-width="2"
+        />
+        <rect
+          x="820"
+          y="70"
+          width="160"
+          height="60"
+          rx="10"
+          fill="#9b59b6"
+          stroke="#8e44ad"
+          stroke-width="2"
+        />
+        <text
+          x="900"
+          y="85"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          Hessian Matrix
+        </text>
+        <text x="900" y="100" text-anchor="middle" fill="white" font-size="10">
+          H ≻ 0 → min
+        </text>
+        <text x="900" y="115" text-anchor="middle" fill="white" font-size="10">
+          H ≺ 0 → max
+        </text>
+        <text x="900" y="130" text-anchor="middle" fill="white" font-size="10">
+          H indefinite → saddle
+        </text>
+
+        <!-- Convex Functions -->
+        <line
+          x1="500"
+          y1="430"
+          x2="500"
+          y2="550"
+          stroke="#667eea"
+          stroke-width="3"
+        />
+        <circle
+          cx="500"
+          cy="580"
+          r="60"
+          fill="#e67e22"
+          stroke="#d35400"
+          stroke-width="2"
+        />
+        <text
+          x="500"
+          y="575"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Convex
+        </text>
+        <text
+          x="500"
+          y="590"
+          text-anchor="middle"
+          fill="white"
+          font-size="12"
+          font-weight="bold"
+        >
+          Functions
+        </text>
+
+        <!-- Convex Properties -->
+        <line
+          x1="440"
+          y1="580"
+          x2="300"
+          y2="640"
+          stroke="#e67e22"
+          stroke-width="2"
+        />
+        <rect
+          x="180"
+          y="620"
+          width="240"
+          height="40"
+          rx="10"
+          fill="#1abc9c"
+          stroke="#16a085"
+          stroke-width="2"
+        />
+        <text
+          x="300"
+          y="640"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          Local minimum = Global minimum
+        </text>
+
+        <line
+          x1="560"
+          y1="580"
+          x2="700"
+          y2="640"
+          stroke="#e67e22"
+          stroke-width="2"
+        />
+        <rect
+          x="580"
+          y="620"
+          width="240"
+          height="40"
+          rx="10"
+          fill="#1abc9c"
+          stroke="#16a085"
+          stroke-width="2"
+        />
+        <text
+          x="700"
+          y="640"
+          text-anchor="middle"
+          fill="white"
+          font-size="10"
+          font-weight="bold"
+        >
+          ∇²f(x) ⪰ 0 everywhere
+        </text>
+
+        <!-- Critical Points -->
+        <line
+          x1="450"
+          y1="280"
+          x2="350"
+          y2="350"
+          stroke="#667eea"
+          stroke-width="2"
+        />
+        <rect
+          x="250"
+          y="330"
+          width="200"
+          height="80"
+          rx="10"
+          fill="#34495e"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text
+          x="350"
+          y="350"
+          text-anchor="middle"
+          fill="white"
+          font-size="11"
+          font-weight="bold"
+        >
+          Critical Points
+        </text>
+        <text x="350" y="365" text-anchor="middle" fill="white" font-size="9">
+          • Local Minimum
+        </text>
+        <text x="350" y="380" text-anchor="middle" fill="white" font-size="9">
+          • Local Maximum
+        </text>
+        <text x="350" y="395" text-anchor="middle" fill="white" font-size="9">
+          • Saddle Point
+        </text>
+
+        <!-- Conditions -->
+        <line
+          x1="550"
+          y1="280"
+          x2="650"
+          y2="350"
+          stroke="#667eea"
+          stroke-width="2"
+        />
+        <rect
+          x="550"
+          y="330"
+          width="200"
+          height="80"
+          rx="10"
+          fill="#34495e"
+          stroke="#2c3e50"
+          stroke-width="2"
+        />
+        <text
+          x="650"
+          y="350"
+          text-anchor="middle"
+          fill="white"
+          font-size="11"
+          font-weight="bold"
+        >
+          Conditions
+        </text>
+        <text x="650" y="365" text-anchor="middle" fill="white" font-size="9">
+          • Necessary: ∇f = 0
+        </text>
+        <text x="650" y="380" text-anchor="middle" fill="white" font-size="9">
+          • Sufficient: H definite
+        </text>
+        <text x="650" y="395" text-anchor="middle" fill="white" font-size="9">
+          • Convex: Global opt
+        </text>
+      </svg>
+    </div>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

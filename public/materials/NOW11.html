@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Optimization: Constrained Optimization Methods - Lecture Notes</title>
+    
+    <!-- MathJax Configuration for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    
+    <style>
+        /* ===== GENERAL STYLING ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* ===== HEADER STYLING ===== */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 4px solid #3498db;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+        
+        /* ===== TABLE OF CONTENTS ===== */
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .toc h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .toc li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            padding-left: 20px;
+        }
+        
+        .toc a:hover {
+            color: #2980b9;
+            padding-left: 30px;
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .toc .sub-item {
+            padding-left: 40px;
+            font-size: 0.95em;
+        }
+        
+        /* ===== HEADINGS ===== */
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 4px solid #9b59b6;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* ===== PARAGRAPHS AND TEXT ===== */
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        strong, .key-term {
+            color: #e74c3c;
+            font-weight: 600;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        /* ===== LISTS ===== */
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* ===== HINGLISH SUMMARY BOXES ===== */
+        .hinglish-summary {
+            background: linear-gradient(135deg, #FFA07A 0%, #FF6347 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 6px solid #FF4500;
+            box-shadow: 0 4px 15px rgba(255, 99, 71, 0.3);
+        }
+        
+        .hinglish-summary h4 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .hinglish-summary p {
+            line-height: 1.7;
+            font-size: 1.05em;
+        }
+        
+        /* ===== PROFESSOR'S NOTES ===== */
+        .professor-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note::before {
+            content: "👨‍🏫 Professor mentioned in class:";
+            display: block;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* ===== MATHEMATICAL EQUATIONS ===== */
+        .equation-block {
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+        
+        /* ===== DIAGRAM PLACEHOLDERS ===== */
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            border: 2px dashed #00acc1;
+            padding: 40px;
+            margin: 25px 0;
+            text-align: center;
+            border-radius: 10px;
+            color: #006064;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        /* ===== EXAMPLES AND IMPORTANT BOXES ===== */
+        .example {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .example h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        
+        .important {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .important h4 {
+            color: #c62828;
+            margin-top: 0;
+        }
+        
+        /* ===== KEY TAKEAWAYS ===== */
+        .key-takeaways {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .key-takeaways h4 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+        
+        .key-takeaways ul {
+            margin-left: 20px;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* ===== PRACTICE QUESTIONS ===== */
+        .practice-questions {
+            background: #f3e5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #9c27b0;
+        }
+        
+        .practice-questions h4 {
+            color: #6a1b9a;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #9c27b0;
+        }
+        
+        .answer {
+            background: #e1f5e1;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .answer::before {
+            content: "✓ Answer: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        /* ===== ALGORITHM BOX ===== */
+        .algorithm {
+            background: #fafafa;
+            border: 2px solid #9e9e9e;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .algorithm h4 {
+            color: #424242;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        /* ===== MIND MAP SECTION ===== */
+        .mindmap {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+        
+        .mindmap h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .central-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 4px solid #3498db;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+        
+        .branch h3 {
+            color: #3498db;
+            margin-top: 0;
+            border: none;
+            padding: 0;
+            font-size: 1.2em;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        
+        .branch li {
+            padding: 8px 0 8px 20px;
+            position: relative;
+        }
+        
+        .branch li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 2px solid #e0e0e0;
+            color: #777;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ===== UTILITY CLASSES ===== */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== HEADER SECTION ===== -->
+        <header>
+            <h1>Numerical Optimization</h1>
+            <h1>~ By Armaan Kachhawa</h1>
+            <p class="subtitle">Constrained Optimization: Lagrange Multiplier & Penalty Methods</p>
+        </header>
+        
+        <!-- ===== TABLE OF CONTENTS ===== -->
+        <nav class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#review">1. Review of Previous Concepts</a></li>
+                <li class="sub-item"><a href="#review-kkt">1.1 Fritz-John and KKT Conditions</a></li>
+                <li class="sub-item"><a href="#review-svm">1.2 Support Vector Machine Application</a></li>
+                
+                <li><a href="#numerical-methods">2. Numerical Methods for Constrained Optimization</a></li>
+                <li class="sub-item"><a href="#methods-overview">2.1 Overview of Methods</a></li>
+                
+                <li><a href="#lagrange">3. Lagrange Multiplier Method (Analytical Approach)</a></li>
+                <li class="sub-item"><a href="#lagrange-concept">3.1 Concept and Formulation</a></li>
+                <li class="sub-item"><a href="#lagrange-example">3.2 Detailed Example</a></li>
+                <li class="sub-item"><a href="#lagrange-limitations">3.3 Limitations</a></li>
+                
+                <li><a href="#penalty-method">4. Penalty Method (Numerical Approach)</a></li>
+                <li class="sub-item"><a href="#penalty-idea">4.1 Main Idea</a></li>
+                <li class="sub-item"><a href="#penalty-functions">4.2 Penalty Functions</a></li>
+                <li class="sub-item"><a href="#quadratic-penalty">4.3 Quadratic Penalty Function</a></li>
+                <li class="sub-item"><a href="#penalty-examples">4.4 Worked Examples</a></li>
+                <li class="sub-item"><a href="#penalty-algorithm">4.5 Algorithm</a></li>
+                <li class="sub-item"><a href="#penalty-convergence">4.6 Convergence Theory</a></li>
+                <li class="sub-item"><a href="#penalty-difficulties">4.7 Difficulties and Limitations</a></li>
+                <li class="sub-item"><a href="#exact-penalty">4.8 Exact Penalty Functions</a></li>
+                
+                <li><a href="#mindmap">5. Comprehensive Mind Map</a></li>
+            </ul>
+        </nav>
+        
+        <!-- ===== SECTION 1: REVIEW ===== -->
+        <section id="review">
+            <h2>1. Review of Previous Concepts</h2>
+            
+            <p>We are moving towards studying the <strong>numerical ways to solve constrained optimization problems</strong>. Let's begin by reviewing what we covered in the last class.</p>
+            
+            <h3 id="review-kkt">1.1 Fritz-John and KKT Conditions</h3>
+            
+            <p>In previous lectures, we discussed the <strong>theoretical necessary and optimal optimality conditions</strong> to study constrained optimization. Two very important conditions we derived were:</p>
+            
+            <ul>
+                <li><strong>Fritz-John Condition</strong>: A necessary condition for optimality that doesn't require constraint qualifications</li>
+                <li><strong>KKT (Karush-Kuhn-Tucker) Condition</strong>: A stronger necessary condition that requires constraint qualifications to hold</li>
+            </ul>
+            
+            <p>We studied several examples to understand whether a given point satisfies the Fritz-John or KKT conditions.</p>
+            
+            <div class="important">
+                <h4>⚠️ Important Theoretical Results</h4>
+                <p>To derive Fritz-John and KKT conditions, we needed important results including:</p>
+                <ul>
+                    <li><strong>Farkas Lemma</strong></li>
+                    <li><strong>Gordan's Alternative</strong></li>
+                    <li>Their consequences from the <strong>Separation Theorem</strong></li>
+                </ul>
+            </div>
+            
+            <h3 id="review-svm">1.2 Support Vector Machine Application</h3>
+            
+            <p>We discussed why studying constrained optimization is very important for data science problems, particularly the <strong>Support Vector Machine (SVM)</strong> problem. We learned:</p>
+            
+            <ul>
+                <li>How to formulate the SVM mathematically as a constrained optimization problem</li>
+                <li>Why the mathematical formulation is correct (justified with at least two examples)</li>
+                <li>How the separator is easy to guess in certain cases</li>
+                <li>That the mathematical formulation gives us the same answer as our intuition</li>
+            </ul>
+            
+            <!-- Hinglish Summary for Section 1 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 1)</h4>
+                <p>
+                    Pichle lecture mein humne constrained optimization ke liye theoretical conditions dekhe the - Fritz-John aur KKT conditions. Ye conditions batate hain ki koi point optimal hai ya nahi. In conditions ko derive karne ke liye Farkas Lemma aur Gordan's Alternative use kiye the. Humne ye bhi dekha ki data science mein, especially Support Vector Machine problem mein, ye constrained optimization kitna important hai. Lekin ab problem ye hai ki in conditions ko analytically solve karna bahut mushkil hai, isliye ab hum numerical methods seekhenge.
+                </p>
+            </div>
+            
+            <!-- Key Takeaways for Section 1 -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Fritz-John and KKT conditions are necessary conditions for constrained optimization problems</li>
+                    <li>These conditions help characterize local solutions but solving them analytically is often impossible</li>
+                    <li>Farkas Lemma and Gordan's Alternative are fundamental theoretical tools</li>
+                    <li>Support Vector Machine is a practical application of constrained optimization in data science</li>
+                    <li>We need numerical methods because analytical solutions are rarely possible</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ===== SECTION 2: NUMERICAL METHODS OVERVIEW ===== -->
+        <section id="numerical-methods">
+            <h2>2. Numerical Methods for Constrained Optimization</h2>
+            
+            <h3 id="methods-overview">2.1 Overview of Methods</h3>
+            
+            <p>We know that necessary conditions in terms of Fritz-John and KKT characterize local solutions of constrained optimization very nicely. However, <strong>solving them analytically is not always possible</strong>.</p>
+            
+            <div class="professor-note">
+                Why can't we solve them analytically? Even in the unconstrained case, solving the gradient equation $\nabla f(x) = 0$ is not always easy! That's why we had to devise numerical methods like gradient descent, Newton's method, conjugate gradient method, and quasi-Newton methods.
+            </div>
+            
+            <p>For constrained optimization, the conditions are much more strict. If you recall Fritz-John and KKT conditions, you'll see that:</p>
+            
+            <ul>
+                <li>Many things are involved - not just the gradient of $f$, but also gradients of $g_i$ and $h_j$</li>
+                <li>Lot of multipliers have to satisfy certain conditions</li>
+                <li>They must add up to zero in specific ways</li>
+                <li>There's the <strong>complementary slackness condition</strong> that must be satisfied</li>
+            </ul>
+            
+            <p>All of these things are not very easy to solve analytically in most cases. Therefore, we must resort to <strong>numerical schemes</strong>.</p>
+            
+            <h4>Specialized Numerical Methods</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Applicable To</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Simplex Method</strong></td>
+                        <td>Linear Programming</td>
+                        <td>Very specialized; doesn't work for other problems. Non-linear simplex methods exist but aren't very popular.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Projected Gradient Method</strong></td>
+                        <td>Differentiable Convex Optimization</td>
+                        <td>Works when you can easily calculate projections. Easy to calculate in the convex case.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Penalty Method</strong></td>
+                        <td>Any Constrained Optimization</td>
+                        <td>Broad umbrella method - can be applied to most problems. We'll study this in detail.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Barrier Method</strong></td>
+                        <td>Inequality Constraints</td>
+                        <td>Related to interior point methods. Works from inside the feasible region.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interior Point Method</strong></td>
+                        <td>General Problems</td>
+                        <td>Very important method. Usually use ready-made solvers.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Frank-Wolfe Method</strong></td>
+                        <td>Specific Problems</td>
+                        <td>Requires knowledge of simplex method (time permitting)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                We will mainly focus on penalty method and barrier method because they are applicable to most constrained optimization problems. Interior point method is essentially a barrier method in a way. We'll study barrier method mainly for inequality constraints. If time permits, we'll do equality constraints too. Frank-Wolfe method requires at least two lectures on simplex method, so we may not have scope for that.
+            </div>
+            
+            <!-- Hinglish Summary for Section 2 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 2)</h4>
+                <p>
+                    Constrained optimization problems ko analytically solve karna bahut mushkil hai kyunki Fritz-John aur KKT conditions bahut complex hote hain - bahut saare gradients, multipliers, aur complementary slackness conditions involved hote hain. Isliye hume numerical methods ki zarurat hai. Kuch methods specific problems ke liye hain (jaise simplex method linear programming ke liye), lekin penalty method aur barrier method almost har tarah ke constrained problems pe kaam karte hain. Hum zyada focus penalty aur barrier methods pe karenge.
+                </p>
+            </div>
+            
+            <!-- Key Takeaways for Section 2 -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Analytical solution of KKT conditions is often impossible</li>
+                    <li>Simplex method is specialized for linear programming only</li>
+                    <li>Projected gradient works well for convex problems with easy projections</li>
+                    <li>Penalty and barrier methods are broadly applicable to most constrained problems</li>
+                    <li>Interior point methods are very important in practice and use ready-made solvers</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ===== SECTION 3: LAGRANGE MULTIPLIER METHOD ===== -->
+        <section id="lagrange">
+            <h2>3. Lagrange Multiplier Method (Analytical Approach)</h2>
+            
+            <h3 id="lagrange-concept">3.1 Concept and Formulation</h3>
+            
+            <p>Before diving into numerical methods, let's understand one important <strong>analytical method</strong> that works in certain situations - the <strong>Lagrange Multiplier Method</strong>.</p>
+            
+            <div class="important">
+                <h4>⚠️ Important Limitation</h4>
+                <p>This method is <strong>only applicable for equality constraints</strong>, not inequality constraints. Why? Because inequality constraints involve the complementary slackness condition, which makes the problem much more complex. With only equality constraints, we don't have to worry about complementary slackness.</p>
+            </div>
+            
+            <p>The Lagrange Multiplier Method was invented by <strong>Lagrange</strong> way back in the 1600s-1700s. The basic idea is:</p>
+            
+            <div class="equation-block">
+                <p><strong>Original Problem:</strong></p>
+
+                $$\text{minimize } f(x) \text{ subject to } h(x) = 0$$
+                
+                <p style="margin-top: 20px;"><strong>Lagrangian Formulation:</strong></p>
+
+                $$\mathcal{L}(x, \lambda) = f(x) + \lambda h(x)$$
+                
+                <p style="margin-top: 20px;"><strong>Solution Method:</strong></p>
+
+                $$\nabla \mathcal{L} = 0$$
+            </div>
+            
+            <p>Notice that the Lagrangian is not just a function of $x$, but also of $\lambda$ (the Lagrange multiplier).</p>
+            
+            <h4>Comparison: Elimination vs. Differentiation</h4>
+            
+            <p>Let's understand why this formulation is clever by looking at a motivating example:</p>
+            
+            <div class="example">
+                <h4>📘 Example: Maximizing Area with Fixed Perimeter</h4>
+                
+                <p><strong>Problem:</strong> Maximize the area of a rectangle given a fixed perimeter.</p>
+                
+                <p>Let $l$ = length and $b$ = breadth. The perimeter is given as:</p>
+                
+                <div class="equation-block">
+
+                    $$l + b = 10$$
+                </div>
+                
+                <p>We want to maximize $l \times b$ subject to $l + b = 10$.</p>
+                
+                <p><strong>Traditional Method (Elimination followed by Differentiation):</strong></p>
+                
+                <ol>
+                    <li><strong>Eliminate:</strong> From $l + b = 10$, we get $l = 10 - b$</li>
+                    <li><strong>Substitute:</strong> Maximize $b(10 - b) = 10b - b^2$</li>
+                    <li><strong>Convert to minimization:</strong> Minimize $b^2 - 10b$</li>
+                    <li><strong>Differentiate:</strong> $\frac{d}{db}(b^2 - 10b) = 2b - 10 = 0$</li>
+                    <li><strong>Solve:</strong> $b = 5$, therefore $l = 5$</li>
+                </ol>
+                
+                <p><strong>Result:</strong> The rectangle is actually a square with all sides equal to 5!</p>
+                
+                <div class="professor-note">
+                    This traditional method is called "Elimination followed by Differentiation" - first you eliminate one variable in terms of another, then you differentiate. But this only works if you can easily eliminate the variable. If the constraint was something like $b \cos(l) + \sin(l)b + b \log(l) = 10$, you couldn't easily write $b$ in terms of $l$!
+                </div>
+            </div>
+            
+            <p><strong>Lagrange's Innovation:</strong> Instead of elimination followed by differentiation, Lagrange proposed <strong>differentiation followed by elimination</strong>!</p>
+            
+            <ol>
+                <li>Don't eliminate initially - instead, add a new variable (multiplier $\lambda$)</li>
+                <li>Form the Lagrangian: $\mathcal{L}(x, \lambda) = f(x) + \lambda h(x)$</li>
+                <li><strong>Differentiate first</strong>: Calculate $\nabla \mathcal{L}$ and set it to zero</li>
+                <li><strong>Then eliminate</strong>: Solve the system of equations to find $x$ and $\lambda$</li>
+            </ol>
+            
+            <p>This is remarkably powerful because you don't need to solve for elimination upfront - you just need to solve the system $\nabla \mathcal{L} = 0$.</p>
+            
+            <h3 id="lagrange-example">3.2 Detailed Example</h3>
+            
+            <div class="example">
+                <h4>📘 Complete Example: Using Lagrange Multipliers</h4>
+                
+                <p><strong>Problem:</strong></p>
+                
+                <div class="equation-block">
+
+                    $$\text{minimize } f(x, y) = x + y$$
+
+                    $$\text{subject to } h(x, y) = x^2 + y^2 - 2 = 0$$
+                </div>
+                
+                <p><strong>Step 1: Visualize the Problem</strong></p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Circular constraint $x^2 + y^2 = 2$ with linear objective function contours $x + y = p$]
+                    <p style="margin-top: 10px;">The constraint is a circle of radius $\sqrt{2}$. The objective function $x + y = p$ represents parallel lines. We want to find the minimum value of $p$ where the line touches the circle.</p>
+                </div>
+                
+                <p><strong>Geometric Insight:</strong> As we decrease $p$, the line moves down and to the left. The minimum value occurs where the line is tangent to the circle. From the geometry, we can see this happens at the point $(-1, -1)$ where $x + y = -2$.</p>
+                
+                <p><strong>Step 2: Form the Lagrangian</strong></p>
+                
+                <div class="equation-block">
+
+                    $$\mathcal{L}(x, y, \lambda) = x + y + \lambda(x^2 + y^2 - 2)$$
+                </div>
+                
+                <p><strong>Step 3: Calculate Partial Derivatives</strong></p>
+                
+                <div class="equation-block">
+
+                    $$\frac{\partial \mathcal{L}}{\partial x} = 1 + 2\lambda x$$
+
+                    $$\frac{\partial \mathcal{L}}{\partial y} = 1 + 2\lambda y$$
+
+                    $$\frac{\partial \mathcal{L}}{\partial \lambda} = x^2 + y^2 - 2$$
+                </div>
+                
+                <p><strong>Step 4: Set Derivatives to Zero</strong></p>
+                
+                <div class="equation-block">
+
+                    $$1 + 2\lambda x = 0 \quad \text{...(1)}$$
+
+                    $$1 + 2\lambda y = 0 \quad \text{...(2)}$$
+
+                    $$x^2 + y^2 - 2 = 0 \quad \text{...(3)}$$
+                </div>
+                
+                <p>Notice that equation (3) is simply our constraint - it always appears when you differentiate with respect to $\lambda$.</p>
+                
+                <p><strong>Step 5: Solve the System (Elimination Process)</strong></p>
+                
+                <p>From equation (1): $x = -\frac{1}{2\lambda}$</p>
+                <p>From equation (2): $y = -\frac{1}{2\lambda}$</p>
+                
+                <p>Substituting into equation (3):</p>
+                
+                <div class="equation-block">
+
+                    $$\left(-\frac{1}{2\lambda}\right)^2 + \left(-\frac{1}{2\lambda}\right)^2 = 2$$
+
+                    $$\frac{1}{4\lambda^2} + \frac{1}{4\lambda^2} = 2$$
+
+                    $$\frac{1}{2\lambda^2} = 2$$
+
+                    $$\lambda^2 = \frac{1}{4}$$
+
+                    $$\lambda = \pm\frac{1}{2}$$
+                </div>
+                
+                <p><strong>Step 6: Find Critical Points</strong></p>
+                
+                <p>When $\lambda = +\frac{1}{2}$:</p>
+                <div class="equation-block">
+
+                    $$x = -\frac{1}{2(1/2)} = -1, \quad y = -1$$
+
+                    $$\text{Critical Point: } (-1, -1) \text{ with } f(-1, -1) = -2$$
+                </div>
+                
+                <p>When $\lambda = -\frac{1}{2}$:</p>
+                <div class="equation-block">
+
+                    $$x = -\frac{1}{2(-1/2)} = 1, \quad y = 1$$
+
+                    $$\text{Critical Point: } (1, 1) \text{ with } f(1, 1) = 2$$
+                </div>
+                
+                <p><strong>Step 7: Interpretation</strong></p>
+                
+                <p>The Lagrange multiplier method gives us <strong>critical points</strong> (first-order critical points). From these:</p>
+                <ul>
+                    <li>$(-1, -1)$ is a <strong>minimizer</strong> with minimum value $-2$</li>
+                    <li>$(1, 1)$ is a <strong>maximizer</strong> with maximum value $2$</li>
+                </ul>
+                
+                <div class="important">
+                    <h4>⚠️ Important Note</h4>
+                    <p>Just like in unconstrained optimization, where $\nabla f = 0$ doesn't tell us if a point is a minimizer or maximizer, the Lagrange multiplier method only gives us critical points. To determine whether a critical point is a minimizer or maximizer, we need:</p>
+                    <ul>
+                        <li>Second-order conditions (which we haven't studied for constrained problems), OR</li>
+                        <li>Additional information about the problem (e.g., convexity), OR</li>
+                        <li>Direct evaluation and comparison of function values</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3 id="lagrange-limitations">3.3 Limitations of Lagrange Multiplier Method</h3>
+            
+            <p>The Lagrange multiplier method is a powerful analytical tool, but it has significant limitations:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Limitation</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Only for Equality Constraints</strong></td>
+                        <td>Cannot handle inequality constraints because of the complementary slackness condition</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Must Solve System Analytically</strong></td>
+                        <td>Only works if you can solve the system $\nabla \mathcal{L} = 0$ analytically. In most real problems, this is impossible.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gives Only Critical Points</strong></td>
+                        <td>Doesn't distinguish between minimizers, maximizers, or saddle points without additional analysis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Guarantee of Solution</strong></td>
+                        <td>The system of equations may be too complex to solve, even for simple-looking problems</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                The Lagrange multiplier method works well for some small toy problems, but in most practical cases, it is very difficult to solve an optimization problem analytically using this method. That's why we must resort to numerical methods like the penalty method, which we'll study next.
+            </div>
+            
+            <!-- Hinglish Summary for Section 3 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 3)</h4>
+                <p>
+                    Lagrange Multiplier Method ek analytical method hai jo sirf equality constraints ke liye kaam karta hai. Traditional method mein pehle variable eliminate karte hain phir differentiate karte hain, lekin Lagrange ne reverse kiya - pehle differentiate karo (ek nayi variable $\lambda$ add karke), phir eliminate karo. Is method se hume critical points milte hain. For example, $x + y$ minimize karna subject to $x^2 + y^2 = 2$, to hume do points milte hain: $(-1,-1)$ jo minimizer hai aur $(1,1)$ jo maximizer hai. Lekin ye method tab hi kaam karta hai jab hum $\nabla \mathcal{L} = 0$ ko analytically solve kar sakein, jo usually mushkil hota hai.
+                </p>
+            </div>
+            
+            <!-- Practice Questions for Section 3 -->
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Question 1:</strong> Use the Lagrange multiplier method to find the critical points of $f(x, y) = x^2 + y^2$ subject to $x + 2y = 5$.
+                </div>
+                <div class="answer">
+                    Form $\mathcal{L}(x, y, \lambda) = x^2 + y^2 + \lambda(x + 2y - 5)$. Setting $\nabla \mathcal{L} = 0$ gives: $2x + \lambda = 0$, $2y + 2\lambda = 0$, and $x + 2y = 5$. Solving: $\lambda = -2x = -y$, so $y = 2x$. Substituting: $x + 4x = 5$, so $x = 1, y = 2$. Critical point: $(1, 2)$ with $f(1, 2) = 5$.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 2:</strong> Why can't we use the Lagrange multiplier method for the constraint $g(x) \leq 0$?
+                </div>
+                <div class="answer">
+                    Because inequality constraints involve the complementary slackness condition: $\lambda g(x) = 0$. This means either $\lambda = 0$ (constraint inactive) or $g(x) = 0$ (constraint active). We don't know which case applies beforehand, making direct application of Lagrange multipliers impossible without considering both cases separately.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 3:</strong> Can Lagrange multiplier method distinguish between a minimizer and maximizer?
+                </div>
+                <div class="answer">
+                    No, the Lagrange multiplier method only gives critical points (first-order conditions). To determine if a point is a minimizer or maximizer, we need to check second-order conditions, or use additional information about the problem (like convexity), or simply evaluate and compare function values at all critical points.
+                </div>
+            </div>
+            
+            <!-- Key Takeaways for Section 3 -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Lagrange multiplier method is an analytical approach applicable only to equality constraints</li>
+                    <li>The method uses "differentiation followed by elimination" rather than the reverse</li>
+                    <li>Form $\mathcal{L}(x, \lambda) = f(x) + \lambda h(x)$ and solve $\nabla \mathcal{L} = 0$</li>
+                    <li>The method gives critical points, not necessarily minimizers or maximizers</li>
+                    <li>Main limitation: requires analytical solution of the system $\nabla \mathcal{L} = 0$</li>
+                    <li>Cannot handle inequality constraints due to complementary slackness</li>
+                    <li>In most practical problems, numerical methods are necessary</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ===== SECTION 4: PENALTY METHOD ===== -->
+        <section id="penalty-method">
+            <h2>4. Penalty Method (Numerical Approach)</h2>
+            
+            <h3 id="penalty-idea">4.1 Main Idea of Penalty Method</h3>
+            
+            <p>Now we begin studying <strong>numerical methods</strong> for constrained optimization. The first and most important method is the <strong>Penalty Method</strong>.</p>
+            
+            <div class="important">
+                <h4>💡 Core Idea</h4>
+                <p>We have already learned how to solve <strong>unconstrained optimization problems</strong> using various numerical methods:</p>
+                <ul>
+                    <li>Gradient Descent Method</li>
+                    <li>Newton's Method</li>
+                    <li>Quasi-Newton Method</li>
+                    <li>Conjugate Gradient Method</li>
+                    <li>Their data science versions</li>
+                </ul>
+                <p><strong>Question:</strong> Can we use these methods to solve constrained optimization problems too?</p>
+                <p><strong>Answer:</strong> Yes! But not by solving just one unconstrained problem - rather by solving a <strong>sequence of unconstrained optimization problems</strong>.</p>
+            </div>
+            
+            <p>The main idea behind penalty methods (and most numerical methods for constrained optimization):</p>
+            
+            <div class="equation-block">
+                <p><strong>Given a constrained optimization problem:</strong></p>
+
+                $$\text{minimize } f(x) \text{ subject to } x \in S$$
+                
+                <p style="margin-top: 15px;"><strong>We construct a sequence of unconstrained problems:</strong></p>
+
+                $$\text{minimize } f(x) + \gamma P(x)$$
+                
+                <p style="margin-top: 15px;">where $\gamma > 0$ is a penalty parameter and $P(x)$ is a penalty function, such that in the limit, solving these unconstrained problems gives us the solution to the original constrained problem.</p>
+            </div>
+            
+            <h4>How Does Penalty Work?</h4>
+            
+            <p>Consider a simple equality constraint problem:</p>
+            
+            <div class="equation-block">
+
+                $$\text{minimize } f(x) \text{ subject to } h(x) = 0$$
+            </div>
+            
+            <p>We modify it to:</p>
+            
+            <div class="equation-block">
+
+                $$\text{minimize } f(x) + \gamma [h(x)]^2$$
+            </div>
+            
+            <p><strong>Why does this make sense?</strong></p>
+            
+            <ul>
+                <li>If $h(x) = 0$ (constraint satisfied), the penalty term $[h(x)]^2 = 0$ adds nothing</li>
+                <li>If $h(x) \neq 0$ (constraint violated), the penalty term $[h(x)]^2 > 0$ adds a positive penalty</li>
+                <li>The larger the violation, the larger the penalty</li>
+            </ul>
+            
+            <div class="example">
+                <h4>📘 Real-World Analogy: Manufacturing Tariffs</h4>
+                
+                <p>Think of penalty methods like import tariffs in international trade:</p>
+                
+                <p><strong>Scenario:</strong> A country wants companies to manufacture products domestically (satisfy the constraint), but labor is cheaper in other countries (violating the constraint might give lower cost).</p>
+                
+                <ul>
+                    <li><strong>No Tariff ($\gamma = 0$):</strong> Companies manufacture abroad because it's cheaper, even though it violates the domestic manufacturing requirement</li>
+                    <li><strong>Small Tariff ($\gamma$ small):</strong> Even with a 10% import tax, it might still be profitable to manufacture abroad because labor is so cheap</li>
+                    <li><strong>Large Tariff ($\gamma$ large):</strong> With 100% or 200% import tax, the cost of violating becomes so high that companies are forced to manufacture domestically</li>
+                </ul>
+                
+                <p>Similarly, in penalty methods:</p>
+                <ul>
+                    <li>Small $\gamma$: Violating the constraint might still give lower objective value</li>
+                    <li>Large $\gamma$: Violation becomes so costly that the optimal solution must satisfy the constraint</li>
+                </ul>
+            </div>
+            
+            <div class="professor-note">
+                The key insight: You add a charge (penalty) for violating the constraint. If you manufacture in the country (satisfy constraint), you don't pay tariff (no penalty). If you don't (violate constraint), you pay heavy import tariff (penalty). As you keep increasing the tariff (penalty parameter), companies will gradually start manufacturing in the country (solution will gradually satisfy the constraint).
+            </div>
+            
+            <h3 id="penalty-functions">4.2 Penalty Functions - General Definition</h3>
+            
+            <p>Now let's formally define what a penalty function is:</p>
+            
+            <div class="equation-block">
+                <p><strong>General Constrained Problem:</strong></p>
+
+                $$\text{minimize } f(x) \text{ subject to } x \in S$$
+                
+                <p style="margin-top: 15px;"><strong>Definition - Penalty Function:</strong></p>
+                <p>A continuous function $P: \mathbb{R}^n \to \mathbb{R}$ is called a <strong>penalty function</strong> if:</p>
+
+                
+                $$P(x) = \begin{cases} 
+                0 & \text{if } x \in S \text{ (constraint satisfied)} \\
+                > 0 & \text{if } x \notin S \text{ (constraint violated)}
+                \end{cases}$$
+            </div>
+            
+            <p>In other words, a penalty function:</p>
+            <ul>
+                <li>Is zero when all constraints are satisfied (feasible points)</li>
+                <li>Is positive when any constraint is violated (infeasible points)</li>
+                <li>Should be continuous (and ideally differentiable for our methods)</li>
+            </ul>
+            
+            <p><strong>Why do we want differentiable penalty functions?</strong> Because we want to use our gradient-based unconstrained optimization methods (gradient descent, Newton's method, etc.) to solve the penalized problem!</p>
+            
+            <div class="important">
+                <h4>⚠️ Important Note</h4>
+                <p>There are many ways to introduce penalties. The definition only requires continuity, but we will focus on <strong>differentiable penalty functions</strong> because we have developed methods specifically for differentiable unconstrained optimization.</p>
+            </div>
+            
+            <h3 id="quadratic-penalty">4.3 Quadratic Penalty Function</h3>
+            
+            <p>One of the most important and widely used penalty functions is the <strong>Quadratic Penalty Function</strong>.</p>
+            
+            <h4>General Form</h4>
+            
+            <p>Consider a general constrained optimization problem:</p>
+            
+            <div class="equation-block">
+
+                $$\begin{align}
+                \text{minimize } & f(x) \\
+                \text{subject to } & g_i(x) \leq 0, \quad i = 1, 2, \ldots, m \\
+                & h_j(x) = 0, \quad j = 1, 2, \ldots, p
+                \end{align}$$
+            </div>
+            
+            <p>The corresponding <strong>quadratic penalty function</strong> is:</p>
+            
+            <div class="equation-block">
+
+                $$Q(x, \gamma) = f(x) + \gamma \left[\sum_{i=1}^{m} ([g_i(x)]_+)^2 + \sum_{j=1}^{p} [h_j(x)]^2\right]$$
+                
+                <p style="margin-top: 15px;">where:</p>
+                <ul>
+                    <li>$\gamma > 0$ is the penalty parameter</li>
+                    <li>$[x]_+ = \max\{x, 0\}$ is the "plus function"</li>
+                </ul>
+            </div>
+            
+            <h4>Understanding the Components</h4>
+            
+            <p><strong>1. For Equality Constraints $h_j(x) = 0$:</strong></p>
+            
+            <div class="equation-block">
+
+                $$\text{Penalty: } \gamma [h_j(x)]^2$$
+            </div>
+            
+            <p>This is straightforward:</p>
+            <ul>
+                <li>If $h_j(x) = 0$: penalty is $0$ ✓</li>
+                <li>If $h_j(x) \neq 0$: penalty is $\gamma [h_j(x)]^2 > 0$ (violation penalized)</li>
+            </ul>
+            
+            <p>We simply square the constraint because any non-zero value (positive or negative) violates the equality constraint.</p>
+            
+            <p><strong>2. For Inequality Constraints $g_i(x) \leq 0$:</strong></p>
+            
+            <div class="equation-block">
+
+                $$\text{Penalty: } \gamma ([g_i(x)]_+)^2$$
+                
+                <p style="margin-top: 15px;">where the <strong>plus function</strong> is defined as:</p>
+
+                $$[x]_+ = \max\{x, 0\} = \begin{cases}
+                x & \text{if } x > 0 \\
+                0 & \text{if } x \leq 0
+                \end{cases}$$
+            </div>
+            
+            <p>This is more subtle because:</p>
+            <ul>
+                <li>If $g_i(x) \leq 0$: constraint is satisfied, so $[g_i(x)]_+ = 0$, penalty is $0$ ✓</li>
+                <li>If $g_i(x) > 0$: constraint is violated, so $[g_i(x)]_+ = g_i(x)$, penalty is $\gamma [g_i(x)]^2 > 0$</li>
+            </ul>
+            
+            <div class="diagram-placeholder">
+                [Insert diagram: Graph of the plus function $[x]_+ = \max\{x, 0\}$]
+                <p style="margin-top: 10px;">The plus function: flat at zero for negative values (no violation), increases linearly for positive values (violation)</p>
+            </div>
+            
+            <div class="professor-note">
+                Why do we need the plus function for inequality constraints? Because if $g_i(x) < 0$, the constraint is still satisfied (not violated), so we shouldn't add any penalty. We only penalize when $g_i(x) > 0$. The plus function ensures we only penalize violations, not over-satisfaction of the constraint.
+            </div>
+            
+            <h4>Properties of Quadratic Penalty Function</h4>
+            
+            <ul>
+                <li><strong>Differentiable:</strong> Can be shown that the quadratic penalty function is differentiable</li>
+                <li><strong>Non-negative:</strong> Always adds a non-negative value to the objective</li>
+                <li><strong>Smooth:</strong> Allows us to use gradient-based optimization methods</li>
+                <li><strong>Continuous:</strong> The penalty grows continuously with the violation</li>
+            </ul>
+            
+            <h3 id="penalty-examples">4.4 Worked Examples</h3>
+            
+            <div class="example">
+                <h4>📘 Example 1: Simple Inequality Constraint</h4>
+                
+                <p><strong>Problem:</strong></p>
+                <div class="equation-block">
+
+                    $$\text{minimize } x^2 \text{ subject to } x \geq 1$$
+                </div>
+                
+                <p>First, rewrite in standard form: $g(x) = 1 - x \leq 0$</p>
+                
+                <p><strong>Quadratic Penalty Formulation:</strong></p>
+                <div class="equation-block">
+
+                    $$Q(x, \gamma) = x^2 + \gamma [(1-x)_+]^2$$
+                </div>
+                
+                <p><strong>Analysis:</strong></p>
+                <ul>
+                    <li>If $x \geq 1$: $g(x) = 1-x \leq 0$, so $[(1-x)_+] = 0$, penalty = $x^2$ only</li>
+                    <li>If $x < 1$: $g(x) = 1-x > 0$, so $[(1-x)_+] = 1-x$, penalty = $x^2 + \gamma(1-x)^2$</li>
+                </ul>
+                
+                <p><strong>Solution Process:</strong> For large $\gamma$, the penalty for violating $x \geq 1$ becomes huge, forcing the solution towards $x = 1$ (the constrained minimum).</p>
+            </div>
+            
+            <div class="example">
+                <h4>📘 Example 2: Equality Constraint - Detailed Solution</h4>
+                
+                <p><strong>Problem:</strong></p>
+                <div class="equation-block">
+
+                    $$\text{minimize } x_1^2 + x_2^2 \text{ subject to } x_1 + x_2 = 2$$
+                </div>
+                
+                <p><strong>Geometric Visualization:</strong></p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Concentric circles $x_1^2 + x_2^2 = c$ and line $x_1 + x_2 = 2$]
+                    <p style="margin-top: 10px;">The objective function $x_1^2 + x_2^2 = c$ represents concentric circles centered at origin. The constraint $x_1 + x_2 = 2$ is a line. The minimum occurs where the smallest circle touches the line, which is at point $(1, 1)$ with minimum value $2$.</p>
+                </div>
+                
+                <p><strong>Quadratic Penalty Formulation:</strong></p>
+                <div class="equation-block">
+
+                    $$Q(x_1, x_2, \gamma) = x_1^2 + x_2^2 + \gamma(x_1 + x_2 - 2)^2$$
+                </div>
+                
+                <p><strong>Step 1: Find Critical Points</strong></p>
+                
+                <p>For a fixed $\gamma$, we solve the unconstrained problem by setting gradients to zero:</p>
+                
+                <div class="equation-block">
+
+                    $$\frac{\partial Q}{\partial x_1} = 2x_1 + 2\gamma(x_1 + x_2 - 2) = 0$$
+
+                    $$\frac{\partial Q}{\partial x_2} = 2x_2 + 2\gamma(x_1 + x_2 - 2) = 0$$
+                </div>
+                
+                <p>Dividing by 2:</p>
+                <div class="equation-block">
+
+                    $$x_1 + \gamma(x_1 + x_2 - 2) = 0 \quad \text{...(1)}$$
+
+                    $$x_2 + \gamma(x_1 + x_2 - 2) = 0 \quad \text{...(2)}$$
+                </div>
+                
+                <p>Expanding:</p>
+                <div class="equation-block">
+
+                    $$(1+\gamma)x_1 + \gamma x_2 = 2\gamma \quad \text{...(1)}$$
+
+                    $$\gamma x_1 + (1+\gamma)x_2 = 2\gamma \quad \text{...(2)}$$
+                </div>
+                
+                <p><strong>Step 2: Solve the System</strong></p>
+                
+                <p>Multiply equation (1) by $(1+\gamma)$ and equation (2) by $\gamma$, then subtract:</p>
+                
+                <div class="equation-block">
+
+                    $$(1+\gamma)^2 x_1 + \gamma(1+\gamma)x_2 = 2\gamma(1+\gamma)$$
+
+                    $$\gamma^2 x_1 + \gamma(1+\gamma)x_2 = 2\gamma^2$$
+                </div>
+                
+                <p>Subtracting:</p>
+                <div class="equation-block">
+
+                    $$[(1+\gamma)^2 - \gamma^2]x_1 = 2\gamma(1+\gamma) - 2\gamma^2$$
+
+                    $$[1 + 2\gamma + \gamma^2 - \gamma^2]x_1 = 2\gamma + 2\gamma^2 - 2\gamma^2$$
+
+                    $$(1 + 2\gamma)x_1 = 2\gamma$$
+
+                    $$x_1 = \frac{2\gamma}{1 + 2\gamma}$$
+                </div>
+                
+                <p>By symmetry (or substitution), we also get:</p>
+                <div class="equation-block">
+
+                    $$x_2 = \frac{2\gamma}{1 + 2\gamma}$$
+                </div>
+                
+                <p><strong>Step 3: Analyze Convergence</strong></p>
+                
+                <p>Let's see what happens for different values of $\gamma$:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>$\gamma$</th>
+                            <th>$x_1 = x_2 = \frac{2\gamma}{1+2\gamma}$</th>
+                            <th>$x_1 + x_2$</th>
+                            <th>Distance to $(1,1)$</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5</td>
+                            <td>$\frac{10}{11} \approx 0.909$</td>
+                            <td>$\frac{20}{11} \approx 1.818$</td>
+                            <td>Not on constraint</td>
+                        </tr>
+                        <tr>
+                            <td>100</td>
+                            <td>$\frac{200}{201} \approx 0.995$</td>
+                            <td>$\frac{400}{201} \approx 1.990$</td>
+                            <td>Very close</td>
+                        </tr>
+                        <tr>
+                            <td>200</td>
+                            <td>$\frac{400}{401} \approx 0.998$</td>
+                            <td>$\frac{800}{401} \approx 1.995$</td>
+                            <td>Even closer</td>
+                        </tr>
+                        <tr>
+                            <td>2000</td>
+                            <td>$\frac{4000}{4001} \approx 0.9998$</td>
+                            <td>$\frac{8000}{4001} \approx 1.9995$</td>
+                            <td>Almost there</td>
+                        </tr>
+                        <tr>
+                            <td>$\infty$</td>
+                            <td>$\lim_{\gamma \to \infty} \frac{2\gamma}{1+2\gamma} = 1$</td>
+                            <td>$2$</td>
+                            <td>Exact solution!</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Key Observation:</strong></p>
+                <div class="equation-block">
+
+                    $$\lim_{\gamma \to \infty} \frac{2\gamma}{1+2\gamma} = \lim_{\gamma \to \infty} \frac{2\gamma}{2\gamma(1/(2\gamma) + 1)} = \lim_{\gamma \to \infty} \frac{1}{1/(2\gamma) + 1} = 1$$
+                </div>
+                
+                <p><strong>Conclusion:</strong> As we increase the penalty parameter $\gamma$, the solution gradually converges to $(1, 1)$, which is the true solution of the constrained problem! However, we <em>never exactly reach</em> $(1, 1)$ for finite $\gamma$ - we only approach it in the limit.</p>
+                
+                <div class="professor-note">
+                    Notice that for each value of $\gamma$ (like 5, 100, 200), the solution point is NOT on the constraint line $x_1 + x_2 = 2$. For $\gamma = 5$, the point is at $(10/11, 10/11)$ which is not on the line. But if you keep increasing $\gamma$ (like 100, 200, 2000), you gradually move closer and closer to the point $(1, 1)$. You are never achieving the point $(1, 1)$ for finite $\gamma$, but in the limit $\gamma \to \infty$, you approach it. This is how quadratic penalty method works!
+                </div>
+            </div>
+            
+            <h3 id="penalty-algorithm">4.5 Quadratic Penalty Function Algorithm</h3>
+            
+            <p>Now let's formalize the penalty method as an algorithm:</p>
+            
+            <div class="algorithm">
+                <h4>Algorithm: Quadratic Penalty Method</h4>
+                
+                <p><strong>Input:</strong></p>
+                <ul>
+                    <li>Initial penalty parameter $\gamma_1 > 0$</li>
+                    <li>Initial points $x^0, x^1 \in \mathbb{R}^n$</li>
+                    <li>Tolerance $\text{tol} > 0$</li>
+                </ul>
+                
+                <p><strong>Initialize:</strong> $k = 1$</p>
+                
+                <p><strong>While</strong> $\|x^k - x^{k-1}\| > \text{tol}$ <strong>do:</strong></p>
+                
+                <ol style="margin-left: 40px; font-family: 'Courier New', monospace;">
+                    <li>Find $x^*(\gamma_k)$ that minimizes $x \mapsto Q(x, \gamma_k)$ using an unconstrained optimization algorithm (e.g., gradient descent, Newton's method)</li>
+                    <li>Set $x^{k+1} = x^*(\gamma_k)$</li>
+                    <li>Choose a new penalty parameter $\gamma_{k+1} > \gamma_k$ (typically $\gamma_{k+1} = 2\gamma_k$)</li>
+                    <li>$k = k + 1$</li>
+                </ol>
+                
+                <p><strong>end while</strong></p>
+                
+                <p><strong>Output:</strong> $x^k$ as the (approximate) minimizer</p>
+            </div>
+            
+            <h4>Detailed Algorithm Explanation</h4>
+            
+            <p><strong>Step 1: Initialization</strong></p>
+            <ul>
+                <li>Start with a modest penalty parameter (e.g., $\gamma_1 = 1$ or $\gamma_1 = 10$)</li>
+                <li>Initialize starting points for the iteration</li>
+                <li>Set a tolerance for the stopping criterion</li>
+            </ul>
+            
+            <p><strong>Step 2: Stopping Criterion</strong></p>
+            <div class="equation-block">
+
+                $$\|x^k - x^{k-1}\| > \text{tol}$$
+            </div>
+            <p>This checks if the solution has converged. If the difference between consecutive iterations is very small (less than tolerance), we stop.</p>
+            
+            <p><strong>Step 3: Solve Unconstrained Problem</strong></p>
+            <p>For the current penalty parameter $\gamma_k$, solve:</p>
+            <div class="equation-block">
+
+                $$x^*(\gamma_k) = \arg\min_{x} Q(x, \gamma_k)$$
+            </div>
+            <p>Use any unconstrained optimization method: gradient descent, Newton's method, quasi-Newton, conjugate gradient, etc.</p>
+            
+            <div class="important">
+                <h4>⚠️ Important Note</h4>
+                <p>The algorithm will typically only give you a <strong>local minimizer</strong>, not necessarily the global minimizer. This is because most unconstrained optimization algorithms only guarantee convergence to local minima. We rarely expect to get the exact global minimizer - we always stop at an <strong>approximate minimizer</strong>.</p>
+            </div>
+            
+            <p><strong>Step 4: Update Penalty Parameter</strong></p>
+            <p>Increase the penalty parameter for the next iteration. Common strategies:</p>
+            <ul>
+                <li><strong>Doubling:</strong> $\gamma_{k+1} = 2\gamma_k$ (most common)</li>
+                <li><strong>Fixed multiplier:</strong> $\gamma_{k+1} = c\gamma_k$ where $c > 1$ (e.g., $c = 1.5$ or $c = 10$)</li>
+            </ul>
+            
+            <p>The idea is that as $\gamma$ increases, violations become increasingly costly, pushing solutions towards feasibility.</p>
+            
+            <div class="example">
+                <h4>📘 Numerical Example: Implementing the Algorithm</h4>
+                
+                <p>Let's trace through the algorithm for our earlier example:</p>
+                <div class="equation-block">
+
+                    $$\text{minimize } x_1^2 + x_2^2 \text{ subject to } x_1 + x_2 = 2$$
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Iteration $k$</th>
+                            <th>$\gamma_k$</th>
+                            <th>$x^k = (x_1, x_2)$</th>
+                            <th>$\|x^k - x^{k-1}\|$</th>
+                            <th>Constraint Violation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>-</td>
+                            <td>$(0, 0)$ (initial guess)</td>
+                            <td>-</td>
+                            <td>$|0+0-2| = 2$</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>$(0.909, 0.909)$</td>
+                            <td>$1.286$</td>
+                            <td>$|1.818-2| = 0.182$</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>10</td>
+                            <td>$(0.952, 0.952)$</td>
+                            <td>$0.061$</td>
+                            <td>$|1.904-2| = 0.096$</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>20</td>
+                            <td>$(0.976, 0.976)$</td>
+                            <td>$0.034$</td>
+                            <td>$|1.952-2| = 0.048$</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>40</td>
+                            <td>$(0.988, 0.988)$</td>
+                            <td>$0.017$</td>
+                            <td>$|1.976-2| = 0.024$</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p>If tolerance $\text{tol} = 0.02$, the algorithm stops at iteration 4 with approximate solution $(0.988, 0.988)$, which is very close to the true solution $(1, 1)$.</p>
+            </div>
+            
+            <div class="professor-note">
+                In practice, you can write your own optimizer or use existing solvers in Python (NumPy, SciPy). In tutorial sessions, we'll see how to implement this numerically in Colab or Python. You can write your own penalty method solver using existing unconstrained optimization functions!
+            </div>
+            
+            <h3 id="penalty-convergence">4.6 Convergence Theory</h3>
+            
+            <p>Now let's understand the theoretical guarantees of the penalty method.</p>
+            
+            <h4>Lower Bound Property</h4>
+            
+            <div class="important">
+                <h4>📊 Lemma: Penalty Problems Give Lower Bounds</h4>
+                
+                <p><strong>Statement:</strong> Suppose $f, g_1, \ldots, g_m, h_1, \ldots, h_\ell$ are continuous functions on $\mathbb{R}^n$, and let $X$ be a nonempty set in $\mathbb{R}^n$. Let $Q$ be a continuous penalty function. Define:</p>
+                
+                <div class="equation-block">
+
+                    $$\theta(\gamma) = \inf\{f(x) + \gamma Q(x) : x \in X\}$$
+                </div>
+                
+                <p><strong>Then:</strong></p>
+                <ol>
+                    <li>$$\inf\{f(x) : x \in X, g(x) \leq 0, h(x) = 0\} \geq \sup_{\gamma \geq 0} \theta(\gamma)$$</li>
+                    <li>$f(x_\gamma)$ is a non-decreasing function of $\gamma \geq 0$</li>
+                    <li>$\theta(\gamma)$ is a non-decreasing function of $\gamma$</li>
+                    <li>$Q(x_\gamma)$ is a non-increasing function of $\gamma$</li>
+                </ol>
+            </div>
+            
+            <p><strong>Interpretation:</strong></p>
+            <ul>
+                <li>As we increase $\gamma$, the objective value at the minimizer increases (or stays the same)</li>
+                <li>As we increase $\gamma$, the constraint violation decreases (or stays the same)</li>
+                <li>The values $\theta(\gamma)$ provide lower bounds to the true optimal value</li>
+            </ul>
+            
+            <h4>Convergence Theorem</h4>
+            
+            <div class="important">
+                <h4>📊 Theorem: Convergence of Penalty Method</h4>
+                
+                <p><strong>Problem:</strong></p>
+                <div class="equation-block">
+
+                    $$\begin{align}
+                    \text{minimize } & f(x) \\
+                    \text{subject to } & g_i(x) \leq 0, \quad i = 1, \ldots, m \\
+                    & h_j(x) = 0, \quad j = 1, \ldots, p
+                    \end{align}$$
+                </div>
+                
+                <p>where all $f, g_i, h_j$ are differentiable.</p>
+                
+                <p><strong>Penalty Function:</strong></p>
+                <div class="equation-block">
+
+                    $$Q(x, \gamma) = f(x) + \gamma \left[\sum_{i=1}^{m} ([g_i(x)]_+)^2 + \sum_{j=1}^{p} [h_j(x)]^2\right]$$
+                </div>
+                
+                <p><strong>Assumptions:</strong></p>
+                <ol>
+                    <li>The problem has a feasible solution</li>
+                    <li>For each $\gamma > 0$, the unconstrained problem has a <strong>global minimizer</strong> $x_\gamma$</li>
+                    <li>The set $\{x_\gamma : \gamma > 0\}$ is contained in a <strong>compact (bounded and closed) set</strong></li>
+                </ol>
+                
+                <p><strong>Conclusion:</strong></p>
+                <div class="equation-block">
+
+                    $$\inf\{f(x) : g_i(x) \leq 0, h_j(x) = 0\} = \sup_{\gamma > 0} Q(\gamma) = \lim_{\gamma \to \infty} Q(\gamma)$$
+                </div>
+                
+                <p>In other words, as $\gamma \to \infty$, the infimum of the penalized problem converges to the infimum of the original constrained problem.</p>
+            </div>
+            
+            <div class="professor-note">
+                These theoretical guarantees come with very strong assumptions! Notice that we assume:
+                <ul>
+                    <li><strong>Global minimizers exist</strong> for each penalty parameter (very strong!)</li>
+                    <li><strong>All solutions are bounded</strong> within a compact region (very strong!)</li>
+                </ul>
+                In practice, we rarely have these guarantees, but the method often works well anyway. These assumptions are mainly for theoretical convergence proofs.
+            </div>
+            
+            <h3 id="penalty-difficulties">4.7 Difficulties and Limitations</h3>
+            
+            <p>Despite its theoretical appeal and practical utility, the penalty method has several important limitations:</p>
+            
+            <h4>1. Ill-Conditioning for Large Penalty Parameters</h4>
+            
+            <div class="important">
+                <h4>⚠️ Problem: Ill-Conditioning</h4>
+                <p>As the penalty parameter $\gamma$ increases, the unconstrained problem becomes <strong>increasingly difficult</strong> to solve because it becomes <strong>ill-conditioned</strong>.</p>
+            </div>
+            
+            <p><strong>What is ill-conditioning?</strong></p>
+            <ul>
+                <li>The gradient has components with vastly different magnitudes (some huge, some tiny)</li>
+                <li>The Hessian matrix has eigenvalues with very large ranges</li>
+                <li>Small changes in $x$ can cause huge changes in function values</li>
+                <li>Numerical algorithms become unstable and slow to converge</li>
+                <li>Calculations suffer from numerical precision issues</li>
+            </ul>
+            
+            <p><strong>Why does this happen?</strong> When $\gamma$ is very large (say $\gamma = 10^6$), the gradient contributions from the penalty term are multiplied by this huge number, overwhelming the gradient from the original objective function.</p>
+            
+            <h4>2. Unboundedness for Small Penalty Parameters</h4>
+            
+            <div class="important">
+                <h4>⚠️ Problem: Unbounded Unconstrained Problems</h4>
+                <p>For some values of the penalty parameter (even small values!), the unconstrained problem can be <strong>unbounded</strong>, causing the algorithm to fail.</p>
+            </div>
+            
+            <div class="example">
+                <h4>📘 Example: Unboundedness Issue</h4>
+                
+                <p><strong>Problem:</strong></p>
+                <div class="equation-block">
+
+                    $$\text{minimize } f(x) = x_1^2 - 15x_2^2$$
+
+                    $$\text{subject to } g(x) = x_2 = 2$$
+                </div>
+                
+                <p>The solution is obviously $x^* = (0, 2)$ with optimal value $f(0, 2) = 0 - 15(4) = -60$.</p>
+                
+                <p><strong>Penalty Formulation:</strong></p>
+                <div class="equation-block">
+
+                    $$Q(x, \gamma) = x_1^2 - 15x_2^2 + \gamma(x_2 - 2)^2$$
+
+                    $$= x_1^2 + (\gamma - 15)x_2^2 - 4\gamma x_2 + 4\gamma$$
+                </div>
+                
+                <p><strong>Analysis:</strong></p>
+                
+                <p>For this to be a valid minimization problem, the coefficient of $x_2^2$ must be positive:</p>
+                <div class="equation-block">
+
+                    $$\gamma - 15 > 0 \implies \gamma > 15$$
+                </div>
+                
+                <p><strong>Problem:</strong> If $\gamma < 15$, the coefficient $(\gamma - 15) < 0$, making the function <strong>unbounded below</strong> in the $x_2$ direction!</p>
+                
+                <ul>
+                    <li>If you start with $\gamma_1 = 2$ (less than 15), the unconstrained minimizer cannot converge</li>
+                    <li>The algorithm will break immediately</li>
+                    <li>Gradient descent or Newton's method will fail because there's no minimum</li>
+                </ul>
+                
+                <p><strong>Lesson:</strong> Even for small penalty parameters, the unconstrained problem can be unbounded. You need to start with a sufficiently large $\gamma$, but then you face the ill-conditioning problem!</p>
+            </div>
+            
+            <h4>3. Trade-off Dilemma</h4>
+            
+            <p>This creates a fundamental trade-off:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Penalty Parameter</th>
+                        <th>Pros</th>
+                        <th>Cons</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Small $\gamma$</strong></td>
+                        <td>
+                            <ul>
+                                <li>Well-conditioned problem</li>
+                                <li>Easy to solve numerically</li>
+                                <li>Fast convergence of optimizer</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>May be unbounded</li>
+                                <li>Large constraint violation</li>
+                                <li>Far from true solution</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large $\gamma$</strong></td>
+                        <td>
+                            <ul>
+                                <li>Small constraint violation</li>
+                                <li>Close to true solution</li>
+                                <li>Guaranteed bounded (usually)</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Severely ill-conditioned</li>
+                                <li>Very difficult to solve</li>
+                                <li>Slow or failed convergence</li>
+                                <li>Numerical instability</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="professor-note">
+                This is the fundamental challenge: you want large $\gamma$ to enforce constraints, but large $\gamma$ makes the problem computationally intractable! You need moderately large $\gamma$, but even moderate values can cause issues. This is why practitioners need to be careful and tune the penalty parameter carefully in practice.
+            </div>
+            
+            <h3 id="exact-penalty">4.8 Exact Penalty Functions</h3>
+            
+            <p>To overcome some limitations of quadratic penalty functions, researchers developed <strong>Exact Penalty Functions</strong>.</p>
+            
+            <h4>What is an Exact Penalty Function?</h4>
+            
+            <p>Unlike quadratic penalty where you need $\gamma \to \infty$ to get the exact solution, an <strong>exact penalty function</strong> gives the exact solution for some <em>finite</em> value of $\gamma$.</p>
+            
+            <div class="equation-block">
+                <p><strong>Example - $\ell_1$ Exact Penalty:</strong></p>
+
+                $$Q(x, \gamma) = f(x) + \gamma \left[\sum_{i=1}^{m} [g_i(x)]_+ + \sum_{j=1}^{p} |h_j(x)|\right]$$
+                
+                <p style="margin-top: 15px;">Note: Absolute value for equality constraints, plus function for inequality constraints</p>
+            </div>
+            
+            <div class="important">
+                <h4>📊 Proposition: Exact Penalty Property</h4>
+                
+                <p><strong>Assumptions:</strong></p>
+                <ul>
+                    <li>$f$ and $g_i$ are convex</li>
+                    <li>$h_j$ are affine (linear)</li>
+                </ul>
+                
+                <p><strong>Statement:</strong> If $x^*$ is a KKT point of the constrained problem with Lagrange multipliers $(\lambda^*, \mu^*)$, then $x^*$ is a local minimizer of the exact penalty function $Q(x, \gamma)$ for all:</p>
+                
+                <div class="equation-block">
+
+                    $$\gamma > \gamma^* = \max_{i,j} \{\lambda_i^*, \mu_j^*\}$$
+                </div>
+                
+                <p><strong>Key Insight:</strong> You don't need $\gamma \to \infty$! A moderately large but <em>finite</em> $\gamma$ is sufficient to get the exact solution.</p>
+            </div>
+            
+            <h4>Advantages of Exact Penalty</h4>
+            
+            <ul>
+                <li><strong>Finite penalty parameter:</strong> Don't need to go to infinity</li>
+                <li><strong>Stops at moderate $\gamma$:</strong> Can stop once $\gamma > \max\{\lambda_i^*, \mu_j^*\}$</li>
+                <li><strong>Less ill-conditioning:</strong> Since $\gamma$ doesn't need to be extremely large</li>
+                <li><strong>Exact solutions:</strong> Get the exact constrained optimum, not just approximate</li>
+            </ul>
+            
+            <h4>Disadvantages of Exact Penalty</h4>
+            
+            <div class="important">
+                <h4>⚠️ Critical Limitation</h4>
+                <p>The exact penalty function is <strong>non-differentiable</strong> because of the absolute value terms $|h_j(x)|$ and the plus function $[g_i(x)]_+$.</p>
+            </div>
+            
+            <ul>
+                <li><strong>Cannot use gradient-based methods:</strong> Our standard algorithms (gradient descent, Newton's method) require differentiability</li>
+                <li><strong>Need subgradient methods:</strong> Have to use more complex optimization techniques</li>
+                <li><strong>Slower convergence:</strong> Subgradient methods converge slower than gradient methods</li>
+                <li><strong>More complex implementation:</strong> Requires understanding of non-smooth optimization</li>
+            </ul>
+            
+            <div class="professor-note">
+                There are exact penalty functions that can handle many issues that quadratic penalty faces. With exact penalty, you don't have to go to extremely large penalty parameters - you can stop at a moderately large value. However, the trade-off is that exact penalty functions are non-differentiable, so you can't use the nice methods designed for differentiable functions (gradient descent, Newton, etc.). You need to use subgradient or other non-smooth optimization methods. That's beyond our scope, so we stay within the nice range of differentiable penalty functions (quadratic penalty).
+            </div>
+            
+            <!-- Hinglish Summary for Section 4 -->
+            <div class="hinglish-summary">
+                <h4>📝 Hinglish Summary (Section 4)</h4>
+                <p>
+                    Penalty method ka main idea hai ki constrained problem ko unconstrained problems ki sequence mein convert karo. Constraint violate karne pe penalty add karte hain. Quadratic penalty mein equality constraint ke liye $h(x)^2$ add karte hain aur inequality ke liye $([g(x)]_+)^2$ add karte hain, jahan $[x]_+ = \max\{x,0\}$ hai. Penalty parameter $\gamma$ ko gradually increase karte hain (jaise 5, 10, 20, 40...). Jaise $\gamma$ badhta hai, solution gradually true constrained solution ki taraf move karta hai. Lekin do problems hain: (1) bada $\gamma$ ill-conditioned problem banata hai jo solve karna mushkil hai, aur (2) chhota $\gamma$ ke liye problem unbounded ho sakta hai. Exact penalty functions finite $\gamma$ mein exact solution dete hain lekin wo non-differentiable hain, isliye gradient methods use nahi kar sakte.
+                </p>
+            </div>
+            
+            <!-- Practice Questions for Section 4 -->
+            <div class="practice-questions">
+                <h4>🎓 Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Question 1:</strong> Write the quadratic penalty function for: minimize $f(x) = x^2 + y^2$ subject to $x + y \geq 5$ and $x - y = 2$.
+                </div>
+                <div class="answer">
+                    First convert to standard form: $g(x,y) = -(x+y) + 5 \leq 0$ (inequality) and $h(x,y) = x - y - 2 = 0$ (equality). Then: $Q(x,y,\gamma) = x^2 + y^2 + \gamma[(-(x+y)+5)_+]^2 + \gamma(x-y-2)^2$, where $[(-(x+y)+5)_+] = \max\{5-x-y, 0\}$.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 2:</strong> In the penalty method, why do we gradually increase $\gamma$ instead of starting with a very large value?
+                </div>
+                <div class="answer">
+                    Because very large $\gamma$ causes severe ill-conditioning, making the unconstrained problem extremely difficult to solve numerically. By starting small and gradually increasing, we get a sequence of well-conditioned problems that progressively approach the constrained solution while remaining computationally tractable.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 3:</strong> What is the main advantage of exact penalty functions over quadratic penalty, and what is their main disadvantage?
+                </div>
+                <div class="answer">
+                    <strong>Advantage:</strong> Exact penalty functions give the exact solution for a finite (moderately large) value of $\gamma$, rather than requiring $\gamma \to \infty$. This reduces ill-conditioning issues. <strong>Disadvantage:</strong> They are non-differentiable (contain absolute values and plus functions), so we cannot use standard gradient-based optimization methods. We need more complex subgradient methods instead.
+                </div>
+                
+                <div class="question">
+                    <strong>Question 4:</strong> For the problem minimize $x_1^2 - 15x_2^2$ subject to $x_2 = 2$, explain why the penalty method fails for $\gamma < 15$.
+                </div>
+                <div class="answer">
+                    The penalty function is $Q(x,\gamma) = x_1^2 - 15x_2^2 + \gamma(x_2-2)^2 = x_1^2 + (\gamma-15)x_2^2 - 4\gamma x_2 + 4\gamma$. If $\gamma < 15$, then $(\gamma-15) < 0$, making the coefficient of $x_2^2$ negative. This means as $x_2 \to \pm\infty$, the function goes to $-\infty$, so the function is unbounded below and has no minimum. The unconstrained optimization will fail.
+                </div>
+            </div>
+            
+            <!-- Key Takeaways for Section 4 -->
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways</h4>
+                <ul>
+                    <li>Penalty method converts constrained problems into sequences of unconstrained problems</li>
+                    <li>Quadratic penalty adds $\gamma[h(x)]^2$ for equality constraints and $\gamma([g(x)]_+)^2$ for inequalities</li>
+                    <li>The plus function $[x]_+ = \max\{x,0\}$ ensures we only penalize violations, not over-satisfaction</li>
+                    <li>Penalty parameter $\gamma$ is gradually increased (typically doubled) each iteration</li>
+                    <li>As $\gamma \to \infty$, solutions converge to the true constrained optimum</li>
+                    <li>Trade-off: small $\gamma$ is well-conditioned but violates constraints; large $\gamma$ satisfies constraints but is ill-conditioned</li>
+                    <li>Unboundedness can occur even for small $\gamma$ values in some problems</li>
+                    <li>Exact penalty functions achieve exact solutions at finite $\gamma$ but are non-differentiable</li>
+                    <li>Theoretical convergence requires strong assumptions: global minimizers, bounded solution sets</li>
+                    <li>In practice, penalty methods give approximate solutions and require careful parameter tuning</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ===== COMPREHENSIVE MIND MAP ===== -->
+        <section id="mindmap" class="mindmap">
+            <h2>🧠 Comprehensive Mind Map</h2>
+            
+            <div class="mindmap-container">
+                <div class="central-topic">
+                    Numerical Optimization: Constrained Problems
+                </div>
+                
+                <div class="branches">
+                    <!-- Branch 1: Review -->
+                    <div class="branch">
+                        <h3>📚 Review Concepts</h3>
+                        <ul>
+                            <li>Fritz-John Conditions</li>
+                            <li>KKT Conditions</li>
+                            <li>Complementary Slackness</li>
+                            <li>Farkas Lemma</li>
+                            <li>Gordan's Alternative</li>
+                            <li>Separation Theorem</li>
+                            <li>SVM Application</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 2: Why Numerical Methods -->
+                    <div class="branch">
+                        <h3>🤔 Why Numerical Methods?</h3>
+                        <ul>
+                            <li>Analytical solutions rarely possible</li>
+                            <li>System of equations too complex</li>
+                            <li>Many variables and constraints</li>
+                            <li>Complementary slackness complicates</li>
+                            <li>Need computational approaches</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 3: Method Categories -->
+                    <div class="branch">
+                        <h3>🔧 Method Categories</h3>
+                        <ul>
+                            <li><strong>Specialized:</strong> Simplex, Projected Gradient</li>
+                            <li><strong>General:</strong> Penalty, Barrier, Interior Point</li>
+                            <li><strong>Analytical:</strong> Lagrange Multipliers</li>
+                            <li><strong>Advanced:</strong> Frank-Wolfe</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 4: Lagrange Multipliers -->
+                    <div class="branch">
+                        <h3>📐 Lagrange Multipliers</h3>
+                        <ul>
+                            <li>Only for equality constraints</li>
+                            <li>Form: $\mathcal{L}(x,\lambda) = f(x) + \lambda h(x)$</li>
+                            <li>Solve: $\nabla \mathcal{L} = 0$</li>
+                            <li>Differentiation then elimination</li>
+                            <li>Gives critical points</li>
+                            <li>Requires analytical solvability</li>
+                            <li>Limited practical use</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 5: Penalty Method Core -->
+                    <div class="branch">
+                        <h3>⚖️ Penalty Method - Core Idea</h3>
+                        <ul>
+                            <li>Convert to unconstrained sequence</li>
+                            <li>Add penalty for violations</li>
+                            <li>Penalty parameter $\gamma$ increases</li>
+                            <li>Use existing unconstrained solvers</li>
+                            <li>Converge in limit $\gamma \to \infty$</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 6: Quadratic Penalty -->
+                    <div class="branch">
+                        <h3>📊 Quadratic Penalty Function</h3>
+                        <ul>
+                            <li>Equality: $\gamma[h(x)]^2$</li>
+                            <li>Inequality: $\gamma([g(x)]_+)^2$</li>
+                            <li>Plus function: $[x]_+ = \max\{x,0\}$</li>
+                            <li>Differentiable and smooth</li>
+                            <li>Enables gradient methods</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 7: Algorithm -->
+                    <div class="branch">
+                        <h3>🔄 Penalty Algorithm</h3>
+                        <ul>
+                            <li>Initialize $\gamma_1$, $x^0$, tolerance</li>
+                            <li>While $\|x^k - x^{k-1}\| >$ tol:</li>
+                            <li>  - Solve $\min Q(x,\gamma_k)$</li>
+                            <li>  - Update $x^{k+1}$</li>
+                            <li>  - Increase $\gamma_{k+1} = 2\gamma_k$</li>
+                            <li>Output approximate minimizer</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 8: Convergence Theory -->
+                    <div class="branch">
+                        <h3>📈 Convergence Theory</h3>
+                        <ul>
+                            <li>Lower bound property</li>
+                            <li>$\theta(\gamma)$ non-decreasing</li>
+                            <li>$Q(x_\gamma)$ non-increasing</li>
+                            <li>Requires global minimizers</li>
+                            <li>Requires bounded solution set</li>
+                            <li>Limit gives true optimum</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 9: Difficulties -->
+                    <div class="branch">
+                        <h3>⚠️ Difficulties & Limitations</h3>
+                        <ul>
+                            <li><strong>Ill-conditioning:</strong> Large $\gamma$ hard to solve</li>
+                            <li><strong>Unboundedness:</strong> Small $\gamma$ may fail</li>
+                            <li><strong>Trade-off:</strong> Well-conditioned vs feasible</li>
+                            <li><strong>Approximate solutions:</strong> Never exact for finite $\gamma$</li>
+                            <li><strong>Parameter tuning:</strong> Requires careful selection</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 10: Exact Penalty -->
+                    <div class="branch">
+                        <h3>✨ Exact Penalty Functions</h3>
+                        <ul>
+                            <li>Uses $\ell_1$ norm (absolute values)</li>
+                            <li>Exact solution at finite $\gamma$</li>
+                            <li>Less ill-conditioning</li>
+                            <li><strong>Drawback:</strong> Non-differentiable</li>
+                            <li>Requires subgradient methods</li>
+                            <li>Beyond scope of this course</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Branch 11: Practical Implementation -->
+                    <div class="branch">
+                        <h3>💻 Practical Implementation</h3>
+                        <ul>
+                            <li>Use Python/NumPy/SciPy</li>
+                            <li>Leverage existing optimizers</li>
+                            <li>Start with moderate $\gamma$</li>
+                            <li>Monitor convergence and violations</li>
+                            <li>Tune parameters carefully</li>
+                            <li>Handle numerical stability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ===== FOOTER ===== -->
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

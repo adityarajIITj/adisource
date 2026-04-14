@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/no/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 7: Constrained Optimization - Numerical Optimization</title>
+    
+    <!-- MathJax for mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .lecture-info {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        
+        nav {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        nav h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        nav ul {
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin: 10px 0;
+        }
+        
+        nav ul li a {
+            color: #555;
+            text-decoration: none;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            display: block;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        
+        nav ul li a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(10px);
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f093fb;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        strong, .key-term {
+            color: #764ba2;
+            font-weight: bold;
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .definition {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .theorem {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example {
+            background: #f1f8e9;
+            border-left: 5px solid #8bc34a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .note {
+            background: #fff9c4;
+            border-left: 5px solid #fdd835;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note {
+            background: #e1bee7;
+            border-left: 5px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #ff6b6b;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .hinglish-summary h4 {
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .diagram-placeholder {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .practice-questions {
+            background: #e8eaf6;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            border: 2px solid #5c6bc0;
+        }
+        
+        .practice-questions h4 {
+            color: #3f51b5;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #c5e1a5;
+            border-radius: 5px;
+            border-left: 4px solid #689f38;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .key-takeaways h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .key-takeaways ul {
+            list-style-position: inside;
+        }
+        
+        .key-takeaways li {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            border: 3px solid #667eea;
+            text-align: center;
+        }
+        
+        .mind-map h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .map-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        
+        .map-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .map-subnode {
+            background: #f8f9fa;
+            color: #333;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            border-left: 3px solid #ff6b6b;
+        }
+        
+        .formula {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+            text-align: center;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lecture 7: Constrained Optimization</h1>
+            
+            <div class="lecture-info">
+                <strong>Created by:</strong> Armaan Kachhawa <br>
+                <strong>Topic:</strong> Introduction to Constrained Optimization, Feasible and Descent Directions, Fritz-John Conditions
+            </div>
+        </header>
+
+        <nav id="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#review">1. Review of Last Lecture</a></li>
+                <li><a href="#introduction">2. Introduction to Constrained Optimization</a></li>
+                <li><a href="#geometric-notion">3. Constrained Optimization: Geometrical Notion of Optimality</a></li>
+                <li><a href="#descent-direction">4. Descent Direction</a></li>
+                <li><a href="#feasible-direction">5. Feasible Direction</a></li>
+                <li><a href="#active-index">6. Active Index Set</a></li>
+                <li><a href="#geometric-optimality">7. Geometric Optimality Condition</a></li>
+                <li><a href="#characterization">8. Characterization of Feasible and Descent Directions</a></li>
+                <li><a href="#separation-theorem">9. Separation Theorem</a></li>
+                <li><a href="#alternative-theorems">10. Alternative Theorems (Farkas Lemma & Gordan's Theorem)</a></li>
+                <li><a href="#fritz-john">11. Fritz-John Conditions</a></li>
+                <li><a href="#mind-map">12. Mind Map</a></li>
+            </ul>
+        </nav>
+
+        <section id="review">
+            <h2>1. Review of Last Lecture</h2>
+            
+            <p>In the previous lectures (Lectures 1-6), we focused exclusively on <strong>unconstrained optimization problems</strong>. Let's recap the key concepts we learned:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Conjugate Directions</strong></td>
+                        <td>Special directions that are orthogonal with respect to a matrix, providing efficient search paths in optimization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conjugate Gradient Method</strong></td>
+                        <td>An iterative method that uses conjugate directions to solve optimization problems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Applications</strong></td>
+                        <td>Both quadratic problems and general nonlinear optimization problems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gradient Descent Methods</strong></td>
+                        <td>Various versions especially applicable to data science problems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Newton's Method</strong></td>
+                        <td>Second-order optimization method using Hessian information</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quasi-Newton Methods</strong></td>
+                        <td>Family of methods approximating Newton's method with lower computational cost</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>📝 Important Note:</strong> In unconstrained optimization, the necessary condition for optimality at a differentiable point \(x^*\) is that \(\nabla f(x^*) = 0\) (Fermat's rule). This will no longer hold in constrained optimization!
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary (Recap)</h4>
+                <p><strong>Pichle lectures mein</strong> humne unconstrained optimization dekha tha jahan koi restriction nahi thi. Conjugate directions aur conjugate gradient method seekhe the jo quadratic aur nonlinear problems dono ke liye kaam karte hain. Gradient descent, Newton's method, aur quasi-Newton methods bhi padhe the. Ab se hum <strong>constrained optimization</strong> shuru karenge jahan restrictions hongi!</p>
+            </div>
+        </section>
+
+        <section id="introduction">
+            <h2>2. Introduction to Constrained Optimization</h2>
+
+            <h3>2.1 What is Constrained Optimization?</h3>
+            
+            <p>Starting from this lecture, we embark on a new journey: <strong>constrained optimization problems</strong>. Unlike unconstrained problems where we could freely search for the minimum in the entire space, constrained problems impose <strong>restrictions</strong> on where we can search for solutions.</p>
+
+            <div class="definition">
+                <h4>Definition: Constrained Optimization Problem</h4>
+                <p>A constrained optimization problem has the general form:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(\mathbf{x})$$
+
+                    $$\text{subject to } \mathbf{x} \in S$$
+                </div>
+                <p>where:</p>
+                <ul>
+                    <li>\(f: \mathbb{R}^n \to \mathbb{R}\) is the <strong>objective function</strong></li>
+                    <li>\(S \subseteq \mathbb{R}^n\) is the <strong>feasible set</strong> (a nonempty set)</li>
+                    <li>Any point \(\mathbf{x} \in S\) is called a <strong>feasible point</strong></li>
+                </ul>
+            </div>
+
+            <h3>2.2 Difference from Unconstrained Problems</h3>
+
+            <div class="example">
+                <h4>Example 1: Simple Quadratic Function</h4>
+                
+                <p><strong>Unconstrained Problem:</strong></p>
+                <div class="formula">
+
+                    $$\text{minimize } f(x, y) = x^2 + y^2$$
+                </div>
+                <p><strong>Solution:</strong> The point \((0, 0)\) is the global minimizer with \(f(0,0) = 0\). This is because \(x^2 + y^2 \geq 0\) everywhere and equals zero only at the origin.</p>
+                
+                <p><strong>Constrained Problem:</strong></p>
+                <div class="formula">
+
+                    $$\text{minimize } f(x, y) = x^2 + y^2$$
+
+                    $$\text{subject to } x + y \geq 2$$
+                </div>
+                <p><strong>Key Observation:</strong> Now \((0, 0)\) is <strong>not even feasible</strong> because \(0 + 0 = 0 \not\geq 2\). We need a completely new approach!</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Think about this: in the unconstrained case, (0,0) was the perfect solution. But once we add the constraint \(x + y \geq 2\), this point doesn't even satisfy our requirements. This is why constrained optimization is fundamentally different and requires new theory!"
+            </div>
+
+            <h3>2.3 Geometric Interpretation</h3>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Contour plot of \(x^2 + y^2\) with feasible region \(x + y \geq 2\)]<br>
+                The diagram shows concentric circles (contours) centered at origin, with the feasible region as a half-plane
+            </div>
+
+            <p>To understand this problem geometrically, we use <strong>contour plots</strong>:</p>
+            
+            <ul>
+                <li><strong>Contours</strong> are curves where the function takes constant values</li>
+                <li>For \(f(x,y) = x^2 + y^2\), contours are circles: \(x^2 + y^2 = r^2\)</li>
+                <li>The constraint \(x + y \geq 2\) defines a <strong>half-space</strong> (one side of a line)</li>
+            </ul>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "The constraint \(x + y = 2\) is a line equation in 2D space. Every line divides the plane into two parts - one where \(x + y \geq 2\) and another where \(x + y \leq 2\). These are called half-spaces. In 3D, a plane like \(x + 2y + 5z = 7\) does the same thing - it divides 3D space into two half-spaces."
+            </div>
+
+            <h3>2.4 Hyperplanes and Half-Spaces</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>Equation</th>
+                        <th>Name</th>
+                        <th>Divides Space Into</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>\(\mathbb{R}^2\)</td>
+                        <td>\(ax + by = c\)</td>
+                        <td>Line</td>
+                        <td>Two half-planes</td>
+                    </tr>
+                    <tr>
+                        <td>\(\mathbb{R}^3\)</td>
+                        <td>\(ax + by + cz = d\)</td>
+                        <td>Plane</td>
+                        <td>Two half-spaces</td>
+                    </tr>
+                    <tr>
+                        <td>\(\mathbb{R}^n\)</td>
+                        <td>\(\alpha_1 x_1 + \alpha_2 x_2 + \cdots + \alpha_n x_n = b\)</td>
+                        <td>Hyperplane</td>
+                        <td>Two half-spaces</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="definition">
+                <h4>Definition: Hyperplane and Half-Spaces</h4>
+                <p>A <strong>hyperplane</strong> in \(\mathbb{R}^n\) is denoted by \(H\) and has the general form:</p>
+                <div class="formula">
+
+                    $$H: \alpha_1 x_1 + \alpha_2 x_2 + \cdots + \alpha_n x_n = b$$
+                </div>
+                <p>It divides \(\mathbb{R}^n\) into two <strong>half-spaces</strong>:</p>
+                <ul>
+                    <li>\(H^+\): \(\{\mathbf{x} : \alpha_1 x_1 + \alpha_2 x_2 + \cdots + \alpha_n x_n \geq b\}\)</li>
+                    <li>\(H^-\): \(\{\mathbf{x} : \alpha_1 x_1 + \alpha_2 x_2 + \cdots + \alpha_n x_n \leq b\}\)</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Constrained optimization mein</strong> humein ek function minimize karna hai lekin kuch restrictions ke saath. Jaise \(x^2 + y^2\) minimize karna hai but \(x + y \geq 2\) ki condition hai. Ab (0,0) solution nahi raha kyunki ye feasible nahi hai. <strong>Hyperplane</strong> ek equation hai jo space ko do half-spaces mein divide karta hai. 2D mein ye line hai, 3D mein plane hai, aur n-dimensions mein hyperplane hai. Hume feasible region mein hi solution dhundna hai!</p>
+            </div>
+        </section>
+
+        <section id="geometric-notion">
+            <h2>3. Constrained Optimization: Geometrical Notion of Optimality</h2>
+
+            <h3>3.1 Finding the Solution</h3>
+
+            <p>Let's return to our example and find the actual solution:</p>
+
+            <div class="example">
+                <h4>Example 2: Solution to Constrained Problem</h4>
+                <div class="formula">
+
+                    $$\text{minimize } f(x, y) = x^2 + y^2$$
+
+                    $$\text{subject to } x + y \geq 2$$
+                </div>
+                
+                <p><strong>Graphical Solution Method:</strong></p>
+                <ol>
+                    <li>Draw the feasible region: The half-plane where \(x + y \geq 2\)</li>
+                    <li>Draw contours of \(f(x,y)\): Concentric circles centered at origin</li>
+                    <li>Find the smallest contour that <strong>touches</strong> the feasible region</li>
+                </ol>
+                
+                <p><strong>Key Observation:</strong> The contour \(x^2 + y^2 = 1\) does NOT intersect the feasible region. We cannot achieve the value 1 while remaining feasible.</p>
+                
+                <p><strong>Solution:</strong> The first contour that touches the feasible region is \(x^2 + y^2 = 2\), which touches at the point \((1, 1)\).</p>
+                
+                <div class="formula">
+
+                    $$\mathbf{x}^* = (1, 1) \quad \text{with} \quad f(1,1) = 2$$
+                </div>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Look at the contours carefully. The contour \(x^2 + y^2 = 1\) doesn't touch the feasible region at all - all points on that circle violate the constraint. But the contour \(x^2 + y^2 = 2\) just touches the boundary line \(x + y = 2\) at exactly one point: (1,1). This touching point is our solution!"
+            </div>
+
+            <h3>3.2 Why Traditional Optimality Conditions Fail</h3>
+
+            <p>At the solution point \((1, 1)\), let's calculate the gradient:</p>
+
+            <div class="formula">
+
+                $$\nabla f(x, y) = (2x, 2y)$$
+
+                $$\nabla f(1, 1) = (2, 2) \neq (0, 0)$$
+            </div>
+
+            <div class="note">
+                <strong>⚠️ Critical Observation:</strong> The gradient at \((1,1)\) is <strong>NOT zero</strong>! This violates Fermat's rule from unconstrained optimization, which states that at a local minimizer of a differentiable function, the gradient must be zero. This proves that <strong>we need completely new necessary conditions for constrained optimization</strong>.
+            </div>
+
+            <p>This failure of the classical condition motivates us to develop new concepts:</p>
+            <ul>
+                <li><strong>Descent Direction:</strong> Related to the objective function \(f\)</li>
+                <li><strong>Feasible Direction:</strong> Related to the feasible set \(S\)</li>
+            </ul>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>Hamare example mein solution (1,1) hai jahan \(f(1,1) = 2\). Lekin yahan gradient \((2,2)\) hai jo zero nahi hai! Matlab <strong>Fermat's rule fail</strong> ho gaya. Unconstrained problem mein gradient zero hona chahiye local minimizer par, lekin constrained problem mein ye condition kaam nahi karti. Isliye humein <strong>naye optimality conditions</strong> chahiye jo descent direction aur feasible direction ka use karenge.</p>
+            </div>
+        </section>
+
+        <section id="descent-direction">
+            <h2>4. Descent Direction</h2>
+
+            <h3>4.1 Concept and Definition</h3>
+
+            <p>The concept of <strong>descent direction</strong> is related to the <strong>objective function</strong> \(f\). It tells us in which directions we can move to decrease the function value.</p>
+
+            <div class="definition">
+                <h4>Definition: Descent Direction</h4>
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(\mathbf{x}) \text{ subject to } \mathbf{x} \in S$$
+                </div>
+                <p>For a point \(\mathbf{x} \in \mathbb{R}^n\), a direction \(\mathbf{d} \neq \mathbf{0}\) is called a <strong>descent direction</strong> of \(f\) at \(\mathbf{x}\) if there exists \(\alpha_0 > 0\) such that:</p>
+                <div class="formula">
+
+                    $$f(\mathbf{x} + \alpha \mathbf{d}) < f(\mathbf{x}) \quad \text{for all } \alpha \in (0, \alpha_0)$$
+                </div>
+                <p>The set of all descent directions at \(\mathbf{x}\) is denoted by \(\mathcal{F}(\mathbf{x})\).</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Think of descent direction like this: You're standing at a point, and you have multiple ways to move. But not all directions will be beneficial if you want to minimize the function. A descent direction means: if I move just a little bit in that direction, my function value decreases. It doesn't mean you can keep moving forever and it keeps decreasing - just that initially, for small steps, it decreases."
+            </div>
+
+            <h3>4.2 Characterization for Differentiable Functions</h3>
+
+            <p>When the function \(f\) is differentiable, we can characterize a subset of descent directions using the gradient:</p>
+
+            <div class="theorem">
+                <h4>Theorem: Subset of Descent Directions</h4>
+                <p>Let \(f\) be differentiable on \(\mathbb{R}^n\). Define:</p>
+                <div class="formula">
+
+                    $$\mathcal{F}_0(\mathbf{x}) = \{\mathbf{d} \in \mathbb{R}^n : \langle \nabla f(\mathbf{x}), \mathbf{d} \rangle < 0\}$$
+                </div>
+                <p>Then \(\mathcal{F}_0(\mathbf{x}) \subseteq \mathcal{F}(\mathbf{x})\).</p>
+                
+                <p><strong>Interpretation:</strong> Any direction that makes a <strong>strictly obtuse angle</strong> with the gradient (i.e., inner product strictly negative) is a descent direction.</p>
+            </div>
+
+            <div class="note">
+                <strong>Important Note:</strong> \(\mathcal{F}_0(\mathbf{x})\) is a <strong>proper subset</strong> of \(\mathcal{F}(\mathbf{x})\). There may be other descent directions not captured by this condition, particularly directions perpendicular to the gradient (where \(\langle \nabla f(\mathbf{x}), \mathbf{d} \rangle = 0\)).
+            </div>
+
+            <h3>4.3 Geometric Interpretation</h3>
+
+            <div class="example">
+                <h4>Example 3: Descent Directions at a Point</h4>
+                <p>Consider \(f(x, y) = x^2 + y^2\) at the point \((0, -1)\).</p>
+                
+                <p><strong>Step 1: Calculate the gradient</strong></p>
+                <div class="formula">
+
+                    $$\nabla f(x, y) = (2x, 2y)$$
+
+                    $$\nabla f(0, -1) = (0, -2)$$
+                </div>
+                
+                <p><strong>Step 2: Find descent directions</strong></p>
+                <p>A direction \(\mathbf{d} = (d_1, d_2)\) is a descent direction if:</p>
+                <div class="formula">
+
+                    $$\langle (0, -2), (d_1, d_2) \rangle = -2d_2 < 0$$
+
+                    $$\Rightarrow d_2 > 0$$
+                </div>
+                
+                <p><strong>Conclusion:</strong> Any direction with positive \(d_2\) component is a descent direction. There's no restriction on \(d_1\).</p>
+                
+                <div class="diagram-placeholder">
+                    [Insert diagram: Point (0,-1) with arrows showing descent directions in the upper half-plane]
+                </div>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Look at the example carefully. From (0,-1), if you move upward (any direction with \(d_2 > 0\)), you're moving toward smaller contours - your function value is decreasing. These are descent directions. But if you move downward, you're moving toward larger contours - function value increases. Those are ascent directions, not descent directions."
+            </div>
+
+            <h3>4.4 Mathematical Properties</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condition on \(\langle \nabla f(\mathbf{x}), \mathbf{d} \rangle\)</th>
+                        <th>Interpretation</th>
+                        <th>Direction Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>\(< 0\) (Strictly negative)</td>
+                        <td>Obtuse angle with gradient</td>
+                        <td>Definite descent direction</td>
+                    </tr>
+                    <tr>
+                        <td>\(= 0\) (Zero)</td>
+                        <td>Perpendicular to gradient</td>
+                        <td>May be descent, ascent, or neither</td>
+                    </tr>
+                    <tr>
+                        <td>\(> 0\) (Strictly positive)</td>
+                        <td>Acute angle with gradient</td>
+                        <td>Ascent direction (not descent)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>Why is \(\mathcal{F}_0\) an open half-space?</strong> The condition \(\langle \nabla f(\mathbf{x}), \mathbf{d} \rangle < 0\) defines an open half-space because it uses strict inequality. The boundary (where the inner product equals zero) is not included.
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> For the function \(f(x, y) = x^2 + 4y^2\) at the point \((2, 1)\), determine if \(\mathbf{d} = (-1, 0)\) is a descent direction.
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        1. \(\nabla f(2, 1) = (2x, 8y)|_{(2,1)} = (4, 8)\)<br>
+                        2. \(\langle (4, 8), (-1, 0) \rangle = -4 < 0\)<br>
+                        3. Yes, \(\mathbf{d} = (-1, 0)\) is a descent direction.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Why can't we conclude that a direction perpendicular to the gradient is always a descent direction?
+                    <div class="answer">
+                        <strong>Answer:</strong> Consider \(f(x) = x^3\) at \(x = 0\). The gradient is \(f'(0) = 0\), so all directions are "perpendicular" to it. However, moving in the positive direction increases \(f\) while moving in the negative direction decreases \(f\). This shows that perpendicular directions can be descent, ascent, or neither - we need higher-order information to decide.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Descent Direction</h4>
+                <ul>
+                    <li>Descent directions are determined by the <strong>objective function</strong> \(f\), independent of constraints</li>
+                    <li>A direction is descent if moving slightly in that direction <strong>decreases</strong> the function value</li>
+                    <li>For differentiable functions, directions making <strong>obtuse angles</strong> with the gradient are descent directions</li>
+                    <li>The set \(\mathcal{F}_0(\mathbf{x}) = \{\mathbf{d} : \langle \nabla f(\mathbf{x}), \mathbf{d} \rangle < 0\}\) is an <strong>open half-space</strong></li>
+                    <li>Descent directions are <strong>local</strong> - they guarantee decrease only for small steps</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Descent direction</strong> matlab ek aisi direction jismein agar hum thoda sa move karein to function value kam ho jaye. Ye objective function se related hai. Agar function differentiable hai aur koi direction gradient ke saath obtuse angle banaye (inner product negative ho), to wo definitely descent direction hai. Lekin gradient ke perpendicular wale directions ke baare mein hum pakka nahi keh sakte. <strong>Important point:</strong> Descent direction local property hai - matlab sirf thoda move karne par hi decrease guarantee hai, poora move karne par nahi!</p>
+            </div>
+        </section>
+
+        <section id="feasible-direction">
+            <h2>5. Feasible Direction</h2>
+
+            <h3>5.1 Concept and Definition</h3>
+
+            <p>While descent direction is related to the objective function, <strong>feasible direction</strong> is related to the <strong>feasible set</strong> \(S\). It tells us in which directions we can move while remaining in the feasible region.</p>
+
+            <div class="definition">
+                <h4>Definition: Feasible Direction</h4>
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(\mathbf{x}) \text{ subject to } \mathbf{x} \in S$$
+                </div>
+                <p>For a point \(\mathbf{x} \in S\), a direction \(\mathbf{d} \neq \mathbf{0}\) is called a <strong>feasible direction</strong> to \(S\) at \(\mathbf{x}\) if there exists \(\alpha_0 > 0\) such that:</p>
+                <div class="formula">
+
+                    $$\mathbf{x} + \alpha \mathbf{d} \in S \quad \text{for all } \alpha \in [0, \alpha_0)$$
+                </div>
+                <p>The set of all feasible directions at \(\mathbf{x}\) is denoted by \(\mathcal{G}(\mathbf{x})\).</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Feasible direction is only defined at feasible points, not at points outside the feasible region. If you're far away from the feasible set, talking about directions to 'remain' feasible doesn't make sense. Our interest is to minimize the function BY REMAINING in the feasible set, so we only care about directions that keep us feasible."
+            </div>
+
+            <h3>5.2 Geometric Understanding</h3>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Feasible region with arrows showing feasible vs. infeasible directions at boundary and interior points]
+            </div>
+
+            <p>Let's understand feasible directions through different scenarios:</p>
+
+            <h4>Case 1: Interior Point</h4>
+            <p>If \(\mathbf{x}\) is in the <strong>interior</strong> of the feasible set \(S\), then:</p>
+            <ul>
+                <li>ALL directions are feasible directions</li>
+                <li>\(\mathcal{G}(\mathbf{x}) = \mathbb{R}^n \setminus \{\mathbf{0}\}\) (all nonzero directions)</li>
+                <li>You can move a little bit in any direction and remain feasible</li>
+            </ul>
+
+            <h4>Case 2: Boundary Point</h4>
+            <p>If \(\mathbf{x}\) is on the <strong>boundary</strong> of \(S\), then:</p>
+            <ul>
+                <li>SOME directions are feasible, SOME are not</li>
+                <li>Directions pointing "inward" or "along" the boundary are feasible</li>
+                <li>Directions pointing "outward" are NOT feasible</li>
+            </ul>
+
+            <div class="example">
+                <h4>Example 4: Feasible Directions Visualization</h4>
+                
+                <p>Consider the feasible set:</p>
+                <div class="formula">
+
+                    $$S = \{(x, y) : x \geq 0, \, y \geq 0, \, x + y \leq 2\}$$
+                </div>
+                <p>This is a triangular region with vertices at \((0, 0)\), \((2, 0)\), and \((0, 2)\).</p>
+                
+                <p><strong>At point \((0, 0)\) (corner):</strong></p>
+                <ul>
+                    <li>Feasible: Directions in the first quadrant (both components positive or zero)</li>
+                    <li>NOT feasible: Any direction with negative components</li>
+                </ul>
+                
+                <p><strong>At point \((2, 0)\) (corner):</strong></p>
+                <ul>
+                    <li>Feasible: Directions with negative or zero \(x\)-component and positive or zero \(y\)-component</li>
+                    <li>Think: Moving left or up keeps you inside</li>
+                </ul>
+                
+                <p><strong>At point \((1, 1)\) (interior):</strong></p>
+                <ul>
+                    <li>ALL directions are feasible</li>
+                    <li>You're far enough from all boundaries</li>
+                </ul>
+            </example>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Look carefully at the boundary points. At (2,0), if you move in a direction pointing outside the triangle, you immediately leave the feasible set. But if you move toward the interior or along the boundary, you remain feasible for at least a little while. That's the key - you don't need to remain feasible forever, just for some small positive distance."
+            </div>
+
+            <h3>5.3 Detailed Example with Objective Function</h3>
+
+            <div class="example">
+                <h4>Example 5: Combining Feasible Region with Objective</h4>
+                
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(x, y) = (x - 1)^2 + y^2$$
+
+                    $$\text{subject to } x \geq 0, \, y \geq 0, \, x + y \leq 2$$
+                </div>
+                
+                <p><strong>Feasible Set:</strong> Triangle with vertices at \((0, 0)\), \((2, 0)\), \((0, 2)\)</p>
+                
+                <p><strong>Objective Function:</strong> Circles centered at \((1, 0)\)</p>
+                
+                <p><strong>Analysis of Feasible Directions at Different Points:</strong></p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Point</th>
+                            <th>Type</th>
+                            <th>Feasible Directions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\((0, 0)\)</td>
+                            <td>Corner</td>
+                            <td>First quadrant (half-plane)</td>
+                        </tr>
+                        <tr>
+                            <td>\((2, 0)\)</td>
+                            <td>Corner</td>
+                            <td>Directions with \(d_1 \leq 0, d_2 \geq 0\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((0, 2)\)</td>
+                            <td>Corner</td>
+                            <td>Directions with \(d_1 \geq 0, d_2 \leq 0\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((1, 0)\)</td>
+                            <td>Edge (on \(y=0\))</td>
+                            <td>Upper half-plane excluding downward directions</td>
+                        </tr>
+                        <tr>
+                            <td>\((0.5, 0.5)\)</td>
+                            <td>Interior</td>
+                            <td>All directions</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Solution:</strong> The optimal point is \((1, 0)\) where \(f(1,0) = 0\). This point is feasible (satisfies all constraints) and is the center of the contours.</p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Notice something interesting: (1,0) is the solution even with constraints because it's still inside the feasible region. If we had a different feasible set that excluded (1,0), then that point couldn't be the solution anymore. The feasible set fundamentally changes what solutions are possible."
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> For the feasible set \(S = \{(x,y) : x^2 + y^2 \leq 1\}\) (unit disk), describe the feasible directions at the point \((1, 0)\).
+                    <div class="answer">
+                        <strong>Answer:</strong> The point (1,0) is on the boundary of the disk. Feasible directions are those pointing into or tangent to the disk. Specifically, any direction \(\mathbf{d} = (d_1, d_2)\) with \(d_1 \leq 0\) (non-positive x-component) is feasible. Directions with \(d_1 > 0\) would immediately exit the disk.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Is it meaningful to discuss feasible directions at a point outside the feasible set? Why or why not?
+                    <div class="answer">
+                        <strong>Answer:</strong> No, it's not meaningful. Feasible directions are defined to help us move while "remaining" in the feasible set. If we're already outside, the concept of "remaining" feasible doesn't apply. Our goal in optimization is to find solutions within the feasible region, so we only care about directions at feasible points.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Feasible Direction</h4>
+                <ul>
+                    <li>Feasible directions are determined by the <strong>feasible set</strong> \(S\), independent of the objective function</li>
+                    <li>Only defined at <strong>feasible points</strong> (points in \(S\))</li>
+                    <li>At <strong>interior points</strong>, all directions are feasible</li>
+                    <li>At <strong>boundary points</strong>, only some directions are feasible (those pointing inward or tangent)</li>
+                    <li>A direction is feasible if moving slightly in that direction <strong>keeps you in</strong> the feasible set</li>
+                    <li>Feasible directions are also a <strong>local concept</strong> - you only need to remain feasible for small steps</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Feasible direction</strong> matlab ek aisi direction jismein move karne par hum feasible set ke andar hi rahein. Ye feasible set se related hai. Agar hum interior point par hain, to saari directions feasible hain. Lekin agar boundary par hain, to sirf kuch hi directions feasible hongi - wo jo andar ki taraf ya boundary ke along point karti hain. <strong>Important:</strong> Feasible direction sirf feasible points par hi define hota hai. Agar hum feasible set ke bahar hain, to feasible direction ki baat hi meaningless hai!</p>
+            </div>
+        </section>
+
+        <section id="active-index">
+            <h2>6. Active Index Set</h2>
+
+            <h3>6.1 Inequality Constrained Problems</h3>
+
+            <p>From now on, we'll focus on feasible sets defined by <strong>inequality constraints</strong>. This is a very important special case that includes many practical problems.</p>
+
+            <div class="definition">
+                <h4>Definition: Feasible Set with Inequalities</h4>
+                <p>Consider a feasible set \(S\) defined by:</p>
+                <div class="formula">
+
+                    $$S = \{\mathbf{x} \in \mathbb{R}^n : g_i(\mathbf{x}) \leq 0, \, i = 1, 2, \ldots, m\}$$
+                </div>
+                <p>where each \(g_i : \mathbb{R}^n \to \mathbb{R}\) is a constraint function.</p>
+            </div>
+
+            <h3>6.2 Polyhedral Sets</h3>
+
+            <p>When all the constraint functions \(g_i\) are <strong>linear</strong>, the feasible set is called a <strong>polyhedral set</strong>.</p>
+
+            <div class="definition">
+                <h4>Definition: Polyhedral Set</h4>
+                <p>A set \(S\) is <strong>polyhedral</strong> if it can be expressed as the intersection of finitely many half-spaces:</p>
+                <div class="formula">
+
+                    $$S = \bigcap_{i=1}^{m} \{\mathbf{x} : \mathbf{a}_i^T \mathbf{x} \leq b_i\}$$
+                </div>
+                <p>Polyhedral sets are the building blocks of <strong>linear programming</strong> problems. They can be:</p>
+                <ul>
+                    <li><strong>Bounded</strong> (e.g., polytopes, like triangles, tetrahedra)</li>
+                    <li><strong>Unbounded</strong> (e.g., infinite cones, half-spaces)</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Example 6: Converting Constraints to Standard Form</h4>
+                
+                <p>Consider the constraints:</p>
+                <div class="formula">
+
+                    $$x \geq 0, \quad y \geq 0, \quad x + y \leq 2$$
+                </div>
+                
+                <p><strong>Convert to standard form</strong> \(g_i(x,y) \leq 0\):</p>
+                <div class="formula">
+
+                    $$g_1(x, y) = -x \leq 0$$
+
+                    $$g_2(x, y) = -y \leq 0$$
+
+                    $$g_3(x, y) = x + y - 2 \leq 0$$
+                </div>
+                
+                <p>This is a bounded polyhedral set (a triangle).</p>
+            </div>
+
+            <h3>6.3 The Concept of Active Constraints</h3>
+
+            <div class="definition">
+                <h4>Definition: Active Index Set</h4>
+                <p>For a feasible point \(\mathbf{x} \in S\), the <strong>active index set</strong> is:</p>
+                <div class="formula">
+
+                    $$I(\mathbf{x}) = \{i : g_i(\mathbf{x}) = 0\}$$
+                </div>
+                <p>A constraint \(g_i(\mathbf{x}) \leq 0\) is called:</p>
+                <ul>
+                    <li><strong>Active (or binding)</strong> at \(\mathbf{x}\) if \(g_i(\mathbf{x}) = 0\) (equality holds)</li>
+                    <li><strong>Inactive (or slack)</strong> at \(\mathbf{x}\) if \(g_i(\mathbf{x}) < 0\) (strict inequality)</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Active constraints are the constraints that 'matter' at a given point. If you're at a corner of a triangular feasible region, two edges meet at that corner - those two constraints are active. But the third edge is far away - that constraint is inactive. Active constraints determine which directions you can move while staying feasible."
+            </div>
+
+            <h3>6.4 Detailed Examples</h3>
+
+            <div class="example">
+                <h4>Example 7: Finding Active Constraints</h4>
+                
+                <p>Consider the triangular feasible set:</p>
+                <div class="formula">
+
+                    $$g_1(x, y) = -x \leq 0, \quad g_2(x, y) = -y \leq 0, \quad g_3(x, y) = x + y - 2 \leq 0$$
+                </div>
+                
+                <p><strong>Vertices:</strong> \((0, 0)\), \((2, 0)\), \((0, 2)\)</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Point</th>
+                            <th>\(g_1\) value</th>
+                            <th>\(g_2\) value</th>
+                            <th>\(g_3\) value</th>
+                            <th>Active Index Set \(I(\mathbf{x})\)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>\((0, 0)\)</td>
+                            <td>0 (active)</td>
+                            <td>0 (active)</td>
+                            <td>-2 (inactive)</td>
+                            <td>\(\{1, 2\}\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((2, 0)\)</td>
+                            <td>-2 (inactive)</td>
+                            <td>0 (active)</td>
+                            <td>0 (active)</td>
+                            <td>\(\{2, 3\}\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((0, 2)\)</td>
+                            <td>0 (active)</td>
+                            <td>-2 (inactive)</td>
+                            <td>0 (active)</td>
+                            <td>\(\{1, 3\}\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((1, 0)\)</td>
+                            <td>-1 (inactive)</td>
+                            <td>0 (active)</td>
+                            <td>-1 (inactive)</td>
+                            <td>\(\{2\}\)</td>
+                        </tr>
+                        <tr>
+                            <td>\((0.5, 0.5)\)</td>
+                            <td>-0.5 (inactive)</td>
+                            <td>-0.5 (inactive)</td>
+                            <td>-1 (inactive)</td>
+                            <td>\(\emptyset\) (empty)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Look at point (0.5, 0.5) in the interior - no constraints are active! All three inequalities are strict. That's why at interior points, all directions are feasible - you're far from all boundaries. But at (2,0), two constraints are active - you're on a corner where two boundaries meet. This is why only certain directions keep you feasible."
+            </div>
+
+            <h3>6.5 Why Active Constraints Matter</h3>
+
+            <p>The active index set is crucial for determining feasible directions because:</p>
+
+            <div class="note">
+                <strong>Key Insight:</strong>
+                <ul>
+                    <li>At a point \(\mathbf{x}\), if constraint \(g_i\) is <strong>inactive</strong> (strictly satisfied), you can move in ANY direction without immediately violating \(g_i\)</li>
+                    <li>If constraint \(g_i\) is <strong>active</strong> (satisfied as equality), some directions will violate \(g_i\) and others won't</li>
+                    <li>Therefore, <strong>only active constraints restrict feasible directions</strong></li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Example 8: Active Constraints and Feasible Directions</h4>
+                
+                <p>At point \((1, 0)\) in the triangular region:</p>
+                <ul>
+                    <li>Active: \(g_2 = -y \leq 0\) (on the boundary \(y = 0\))</li>
+                    <li>Inactive: \(g_1 = -x \leq 0\) and \(g_3 = x + y - 2 \leq 0\)</li>
+                </ul>
+                
+                <p><strong>Analysis:</strong></p>
+                <ul>
+                    <li>Moving in directions with \(d_2 < 0\) (downward) violates \(g_2\) immediately</li>
+                    <li>Moving with \(d_2 \geq 0\) keeps \(g_2\) satisfied at least initially</li>
+                    <li>The inactive constraints \(g_1\) and \(g_3\) don't impose immediate restrictions</li>
+                </ul>
+                
+                <p><strong>Conclusion:</strong> Only the active constraint \(g_2\) determines which directions are feasible at \((1,0)\).</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> For the constraint set \(x \geq 1, y \geq 2, x + 2y \leq 10\), find the active index set at the point \((1, 3)\).
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        Convert to standard form: \(g_1 = 1-x \leq 0, g_2 = 2-y \leq 0, g_3 = x+2y-10 \leq 0\)<br>
+                        At (1,3): \(g_1(1,3) = 0\) (active), \(g_2(1,3) = -1 < 0\) (inactive), \(g_3(1,3) = -3 < 0\) (inactive)<br>
+                        Active index set: \(I(1,3) = \{1\}\)
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> Can a point have all constraints inactive? What does this mean geometrically?
+                    <div class="answer">
+                        <strong>Answer:</strong> Yes! A point with all constraints inactive is in the <strong>interior</strong> of the feasible region. It's not on any boundary. At such points, the active index set is empty (\(I(\mathbf{x}) = \emptyset\)), and all directions are feasible directions.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Active Index Set</h4>
+                <ul>
+                    <li>The <strong>active index set</strong> \(I(\mathbf{x})\) contains indices of constraints that are satisfied as <strong>equalities</strong></li>
+                    <li><strong>Only active constraints</strong> can restrict feasible directions at a point</li>
+                    <li>At <strong>interior points</strong>, \(I(\mathbf{x}) = \emptyset\) (no active constraints)</li>
+                    <li>At <strong>boundary points</strong>, at least one constraint is active</li>
+                    <li>At <strong>corner points</strong>, multiple constraints are typically active</li>
+                    <li>Active constraints determine which directions violate feasibility</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>Ab hum <strong>inequality constraints</strong> wale problems dekh rahe hain jahan feasible set inequalities se define hota hai. Jab saari inequalities linear hain to ye <strong>polyhedral set</strong> kehlata hai (linear programming ka base hai). <strong>Active index set</strong> \(I(\mathbf{x})\) mein wo constraints hote hain jo equality ke taur par satisfy ho rahe hain. Jo constraints inactive hain (strict inequality), wo move karne mein immediately problem nahi dete. Sirf <strong>active constraints hi feasible directions ko restrict</strong> karte hain. Interior points par koi constraint active nahi hota, isliye saari directions feasible hain!</p>
+            </div>
+        </section>
+
+        <section id="geometric-optimality">
+            <h2>7. Geometric Optimality Condition</h2>
+
+            <h3>7.1 The Core Principle</h3>
+
+            <p>Now we arrive at the fundamental principle of constrained optimization. This is the geometric condition that ties together descent directions and feasible directions.</p>
+
+            <div class="theorem">
+                <h4>Theorem: Geometric Optimality Condition</h4>
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(\mathbf{x}) \text{ subject to } \mathbf{x} \in S$$
+                </div>
+                <p>If \(\mathbf{x}^* \in S\) is a <strong>local minimizer</strong>, then:</p>
+                <div class="formula">
+
+                    $$\mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*) = \emptyset$$
+                </div>
+                <p>where:</p>
+                <ul>
+                    <li>\(\mathcal{F}(\mathbf{x}^*)\) = set of descent directions of \(f\) at \(\mathbf{x}^*\)</li>
+                    <li>\(\mathcal{G}(\mathbf{x}^*)\) = set of feasible directions to \(S\) at \(\mathbf{x}^*\)</li>
+                </ul>
+                
+                <p><strong>Interpretation:</strong> At a local minimizer, there cannot exist a direction that is BOTH:</p>
+                <ol>
+                    <li>A descent direction (decreases the function), AND</li>
+                    <li>A feasible direction (keeps you in the feasible set)</li>
+                </ol>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "This is THE most important concept in constrained optimization! Think about it logically: If you're at a local minimizer and there exists a direction where (1) your function value decreases AND (2) you remain feasible, then you can move in that direction and get a better solution. But that contradicts being a local minimizer! So at a true local minimizer, no such direction can exist. This is the ENTIRE story of constrained optimization!"
+            </div>
+
+            <h3>7.2 Proof Intuition</h3>
+
+            <div class="note">
+                <strong>Proof by Contradiction:</strong>
+                <ol>
+                    <li>Suppose \(\mathbf{x}^*\) is a local minimizer</li>
+                    <li>Assume there exists a direction \(\mathbf{d} \in \mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*)\)</li>
+                    <li>Since \(\mathbf{d} \in \mathcal{F}(\mathbf{x}^*)\): For small \(\alpha > 0\), \(f(\mathbf{x}^* + \alpha\mathbf{d}) < f(\mathbf{x}^*)\)</li>
+                    <li>Since \(\mathbf{d} \in \mathcal{G}(\mathbf{x}^*)\): For small \(\alpha > 0\), \(\mathbf{x}^* + \alpha\mathbf{d} \in S\)</li>
+                    <li>Therefore, we found a feasible point with lower function value than \(\mathbf{x}^*\)</li>
+                    <li>This contradicts \(\mathbf{x}^*\) being a local minimizer</li>
+                    <li>Hence, no such direction \(\mathbf{d}\) can exist</li>
+                </ol>
+            </div>
+
+            <h3>7.3 Connection to Unconstrained Optimization</h3>
+
+            <p>Let's see how this generalizes the unconstrained case:</p>
+
+            <div class="note">
+                <strong>Special Case: Unconstrained Problem</strong>
+                <p>When \(S = \mathbb{R}^n\) (no constraints), then:</p>
+                <ul>
+                    <li>\(\mathcal{G}(\mathbf{x}) = \mathbb{R}^n \setminus \{\mathbf{0}\}\) (all nonzero directions are feasible)</li>
+                    <li>The condition becomes: \(\mathcal{F}(\mathbf{x}^*) \cap \mathbb{R}^n = \emptyset\)</li>
+                    <li>This means: \(\mathcal{F}(\mathbf{x}^*) = \emptyset\) (no descent directions)</li>
+                    <li>For differentiable \(f\), this implies: \(\nabla f(\mathbf{x}^*) = 0\) (Fermat's rule)</li>
+                </ul>
+                <p>So the geometric optimality condition <strong>generalizes</strong> the classical unconstrained condition!</p>
+            </div>
+
+            <h3>7.4 Visual Examples</h3>
+
+            <div class="example">
+                <h4>Example 9: Geometric Optimality at Different Points</h4>
+                
+                <p>Consider minimizing \(f(x,y) = x^2 + y^2\) subject to \(x + y \geq 2\).</p>
+                
+                <p><strong>At point \((1, 1)\) (the solution):</strong></p>
+                <ul>
+                    <li>Feasible directions: Half-space where \(d_1 + d_2 \geq 0\)</li>
+                    <li>Descent directions: Half-space where \(2d_1 + 2d_2 < 0\) (i.e., \(d_1 + d_2 < 0\))</li>
+                    <li>Intersection: Empty! ✓ (Geometric optimality satisfied)</li>
+                </ul>
+                
+                <p><strong>At point \((0.5, 1.5)\) (not optimal):</strong></p>
+                <ul>
+                    <li>This point is feasible: \(0.5 + 1.5 = 2 \geq 2\)</li>
+                    <li>Gradient: \(\nabla f(0.5, 1.5) = (1, 3)\)</li>
+                    <li>Consider direction \(\mathbf{d} = (0.5, -0.3)\)</li>
+                    <li>Check feasibility: \(0.5 + (-0.3) = 0.2 > 0\) ✓ (feasible direction)</li>
+                    <li>Check descent: \(\langle (1, 3), (0.5, -0.3) \rangle = 0.5 - 0.9 = -0.4 < 0\) ✓ (descent direction)</li>
+                    <li>Intersection: Non-empty! ✗ (Not optimal)</li>
+                </ul>
+            </example>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Feasible region with contours, showing optimal point where feasible cone and descent cone don't intersect]
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "At the optimal point (1,1), imagine drawing all feasible directions as one cone and all descent directions as another cone. These two cones point in completely opposite directions - they don't overlap! But at a non-optimal point like (0.5, 1.5), these cones do overlap. The overlapping directions are your 'improvement directions' - you can move there, stay feasible, and get better objective value."
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Is the geometric optimality condition \(\mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*) = \emptyset\) a necessary condition, sufficient condition, or both?
+                    <div class="answer">
+                        <strong>Answer:</strong> It is a <strong>necessary condition</strong> only. If a point is a local minimizer, this condition must hold. However, the converse is not always true - a point satisfying this condition might not be a local minimizer (additional conditions like convexity are needed for sufficiency).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> For the problem: minimize \(f(x) = x^3\) subject to \(x \geq -1\), check if \(x^* = 0\) satisfies the geometric optimality condition.
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        At \(x = 0\): \(f'(0) = 0\), so all directions have \(\langle 0, d \rangle = 0\).<br>
+                        Feasible directions: \(d \geq 0\) (we're on the interior, can move right)<br>
+                        But actually both \(d > 0\) and \(d < 0\) are feasible since we're in the interior.<br>
+                        Descent: We need higher order analysis since gradient is zero.<br>
+                        Note: \(x = 0\) is actually an inflection point, not a minimizer for this problem (no minimum exists).
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Geometric Optimality</h4>
+                <ul>
+                    <li>The geometric optimality condition: \(\mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*) = \emptyset\) is the <strong>fundamental principle</strong> of constrained optimization</li>
+                    <li>At a local minimizer, no direction can be <strong>both</strong> feasible and descent</li>
+                    <li>This is a <strong>necessary condition</strong>, not sufficient</li>
+                    <li>It <strong>generalizes</strong> the unconstrained condition \(\nabla f(\mathbf{x}^*) = 0\)</li>
+                    <li>The entire theory of constrained optimization is about making this geometric condition <strong>algebraically checkable</strong></li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>Yahi hai <strong>constrained optimization ka sabse important concept</strong>! Geometric optimality condition kehta hai ki agar \(\mathbf{x}^*\) local minimizer hai, to koi bhi direction aisi nahi ho sakti jo <strong>dono</strong> feasible bhi ho aur descent bhi ho. Kyun? Kyunki agar aisi direction hoti, to us direction mein move karke hum feasible rahenge aur function value bhi kam ho jayega - matlab \(\mathbf{x}^*\) minimizer nahi tha! Ye condition <strong>necessary hai</strong> (sufficient nahi). Saara constrained optimization theory isi geometric condition ko algebraically check karne layak banane ke baare mein hai. Unconstrained case mein ye \(\nabla f = 0\) wali condition ban jata hai!</p>
+            </div>
+        </section>
+
+        <section id="characterization">
+            <h2>8. Characterization of Feasible and Descent Directions</h2>
+
+            <h3>8.1 Making the Condition Checkable</h3>
+
+            <p>The geometric optimality condition \(\mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*) = \emptyset\) is beautiful conceptually, but how do we actually <strong>check</strong> it? We cannot easily characterize all descent and feasible directions. Instead, we characterize <strong>subsets</strong> that are easier to work with.</p>
+
+            <h3>8.2 Subset of Descent Directions</h3>
+
+            <div class="definition">
+                <h4>Definition: \(\mathcal{F}_0(\mathbf{x})\) - Linearized Descent Directions</h4>
+                <p>Let \(f\) be differentiable on \(\mathbb{R}^n\). Define:</p>
+                <div class="formula">
+
+                    $$\mathcal{F}_0(\mathbf{x}) = \{\mathbf{d} \in \mathbb{R}^n : \langle \nabla f(\mathbf{x}), \mathbf{d} \rangle < 0\}$$
+                </div>
+                <p>Then: \(\mathcal{F}_0(\mathbf{x}) \subseteq \mathcal{F}(\mathbf{x})\)</p>
+                
+                <p><strong>Properties:</strong></p>
+                <ul>
+                    <li>\(\mathcal{F}_0(\mathbf{x})\) is an <strong>open half-space</strong> (or empty if \(\nabla f(\mathbf{x}) = 0\))</li>
+                    <li>Easy to check: Just compute gradient and check inner product</li>
+                    <li>Captures the "obvious" descent directions using first-order information</li>
+                </ul>
+            </div>
+
+            <h3>8.3 Subset of Feasible Directions</h3>
+
+            <p>For feasible sets defined by inequalities \(S = \{\mathbf{x} : g_i(\mathbf{x}) \leq 0, i=1,\ldots,m\}\), we can characterize a subset of feasible directions using the active constraints.</p>
+
+            <div class="definition">
+                <h4>Definition: \(\mathcal{G}_0(\mathbf{x})\) - Linearized Feasible Directions</h4>
+                <p>Let \(g_i\) be differentiable for \(i = 1, \ldots, m\). For \(\mathbf{x} \in S\), define:</p>
+                <div class="formula">
+
+                    $$\mathcal{G}_0(\mathbf{x}) = \{\mathbf{d} \in \mathbb{R}^n : \langle \nabla g_i(\mathbf{x}), \mathbf{d} \rangle < 0 \text{ for all } i \in I(\mathbf{x})\}$$
+                </div>
+                <p>where \(I(\mathbf{x}) = \{i : g_i(\mathbf{x}) = 0\}\) is the active index set.</p>
+                
+                <p>Then: \(\mathcal{G}_0(\mathbf{x}) \subseteq \mathcal{G}(\mathbf{x})\)</p>
+                
+                <p><strong>Properties:</strong></p>
+                <ul>
+                    <li>\(\mathcal{G}_0(\mathbf{x})\) is the intersection of open half-spaces (one for each active constraint)</li>
+                    <li>If \(I(\mathbf{x}) = \emptyset\) (interior point), then \(\mathcal{G}_0(\mathbf{x}) = \mathbb{R}^n \setminus \{\mathbf{0}\}\)</li>
+                    <li>Captures directions that "move away" from active constraint boundaries</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Why do we only consider active constraints in \(\mathcal{G}_0\)? Because inactive constraints are strictly satisfied - you're far from those boundaries. You can move in any direction without immediately violating them. Only active constraints, where you're right on the boundary, can be immediately violated by moving in the wrong direction."
+            </div>
+
+            <h3>8.4 Using the Subsets for Optimality</h3>
+
+            <div class="theorem">
+                <h4>Implication for Optimality</h4>
+                <p>Since \(\mathcal{F}_0(\mathbf{x}) \subseteq \mathcal{F}(\mathbf{x})\) and \(\mathcal{G}_0(\mathbf{x}) \subseteq \mathcal{G}(\mathbf{x})\):</p>
+                <div class="formula">
+
+                    $$\mathcal{F}(\mathbf{x}^*) \cap \mathcal{G}(\mathbf{x}^*) = \emptyset \quad \Rightarrow \quad \mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset$$
+                </div>
+                
+                <p><strong>Key Insight:</strong> If a point \(\mathbf{x}^*\) is a local minimizer, then the linearized condition must hold:</p>
+                <div class="formula">
+
+                    $$\mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset$$
+                </div>
+                
+                <p>This is easier to check because both sets are defined by linear conditions (inner products)!</p>
+            </div>
+
+            <h3>8.5 Example of Characterization</h3>
+
+            <div class="example">
+                <h4>Example 10: Computing \(\mathcal{F}_0\) and \(\mathcal{G}_0\)</h4>
+                
+                <p>Problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(x, y) = (x-1)^2 + y^2$$
+
+                    $$\text{subject to } x \geq 0, \, y \geq 0, \, x + y \leq 2$$
+                </div>
+                
+                <p>Convert constraints:</p>
+                <div class="formula">
+
+                    $$g_1(x,y) = -x \leq 0, \quad g_2(x,y) = -y \leq 0, \quad g_3(x,y) = x+y-2 \leq 0$$
+                </div>
+                
+                <p><strong>At point \((1, 0)\):</strong></p>
+                
+                <p>1. <strong>Compute gradient of objective:</strong></p>
+                <div class="formula">
+
+                    $$\nabla f(1, 0) = (2(x-1), 2y)|_{(1,0)} = (0, 0)$$
+                </div>
+                
+                <p>2. <strong>Find \(\mathcal{F}_0(1,0)\):</strong></p>
+                <div class="formula">
+
+                    $$\mathcal{F}_0(1,0) = \{\mathbf{d} : \langle (0,0), \mathbf{d} \rangle < 0\} = \emptyset$$
+                </div>
+                <p>Since gradient is zero, there are no "obvious" descent directions.</p>
+                
+                <p>3. <strong>Find active constraints at \((1,0)\):</strong></p>
+                <ul>
+                    <li>\(g_1(1,0) = -1 < 0\) (inactive)</li>
+                    <li>\(g_2(1,0) = 0\) (active) ✓</li>
+                    <li>\(g_3(1,0) = -1 < 0\) (inactive)</li>
+                </ul>
+                <p>So \(I(1,0) = \{2\}\)</p>
+                
+                <p>4. <strong>Find \(\mathcal{G}_0(1,0)\):</strong></p>
+                <div class="formula">
+
+                    $$\nabla g_2(x,y) = (0, -1)$$
+
+                    $$\mathcal{G}_0(1,0) = \{\mathbf{d} : \langle (0,-1), \mathbf{d} \rangle < 0\} = \{(d_1, d_2) : d_2 > 0\}$$
+                </div>
+                
+                <p>5. <strong>Check intersection:</strong></p>
+                <div class="formula">
+
+                    $$\mathcal{F}_0(1,0) \cap \mathcal{G}_0(1,0) = \emptyset \cap \{d_2 > 0\} = \emptyset$$
+                </div>
+                
+                <p><strong>Conclusion:</strong> The linearized optimality condition is satisfied at \((1,0)\). This is consistent with \((1,0)\) being the optimal solution!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Why is \(\mathcal{F}_0(\mathbf{x})\) only a subset of \(\mathcal{F}(\mathbf{x})\), not the entire set?
+                    <div class="answer">
+                        <strong>Answer:</strong> Directions perpendicular to the gradient (where \(\langle \nabla f(\mathbf{x}), \mathbf{d} \rangle = 0\)) might still be descent directions, depending on higher-order terms. The linear approximation (first-order Taylor expansion) cannot detect these. So \(\mathcal{F}_0\) captures only the "definitely descent" directions based on first-order information.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> At an interior point where \(I(\mathbf{x}) = \emptyset\), what is \(\mathcal{G}_0(\mathbf{x})\)?
+                    <div class="answer">
+                        <strong>Answer:</strong> When no constraints are active, there are no restrictions on directions from the constraint side. Formally, \(\mathcal{G}_0(\mathbf{x}) = \mathbb{R}^n \setminus \{\mathbf{0}\}\) (all nonzero directions). This makes sense: at interior points, all directions are feasible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Characterization</h4>
+                <ul>
+                    <li>We use <strong>computable subsets</strong> \(\mathcal{F}_0\) and \(\mathcal{G}_0\) instead of the full sets \(\mathcal{F}\) and \(\mathcal{G}\)</li>
+                    <li>\(\mathcal{F}_0(\mathbf{x}) = \{\mathbf{d} : \langle \nabla f(\mathbf{x}), \mathbf{d} \rangle < 0\}\) captures linearized descent directions</li>
+                    <li>\(\mathcal{G}_0(\mathbf{x}) = \{\mathbf{d} : \langle \nabla g_i(\mathbf{x}), \mathbf{d} \rangle < 0, \forall i \in I(\mathbf{x})\}\) captures linearized feasible directions</li>
+                    <li>Both sets are defined by <strong>linear inequalities</strong> (inner products)</li>
+                    <li>The condition \(\mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset\) is a <strong>necessary condition</strong> for optimality</li>
+                    <li>This condition can be analyzed using <strong>separation theorems</strong> and <strong>alternative theorems</strong></li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p>Geometric optimality condition ko actually check karne ke liye hum \(\mathcal{F}\) aur \(\mathcal{G}\) ke <strong>subsets</strong> use karte hain jo calculate karne mein aasan hain. \(\mathcal{F}_0\) mein wo directions hain jo gradient ke saath strictly obtuse angle banate hain - ye "pakka" descent directions hain. \(\mathcal{G}_0\) mein wo directions hain jo <strong>active constraints</strong> ke gradients se strictly obtuse angle banate hain - ye linearized feasible directions hain. Dono sets <strong>linear conditions</strong> se define hote hain (inner products). Agar \(\mathbf{x}^*\) local minimizer hai, to \(\mathcal{F}_0 \cap \mathcal{G}_0 = \emptyset\) hona chahiye. Is condition ko check karne ke liye hum <strong>separation theorems</strong> use karenge!</p>
+            </div>
+        </section>
+
+        <section id="separation-theorem">
+            <h2>9. Separation Theorem</h2>
+
+            <h3>9.1 Motivation</h3>
+
+            <p>We now have a condition to check: \(\mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset\). Both sets are defined by linear conditions, making them convex. To analyze when two convex sets are disjoint, we use <strong>separation theorems</strong> from convex analysis.</p>
+
+            <h3>9.2 Separation Theorems</h3>
+
+            <div class="theorem">
+                <h4>Theorem 1: Separating a Point from a Closed Convex Set</h4>
+                <p>Let \(S \subseteq \mathbb{R}^n\) be a nonempty <strong>closed convex set</strong> and \(\mathbf{y} \notin S\). Then there exists a nonzero vector \(\mathbf{p} \in \mathbb{R}^n\) and a scalar \(\alpha \in \mathbb{R}\) such that:</p>
+                <div class="formula">
+
+                    $$\langle \mathbf{p}, \mathbf{y} \rangle > \alpha \quad \text{and} \quad \langle \mathbf{p}, \mathbf{s} \rangle \leq \alpha \quad \text{for all } \mathbf{s} \in S$$
+                </div>
+                
+                <p><strong>Geometric Interpretation:</strong> The hyperplane \(\{\mathbf{x} : \langle \mathbf{p}, \mathbf{x} \rangle = \alpha\}\) <strong>strictly separates</strong> the point \(\mathbf{y}\) from the set \(S\).</p>
+            </div>
+
+            <div class="diagram-placeholder">
+                [Insert diagram: Convex set S with point y outside, and separating hyperplane between them]
+            </div>
+
+            <div class="theorem">
+                <h4>Theorem 2: Separating Two Disjoint Convex Sets</h4>
+                <p>If \(A\) and \(B\) are two <strong>nonempty, disjoint, convex subsets</strong> of \(\mathbb{R}^n\), then there exists a nonzero vector \(\mathbf{p} \in \mathbb{R}^n\) and a scalar \(\alpha \in \mathbb{R}\) such that:</p>
+                <div class="formula">
+
+                    $$\langle \mathbf{p}, \mathbf{a} \rangle \geq \alpha \quad \text{for all } \mathbf{a} \in A$$
+
+                    $$\langle \mathbf{p}, \mathbf{b} \rangle \leq \alpha \quad \text{for all } \mathbf{b} \in B$$
+                </div>
+                
+                <p><strong>Geometric Interpretation:</strong> A hyperplane separates the two sets (though not necessarily strictly).</p>
+            </div>
+
+            <div class="note">
+                <strong>Key Difference:</strong>
+                <ul>
+                    <li><strong>Theorem 1</strong> gives <strong>strict separation</strong> (uses \(>\) and \(\leq\)) when separating a point from a closed convex set</li>
+                    <li><strong>Theorem 2</strong> gives <strong>weak separation</strong> (uses \(\geq\) and \(\leq\)) when separating two convex sets</li>
+                </ul>
+            </div>
+
+            <h3>9.3 Application to Optimality Conditions</h3>
+
+            <p>How do these theorems help us? Recall:</p>
+            <ul>
+                <li>\(\mathcal{F}_0(\mathbf{x})\) and \(\mathcal{G}_0(\mathbf{x})\) are both convex sets (intersections of half-spaces)</li>
+                <li>If \(\mathbf{x}^*\) is optimal, these sets are disjoint</li>
+                <li>By the separation theorem, there exists a hyperplane separating them</li>
+                <li>This separation condition can be written algebraically</li>
+            </ul>
+
+            <p>This algebraic condition will lead us to the <strong>Fritz-John conditions</strong>!</p>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Separation theorems are powerful tools from convex analysis. They say: if two convex sets don't overlap, you can always draw a hyperplane (a flat surface) between them. This geometric fact translates into algebraic conditions involving gradients - that's how we get Fritz-John and later KKT conditions!"
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Separation theorems</strong> kehte hain ki agar do convex sets disjoint hain (overlap nahi karte), to unke beech ek hyperplane draw ki ja sakti hai jo unhe separate kar de. Pehla theorem point ko closed convex set se <strong>strictly separate</strong> karta hai, aur doosra theorem do convex sets ko separate karta hai. Hamara \(\mathcal{F}_0\) aur \(\mathcal{G}_0\) dono convex hain (half-spaces ke intersections). Agar optimal point par ye disjoint hain, to separation theorem se ek hyperplane milti hai. Is hyperplane ka equation hi <strong>algebraic optimality condition</strong> ban jata hai jise hum Fritz-John condition kehte hain!</p>
+            </div>
+        </section>
+
+        <section id="alternative-theorems">
+            <h2>10. Alternative Theorems (Farkas Lemma & Gordan's Theorem)</h2>
+
+            <h3>10.1 Introduction to Alternative Theorems</h3>
+
+            <p>Alternative theorems are special results that say: given a system of equations/inequalities, <strong>exactly one</strong> of two alternatives holds. They are powerful tools for deriving optimality conditions.</p>
+
+            <h3>10.2 Farkas Lemma</h3>
+
+            <div class="theorem">
+                <h4>Lemma (Farkas Lemma)</h4>
+                <p>Let \(A \in \mathbb{R}^{m \times n}\) be a matrix and \(\mathbf{c} \in \mathbb{R}^n\). Then <strong>exactly one</strong> of the following systems has a solution:</p>
+                
+                <p><strong>System 1:</strong></p>
+                <div class="formula">
+
+                    $$A\mathbf{x} \leq \mathbf{0} \quad \text{and} \quad \langle \mathbf{c}, \mathbf{x} \rangle > 0 \quad \text{for some } \mathbf{x} \in \mathbb{R}^n$$
+                </div>
+                
+                <p><strong>System 2:</strong></p>
+                <div class="formula">
+
+                    $$A^T \mathbf{y} = \mathbf{c} \quad \text{and} \quad \mathbf{y} \geq \mathbf{0} \quad \text{for some } \mathbf{y} \in \mathbb{R}^m$$
+                </div>
+                
+                <p><strong>Interpretation:</strong> Either:</p>
+                <ul>
+                    <li>There exists a direction \(\mathbf{x}\) that satisfies all inequalities \(A\mathbf{x} \leq 0\) and makes positive inner product with \(\mathbf{c}\), OR</li>
+                    <li>\(\mathbf{c}\) can be written as a non-negative combination of rows of \(A\)</li>
+                </ul>
+                <p>But NOT both!</p>
+            </div>
+
+            <h3>10.3 Example of Farkas Lemma</h3>
+
+            <div class="example">
+                <h4>Example 11: Applying Farkas Lemma</h4>
+                
+                <p>Consider:</p>
+                <div class="formula">
+
+                    $$A = \begin{bmatrix} 1 & 1 \\ -1 & 1 \end{bmatrix}, \quad \mathbf{c} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$$
+                </div>
+                
+                <p><strong>System 1:</strong> Find \(\mathbf{x} = (x_1, x_2)^T\) such that:</p>
+                <div class="formula">
+
+                    $$\begin{bmatrix} 1 & 1 \\ -1 & 1 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} \leq \begin{bmatrix} 0 \\ 0 \end{bmatrix} \quad \text{and} \quad 2x_1 + x_2 > 0$$
+                </div>
+                
+                <p>This gives:</p>
+                <div class="formula">
+
+                    $$x_1 + x_2 \leq 0, \quad -x_1 + x_2 \leq 0, \quad 2x_1 + x_2 > 0$$
+                </div>
+                
+                <p>Try \(x_1 = 1.5, x_2 = -0.5\):</p>
+                <ul>
+                    <li>\(1.5 + (-0.5) = 1 \not\leq 0\) ✗</li>
+                </ul>
+                <p>System 1 has no solution.</p>
+                
+                <p><strong>System 2:</strong> Find \(\mathbf{y} = (y_1, y_2)^T\) such that:</p>
+                <div class="formula">
+
+                    $$\begin{bmatrix} 1 & -1 \\ 1 & 1 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}, \quad y_1, y_2 \geq 0$$
+                </div>
+                
+                <p>This gives:</p>
+                <div class="formula">
+
+                    $$y_1 - y_2 = 2, \quad y_1 + y_2 = 1, \quad y_1, y_2 \geq 0$$
+                </div>
+                
+                <p>Solving: \(2y_1 = 3 \Rightarrow y_1 = 1.5\), \(y_2 = -0.5\)</p>
+                <p>But \(y_2 = -0.5 < 0\) ✗</p>
+                
+                <p><strong>Wait!</strong> Let me recalculate... Actually, trying \(\mathbf{x} = (1, -1)^T\):</p>
+                <ul>
+                    <li>\(1 + (-1) = 0 \leq 0\) ✓</li>
+                    <li>\(-1 + (-1) = -2 \leq 0\) ✓</li>
+                    <li>\(2(1) + (-1) = 1 > 0\) ✓</li>
+                </ul>
+                <p>System 1 has a solution! So System 2 cannot have a solution (as Farkas guarantees).</p>
+            </div>
+
+            <h3>10.4 Gordan's Alternative Theorem</h3>
+
+            <div class="theorem">
+                <h4>Corollary (Gordan's Alternative Theorem)</h4>
+                <p>Let \(A \in \mathbb{R}^{m \times n}\) be a matrix. Then <strong>exactly one</strong> of the following systems has a solution:</p>
+                
+                <p><strong>System 1:</strong></p>
+                <div class="formula">
+
+                    $$A\mathbf{x} < \mathbf{0} \quad \text{for some } \mathbf{x} \in \mathbb{R}^n$$
+                </div>
+                
+                <p><strong>System 2:</strong></p>
+                <div class="formula">
+
+                    $$A^T \mathbf{y} = \mathbf{0} \quad \text{and} \quad \mathbf{y} \geq \mathbf{0} \quad \text{for some nonzero } \mathbf{y} \in \mathbb{R}^m$$
+                </div>
+                
+                <p><strong>Interpretation:</strong> Either there exists a direction strictly satisfying all inequalities, OR the zero vector can be written as a non-negative non-trivial combination of rows of \(A\).</p>
+            </div>
+
+            <h3>10.5 Example of Gordan's Theorem</h3>
+
+            <div class="example">
+                <h4>Example 12: Applying Gordan's Theorem</h4>
+                
+                <p>Let:</p>
+                <div class="formula">
+
+                    $$A = \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}$$
+                </div>
+                
+                <p><strong>System 1:</strong> Find \(\mathbf{x} = (x_1, x_2)^T\) such that:</p>
+                <div class="formula">
+
+                    $$x_1 - x_2 < 0 \quad \text{and} \quad -x_1 + x_2 < 0$$
+                </div>
+                
+                <p>This simplifies to:</p>
+                <div class="formula">
+
+                    $$x_1 < x_2 \quad \text{and} \quad x_2 < x_1$$
+                </div>
+                
+                <p>This is <strong>impossible</strong>! System 1 has no solution.</p>
+                
+                <p><strong>System 2:</strong> Find \(\mathbf{y} = (y_1, y_2)^T\) such that:</p>
+                <div class="formula">
+
+                    $$\begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \quad y_1, y_2 \geq 0, \quad (y_1, y_2) \neq (0,0)$$
+                </div>
+                
+                <p>This gives:</p>
+                <div class="formula">
+
+                    $$y_1 - y_2 = 0, \quad -y_1 + y_2 = 0 \quad \Rightarrow \quad y_1 = y_2$$
+                </div>
+                
+                <p><strong>Solution:</strong> \(\mathbf{y} = (1, 1)^T\) ✓ (or any positive multiple)</p>
+                
+                <p>Since System 1 has no solution, System 2 must have a solution (as Gordan's theorem guarantees).</p>
+            </div>
+
+            <h3>10.6 Connection to Fritz-John Conditions</h3>
+
+            <p>These alternative theorems are used to prove the <strong>Fritz-John conditions</strong>. The key insight is:</p>
+            
+            <div class="note">
+                <p>If \(\mathbf{x}^*\) is optimal, then \(\mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset\). This means there is NO direction \(\mathbf{d}\) such that:</p>
+                <div class="formula">
+
+                    $$\langle \nabla f(\mathbf{x}^*), \mathbf{d} \rangle < 0 \quad \text{and} \quad \langle \nabla g_i(\mathbf{x}^*), \mathbf{d} \rangle < 0 \text{ for all } i \in I(\mathbf{x}^*)$$
+                </div>
+                
+                <p>By <strong>Gordan's theorem</strong> applied to the matrix whose rows are \(\nabla f(\mathbf{x}^*)\) and \(\nabla g_i(\mathbf{x}^*)\) for \(i \in I(\mathbf{x}^*)\), there must exist non-negative multipliers such that a linear combination equals zero. This gives us the Fritz-John conditions!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Why are these called "alternative" theorems?
+                    <div class="answer">
+                        <strong>Answer:</strong> They present two "alternatives" (System 1 or System 2), and they guarantee that exactly ONE of them is true. It's an "either-or" situation with no middle ground - one system always has a solution, and the other never does (for any given data).
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> How does Gordan's theorem relate to Farkas lemma?
+                    <div class="answer">
+                        <strong>Answer:</strong> Gordan's theorem is actually a special case (corollary) of Farkas lemma. It can be derived from Farkas lemma by setting \(\mathbf{c} = \mathbf{0}\) and adjusting the inequalities appropriately. Both are fundamental tools in optimization theory.
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Alternative Theorems</h4>
+                <ul>
+                    <li><strong>Alternative theorems</strong> state that exactly ONE of two systems has a solution</li>
+                    <li><strong>Farkas Lemma:</strong> Either \(A\mathbf{x} \leq 0, \langle \mathbf{c}, \mathbf{x} \rangle > 0\) has a solution, OR \(A^T\mathbf{y} = \mathbf{c}, \mathbf{y} \geq 0\) has a solution</li>
+                    <li><strong>Gordan's Theorem:</strong> Either \(A\mathbf{x} < 0\) has a solution, OR \(A^T\mathbf{y} = 0, \mathbf{y} \geq 0, \mathbf{y} \neq 0\) has a solution</li>
+                    <li>These theorems bridge <strong>geometric conditions</strong> (disjoint sets) and <strong>algebraic conditions</strong> (linear combinations of gradients)</li>
+                    <li>They are the key tool for proving <strong>Fritz-John</strong> and <strong>KKT conditions</strong></li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Alternative theorems</strong> kehte hain ki do systems mein se <strong>exactly ek</strong> ka solution hoga, dono ka nahi. <strong>Farkas Lemma</strong> kehta hai: ya to \(A\mathbf{x} \leq 0\) aur \(\mathbf{c}\) ke saath positive inner product wala \(\mathbf{x}\) milega, ya to \(\mathbf{c} = A^T\mathbf{y}\) with \(\mathbf{y} \geq 0\) milega, lekin dono ek saath nahi. <strong>Gordan's Theorem</strong> similar hai lekin strict inequalities use karta hai. Ye theorems <strong>geometric conditions</strong> (disjoint sets) ko <strong>algebraic conditions</strong> (gradient combinations) mein convert karte hain. Inhika use karke hum <strong>Fritz-John conditions</strong> derive kar sakte hain!</p>
+            </div>
+        </section>
+
+        <section id="fritz-john">
+            <h2>11. Fritz-John Conditions</h2>
+
+            <h3>11.1 Statement of Fritz-John Conditions</h3>
+
+            <p>We finally arrive at the main result of this lecture: the <strong>Fritz-John necessary conditions for optimality</strong>. These conditions provide an algebraic way to check if a point could be a local minimizer.</p>
+
+            <div class="theorem">
+                <h4>Theorem: Fritz-John Necessary Conditions</h4>
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(\mathbf{x}) \quad \text{subject to } g_i(\mathbf{x}) \leq 0, \, i = 1, 2, \ldots, m$$
+                </div>
+                
+                <p>Let the functions \(f, g_i\) be differentiable on \(\mathbb{R}^n\). If \(\mathbf{x}^*\) is a <strong>feasible point</strong> and a <strong>local minimizer</strong>, then there exist multipliers \(\lambda_0, \lambda_1, \ldots, \lambda_m\) such that:</p>
+                
+                <div class="formula">
+                    <p><strong>(FJ1) Non-negativity:</strong> \(\lambda_i \geq 0\) for all \(i = 0, 1, \ldots, m\)</p>
+                    <p><strong>(FJ2) Not all zero:</strong> \((\lambda_0, \lambda_1, \ldots, \lambda_m) \neq (0, 0, \ldots, 0)\)</p>
+                    <p><strong>(FJ3) Stationarity:</strong> \(\lambda_0 \nabla f(\mathbf{x}^*) + \sum_{i=1}^{m} \lambda_i \nabla g_i(\mathbf{x}^*) = \mathbf{0}\)</p>
+                    <p><strong>(FJ4) Complementary slackness:</strong> \(\lambda_i g_i(\mathbf{x}^*) = 0\) for all \(i = 1, \ldots, m\)</p>
+                </div>
+            </div>
+
+            <div class="definition">
+                <h4>Definition: Fritz-John Point and Multipliers</h4>
+                <ul>
+                    <li>A point satisfying the Fritz-John conditions is called a <strong>Fritz-John point</strong></li>
+                    <li>The scalars \(\lambda_0, \lambda_1, \ldots, \lambda_m\) are called <strong>Lagrange multipliers</strong> or <strong>Fritz-John multipliers</strong></li>
+                </ul>
+            </div>
+
+            <h3>11.2 Understanding Each Condition</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condition</th>
+                        <th>Mathematical Form</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>(FJ1) Non-negativity</strong></td>
+                        <td>\(\lambda_i \geq 0\) for all \(i\)</td>
+                        <td>All multipliers are non-negative; they represent "weights" on gradients</td>
+                    </tr>
+                    <tr>
+                        <td><strong>(FJ2) Not all zero</strong></td>
+                        <td>\((\lambda_0, \ldots, \lambda_m) \neq \mathbf{0}\)</td>
+                        <td>At least one multiplier is positive; prevents trivial solution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>(FJ3) Stationarity</strong></td>
+                        <td>\(\lambda_0 \nabla f + \sum \lambda_i \nabla g_i = 0\)</td>
+                        <td>Weighted combination of gradients equals zero; gradient of objective is in the cone generated by constraint gradients</td>
+                    </tr>
+                    <tr>
+                        <td><strong>(FJ4) Complementary Slackness</strong></td>
+                        <td>\(\lambda_i g_i(\mathbf{x}^*) = 0\)</td>
+                        <td>If constraint is inactive (\(g_i < 0\)), then \(\lambda_i = 0\); only active constraints get non-zero multipliers</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "The complementary slackness condition (FJ4) is very important. It says: if a constraint is not active (not binding), its multiplier must be zero. Only active constraints 'participate' in the optimality condition. This makes sense - if you're far from a constraint boundary, that constraint doesn't affect whether you're at a minimum or not."
+            </div>
+
+            <h3>11.3 Proof Sketch</h3>
+
+            <div class="note">
+                <h4>Proof Sketch of Fritz-John Conditions</h4>
+                <ol>
+                    <li>If \(\mathbf{x}^*\) is a local minimizer, then \(\mathcal{F}_0(\mathbf{x}^*) \cap \mathcal{G}_0(\mathbf{x}^*) = \emptyset\)</li>
+                    <li>This means there is NO direction \(\mathbf{d}\) such that:
+                        <div class="formula">
+
+                            $$\langle \nabla f(\mathbf{x}^*), \mathbf{d} \rangle < 0 \text{ and } \langle \nabla g_i(\mathbf{x}^*), \mathbf{d} \rangle < 0 \text{ for all } i \in I(\mathbf{x}^*)$$
+                        </div>
+                    </li>
+                    <li>Form matrix \(A\) with rows: \(\nabla f(\mathbf{x}^*)\) and \(\nabla g_i(\mathbf{x}^*)\) for \(i \in I(\mathbf{x}^*)\)</li>
+                    <li>By <strong>Gordan's alternative theorem</strong>, since \(A\mathbf{d} < 0\) has no solution, there exist \(\lambda_0, \lambda_i \geq 0\) (not all zero) such that:
+                        <div class="formula">
+
+                            $$\lambda_0 \nabla f(\mathbf{x}^*) + \sum_{i \in I(\mathbf{x}^*)} \lambda_i \nabla g_i(\mathbf{x}^*) = \mathbf{0}$$
+                        </div>
+                    </li>
+                    <li>For inactive constraints \(i \notin I(\mathbf{x}^*)\), set \(\lambda_i = 0\)</li>
+                    <li>This gives the stationarity condition (FJ3)</li>
+                    <li>Complementary slackness (FJ4) follows because \(\lambda_i = 0\) whenever \(g_i(\mathbf{x}^*) < 0\), and \(g_i(\mathbf{x}^*) = 0\) when \(\lambda_i\) might be nonzero</li>
+                </ol>
+            </div>
+
+            <h3>11.4 Detailed Example</h3>
+
+            <div class="example">
+                <h4>Example 13: Verifying Fritz-John Conditions</h4>
+                
+                <p>Consider the problem:</p>
+                <div class="formula">
+
+                    $$\text{minimize } f(x_1, x_2) = x_1^2 + x_2^2$$
+
+                    $$\text{subject to } g(x_1, x_2) = 1 - x_1 \leq 0$$
+                </div>
+                
+                <p><strong>Step 1: Find the optimal solution</strong></p>
+                <p>The feasible set is \(\{(x_1, x_2) : x_1 \geq 1\}\). Minimizing \(x_1^2 + x_2^2\) over this region:</p>
+                <ul>
+                    <li>Smallest value of \(x_1\) is 1 (on boundary)</li>
+                    <li>Minimize \(x_2^2\) by setting \(x_2 = 0\)</li>
+                </ul>
+                <p><strong>Optimal solution:</strong> \(\mathbf{x}^* = (1, 0)\) with \(f(1, 0) = 1\)</p>
+                
+                <p><strong>Step 2: Compute gradients</strong></p>
+                <div class="formula">
+
+                    $$\nabla f(x_1, x_2) = (2x_1, 2x_2)$$
+
+                    $$\nabla f(1, 0) = (2, 0)$$
+
+                    
+                    $$\nabla g(x_1, x_2) = (-1, 0)$$
+
+                    $$\nabla g(1, 0) = (-1, 0)$$
+                </div>
+                
+                <p><strong>Step 3: Check constraint activity</strong></p>
+                <div class="formula">
+
+                    $$g(1, 0) = 1 - 1 = 0 \quad \text{(active)}$$
+                </div>
+                
+                <p><strong>Step 4: Apply Fritz-John conditions</strong></p>
+                <p>Find \(\lambda_0, \lambda_1 \geq 0\) (not both zero) such that:</p>
+                <div class="formula">
+
+                    $$\lambda_0 \nabla f(1, 0) + \lambda_1 \nabla g(1, 0) = \mathbf{0}$$
+
+                    $$\lambda_0 (2, 0) + \lambda_1 (-1, 0) = (0, 0)$$
+
+                    $$(2\lambda_0 - \lambda_1, 0) = (0, 0)$$
+                </div>
+                
+                <p>This gives: \(2\lambda_0 - \lambda_1 = 0\), so \(\lambda_1 = 2\lambda_0\)</p>
+                
+                <p><strong>Solution:</strong> Choose \(\lambda_0 = 1, \lambda_1 = 2\) (or any positive multiple)</p>
+                
+                <p><strong>Verification:</strong></p>
+                <ul>
+                    <li>✓ (FJ1): \(\lambda_0 = 1 \geq 0\), \(\lambda_1 = 2 \geq 0\)</li>
+                    <li>✓ (FJ2): Not both zero</li>
+                    <li>✓ (FJ3): \(1 \cdot (2, 0) + 2 \cdot (-1, 0) = (0, 0)\)</li>
+                    <li>✓ (FJ4): \(\lambda_1 g(1, 0) = 2 \cdot 0 = 0\)</li>
+                </ul>
+                
+                <p><strong>Conclusion:</strong> \((1, 0)\) satisfies the Fritz-John conditions!</p>
+            </example>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong> "Notice that we have freedom in choosing the multipliers - we can scale them. If \((\lambda_0, \lambda_1)\) works, so does \((2\lambda_0, 2\lambda_1)\) or any positive multiple. What matters is the ratio between multipliers, not their absolute values. This is why we need the 'not all zero' condition - otherwise \((0, 0)\) would always be a trivial solution!"
+            </div>
+
+            <h3>11.5 Important Notes and Limitations</h3>
+
+            <div class="note">
+                <h4>Key Points about Fritz-John Conditions</h4>
+                <ul>
+                    <li><strong>Necessary, not sufficient:</strong> Fritz-John conditions are necessary for optimality but not sufficient. A point satisfying them might not be optimal.</li>
+                    <li><strong>Allows \(\lambda_0 = 0\):</strong> A major weakness! When \(\lambda_0 = 0\), the objective function gradient disappears from the stationarity condition. This is undesirable because we're trying to minimize \(f\), not just satisfy constraints!</li>
+                    <li><strong>Building block for KKT:</strong> Fritz-John conditions are the foundation. Under additional assumptions (constraint qualifications), we can guarantee \(\lambda_0 \neq 0\), leading to <strong>Karush-Kuhn-Tucker (KKT) conditions</strong>.</li>
+                    <li><strong>Works for non-convex problems:</strong> Unlike KKT (which requires constraint qualifications), Fritz-John always applies at local minimizers of differentiable problems.</li>
+                </ul>
+            </div>
+
+            <h3>11.6 Preview: KKT Conditions</h3>
+
+            <p>In the next lecture, we'll study <strong>Karush-Kuhn-Tucker (KKT) conditions</strong>, which are stronger than Fritz-John. Under certain regularity conditions on the constraints (called <strong>constraint qualifications</strong>), we can ensure \(\lambda_0 > 0\). By normalizing (dividing by \(\lambda_0\)), we get:</p>
+
+            <div class="formula">
+
+                $$\nabla f(\mathbf{x}^*) + \sum_{i=1}^{m} \mu_i \nabla g_i(\mathbf{x}^*) = \mathbf{0}$$
+            </div>
+
+            <p>where \(\mu_i = \lambda_i / \lambda_0\). These are the KKT conditions, which explicitly involve the objective function gradient.</p>
+
+            <div class="practice-questions">
+                <h4>Practice Questions</h4>
+                
+                <div class="question">
+                    <strong>Q1:</strong> Why is the condition "not all multipliers are zero" necessary?
+                    <div class="answer">
+                        <strong>Answer:</strong> Without this condition, \((\lambda_0, \lambda_1, \ldots, \lambda_m) = (0, 0, \ldots, 0)\) would always satisfy the stationarity condition \(\lambda_0 \nabla f + \sum \lambda_i \nabla g_i = 0\) (since \(0 = 0\)), making the condition trivial and useless. The "not all zero" requirement ensures the condition is meaningful.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q2:</strong> What does it mean geometrically when \(\lambda_0 = 0\) in Fritz-John conditions?
+                    <div class="answer">
+                        <strong>Answer:</strong> When \(\lambda_0 = 0\), the stationarity condition becomes \(\sum_{i=1}^m \lambda_i \nabla g_i(\mathbf{x}^*) = 0\), which means the gradient of the objective function doesn't appear! Geometrically, this occurs at "abnormal" points where the constraint gradients are linearly dependent. At such points, the constraints alone determine the Fritz-John conditions, regardless of the objective function.
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <strong>Q3:</strong> Verify Fritz-John conditions for: minimize \(f(x,y) = x\) subject to \(x \geq 0\) at point \((0, 0)\).
+                    <div class="answer">
+                        <strong>Answer:</strong><br>
+                        Convert constraint: \(g(x,y) = -x \leq 0\)<br>
+                        At \((0,0)\): \(g(0,0) = 0\) (active)<br>
+                        Gradients: \(\nabla f = (1, 0)\), \(\nabla g = (-1, 0)\)<br>
+                                            <div class="answer">
+                        <strong>Answer:</strong><br>
+                        Convert constraint: \(g(x,y) = -x \leq 0\)<br>
+                        At \((0,0)\): \(g(0,0) = 0\) (active)<br>
+                        Gradients: \(\nabla f = (1, 0)\), \(\nabla g = (-1, 0)\)<br>
+                        Fritz-John condition: \(\lambda_0 (1, 0) + \lambda_1 (-1, 0) = (0, 0)\)<br>
+                        This gives: \(\lambda_0 - \lambda_1 = 0\), so \(\lambda_0 = \lambda_1\)<br>
+                        Choose \(\lambda_0 = 1, \lambda_1 = 1\) (both non-negative, not both zero)<br>
+                        Complementary slackness: \(\lambda_1 g(0,0) = 1 \cdot 0 = 0\) ✓<br>
+                        All Fritz-John conditions are satisfied at \((0,0)\).
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways: Fritz-John Conditions</h4>
+                <ul>
+                    <li>Fritz-John conditions are <strong>necessary conditions</strong> for local optimality in constrained problems</li>
+                    <li>They involve multipliers \(\lambda_0, \lambda_1, \ldots, \lambda_m\) that are all non-negative and not all zero</li>
+                    <li>The <strong>stationarity condition</strong> requires a weighted combination of gradients to equal zero</li>
+                    <li><strong>Complementary slackness</strong> ensures only active constraints get non-zero multipliers</li>
+                    <li>They are proven using <strong>Gordan's alternative theorem</strong> from the geometric optimality condition</li>
+                    <li>A major limitation is that \(\lambda_0\) might be zero, making the objective function gradient disappear</li>
+                    <li>Fritz-John conditions are the foundation for <strong>KKT conditions</strong> (which will be covered in the next lecture)</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary</h4>
+                <p><strong>Fritz-John conditions</strong> constrained optimization mein local optimality ke liye <strong>necessary conditions</strong> hain. Yeh multipliers \(\lambda_0, \lambda_1, \ldots, \lambda_m\) use karte hain jo non-negative hain aur saath mein zero nahi hote. Stationarity condition kehta hai ki gradients ka weighted combination zero hona chahiye. Complementary slackness kehta sirf active constraints ko non-zero multipliers milte hain. Yeh conditions <strong>Gordan's theorem</strong> se prove hote hain. Ek problem hai ki \(\lambda_0\) zero ho sakta hai, jis se objective function gradient disappear ho jata hai. Fritz-John conditions <strong>KKT conditions</strong> ke foundation hain jo agli lecture mein padhenge!</p>
+            </div>
+        </section>
+
+        <section id="mind-map">
+            <h2>12. Mind Map</h2>
+            
+            <div class="mind-map">
+                <h3>Constrained Optimization - Key Concepts</h3>
+                
+                <div class="map-container">
+                    <div class="map-node">
+                        <h4>Constrained Optimization</h4>
+                        <div class="map-subnode">minimize f(x) subject to x ∈ S</div>
+                        <div class="map-subnode">Different from unconstrained</div>
+                        <div class="map-subnode">New optimality conditions needed</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Key Concepts</h4>
+                        <div class="map-subnode">Descent Direction</div>
+                        <div class="map-subnode">Feasible Direction</div>
+                        <div class="map-subnode">Active Index Set</div>
+                        <div class="map-subnode">Geometric Optimality</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Descent Direction</h4>
+                        <div class="map-subnode">Related to objective function</div>
+                        <div class="map-subnode">F₀(x) = {d: ⟨∇f(x), d⟩ < 0}</div>
+                        <div class="map-subnode">Decreases function value</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Feasible Direction</h4>
+                        <div class="map-subnode">Related to feasible set</div>
+                        <div class="map-subnode">G₀(x) = {d: ⟨∇gᵢ(x), d⟩ < 0, i∈I(x)}</div>
+                        <div class="map-subnode">Keeps point in feasible set</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Active Index Set</h4>
+                        <div class="map-subnode">I(x) = {i: gᵢ(x) = 0}</div>
+                        <div class="map-subnode">Constraints binding at x</div>
+                        <div class="map-subnode">Determines feasible directions</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Geometric Optimality</h4>
+                        <div class="map-subnode">F(x*) ∩ G(x*) = ∅</div>
+                        <div class="map-subnode">No direction is both feasible and descent</div>
+                        <div class="map-subnode">Fundamental principle</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Mathematical Tools</h4>
+                        <div class="map-subnode">Separation Theorems</div>
+                        <div class="map-subnode">Farkas Lemma</div>
+                        <div class="map-subnode">Gordan's Theorem</div>
+                    </div>
+                    
+                    <div class="map-node">
+                        <h4>Fritz-John Conditions</h4>
+                        <div class="map-subnode">λ₀∇f(x*) + Σλᵢ∇gᵢ(x*) = 0</div>
+                        <div class="map-subnode">λᵢ ≥ 0, not all zero</div>
+                        <div class="map-subnode">λᵢgᵢ(x*) = 0 (complementary slackness)</div>
+                        <div class="map-subnode">Necessary condition for optimality</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px;">
+            <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

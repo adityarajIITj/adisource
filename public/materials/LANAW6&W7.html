@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Inverse and Rank - Linear Algebra and Numerical Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3366cc;
+            background: linear-gradient(to right, #3366cc, #6699ff);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        h1, h2, h3, h4 {
+            color: #3366cc;
+            margin-top: 1.5em;
+            margin-bottom: 0.7em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.2em; }
+        h2 { font-size: 1.8em; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.2em; }
+        
+        p, li {
+            margin-bottom: 1em;
+            text-align: justify;
+        }
+        
+        .math {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .example {
+            background-color: #f0f7ff;
+            border-left: 5px solid #3366cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .hinglish-summary {
+            background-color: #ffe8cc;
+            border-left: 5px solid #ff9933;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .key-takeaway {
+            background-color: #e6ffe6;
+            border-left: 5px solid #33cc33;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .practice-question {
+            background-color: #e6f2ff;
+            border-left: 5px solid #3399ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .show-answer {
+            background-color: #3399ff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .extra-content {
+            background-color: #e6e6ff;
+            border-left: 5px solid #6666ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .toc {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 5px;
+        }
+        
+        .toc-h2 {
+            margin-left: 15px;
+        }
+        
+        .toc-h3 {
+            margin-left: 30px;
+        }
+        
+        .mind-map {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3366cc;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .scroll-top:hover {
+            opacity: 1;
+        }
+
+        .formula {
+            display: block;
+            text-align: center;
+            margin: 15px 0;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.1em;
+        }
+
+        .note {
+            background-color: #fff9e6;
+            border-left: 5px solid #ffcc00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Matrix Inverse and Rank</h1>
+        <p class="text-xl">Linear Algebra and Numerical Analysis</p>
+    </div>
+    
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li><a href="#introduction">1. Introduction</a></li>
+            <li class="toc-h2"><a href="#real-world-applications">1.1 Real-World Applications</a></li>
+            <li><a href="#matrix-inverse">2. Matrix Inverse</a></li>
+            <li class="toc-h2"><a href="#inverse-definition">2.1 Definition and Properties</a></li>
+            <li class="toc-h2"><a href="#inverse-2x2">2.2 Inverse of a 2×2 Matrix</a></li>
+            <li class="toc-h2"><a href="#row-reduction">2.3 Matrix Inversion Using Row Reduction</a></li>
+            <li><a href="#row-echelon-form">3. Row Echelon Form (REF)</a></li>
+            <li class="toc-h2"><a href="#ref-properties">3.1 Properties of Row Echelon Form</a></li>
+            <li class="toc-h2"><a href="#ref-example">3.2 Examples of Row Echelon Form</a></li>
+            <li><a href="#reduced-row-echelon-form">4. Reduced Row Echelon Form (RREF)</a></li>
+            <li class="toc-h2"><a href="#rref-properties">4.1 Properties of Reduced Row Echelon Form</a></li>
+            <li class="toc-h2"><a href="#rref-example">4.2 Examples of RREF</a></li>
+            <li><a href="#minors-cofactors">5. Minors and Cofactors</a></li>
+            <li class="toc-h2"><a href="#minors">5.1 Matrix Minors</a></li>
+            <li class="toc-h2"><a href="#cofactors">5.2 Cofactors</a></li>
+            <li class="toc-h2"><a href="#adjoint">5.3 Adjoint Matrix</a></li>
+            <li><a href="#matrix-rank">6. Rank of a Matrix</a></li>
+            <li class="toc-h2"><a href="#rank-definition">6.1 Definition and Properties</a></li>
+            <li class="toc-h2"><a href="#rank-invertibility">6.2 Relationship with Invertibility</a></li>
+            <li class="toc-h2"><a href="#linear-independence">6.3 Linear Independence and Rank</a></li>
+            <li><a href="#practice-questions">7. Practice Questions</a></li>
+            <li><a href="#mind-map">8. Mind Map</a></li>
+        </ul>
+    </div>
+
+    <section id="introduction">
+        <h2>1. Introduction</h2>
+        <p>Matrix inverse and rank are fundamental concepts in linear algebra with wide-ranging applications in data science, machine learning, computer graphics, and other fields. This lecture explores the definitions, properties, and computational methods of matrix inversions and ranks, as well as their relationship with linear independence.</p>
+        
+        <div class="hinglish-summary">
+            Linear algebra mein matrix inverse aur rank bahut important concepts hain. Ye concepts data science, machine learning aur computer graphics mein widely use hote hain. Is lecture mein, hum in concepts ki definitions, properties aur calculation methods ke baare mein detail se janenge, aur dekhenge ki ye linear independence se kaise related hain.
+        </div>
+
+        <h3 id="real-world-applications">1.1 Real-World Applications</h3>
+        <p>Matrix inverse operations are prevalent in numerous real-world applications:</p>
+        <ul>
+            <li><strong>Economics</strong>: Linear equations can model supply and demand chains. Using inverse matrices helps efficiently solve for unknown variables and relationships between economic factors.</li>
+            <li><strong>Computer Graphics</strong>: Inverse matrices are crucial in 3D computer graphics for transformations like rotations, translations, and scaling of objects.</li>
+            <li><strong>Cryptography</strong>: Matrices are used in encryption and decryption of data. Inverse matrices play a vital role in decoding encrypted messages in cybersecurity applications.</li>
+            <li><strong>GPS Systems</strong>: In navigation systems, matrices help calculate position coordinates and distances. Inverse matrices can be used to solve for unknown coordinates.</li>
+        </ul>
+        
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>Matrix inverse is essential for solving systems of linear equations</li>
+                <li>Real-world applications include economics, 3D graphics, cryptography, and GPS systems</li>
+                <li>The inverse only exists for square matrices with non-zero determinant</li>
+            </ul>
+        </div>
+    </section>
+    
+    <section id="matrix-inverse">
+        <h2>2. Matrix Inverse</h2>
+        
+        <h3 id="inverse-definition">2.1 Definition and Properties</h3>
+        <p>A matrix inverse is a mathematical operation that results in another matrix which, when multiplied with the original matrix, gives the identity matrix. If A is a square matrix, then its inverse (if it exists) is denoted as A<sup>-1</sup>.</p>
+
+        <div class="formula">
+            A × A<sup>-1</sup> = A<sup>-1</sup> × A = I
+        </div>
+        
+        <p>Where I is the identity matrix, which has 1s on the main diagonal and 0s elsewhere.</p>
+        
+        <p><strong>Properties of matrix inverses:</strong></p>
+        <ol>
+            <li>If A is invertible, then (A<sup>-1</sup>)<sup>-1</sup> = A</li>
+            <li>If matrices A and B are invertible, then (AB)<sup>-1</sup> = B<sup>-1</sup>A<sup>-1</sup></li>
+            <li>If matrix A<sup>T</sup> (transpose of A) is invertible, then (A<sup>T</sup>)<sup>-1</sup> = (A<sup>-1</sup>)<sup>T</sup></li>
+        </ol>
+
+        <div class="note">
+            <strong>Note:</strong> Not all matrices have an inverse. A matrix has an inverse if and only if it is square and its determinant is not zero (non-singular).
+        </div>
+
+        <h3 id="inverse-2x2">2.2 Inverse of a 2×2 Matrix</h3>
+        <p>For 2×2 matrices, there's a quick formula to find the inverse:</p>
+        
+        <p>If A = <span class="math">
+            \begin{bmatrix} 
+            a & b \\
+            c & d 
+            \end{bmatrix}
+        </span>, then A<sup>-1</sup> = <span class="math">
+            \frac{1}{ad-bc}
+            \begin{bmatrix} 
+            d & -b \\
+            -c & a 
+            \end{bmatrix}
+        </span></p>
+
+        <p>where <span class="math">ad-bc</span> is the determinant of matrix A.</p>
+
+        <div class="example">
+            <h4>Example: Finding the inverse of a 2×2 matrix</h4>
+            <p>Find the inverse of A = <span class="math">
+                \begin{bmatrix} 
+                4 & -7 \\
+                2 & -3 
+                \end{bmatrix}
+            </span></p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>First, calculate the determinant:</p>
+            <p>det(A) = 4 × (-3) - (-7) × 2 = -12 + 14 = 2</p>
+            
+            <p>Now apply the formula:</p>
+            <p>A<sup>-1</sup> = <span class="math">
+                \frac{1}{2}
+                \begin{bmatrix} 
+                -3 & 7 \\
+                -2 & 4 
+                \end{bmatrix}
+            </span> = <span class="math">
+                \begin{bmatrix} 
+                -\frac{3}{2} & \frac{7}{2} \\
+                -1 & 2 
+                \end{bmatrix}
+            </span></p>
+
+            <p>We can verify this by multiplying A × A<sup>-1</sup>:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                4 & -7 \\
+                2 & -3 
+                \end{bmatrix}
+            </span> × <span class="math">
+                \begin{bmatrix} 
+                -\frac{3}{2} & \frac{7}{2} \\
+                -1 & 2 
+                \end{bmatrix}
+            </span> = <span class="math">
+                \begin{bmatrix} 
+                1 & 0 \\
+                0 & 1 
+                \end{bmatrix}
+            </span></p>
+        </div>
+        
+        <img src="https://mathsisfun.com/algebra//images/matrix-gauss-jordan2.svg" alt="Matrix inverse calculation using elementary row operations" class="my-5">
+
+        <div class="hinglish-summary">
+            Matrix inverse ek special matrix hota hai jo original matrix ke sath multiply karne par identity matrix deta hai. 2×2 matrix ke liye, inverse calculate karne ka ek quick formula hota hai jisme determinant ka use kiya jata hai. Matrix inverse tabhi exist karta hai jab matrix square ho aur uska determinant zero na ho.
+        </div>
+
+        <h3 id="row-reduction">2.3 Matrix Inversion Using Row Reduction</h3>
+        <p>For larger matrices, finding the inverse using row reduction is a systematic approach. The method involves:</p>
+        
+        <ol>
+            <li>Creating an augmented matrix [A|I], where A is the original matrix and I is the identity matrix of the same size</li>
+            <li>Performing elementary row operations to transform A into the identity matrix</li>
+            <li>These same operations will transform I into A<sup>-1</sup></li>
+        </ol>
+
+        <p>These elementary row operations include:</p>
+        <ul>
+            <li><strong>Type 1:</strong> Interchanging any two rows</li>
+            <li><strong>Type 2:</strong> Multiplying all elements in a row by a non-zero real number</li>
+            <li><strong>Type 3:</strong> Adding multiples of one row to another row</li>
+        </ul>
+
+        <div class="example">
+            <h4>Example: Finding the inverse of a larger matrix using row reduction</h4>
+            <p>Consider matrix C = <span class="math">
+                \begin{bmatrix} 
+                1 & 3 & -1 \\
+                -1 & 2 & 2 \\
+                -2 & 6 & 1 
+                \end{bmatrix}
+            </span></p>
+            
+            <p>We create the augmented matrix [C|I]:</p>
+            <p><span class="math">
+                \left[
+                \begin{array}{ccc|ccc}
+                1 & 3 & -1 & 1 & 0 & 0 \\
+                -1 & 2 & 2 & 0 & 1 & 0 \\
+                -2 & 6 & 1 & 0 & 0 & 1
+                \end{array}
+                \right]
+            </span></p>
+            
+            <p>Through a series of row operations, we transform the left side to I:</p>
+            <p>Step 1: Add row 1 to row 2</p>
+            <p>Step 2: Add 2 times row 1 to row 3</p>
+            <p>Step 3: Continue with more operations...</p>
+            
+            <p>Eventually, we arrive at:</p>
+            <p><span class="math">
+                \left[
+                \begin{array}{ccc|ccc}
+                1 & 0 & 0 & -1 & -2 & -3 \\
+                0 & 1 & 0 & 0 & 1 & 1 \\
+                0 & 0 & 1 & -1 & -1 & -1
+                \end{array}
+                \right]
+            </span></p>
+            
+            <p>The right side is now C<sup>-1</sup> = <span class="math">
+                \begin{bmatrix} 
+                -1 & -2 & -3 \\
+                0 & 1 & 1 \\
+                -1 & -1 & -1
+                \end{bmatrix}
+            </span></p>
+        </div>
+
+        <img src="https://i.ytimg.com/vi/cJg2AuSFdjw/sddefault.jpg" alt="Inverse Matrix Using Gauss-Jordan Row Reduction Example" class="my-5">
+
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>Row reduction is a systematic method to find matrix inverse</li>
+                <li>The process involves elementary row operations on an augmented matrix [A|I]</li>
+                <li>When A is transformed to I, I transforms to A<sup>-1</sup></li>
+                <li>This method works for any invertible matrix regardless of size</li>
+            </ul>
+        </div>
+
+        <div class="practice-question">
+            <h4>Practice Question:</h4>
+            <p>Find the inverse of the matrix <span class="math">
+                \begin{bmatrix} 
+                2 & 1 \\
+                3 & 2 
+                \end{bmatrix}
+            </span> using both the direct formula and row reduction method.</p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p><strong>Using the direct formula:</strong></p>
+                <p>det(A) = 2(2) - 1(3) = 4 - 3 = 1</p>
+                <p>A<sup>-1</sup> = <span class="math">
+                    \frac{1}{1}
+                    \begin{bmatrix} 
+                    2 & -1 \\
+                    -3 & 2 
+                    \end{bmatrix}
+                </span> = <span class="math">
+                    \begin{bmatrix} 
+                    2 & -1 \\
+                    -3 & 2 
+                    \end{bmatrix}
+                </span></p>
+                
+                <p><strong>Using row reduction:</strong></p>
+                <p>Start with [A|I]: <span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    2 & 1 & 1 & 0 \\
+                    3 & 2 & 0 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 1: R1 = (1/2)R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 1/2 & 1/2 & 0 \\
+                    3 & 2 & 0 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 2: R2 = R2 - 3R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 1/2 & 1/2 & 0 \\
+                    0 & 1/2 & -3/2 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 3: R2 = 2R2</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 1/2 & 1/2 & 0 \\
+                    0 & 1 & -3 & 2
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 4: R1 = R1 - (1/2)R2</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 0 & 2 & -1 \\
+                    0 & 1 & -3 & 2
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Therefore, A<sup>-1</sup> = <span class="math">
+                    \begin{bmatrix} 
+                    2 & -1 \\
+                    -3 & 2 
+                    \end{bmatrix}
+                </span></p>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            Bade matrices ke inverse find karne ke liye row reduction method bahut useful hai. Is method mein, hum matrix A ke saath identity matrix I ko jodkar ek augmented matrix [A|I] banate hain. Phir elementary row operations se A ko I mein transform karte hain. Ye same operations I ko A-inverse mein transform kar denge. Ye method kisi bhi size ke invertible matrix ke liye kaam karta hai.
+        </div>
+    </section>
+
+    <section id="row-echelon-form">
+        <h2>3. Row Echelon Form (REF)</h2>
+        
+        <h3 id="ref-properties">3.1 Properties of Row Echelon Form</h3>
+        <p>Row Echelon Form (REF) is a special form of a matrix that is obtained after applying elementary row operations. A matrix is in REF if it satisfies these properties:</p>
+        
+        <ol>
+            <li><strong>Property 1 (P1):</strong> All non-zero rows are above any rows of all zeros</li>
+            <li><strong>Property 2 (P2):</strong> The leftmost non-zero entry (called a leading entry) of a row is to the right of the leftmost non-zero entry of the row above it</li>
+            <li>Every entry below a leading entry is zero</li>
+        </ol>
+
+        <p>REF can be visualized as a "staircase" pattern of non-zero entries in the matrix.</p>
+
+        <img src="https://i.ytimg.com/vi/biW3S9EdE4w/maxresdefault.jpg" alt="Row Echelon Form of a Matrix" class="my-5">
+
+        <div class="example">
+            <h4>Example: Matrix in Row Echelon Form</h4>
+            <p>The following matrix is in REF:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 3 & 2 & 7 \\
+                0 & 2 & -1 & 5 \\
+                0 & 0 & 4 & 3 \\
+                0 & 0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p>It satisfies both properties P1 and P2:</p>
+            <ul>
+                <li>The zero row is at the bottom</li>
+                <li>The leading entries (1, 2, 4) form a staircase pattern from left to right</li>
+                <li>All entries below each leading entry are zeros</li>
+            </ul>
+        </div>
+
+        <h3 id="ref-example">3.2 Examples of Row Echelon Form</h3>
+        <p>Let's examine some examples to understand whether they are in REF or not, and how to convert them:</p>
+
+        <div class="example">
+            <h4>Example 1: Testing if a matrix is in REF</h4>
+            <p>Is the following matrix M in REF?</p>
+            <p>M = <span class="math">
+                \begin{bmatrix} 
+                1 & 3 & -1 & 0 & 3 \\
+                0 & 0 & 0 & 0 & 0 \\
+                0 & 1 & 3 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>This matrix fails Property 1, because a row of all zeros (row 2) appears above a non-zero row (row 3).</p>
+            
+            <p>To put M in REF, we interchange rows 2 and 3:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 3 & -1 & 0 & 3 \\
+                0 & 1 & 3 & 0 & 0 \\
+                0 & 0 & 0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Now it satisfies both properties and is in REF.</p>
+        </div>
+
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>Row Echelon Form (REF) is a "staircase" arrangement of matrix entries</li>
+                <li>All zero rows must be at the bottom of the matrix</li>
+                <li>Leading entries of each row must progress to the right</li>
+                <li>Elementary row operations can transform any matrix to REF</li>
+                <li>REF simplifies solving systems of linear equations</li>
+            </ul>
+        </div>
+
+        <div class="practice-question">
+            <h4>Practice Question:</h4>
+            <p>Convert the following matrix to Row Echelon Form using elementary row operations:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                2 & 4 & 6 & 8 \\
+                1 & 2 & 4 & 8 \\
+                3 & 6 & 9 & 12
+                \end{bmatrix}
+            </span></p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>Step 1: R1 = (1/2)R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 2 & 3 & 4 \\
+                    1 & 2 & 4 & 8 \\
+                    3 & 6 & 9 & 12
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 2: R2 = R2 - R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 2 & 3 & 4 \\
+                    0 & 0 & 1 & 4 \\
+                    3 & 6 & 9 & 12
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 3: R3 = R3 - 3R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 2 & 3 & 4 \\
+                    0 & 0 & 1 & 4 \\
+                    0 & 0 & 0 & 0
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>This matrix is now in Row Echelon Form.</p>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            Row Echelon Form (REF) matrix ka ek special form hai jisme non-zero rows zero rows ke upar hote hain, aur har row ka leftmost non-zero element (leading entry) upar wali row ke leading entry ke right side mein hota hai. REF matrix mein leading entries ke neeche sirf zeros hote hain. Kisi bhi matrix ko elementary row operations ke through REF mein convert kiya ja sakta hai.
+        </div>
+    </section>
+
+    <section id="reduced-row-echelon-form">
+        <h2>4. Reduced Row Echelon Form (RREF)</h2>
+        
+        <h3 id="rref-properties">4.1 Properties of Reduced Row Echelon Form</h3>
+        <p>Reduced Row Echelon Form (RREF) is a more specialized form of Row Echelon Form. A matrix is in RREF if:</p>
+        
+        <ol>
+            <li>It satisfies all properties of REF (P1 and P2)</li>
+            <li><strong>Property 3 (P3):</strong> The leading entry in each non-zero row is 1</li>
+            <li><strong>Property 4 (P4):</strong> All entries above and below a leading 1 are 0</li>
+        </ol>
+
+        <p>In RREF, a leading 1 is sometimes called a "pivot".</p>
+
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240729182100/Reduced-Row-Echelon-Form.webp" alt="Reduced Row Echelon Form" class="my-5">
+
+        <div class="example">
+            <h4>Example: Matrix in RREF</h4>
+            <p>The following matrix is in RREF:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 0 & 0 & 3 \\
+                0 & 1 & 0 & 5 \\
+                0 & 0 & 1 & 7 \\
+                0 & 0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p>It satisfies all properties:</p>
+            <ul>
+                <li>All non-zero rows are above the zero row</li>
+                <li>The leading entries form a diagonal pattern</li>
+                <li>Each leading entry is 1</li>
+                <li>All other entries in the columns containing leading 1s are 0</li>
+            </ul>
+        </div>
+
+        <h3 id="rref-example">4.2 Examples of RREF</h3>
+        <p>Let's see how to convert a matrix to RREF:</p>
+        
+        <div class="example">
+            <h4>Example: Converting a matrix to RREF</h4>
+            <p>Convert the following matrix to RREF:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                0 & 3 & -6 & 6 & 4 & 5 \\
+                3 & -7 & 8 & -5 & 8 & 9 \\
+                3 & -9 & 12 & 9 & 6 & 15
+                \end{bmatrix}
+            </span></p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>Step 1: Interchange R1 and R3 to make the top leftmost entry non-zero</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                3 & -9 & 12 & 9 & 6 & 15 \\
+                3 & -7 & 8 & -5 & 8 & 9 \\
+                0 & 3 & -6 & 6 & 4 & 5
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 2: Create leading 1 in the first row by multiplying R1 by 1/3</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & -3 & 4 & 3 & 2 & 5 \\
+                3 & -7 & 8 & -5 & 8 & 9 \\
+                0 & 3 & -6 & 6 & 4 & 5
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 3: Create zeros under the first leading 1 by operations R2 = R2 - 3R1 and continue with more steps...</p>
+            
+            <p>After several more operations, we get:</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 0 & 0 & 0 & 1 & 2 \\
+                0 & 1 & 0 & 2 & 0 & 1 \\
+                0 & 0 & 1 & 1 & 0 & 1
+                \end{bmatrix}
+            </span></p>
+            
+            <p>This matrix is now in RREF.</p>
+        </div>
+
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>RREF is more structured than REF</li>
+                <li>RREF requires leading entries to be 1 and all other entries in those columns to be 0</li>
+                <li>Every matrix has a unique RREF</li>
+                <li>RREF is achieved through systematic row operations</li>
+                <li>RREF is particularly useful for solving systems of linear equations and finding nullspace</li>
+            </ul>
+        </div>
+
+        <div class="practice-question">
+            <h4>Practice Question:</h4>
+            <p>Use row reduction to solve the following linear system:</p>
+            <p>2x₁ + 4x₂ + 6x₃ = 8</p>
+            <p>x₁ + 2x₂ + 4x₃ = 8</p>
+            <p>3x₁ + 6x₂ + 9x₃ = 12</p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>First, create the augmented matrix:</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    2 & 4 & 6 & 8 \\
+                    1 & 2 & 4 & 8 \\
+                    3 & 6 & 9 & 12
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 1: Multiply R2 by 2 and swap with R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    2 & 4 & 8 & 16 \\
+                    2 & 4 & 6 & 8 \\
+                    3 & 6 & 9 & 12
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 2: R2 = R2 - R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    2 & 4 & 8 & 16 \\
+                    0 & 0 & -2 & -8 \\
+                    3 & 6 & 9 & 12
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 3: R3 = R3 - (3/2)R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    2 & 4 & 8 & 16 \\
+                    0 & 0 & -2 & -8 \\
+                    0 & 0 & -3 & -12
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 4: R1 = R1/2, R2 = R2/(-2), R3 = R3/(-3)</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    1 & 2 & 4 & 8 \\
+                    0 & 0 & 1 & 4 \\
+                    0 & 0 & 1 & 4
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 5: R3 = R3 - R2</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    1 & 2 & 4 & 8 \\
+                    0 & 0 & 1 & 4 \\
+                    0 & 0 & 0 & 0
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 6: R1 = R1 - 4R2</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{ccc|c}
+                    1 & 2 & 0 & -8 \\
+                    0 & 0 & 1 & 4 \\
+                    0 & 0 & 0 & 0
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>This means:</p>
+                <p>x₁ + 2x₂ = -8</p>
+                <p>x₃ = 4</p>
+                
+                <p>This is an underdetermined system with infinitely many solutions. If we set x₂ = t (any value), then:</p>
+                <p>x₁ = -8 - 2t</p>
+                <p>x₂ = t</p>
+                <p>x₃ = 4</p>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            Reduced Row Echelon Form (RREF) ek aur specialized form hai jo REF ke saare properties ke saath kuch additional requirements bhi satisfy karta hai. RREF mein har non-zero row ka leading entry 1 hota hai, aur us column mein upar ya neeche koi bhi non-zero element nahi hota. RREF ka use linear equations solve karne mein, null space find karne mein, aur matrix ke rank ko determine karne mein hota hai.
+        </div>
+    </section>
+
+    <section id="minors-cofactors">
+        <h2>5. Minors and Cofactors</h2>
+        
+        <h3 id="minors">5.1 Matrix Minors</h3>
+        <p>A minor of a matrix is the determinant of a smaller square matrix that is formed by deleting one row and one column from the original matrix.</p>
+
+        <p>For an element a<sub>ij</sub> in matrix A, its minor M<sub>ij</sub> is determined by:</p>
+        <ol>
+            <li>Removing the i<sup>th</sup> row and j<sup>th</sup> column from A</li>
+            <li>Calculating the determinant of the resulting submatrix</li>
+        </ol>
+
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230609104732/Minors-and-Cofactors-(1).png" alt="Minors and Cofactors" class="my-5">
+
+        <div class="example">
+            <h4>Example: Finding Minors of a Matrix</h4>
+            <p>Consider the matrix A = <span class="math">
+                \begin{bmatrix} 
+                a_{11} & a_{12} & a_{13} \\
+                a_{21} & a_{22} & a_{23} \\
+                a_{31} & a_{32} & a_{33}
+                \end{bmatrix}
+            </span></p>
+            
+            <p>The minor M<sub>11</sub> is found by deleting the first row and first column:</p>
+            <p>M<sub>11</sub> = det(<span class="math">
+                \begin{bmatrix} 
+                a_{22} & a_{23} \\
+                a_{32} & a_{33}
+                \end{bmatrix}
+            </span>) = a<sub>22</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>32</sub></p>
+            
+            <p>Similarly, the minor M<sub>12</sub> is found by deleting the first row and second column:</p>
+            <p>M<sub>12</sub> = det(<span class="math">
+                \begin{bmatrix} 
+                a_{21} & a_{23} \\
+                a_{31} & a_{33}
+                \end{bmatrix}
+            </span>) = a<sub>21</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>31</sub></p>
+        </div>
+
+        <h3 id="cofactors">5.2 Cofactors</h3>
+        <p>A cofactor C<sub>ij</sub> of an element a<sub>ij</sub> is calculated using its minor with an additional sign adjustment:</p>
+        
+        <div class="formula">
+            C<sub>ij</sub> = (-1)<sup>i+j</sup> × M<sub>ij</sub>
+        </div>
+
+        <p>The sign adjustment follows a checkerboard pattern:</p>
+        <p><span class="math">
+            \begin{bmatrix} 
+            + & - & + & \cdots \\
+            - & + & - & \cdots \\
+            + & - & + & \cdots \\
+            \vdots & \vdots & \vdots & \ddots
+            \end{bmatrix}
+        </span></p>
+
+        <div class="example">
+            <h4>Example: Finding Cofactors of a 2×2 Matrix</h4>
+            <p>For matrix A = <span class="math">
+                \begin{bmatrix} 
+                a_{11} & a_{12} \\
+                a_{21} & a_{22}
+                \end{bmatrix}
+            </span></p>
+            
+            <p>C<sub>11</sub> = (-1)<sup>1+1</sup> × M<sub>11</sub> = (+1) × a<sub>22</sub> = a<sub>22</sub></p>
+            <p>C<sub>12</sub> = (-1)<sup>1+2</sup> × M<sub>12</sub> = (-1) × a<sub>21</sub> = -a<sub>21</sub></p>
+            <p>C<sub>21</sub> = (-1)<sup>2+1</sup> × M<sub>21</sub> = (-1) × a<sub>12</sub> = -a<sub>12</sub></p>
+            <p>C<sub>22</sub> = (-1)<sup>2+2</sup> × M<sub>22</sub> = (+1) × a<sub>11</sub> = a<sub>11</sub></p>
+        </div>
+
+        <h3 id="adjoint">5.3 Adjoint Matrix</h3>
+        <p>The adjoint of a matrix A, denoted as adj(A), is the transpose of its cofactor matrix:</p>
+
+        <div class="formula">
+            adj(A) = [C<sub>ij</sub>]<sup>T</sup>
+        </div>
+
+        <p>For a 2×2 matrix A = <span class="math">
+            \begin{bmatrix} 
+            a & b \\
+            c & d
+            \end{bmatrix}
+        </span>, the adjoint is:</p>
+
+        <div class="formula">
+            adj(A) = <span class="math">
+                \begin{bmatrix} 
+                d & -b \\
+                -c & a
+                \end{bmatrix}
+            </span>
+        </div>
+
+        <p>The adjoint is used to compute the inverse of a matrix:</p>
+
+        <div class="formula">
+            A<sup>-1</sup> = \frac{1}{det(A)} × adj(A)
+        </div>
+
+        <img src="https://www.mathsisfun.com/algebra/images/matrix-minors1.gif" alt="Matrix Minors and Adjoint" class="my-5">
+
+        <div class="example">
+            <h4>Example: Using Adjoint to Find Matrix Inverse</h4>
+            <p>Consider the matrix A = <span class="math">
+                \begin{bmatrix} 
+                1 & 2 \\
+                -3 & 4
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 1: Calculate the determinant</p>
+            <p>det(A) = 1(4) - 2(-3) = 4 + 6 = 10</p>
+            
+            <p>Step 2: Find the cofactor matrix</p>
+            <p>C<sub>11</sub> = 4, C<sub>12</sub> = 3, C<sub>21</sub> = -2, C<sub>22</sub> = 1</p>
+            <p>Cofactor matrix = <span class="math">
+                \begin{bmatrix} 
+                4 & 3 \\
+                -2 & 1
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 3: Find the adjoint by taking the transpose</p>
+            <p>adj(A) = <span class="math">
+                \begin{bmatrix} 
+                4 & -2 \\
+                3 & 1
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 4: Calculate the inverse</p>
+            <p>A<sup>-1</sup> = (1/10) × <span class="math">
+                \begin{bmatrix} 
+                4 & -2 \\
+                3 & 1
+                \end{bmatrix}
+            </span> = <span class="math">
+                \begin{bmatrix} 
+                0.4 & -0.2 \\
+                0.3 & 0.1
+                \end{bmatrix}
+            </span></p>
+        </div>
+
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>A minor is the determinant of a submatrix formed by deleting one row and one column</li>
+                <li>Cofactors are minors with a sign adjustment based on position</li>
+                <li>The adjoint is the transpose of the cofactor matrix</li>
+                <li>Matrix inverse can be calculated using adjoint and determinant</li>
+                <li>This method (using cofactors) is an alternative to row reduction for finding inverses</li>
+            </ul>
+        </div>
+
+        <div class="practice-question">
+            <h4>Practice Question:</h4>
+            <p>Find the cofactor matrix and adjoint of the following matrix:</p>
+            <p>A = <span class="math">
+                \begin{bmatrix} 
+                3 & 1 \\
+                2 & 4
+                \end{bmatrix}
+            </span></p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>To find the cofactor matrix:</p>
+                <p>C<sub>11</sub> = (-1)<sup>1+1</sup> × M<sub>11</sub> = (+1) × 4 = 4</p>
+                <p>C<sub>12</sub> = (-1)<sup>1+2</sup> × M<sub>12</sub> = (-1) × 2 = -2</p>
+                <p>C<sub>21</sub> = (-1)<sup>2+1</sup> × M<sub>21</sub> = (-1) × 1 = -1</p>
+                <p>C<sub>22</sub> = (-1)<sup>2+2</sup> × M<sub>22</sub> = (+1) × 3 = 3</p>
+                
+                <p>Cofactor matrix = <span class="math">
+                    \begin{bmatrix} 
+                    4 & -2 \\
+                    -1 & 3
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>The adjoint is the transpose of the cofactor matrix:</p>
+                <p>adj(A) = <span class="math">
+                    \begin{bmatrix} 
+                    4 & -1 \\
+                    -2 & 3
+                    \end{bmatrix}
+                </span></p>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            Matrix minors aur cofactors matrix inverse calculate karne ke important tools hain. Minor ek submatrix ka determinant hota hai jo original matrix mein se ek row aur ek column delete karke banta hai. Cofactor ek minor hota hai jisme position ke hisaab se sign adjustment kiya jata hai. Adjoint cofactor matrix ka transpose hota hai. Matrix ka inverse calculate karne ke liye, adjoint ko determinant se divide kiya jata hai. Ye method row reduction ke alava matrix inverse find karne ka ek alternative tarika hai.
+        </div>
+    </section>
+
+    <section id="matrix-rank">
+        <h2>6. Rank of a Matrix</h2>
+        
+        <h3 id="rank-definition">6.1 Definition and Properties</h3>
+        <p>The rank of a matrix is the maximum number of linearly independent rows or columns in the matrix. It represents the dimension of the vector space spanned by the rows or columns of the matrix.</p>
+
+        <p><strong>Key properties of matrix rank:</strong></p>
+        <ul>
+            <li>For any matrix A of size m × n, the maximum possible rank is min(m,n)</li>
+            <li>The rank of a zero matrix is 0</li>
+            <li>The rank of a matrix equals the number of non-zero rows in its Row Echelon Form</li>
+            <li>Rank(A) = Rank(A<sup>T</sup>) (row rank equals column rank)</li>
+        </ul>
+
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240122123319/Rank-and-Nullity.jpg" alt="Rank and Nullity of a Matrix" class="my-5">
+
+        <div class="example">
+            <h4>Example: Finding the Rank of a Matrix</h4>
+            <p>Find the rank of matrix A = <span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                2 & 4 & 6 \\
+                3 & 6 & 9
+                \end{bmatrix}
+            </span></p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>We can use row operations to convert A to Row Echelon Form:</p>
+            <p>Step 1: Apply R2 = R2 - 2R1</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & 0 \\
+                3 & 6 & 9
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 2: Apply R3 = R3 - 3R1</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & 0 \\
+                0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p>The matrix has only one non-zero row in its Row Echelon Form, so the rank is 1.</p>
+        </div>
+
+        <h3 id="rank-invertibility">6.2 Relationship with Invertibility</h3>
+        <p>There is a crucial relationship between the rank of a matrix and its invertibility:</p>
+
+        <div class="formula">
+            A square matrix A (n × n) is invertible if and only if it has full rank (rank = n).
+        </div>
+
+        <p>This relationship connects several important concepts in linear algebra:</p>
+        <ul>
+            <li>A has full rank (rank = n)</li>
+            <li>A is invertible (non-singular)</li>
+            <li>det(A) ≠ 0</li>
+            <li>The columns (or rows) of A are linearly independent</li>
+            <li>The linear system Ax = b has a unique solution for any b</li>
+        </ul>
+
+        <h3 id="linear-independence">6.3 Linear Independence and Rank</h3>
+        <p>A set of vectors is linearly independent if none of them can be expressed as a linear combination of the others. The rank helps determine whether vectors are linearly independent:</p>
+
+        <img src="https://i.ytimg.com/vi/OgTQo_3t-RQ/maxresdefault.jpg" alt="Linear Independence and Rank" class="my-5">
+
+        <p><strong>Algorithm for determining linear independence:</strong></p>
+        <ol>
+            <li>Arrange the vectors as columns (or rows) of a matrix A</li>
+            <li>Compute the rank of the matrix</li>
+            <li>If rank(A) = number of vectors, they are linearly independent</li>
+            <li>If rank(A) < number of vectors, they are linearly dependent</li>
+        </ol>
+
+        <div class="example">
+            <h4>Example: Testing Linear Independence</h4>
+            <p>Determine if the following vectors are linearly independent:</p>
+            <p>v₁ = (1, 2, 3), v₂ = (2, 4, 6), v₃ = (3, 5, 8)</p>
+            
+            <p><strong>Solution:</strong></p>
+            <p>Form a matrix with these vectors as columns:</p>
+            <p>A = <span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                2 & 4 & 5 \\
+                3 & 6 & 8
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Using row operations to find the rank:</p>
+            <p>Step 1: R2 = R2 - 2R1</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & -1 \\
+                3 & 6 & 8
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 2: R3 = R3 - 3R1</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & -1 \\
+                0 & 0 & -1
+                \end{bmatrix}
+            </span></p>
+            
+            <p>Step 3: R3 = R3 - R2</p>
+            <p><span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & -1 \\
+                0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            
+            <p>The rank of A is 2, which is less than the number of vectors (3), so the vectors are linearly dependent.</p>
+        </div>
+
+        <div class="key-takeaway">
+            <h4>Key Takeaways:</h4>
+            <ul>
+                <li>Rank represents the dimension of the space spanned by the rows or columns</li>
+                <li>Maximum possible rank is min(rows, columns)</li>
+                <li>A matrix is invertible if and only if it has full rank</li>
+                <li>Rank can be found by counting non-zero rows in REF</li>
+                <li>Rank helps determine if a set of vectors is linearly independent</li>
+                <li>Zero matrix is the only matrix with rank 0</li>
+            </ul>
+        </div>
+
+        <div class="practice-question">
+            <h4>Practice Question:</h4>
+            <p>Determine the rank of each of the following matrices:</p>
+            <p>A = <span class="math">
+                \begin{bmatrix} 
+                1 & 2 & 3 \\
+                0 & 0 & 0 \\
+                4 & 5 & 6
+                \end{bmatrix}
+            </span></p>
+            <p>B = <span class="math">
+                \begin{bmatrix} 
+                1 & 0 & 0 \\
+                0 & 1 & 0 \\
+                0 & 0 & 1
+                \end{bmatrix}
+            </span></p>
+            <p>C = <span class="math">
+                \begin{bmatrix} 
+                0 & 0 & 0 \\
+                0 & 0 & 0 \\
+                0 & 0 & 0
+                \end{bmatrix}
+            </span></p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>Matrix A:</p>
+                <p>Using row operations:</p>
+                <p>Step 1: R3 = R3 - 4R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 2 & 3 \\
+                    0 & 0 & 0 \\
+                    0 & -3 & -6
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 2: R3 = R3/(-3)</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 2 & 3 \\
+                    0 & 0 & 0 \\
+                    0 & 1 & 2
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>The matrix has 2 non-zero rows in REF, so rank(A) = 2.</p>
+                
+                <p>Matrix B:</p>
+                <p>This is an identity matrix with 3 non-zero rows, so rank(B) = 3 (full rank).</p>
+                
+                <p>Matrix C:</p>
+                <p>This is a zero matrix, so rank(C) = 0.</p>
+            </div>
+        </div>
+
+        <div class="hinglish-summary">
+            Matrix rank matrix ke maximum linearly independent rows ya columns ki sankhya hoti hai. Kisi matrix ke liye maximum possible rank minimum(rows, columns) hota hai. Rank ka matrix invertibility se seedha sambandh hai - ek square matrix tabhi invertible hoti hai jab uska rank full ho. REF mein non-zero rows count karke rank calculate kiya ja sakta hai. Rank ka use vector set ki linear independence check karne mein bhi hota hai, aur ye linear algebra ke kai important concepts se linked hai.
+        </div>
+    </section>
+
+    <section id="practice-questions">
+        <h2>7. Practice Questions</h2>
+        <div class="practice-question">
+            <p>1. Find the inverse of the matrix <span class="math">
+                \begin{bmatrix} 
+                3 & 2 \\
+                5 & 3
+                \end{bmatrix}
+            </span> using both row reduction and cofactor methods.</p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p><strong>Using determinant and cofactor method:</strong></p>
+                <p>det(A) = 3(3) - 2(5) = 9 - 10 = -1</p>
+                <p>Cofactor matrix = <span class="math">
+                    \begin{bmatrix} 
+                    3 & -5 \\
+                    -2 & 3
+                    \end{bmatrix}
+                </span></p>
+                <p>A<sup>-1</sup> = -1 × <span class="math">
+                    \begin{bmatrix} 
+                    3 & -2 \\
+                    -5 & 3
+                    \end{bmatrix}
+                </span> = <span class="math">
+                    \begin{bmatrix} 
+                    -3 & 2 \\
+                    5 & -3
+                    \end{bmatrix}
+                </span></p>
+                
+                <p><strong>Using row reduction:</strong></p>
+                <p>Augmented matrix [A|I]:</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    3 & 2 & 1 & 0 \\
+                    5 & 3 & 0 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 1: R1 = R1/3</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 2/3 & 1/3 & 0 \\
+                    5 & 3 & 0 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 2: R2 = R2 - 5R1</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 2/3 & 1/3 & 0 \\
+                    0 & -1/3 & -5/3 & 1
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 3: R2 = R2 × (-3)</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 2/3 & 1/3 & 0 \\
+                    0 & 1 & 5 & -3
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Step 4: R1 = R1 - (2/3)R2</p>
+                <p><span class="math">
+                    \left[
+                    \begin{array}{cc|cc}
+                    1 & 0 & -3 & 2 \\
+                    0 & 1 & 5 & -3
+                    \end{array}
+                    \right]
+                </span></p>
+                
+                <p>Therefore, A<sup>-1</sup> = <span class="math">
+                    \begin{bmatrix} 
+                    -3 & 2 \\
+                    5 & -3
+                    \end{bmatrix}
+                </span></p>
+            </div>
+        </div>
+        
+        <div class="practice-question">
+            <p>2. Convert the matrix <span class="math">
+                \begin{bmatrix} 
+                1 & 3 & 0 & 2 \\
+                0 & 0 & 1 & 4 \\
+                0 & 0 & 0 & 0
+                \end{bmatrix}
+            </span> to Reduced Row Echelon Form.</p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>This matrix is already in Row Echelon Form because:</p>
+                <ul>
+                    <li>All non-zero rows are above the zero row</li>
+                    <li>The leading entries move to the right as we move down the rows</li>
+                </ul>
+                
+                <p>To convert to RREF, we need to make sure all entries above the leading 1s are zero:</p>
+                
+                <p>Step 1: R1 = R1 - 3R2</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & -3 & -10 \\
+                    0 & 0 & 1 & 4 \\
+                    0 & 0 & 0 & 0
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>The matrix is now in RREF form because:</p>
+                <ul>
+                    <li>All leading entries are 1</li>
+                    <li>All other entries in the columns containing leading 1s are zero</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="practice-question">
+            <p>3. Determine if the vectors (1,2,1), (3,1,2), and (5,5,4) are linearly independent.</p>
+            <button class="show-answer" onclick="this.nextElementSibling.style.display = 'block'; this.style.display = 'none';">Show Answer</button>
+            <div class="answer">
+                <p>Form a matrix with these vectors as columns:</p>
+                <p>A = <span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & 5 \\
+                    2 & 1 & 5 \\
+                    1 & 2 & 4
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Use row operations to find the rank:</p>
+                <p>Step 1: R2 = R2 - 2R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & 5 \\
+                    0 & -5 & -5 \\
+                    1 & 2 & 4
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 2: R3 = R3 - R1</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & 5 \\
+                    0 & -5 & -5 \\
+                    0 & -1 & -1
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 3: R2 = R2/(-5)</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & 5 \\
+                    0 & 1 & 1 \\
+                    0 & -1 & -1
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>Step 4: R3 = R3 + R2</p>
+                <p><span class="math">
+                    \begin{bmatrix} 
+                    1 & 3 & 5 \\
+                    0 & 1 & 1 \\
+                    0 & 0 & 0
+                    \end{bmatrix}
+                </span></p>
+                
+                <p>The rank of A is 2, which is less than the number of vectors (3), so the vectors are linearly dependent.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="mind-map">
+        <h2>8. Mind Map</h2>
+        <div class="mind-map">
+            <h3>Matrix Inverse and Rank: Key Concepts and Relationships</h3>
+            
+            <ul>
+                <li><strong>Matrix Inverse</strong>
+                    <ul>
+                        <li>Definition: A<sup>-1</sup> such that A × A<sup>-1</sup> = A<sup>-1</sup> × A = I</li>
+                        <li>Exists only for square matrices with non-zero determinant</li>
+                        <li>Methods to find inverse:
+                            <ul>
+                                <li>Direct formula (2×2 matrices): A<sup>-1</sup> = (1/det(A)) × [d -b; -c a]</li>
+                                <li>Row reduction (augmented matrix [A|I])</li>
+                                <li>Cofactor method: A<sup>-1</sup> = (1/det(A)) × adj(A)</li>
+                            </ul>
+                        </li>
+                        <li>Applications: Solving linear systems, computer graphics, cryptography</li>
+                        <li>Properties:
+                            <ul>
+                                <li>(A<sup>-1</sup>)<sup>-1</sup> = A</li>
+                                <li>(AB)<sup>-1</sup> = B<sup>-1</sup>A<sup>-1</sup></li>
+                                <li>(A<sup>T</sup>)<sup>-1</sup> = (A<sup>-1</sup>)<sup>T</sup></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li><strong>Row Echelon Forms</strong>
+                    <ul>
+                        <li>Row Echelon Form (REF):
+                            <ul>
+                                <li>All non-zero rows above zero rows</li>
+                                <li>Leading entries form staircase pattern</li>
+                                <li>All entries below leading entries are zero</li>
+                            </ul>
+                        </li>
+                        <li>Reduced Row Echelon Form (RREF):
+                            <ul>
+                                <li>All REF properties</li>
+                                <li>Leading entries are all 1</li>
+                                <li>All entries above and below leading 1s are zero</li>
+                            </ul>
+                        </li>
+                        <li>Uses: Solving linear systems, finding rank, null space</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Minors and Cofactors</strong>
+                    <ul>
+                        <li>Minor (M<sub>ij</sub>): Determinant of submatrix by removing row i, column j</li>
+                        <li>Cofactor (C<sub>ij</sub>): (-1)<sup>i+j</sup> × M<sub>ij</sub></li>
+                        <li>Adjoint: Transpose of cofactor matrix</li>
+                        <li>Relationship: A<sup>-1</sup> = (1/det(A)) × adj(A)</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Rank of a Matrix</strong>
+                    <ul>
+                        <li>Definition: Maximum number of linearly independent rows/columns</li>
+                        <li>Properties:
+                            <ul>
+                                <li>0 ≤ rank(A) ≤ min(m,n)</li>
+                                <li>rank(A) = number of non-zero rows in REF</li>
+                                <li>rank(zero matrix) = 0</li>
+                            </ul>
+                        </li>
+                        <li>Relationship with invertibility: Square matrix A is invertible iff rank(A) = n</li>
+                        <li>Linear independence: Vectors are linearly independent iff rank = number of vectors</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Key Connections</strong>
+                    <ul>
+                        <li>A is invertible ⟺ det(A) ≠ 0 ⟺ A has full rank</li>
+                        <li>A is invertible ⟺ Ax = b has unique solution for any b</li>
+                        <li>A is invertible ⟺ columns of A are linearly independent</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // Show/hide answers
+        document.querySelectorAll('.show-answer').forEach(button => {
+            button.addEventListener('click', function() {
+                this.nextElementSibling.style.display = 'block';
+                this.style.display = 'none';
+            });
+        });
+    </script>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

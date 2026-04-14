@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra: Vector Space and Linear Independence - Lecture Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        @page {
+            margin: 0.5in;
+            size: A4;
+        }
+        
+        .mind-map-node {
+            transition: all 0.3s ease;
+        }
+        
+        .mind-map-node:hover {
+            transform: scale(1.05);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .theorem-box {
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(90deg, #dbeafe 0%, #f8fafc 100%);
+        }
+        
+        .example-box {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(90deg, #d1fae5 0%, #f8fafc 100%);
+        }
+        
+        .definition-box {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(90deg, #fef3c7 0%, #f8fafc 100%);
+        }
+        
+        .hinglish-summary {
+            border-left: 4px solid #8b5cf6;
+            background: linear-gradient(90deg, #e9d5ff 0%, #f8fafc 100%);
+        }
+        
+        .practice-box {
+            border-left: 4px solid #ef4444;
+            background: linear-gradient(90deg, #fee2e2 0%, #f8fafc 100%);
+        }
+        
+        body {
+            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .math-expression {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        
+        .vector-notation {
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        .highlight-term {
+            background: linear-gradient(120deg, #fbbf24 0%, #fbbf24 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+            font-weight: 600;
+        }
+        
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background: white !important;
+            }
+            
+            .gradient-bg {
+                background: #4f46e5 !important;
+                color: white !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8 px-6 mb-8">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-4xl font-bold mb-2">
+                <i class="fas fa-vector-square mr-3"></i>
+                Linear Algebra & Numerical Analysis
+            </h1>
+            <h2 class="text-2xl font-light mb-4">Module 3.4: Vector Space and Linear Independence</h2>
+            <div class="flex items-center space-x-6 text-lg">
+                <span><i class="fas fa-university mr-2"></i>BS/BSc in Applied AI and Data Science</span>
+                <span><i class="fas fa-calendar-alt mr-2"></i>Lecture 13</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-6">
+        <!-- Table of Contents -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-600">
+                <i class="fas fa-list mr-2"></i>Table of Contents
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <ol class="space-y-2 text-lg">
+                        <li><a href="#introduction" class="text-blue-600 hover:underline">1. Introduction</a></li>
+                        <li><a href="#why-vector-space" class="text-blue-600 hover:underline">2. Why Vector Space and Linear Independence</a></li>
+                        <li><a href="#real-world" class="text-blue-600 hover:underline">3. Vector Spaces in Real World</a></li>
+                        <li><a href="#axioms" class="text-blue-600 hover:underline">4. Vector Space Axioms</a></li>
+                        <li><a href="#examples" class="text-blue-600 hover:underline">5. Vector Space Examples</a></li>
+                    </ol>
+                </div>
+                <div>
+                    <ol start="6" class="space-y-2 text-lg">
+                        <li><a href="#basis-span" class="text-blue-600 hover:underline">6. Basis and Span</a></li>
+                        <li><a href="#subspaces" class="text-blue-600 hover:underline">7. Subspaces</a></li>
+                        <li><a href="#practice" class="text-blue-600 hover:underline">8. Practice Questions</a></li>
+                        <li><a href="#takeaways" class="text-blue-600 hover:underline">9. Key Takeaways</a></li>
+                        <li><a href="#mindmap" class="text-blue-600 hover:underline">10. Concept Mind Map</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Introduction -->
+        <section id="introduction" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-play-circle mr-3"></i>Introduction
+                </h2>
+                
+                <div class="prose max-w-none text-lg leading-relaxed mb-6">
+                    <p>Welcome back to our Linear Algebra and Numerical Analysis course! In this lecture, we embark on a fundamental journey into <strong class="highlight-term">vector spaces</strong> and <strong class="highlight-term">linear independence</strong>. These concepts form the backbone of linear algebra and are indispensable for data science, machine learning, and advanced mathematical analysis.</p>
+                    
+                    <p>Today's major learning outcomes include:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Conceptual understanding of vector space</strong></li>
+                        <li><strong>Basis and span concepts</strong></li>
+                        <li><strong>Linear independence and dependence</strong></li>
+                        <li><strong>Real-world applications</strong></li>
+                    </ul>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Aaj hum vector space aur linear independence ke bare mein sikhenge. Ye concepts bahut important hai data science aur machine learning ke liye. Vector space ek mathematical structure hai jahan hum vectors ko add kar sakte hai aur scalar se multiply kar sakte hai. Ye concepts Gaussian elimination se bhi jude hue hai jo linear equations solve karne ke liye use hota hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Vector Space and Linear Independence -->
+        <section id="why-vector-space" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-question-circle mr-3"></i>Why Vector Space and Linear Independence?
+                </h2>
+
+                <div class="definition-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-amber-700 mb-3">Core Motivation</h3>
+                    <p class="text-gray-700 leading-relaxed">Since our ultimate goal is to <strong>fully characterize the behavior of linear systems of equations</strong> in terms of the existence and uniqueness of solutions, we must introduce fundamental linear algebraic concepts such as vector space.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="theorem-box p-6 rounded-lg">
+                        <h4 class="font-bold text-blue-700 mb-3">
+                            <i class="fas fa-key mr-2"></i>Key Concepts
+                        </h4>
+                        <ul class="space-y-2">
+                            <li><strong>Linear Independence</strong> - Vectors that cannot be expressed as combinations of others</li>
+                            <li><strong>Matrix Rank</strong> - Number of linearly independent rows/columns</li>
+                            <li><strong>Vector Space</strong> - Set with defined addition and scalar multiplication</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example-box p-6 rounded-lg">
+                        <h4 class="font-bold text-green-700 mb-3">
+                            <i class="fas fa-link mr-2"></i>Connection to Gaussian Elimination
+                        </h4>
+                        <p class="text-gray-700">These concepts are intimately linked with the <strong>Gaussian elimination method</strong>, which is an algorithmic approach for:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>Determining linear independence</li>
+                            <li>Finding existence of solutions</li>
+                            <li>Establishing uniqueness of solutions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Vector space isliye important hai kyunki humein linear equations ka behavior samajhna hai. Jab hum kisi system ke solutions exist karte hai ya nahi, aur agar karte hai to unique hai ya nahi - ye sab vector space concepts se pata chalta hai. Matrix rank aur linear independence bhi isi se jude concepts hai jo Gaussian elimination mein use hote hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vector Spaces in Real World -->
+        <section id="real-world" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-globe mr-3"></i>Vector Spaces in Real World
+                </h2>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">
+                            <i class="fas fa-cogs mr-2"></i>Mechanics & Engineering
+                        </h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>Forces, velocities, accelerations</strong> - Newtonian physics</li>
+                            <li><strong>Projectile motion</strong> - Trajectory analysis</li>
+                            <li><strong>Complex mechanical systems</strong> - Spring-mass systems</li>
+                            <li><strong>Structural engineering</strong> - Stress and strain analysis</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">
+                            <i class="fas fa-desktop mr-2"></i>Computer Graphics
+                        </h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>3D transformations</strong> - Points and directions in space</li>
+                            <li><strong>Image rendering</strong> - Virtual environments</li>
+                            <li><strong>Animations</strong> - Movement and rotation</li>
+                            <li><strong>Game development</strong> - Physics engines</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">
+                            <i class="fas fa-chart-line mr-2"></i>Economics & Data Science
+                        </h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>Market trends</strong> - Economic modeling</li>
+                            <li><strong>Resource allocation</strong> - Optimization problems</li>
+                            <li><strong>Big data analysis</strong> - High-dimensional spaces</li>
+                            <li><strong>Machine learning</strong> - Feature spaces</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">
+                            <i class="fas fa-brain mr-2"></i>AI & Machine Learning
+                        </h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>Feature vectors</strong> - Data representation</li>
+                            <li><strong>Neural networks</strong> - Weight matrices</li>
+                            <li><strong>Dimensionality reduction</strong> - PCA, SVD</li>
+                            <li><strong>Pattern recognition</strong> - Vector similarity</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Vector spaces real world mein kahin bhi use hote hai - physics mein forces aur motion ke liye, computer graphics mein 3D objects banane ke liye, economics mein market analysis ke liye, aur machine learning mein data ko represent karne ke liye. Ye sab fields mein vectors ka use karke complex problems solve karte hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vector Space Axioms -->
+        <section id="axioms" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-balance-scale mr-3"></i>Vector Space Axioms
+                </h2>
+
+                <div class="definition-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-amber-700 mb-3">Definition</h3>
+                    <p class="text-gray-700 leading-relaxed">A <strong class="highlight-term">vector space</strong> refers to objects for which <strong>addition</strong> and <strong>scalar multiplication</strong> are defined. These operations obey specific axioms.</p>
+                    <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                        <p class="text-sm text-gray-600"><strong>Note:</strong> An <strong>axiom</strong> is a statement that is taken to be true without requiring formal proof.</p>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 mb-6">
+                    <div class="theorem-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-700 mb-4">Addition Properties</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-sm">1</span>
+                                <div>
+                                    <p class="font-semibold">Associativity</p>
+                                    <p class="math-expression text-gray-600">(<span class="vector-notation">u</span> + <span class="vector-notation">v</span>) + <span class="vector-notation">w</span> = <span class="vector-notation">u</span> + (<span class="vector-notation">v</span> + <span class="vector-notation">w</span>)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-sm">2</span>
+                                <div>
+                                    <p class="font-semibold">Commutativity</p>
+                                    <p class="math-expression text-gray-600"><span class="vector-notation">u</span> + <span class="vector-notation">v</span> = <span class="vector-notation">v</span> + <span class="vector-notation">u</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-sm">3</span>
+                                <div>
+                                    <p class="font-semibold">Additive Identity</p>
+                                    <p class="math-expression text-gray-600"><span class="vector-notation">v</span> + <span class="vector-notation">0</span> = <span class="vector-notation">v</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-sm">4</span>
+                                <div>
+                                    <p class="font-semibold">Additive Inverse</p>
+                                    <p class="math-expression text-gray-600"><span class="vector-notation">v</span> + (-<span class="vector-notation">v</span>) = <span class="vector-notation">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="theorem-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-700 mb-4">Scalar Multiplication Properties</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold text-sm">5</span>
+                                <div>
+                                    <p class="font-semibold">Multiplicative Identity</p>
+                                    <p class="math-expression text-gray-600">1 · <span class="vector-notation">v</span> = <span class="vector-notation">v</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold text-sm">6</span>
+                                <div>
+                                    <p class="font-semibold">Associativity with Scalars</p>
+                                    <p class="math-expression text-gray-600">(αβ) · <span class="vector-notation">v</span> = α · (β · <span class="vector-notation">v</span>)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold text-sm">7</span>
+                                <div>
+                                    <p class="font-semibold">Distributive (Scalar)</p>
+                                    <p class="math-expression text-gray-600">α · (<span class="vector-notation">u</span> + <span class="vector-notation">v</span>) = α · <span class="vector-notation">u</span> + α · <span class="vector-notation">v</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold text-sm">8</span>
+                                <div>
+                                    <p class="font-semibold">Distributive (Vector)</p>
+                                    <p class="math-expression text-gray-600">(α + β) · <span class="vector-notation">v</span> = α · <span class="vector-notation">v</span> + β · <span class="vector-notation">v</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Vector space ke 8 axioms hai jo addition aur scalar multiplication ke rules define karte hai. Ye axioms ensure karte hai ki vector operations predictable aur consistent rahe. Jaise addition commutative hai (u+v = v+u), aur scalar multiplication distributive hai. Ye sab properties normal arithmetic jaisi hai lekin vectors ke liye specially defined hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vector Space Examples -->
+        <section id="examples" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-calculator mr-3"></i>Vector Space Examples
+                </h2>
+
+                <div class="example-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Example 1: Vector Addition in ℝ²</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="mb-4">Let's consider two column vectors:</p>
+                            <div class="bg-gray-50 p-4 rounded-lg font-mono">
+                                <p><span class="vector-notation">A</span> = [3, -2]ᵀ</p>
+                                <p><span class="vector-notation">B</span> = [4, 8]ᵀ</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p class="mb-4">Vector addition:</p>
+                            <div class="bg-gray-50 p-4 rounded-lg font-mono">
+                                <p><span class="vector-notation">A</span> ⊕ <span class="vector-notation">B</span> = [3+4, -2+8]ᵀ = [7, 6]ᵀ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-blue-800"><strong>Key Point:</strong> The addition preserves the dimension (2×1) and structure of the vector space.</p>
+                    </div>
+                </div>
+
+                <div class="example-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Example 2: Scalar Multiplication</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="mb-4">Given vector <span class="vector-notation">C</span> = [7, 6]ᵀ and scalar α = 6:</p>
+                            <div class="bg-gray-50 p-4 rounded-lg font-mono">
+                                <p>α ⊙ <span class="vector-notation">C</span> = 6 ⊙ [7, 6]ᵀ</p>
+                                <p>= [6×7, 6×6]ᵀ = [42, 36]ᵀ</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <div class="p-4 bg-yellow-50 rounded-lg">
+                                <p class="text-yellow-800"><strong>Important:</strong> This is NOT ordinary multiplication - it's a special vector space operation that preserves structure!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="practice-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-red-700 mb-4">
+                        <i class="fas fa-pencil-alt mr-2"></i>Practice Problem 1
+                    </h3>
+                    <p class="mb-4">A vector space uses 2×2 matrices with trace equal to zero. Perform vector addition on:</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-50 p-4 rounded-lg font-mono text-center">
+                            <p>Matrix A:</p>
+                            <p>[a₁₁  a₁₂]</p>
+                            <p>[a₂₁  a₂₂]</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg font-mono text-center">
+                            <p>Matrix B:</p>
+                            <p>[b₁₁  b₁₂]</p>
+                            <p>[b₂₁  b₂₂]</p>
+                        </div>
+                    </div>
+                    
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-blue-600 font-semibold">Click for Solution</summary>
+                        <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                            <p class="font-semibold mb-2">Solution:</p>
+                            <div class="font-mono">
+                                <p>A ⊕ B = [a₁₁+b₁₁  a₁₂+b₁₂]</p>
+                                <p class="ml-8">[a₂₁+b₂₁  a₂₂+b₂₂]</p>
+                                <p class="mt-2">Trace equation: (a₁₁ + b₁₁) + (a₂₂ + b₂₂) = 0</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="definition-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-amber-700 mb-4">Growing Vector Spaces</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">Vector spaces are tied to vector addition operations. For ordered pairs (x,y) in ℝ²:</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg font-mono mb-4">
+                        <p>(x₁, y₁) ⊕ (x₂, y₂) = (x₁ + x₂, y₁ + y₂)</p>
+                    </div>
+                    
+                    <p class="text-gray-700">This creates a new coordinate system from the combination of two existing coordinate systems, preserving the geometric structure while performing algebraic operations.</p>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Vector space examples mein dekha ki kaise addition aur scalar multiplication normal arithmetic se different hai. Vector addition mein hum corresponding elements ko add karte hai aur structure preserve karte hai. Scalar multiplication mein har element ko same number se multiply karte hai. Ye operations geometric meaning bhi rakhte hai - new coordinate systems banate hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Basis and Span -->
+        <section id="basis-span" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-layer-group mr-3"></i>Basis and Span
+                </h2>
+
+                <div class="grid lg:grid-cols-2 gap-8 mb-6">
+                    <div class="definition-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-amber-700 mb-4">
+                            <i class="fas fa-foundation mr-2"></i>Basis Definition
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">A <strong class="highlight-term">linearly independent set</strong> in V consisting of the <strong>maximum possible number of vectors</strong> in V is called a <strong>basis</strong> for V.</p>
+                        
+                        <div class="bg-amber-50 p-4 rounded-lg mt-4">
+                            <p class="text-amber-800 text-sm"><strong>Key Point:</strong> If we add one or more vectors to a basis set, the set becomes linearly dependent.</p>
+                        </div>
+                    </div>
+
+                    <div class="definition-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-amber-700 mb-4">
+                            <i class="fas fa-expand-arrows-alt mr-2"></i>Span Definition
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">The <strong class="highlight-term">span</strong> of a set of vectors is the set of all <strong>linear combinations</strong> of those vectors with the same number of components.</p>
+                        
+                        <div class="bg-amber-50 p-4 rounded-lg mt-4">
+                            <p class="text-amber-800 text-sm"><strong>Mathematical notation:</strong> span{v₁, v₂, ..., vₙ} = {c₁v₁ + c₂v₂ + ... + cₙvₙ | cᵢ ∈ ℝ}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theorem-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">
+                        <i class="fas fa-question mr-2"></i>"In the Span" Question
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">A frequent question in linear algebra: <em>"Is vector <strong class="vector-notation">w</strong> in the span of set S?"</em></p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-blue-800"><strong>Answer:</strong> Vector <span class="vector-notation">w</span> is in the span of S if <span class="vector-notation">w</span> can be exactly created by some linear combination of vectors in set S.</p>
+                    </div>
+                </div>
+
+                <div class="example-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Example: Testing Span Membership</h3>
+                    
+                    <div class="grid md:grid-cols-3 gap-4 mb-4">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="font-semibold mb-2">Vector v</p>
+                            <div class="font-mono">
+                                <p>[1]</p>
+                                <p>[2]</p>
+                                <p>[0]</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="font-semibold mb-2">Vector w</p>
+                            <div class="font-mono">
+                                <p>[3]</p>
+                                <p>[2]</p>
+                                <p>[1]</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="font-semibold mb-2">Set S</p>
+                            <div class="font-mono">
+                                <p>s₁ = [1, 1, 0]ᵀ</p>
+                                <p>s₂ = [7, 0, 0]ᵀ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-700 mb-2">✓ Vector v IS in span(S)</h4>
+                            <p class="text-green-800 text-sm mb-2">We can write: v = c₁s₁ + c₂s₂</p>
+                            <div class="font-mono text-sm">
+                                <p>[1] = c₁[1] + c₂[7]</p>
+                                <p>[2]    [1]    [0]</p>
+                                <p>[0]    [0]    [0]</p>
+                            </div>
+                            <p class="text-green-800 text-sm mt-2">Solution exists: c₁ = 2, c₂ = -1/7</p>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-red-700 mb-2">✗ Vector w is NOT in span(S)</h4>
+                            <p class="text-red-800 text-sm">The third element in w is non-zero (1), but all vectors in S have third element = 0.</p>
+                            <p class="text-red-800 text-sm mt-2"><strong>Reason:</strong> No linear combination of zeros can produce a non-zero value.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theorem-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">
+                        <i class="fas fa-cube mr-2"></i>Geometric Interpretation
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">In our example:</p>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><strong>Span of S:</strong> A 2D plane embedded in 3D space</li>
+                        <li><strong>Vector v:</strong> A line lying within that plane (coplanar)</li>
+                        <li><strong>Vector w:</strong> "Pops out" of the plane (not coplanar)</li>
+                    </ul>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mt-4">
+                        <p class="text-blue-800 text-sm"><strong>Visualization:</strong> Think of a flat piece of paper (the span) in a room (3D space). Vector v can be drawn on the paper, but vector w points off the paper into the room.</p>
+                    </div>
+                </div>
+
+                <div class="practice-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-red-700 mb-4">
+                        <i class="fas fa-pencil-alt mr-2"></i>Practice Problem 2
+                    </h3>
+                    <p class="mb-4">Determine whether vectors m and x are in the span of the associated set:</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Given vectors (4×1):</p>
+                            <div class="font-mono">
+                                <p>m = [2, 3, 1, 4]ᵀ</p>
+                                <p>x = [1, 0, 2, 3]ᵀ</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Associated set (3×1):</p>
+                            <div class="font-mono">
+                                <p>s₁ = [1, 2, 0]ᵀ</p>
+                                <p>s₂ = [0, 1, 1]ᵀ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-blue-600 font-semibold">Click for Solution</summary>
+                        <div class="mt-4 p-4 bg-red-50 rounded-lg">
+                            <p class="font-semibold mb-2 text-red-700">Solution: Invalid Dimensions</p>
+                            <p class="text-red-800">The vectors m and x are 4×1, while the vectors in the associated set S are 3×1. Since dimensions don't match, we cannot determine span membership. For span operations, all vectors must have the same dimensions.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Basis ek maximum set hai linearly independent vectors ka jo puri vector space ko span kar sakta hai. Span matlab hai ki kya hum kisi vector ko dusre vectors ke linear combination se bana sakte hai. Agar third element zero hai set mein to hum non-zero third element wala vector nahi bana sakte. Geometric interpretation mein span ek plane hoti hai 3D space mein.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subspaces -->
+        <section id="subspaces" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-sitemap mr-3"></i>Subspaces of Vector Spaces
+                </h2>
+
+                <div class="definition-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-amber-700 mb-4">Subspace Definition</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">Let V be a vector space. A subset W of V is called a <strong class="highlight-term">subspace</strong> of V if it satisfies three properties:</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-4 mt-6">
+                        <div class="bg-amber-50 p-4 rounded-lg text-center">
+                            <div class="text-2xl mb-2">🎯</div>
+                            <h4 class="font-bold text-amber-700 mb-2">1. Zero Vector</h4>
+                            <p class="text-sm text-gray-600">The zero vector of V is also in W</p>
+                        </div>
+                        
+                        <div class="bg-amber-50 p-4 rounded-lg text-center">
+                            <div class="text-2xl mb-2">➕</div>
+                            <h4 class="font-bold text-amber-700 mb-2">2. Closure Under Addition</h4>
+                            <p class="text-sm text-gray-600">If u, v ∈ W, then u + v ∈ W</p>
+                        </div>
+                        
+                        <div class="bg-amber-50 p-4 rounded-lg text-center">
+                            <div class="text-2xl mb-2">✖️</div>
+                            <h4 class="font-bold text-amber-700 mb-2">3. Closure Under Scalar Multiplication</h4>
+                            <p class="text-sm text-gray-600">If u ∈ W and α is scalar, then αu ∈ W</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Example 1: Line Through Origin (Valid Subspace)</h3>
+                    <p class="mb-4">Let W be the graph of function f(x) = 2x, or equivalently y = 2x:</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg font-mono mb-4">
+                        W = {(x, y) ∈ ℝ² | y = 2x}
+                    </div>
+                    
+                    <p class="mb-4"><strong>Question:</strong> Is W a subspace of V = ℝ²?</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-700 mb-2">✓ Zero Vector Check</h4>
+                            <p class="text-sm">When x = 0: y = 2(0) = 0</p>
+                            <p class="text-sm">So (0,0) ∈ W ✓</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-700 mb-2">✓ Addition Check</h4>
+                            <p class="text-sm">If u = (a, 2a) and v = (b, 2b):</p>
+                            <p class="text-sm">u + v = (a+b, 2a+2b) = (a+b, 2(a+b)) ∈ W ✓</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-700 mb-2">✓ Scalar Multiplication Check</h4>
+                            <p class="text-sm">If u = (a, 2a) and α is scalar:</p>
+                            <p class="text-sm">αu = (αa, 2αa) = (αa, 2(αa)) ∈ W ✓</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-green-100 rounded-lg">
+                        <p class="text-green-800 font-semibold">Conclusion: W is a subspace of ℝ²</p>
+                    </div>
+                </div>
+
+                <div class="example-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">Example 2: Unit Disc (Not a Vector Space)</h3>
+                    <p class="mb-4">Let V be the unit disc in ℝ²:</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg font-mono mb-4">
+                        V = {(x, y) ∈ ℝ² | x² + y² ≤ 1}
+                    </div>
+                    
+                    <p class="mb-4"><strong>Question:</strong> Is V a vector space?</p>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-red-700 mb-2">✗ Fails Scalar Multiplication</h4>
+                        <p class="text-gray-700 mb-2">Take u = (1, 0) ∈ V (since 1² + 0² = 1 ≤ 1)</p>
+                        <p class="text-gray-700 mb-2">Let α = 2, then αu = 2(1, 0) = (2, 0)</p>
+                        <p class="text-gray-700 mb-2">But (2, 0) ∉ V since 2² + 0² = 4 > 1</p>
+                        <p class="text-red-800 font-semibold">Therefore, the unit disc is NOT a vector space.</p>
+                    </div>
+                </div>
+
+                <div class="practice-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-red-700 mb-4">
+                        <i class="fas fa-pencil-alt mr-2"></i>Practice Problem 3
+                    </h3>
+                    <p class="mb-4">Is V a vector space where V is the graph of f(x) = x²?</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg font-mono mb-4">
+                        V = {(x, y) ∈ ℝ² | y = x²}
+                    </div>
+                    
+                    <details class="mt-4">
+                        <summary class="cursor-pointer text-blue-600 font-semibold">Click for Solution</summary>
+                        <div class="mt-4 p-4 bg-red-50 rounded-lg">
+                            <p class="font-semibold mb-2 text-red-700">Solution: V is NOT a vector space</p>
+                            <div class="space-y-2 text-red-800">
+                                <p><strong>Counterexample for scalar multiplication:</strong></p>
+                                <p>Take u = (1, 1) ∈ V (since 1² = 1)</p>
+                                <p>Let α = 2, then αu = (2, 2)</p>
+                                <p>But (2, 2) ∉ V since 2² = 4 ≠ 2</p>
+                                
+                                <p class="mt-3"><strong>Counterexample for addition:</strong></p>
+                                <p>Take u = (1, 1) and v = (2, 4) both in V</p>
+                                <p>u + v = (3, 5), but 3² = 9 ≠ 5</p>
+                                <p>So (3, 5) ∉ V</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="theorem-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">General Subspace Properties</h3>
+                    <div class="space-y-4 text-gray-700">
+                        <p>• The vector space ℝⁿ has dimension n and can be spanned by n basis vectors</p>
+                        <p>• Standard basis for ℝ² is {(1,0), (0,1)}</p>
+                        <p>• Standard basis for ℝⁿ is {e₁, e₂, ..., eₙ} where eᵢ has 1 in position i and 0 elsewhere</p>
+                        <p>• For matrix A: <strong>row space</strong> = span of row vectors, <strong>column space</strong> = span of column vectors</p>
+                    </div>
+                </div>
+
+                <div class="hinglish-summary p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-700 mb-2">
+                        <i class="fas fa-comment-dots mr-2"></i>Hinglish Summary
+                    </h4>
+                    <p class="text-gray-700">Subspace ek subset hai vector space ka jo teeno properties satisfy karta hai - zero vector present hai, addition ke under closed hai, aur scalar multiplication ke under closed hai. Straight line through origin ek valid subspace hai lekin circle ya parabola nahi hai kyunki ye scalar multiplication ke under closed nahi hai. Har subspace mein zero vector hona zaruri hai.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Questions -->
+        <section id="practice" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-brain mr-3"></i>Comprehensive Practice Questions
+                </h2>
+
+                <div class="space-y-8">
+                    <div class="practice-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">Question 1: Vector Space Verification</h3>
+                        <p class="mb-4">Verify whether the set of all 3×3 symmetric matrices forms a vector space under standard matrix addition and scalar multiplication.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer text-blue-600 font-semibold">Show Solution</summary>
+                            <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                                <p class="font-semibold mb-2 text-green-700">Solution: Yes, it forms a vector space</p>
+                                <div class="text-green-800 space-y-2">
+                                    <p>1. <strong>Closure under addition:</strong> Sum of symmetric matrices is symmetric</p>
+                                    <p>2. <strong>Closure under scalar multiplication:</strong> Scalar multiple of symmetric matrix is symmetric</p>
+                                    <p>3. <strong>Zero matrix is symmetric:</strong> 0ᵀ = 0</p>
+                                    <p>4. <strong>All other axioms inherited from ℝ³ˣ³</strong></p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="practice-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">Question 2: Span Determination</h3>
+                        <p class="mb-4">Determine if vector v = [2, -1, 3]ᵀ is in the span of S = {[1, 0, 1]ᵀ, [0, 1, 1]ᵀ, [1, 1, 2]ᵀ}.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer text-blue-600 font-semibold">Show Solution</summary>
+                            <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                                <p class="font-semibold mb-2 text-green-700">Solution: Yes, v ∈ span(S)</p>
+                                <div class="text-green-800">
+                                    <p>We need to solve: c₁[1,0,1]ᵀ + c₂[0,1,1]ᵀ + c₃[1,1,2]ᵀ = [2,-1,3]ᵀ</p>
+                                    <p class="mt-2">This gives us the system:</p>
+                                    <div class="font-mono mt-2">
+                                        <p>c₁ + c₃ = 2</p>
+                                        <p>c₂ + c₃ = -1</p>
+                                        <p>c₁ + c₂ + 2c₃ = 3</p>
+                                    </div>
+                                    <p class="mt-2">Solution: c₁ = 3, c₂ = -2, c₃ = -1</p>
+                                    <p>Verification: 3[1,0,1]ᵀ + (-2)[0,1,1]ᵀ + (-1)[1,1,2]ᵀ = [2,-1,3]ᵀ ✓</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="practice-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">Question 3: Subspace Properties</h3>
+                        <p class="mb-4">Let W = {(x, y, z) ∈ ℝ³ | x + 2y - z = 0}. Prove that W is a subspace of ℝ³.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer text-blue-600 font-semibold">Show Solution</summary>
+                            <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                                <p class="font-semibold mb-2 text-green-700">Solution: W is a subspace</p>
+                                <div class="text-green-800 space-y-3">
+                                    <div>
+                                        <p><strong>1. Zero vector:</strong> (0,0,0) satisfies 0 + 2(0) - 0 = 0 ✓</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>2. Closure under addition:</strong></p>
+                                        <p>If u = (x₁,y₁,z₁) and v = (x₂,y₂,z₂) are in W, then:</p>
+                                        <p>x₁ + 2y₁ - z₁ = 0 and x₂ + 2y₂ - z₂ = 0</p>
+                                        <p>For u + v = (x₁+x₂, y₁+y₂, z₁+z₂):</p>
+                                        <p>(x₁+x₂) + 2(y₁+y₂) - (z₁+z₂) = (x₁+2y₁-z₁) + (x₂+2y₂-z₂) = 0 + 0 = 0 ✓</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>3. Closure under scalar multiplication:</strong></p>
+                                        <p>If u = (x,y,z) ∈ W and α ∈ ℝ, then αu = (αx, αy, αz)</p>
+                                        <p>αx + 2(αy) - αz = α(x + 2y - z) = α(0) = 0 ✓</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="practice-box p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">Question 4: Linear Independence</h3>
+                        <p class="mb-4">Determine if the vectors v₁ = [1,2,1]ᵀ, v₂ = [2,1,3]ᵀ, v₃ = [1,-1,2]ᵀ are linearly independent.</p>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer text-blue-600 font-semibold">Show Solution</summary>
+                            <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                                <p class="font-semibold mb-2 text-green-700">Solution: The vectors are linearly independent</p>
+                                <div class="text-green-800">
+                                    <p>We solve: c₁v₁ + c₂v₂ + c₃v₃ = 0</p>
+                                    <div class="font-mono mt-2">
+                                        <p>c₁ + 2c₂ + c₃ = 0</p>
+                                        <p>2c₁ + c₂ - c₃ = 0</p>
+                                        <p>c₁ + 3c₂ + 2c₃ = 0</p>
+                                    </div>
+                                    <p class="mt-2">Using Gaussian elimination, the only solution is c₁ = c₂ = c₃ = 0</p>
+                                    <p>Therefore, the vectors are linearly independent.</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Takeaways -->
+        <section id="takeaways" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600">
+                    <i class="fas fa-key mr-3"></i>Key Takeaways
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="theorem-box p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-blue-700 mb-3">
+                                <i class="fas fa-star mr-2"></i>Vector Space Fundamentals
+                            </h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• A mathematical structure with defined addition and scalar multiplication</li>
+                                <li>• Must satisfy 8 axioms ensuring consistent behavior</li>
+                                <li>• Generalizes Euclidean vectors to abstract mathematical objects</li>
+                                <li>• Foundation for linear algebra and transformations</li>
+                            </ul>
+                        </div>
+
+                        <div class="definition-box p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-amber-700 mb-3">
+                                <i class="fas fa-expand mr-2"></i>Basis and Span
+                            </h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• <strong>Basis:</strong> Maximum linearly independent set</li>
+                                <li>• <strong>Span:</strong> All possible linear combinations</li>
+                                <li>• Basis vectors can generate the entire vector space</li>
+                                <li>• Adding vectors to basis creates linear dependence</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="example-box p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-green-700 mb-3">
+                                <i class="fas fa-sitemap mr-2"></i>Subspaces
+                            </h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• Subset of vector space with same structure</li>
+                                <li>• Must contain zero vector</li>
+                                <li>• Closed under addition and scalar multiplication</li>
+                                <li>• Lines through origin are subspaces; circles are not</li>
+                            </ul>
+                        </div>
+
+                        <div class="practice-box p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-red-700 mb-3">
+                                <i class="fas fa-rocket mr-2"></i>Applications
+                            </h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li>• Essential for data science and machine learning</li>
+                                <li>• Used in computer graphics and animations</li>
+                                <li>• Foundation for solving linear equation systems</li>
+                                <li>• Critical for understanding transformations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 gradient-bg text-white p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-3">
+                        <i class="fas fa-forward mr-2"></i>Coming Up Next
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">🔗</div>
+                            <p class="font-semibold">Linear Independence</p>
+                            <p class="text-sm opacity-90">Detailed concepts and conditions</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">📐</div>
+                            <p class="font-semibold">Orthogonality</p>
+                            <p class="text-sm opacity-90">Inner products and orthogonal vectors</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">🎯</div>
+                            <p class="font-semibold">Projections</p>
+                            <p class="text-sm opacity-90">Orthogonal projections and derivatives</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mind Map -->
+        <section id="mindmap" class="mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold mb-6 text-indigo-600 text-center">
+                    <i class="fas fa-project-diagram mr-3"></i>Concept Mind Map
+                </h2>
+
+                <div class="relative">
+                    <!-- Central Node -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="mind-map-node bg-indigo-600 text-white p-6 rounded-full text-center font-bold text-lg shadow-lg">
+                            Vector Space<br>& Linear<br>Independence
+                        </div>
+                    </div>
+
+                    <!-- Branch 1: Vector Space -->
+                    <div class="absolute top-16 left-16">
+                        <div class="mind-map-node bg-blue-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Vector Space</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• 8 Axioms</li>
+                                <li>• Addition</li>
+                                <li>• Scalar Multiplication</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Branch 2: Basis -->
+                    <div class="absolute top-16 right-16">
+                        <div class="mind-map-node bg-green-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Basis</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Linearly Independent</li>
+                                <li>• Maximum Set</li>
+                                <li>• Spans Space</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Branch 3: Span -->
+                    <div class="absolute bottom-16 left-16">
+                        <div class="mind-map-node bg-yellow-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Span</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Linear Combinations</li>
+                                <li>• Generated Space</li>
+                                <li>• Membership Test</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Branch 4: Subspace -->
+                    <div class="absolute bottom-16 right-16">
+                        <div class="mind-map-node bg-purple-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Subspace</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Contains Zero</li>
+                                <li>• Closed Addition</li>
+                                <li>• Closed Scalar Mult</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Branch 5: Applications -->
+                    <div class="absolute top-1/2 left-4 transform -translate-y-1/2">
+                        <div class="mind-map-node bg-red-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Applications</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Physics</li>
+                                <li>• Computer Graphics</li>
+                                <li>• Machine Learning</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Branch 6: Properties -->
+                    <div class="absolute top-1/2 right-4 transform -translate-y-1/2">
+                        <div class="mind-map-node bg-teal-500 text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">Properties</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Associativity</li>
+                                <li>• Commutativity</li>
+                                <li>• Distributivity</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Connecting Lines -->
+                    <svg class="absolute inset-0 w-full h-full" style="z-index: 1;">
+                        <line x1="50%" y1="50%" x2="20%" y2="25%" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="50%" y1="50%" x2="80%" y2="25%" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="50%" y1="50%" x2="20%" y2="75%" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="50%" y1="50%" x2="80%" y2="75%" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="50%" y1="50%" x2="10%" y2="50%" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="50%" y1="50%" x2="90%" y2="50%" stroke="#4f46e5" stroke-width="2"/>
+                    </svg>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <p class="text-gray-600 italic">This mind map shows the interconnected concepts we've covered in this lecture. Each branch represents a key concept that builds upon the central theme of vector spaces and linear independence.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Summary -->
+        <div class="hinglish-summary p-6 rounded-lg mb-8">
+            <h3 class="text-2xl font-bold text-purple-700 mb-4 text-center">
+                <i class="fas fa-graduation-cap mr-2"></i>Complete Lecture Summary (Hinglish)
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-lg">
+                Aaj ke lecture mein humne vector space ke fundamentals sikhe. Vector space ek mathematical structure hai jahan addition aur scalar multiplication defined hai. Ye 8 axioms follow karta hai jo ensure karta hai ki operations consistent rahe. Humne dekha ki real world mein ye concepts kahin use hote hai - physics mein forces, computer graphics mein 3D transformations, aur machine learning mein data representation. Basis aur span important concepts hai - basis maximum independent vectors ka set hai jo puri space ko span karta hai. Subspace ek subset hai jo same properties satisfy karta hai. Ye sab concepts linear algebra ki foundation hai aur data science mein bahut important hai.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-lg">Thank you for studying with us!</p>
+            <p class="text-sm opacity-90 mt-2">Next: Linear Independence and Dependence of Vectors and Functions</p>
+        </div>
+    </footer>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

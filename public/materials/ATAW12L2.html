@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/ata/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number System: Base Conversion</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .notes-container {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .title-underline {
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 0.25rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .code-block {
+            background-color: #f1f5f9;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .note-box {
+            background-color: #e6f7ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .example-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning-box {
+            background-color: #fff7ed;
+            border-left: 4px solid #f97316;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .hand-drawn {
+            font-family: 'Comic Sans MS', cursive;
+            color: #2563eb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f4f6;
+        }
+        /* Add page-break style to avoid page breaks inside certain elements when printing */
+        @media print {
+            h2, h3, .example-box, .code-block {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="py-6 px-4">
+    <div class="notes-container">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 mb-2">BS./BSc. in Applied AI and Data Science</h1>
+            <h2 class="text-2xl font-semibold">Number System: Base Conversion</h2>
+            <p class="text-gray-600 mt-2">Lecture Notes - Week 12, Lecture 2</p>
+            <p class="text-sm text-gray-500 mt-1">Date: 15/11/2023</p>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Contents</span>
+            </h2>
+            <ul class="list-disc pl-6">
+                <li>Introduction to Number Systems</li>
+                <li>Types of Number Systems (Decimal, Binary, Octal, Hexadecimal)</li>
+                <li>Conversion Methods</li>
+                <li>Python Implementation</li>
+                <li>Summary</li>
+            </ul>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Introduction to Number Systems</span>
+            </h2>
+            <p>A number system is a writing system for expressing numbers; it is a mathematical notation for representing numbers of a given set, using digits or other symbols in a consistent manner.</p>
+            
+            <div class="note-box mt-4">
+                <p><strong>Key Point:</strong> The base of a number system indicates the total number of symbols available in that system.</p>
+            </div>
+            
+            <p class="mt-4">Common number systems include:</p>
+            <ul class="list-disc pl-6">
+                <li><strong>Decimal (Base 10)</strong>: Uses digits 0-9</li>
+                <li><strong>Binary (Base 2)</strong>: Uses digits 0-1</li>
+                <li><strong>Octal (Base 8)</strong>: Uses digits 0-7</li>
+                <li><strong>Hexadecimal (Base 16)</strong>: Uses digits 0-9 and letters A-F</li>
+            </ul>
+            
+            <div class="hand-drawn mt-4">
+                <p>Prof mentioned: Binary is the "mother tongue" of computers, while decimal is our natural system!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Decimal System (Base 10)</span>
+            </h2>
+            <p>The decimal system is the standard system for denoting integer and non-integer numbers. It is what we use in our everyday calculations.</p>
+            
+            <ul class="list-disc pl-6 mt-4">
+                <li>Also called the base 10 system</li>
+                <li>Uses digits from 0 to 9</li>
+                <li>The positional value is based on powers of 10</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> The decimal number 347</p>
+                <p class="mt-2">3 × 10<sup>2</sup> + 4 × 10<sup>1</sup> + 7 × 10<sup>0</sup></p>
+                <p class="mt-1">3 × 100 + 4 × 10 + 7 × 1 = 347</p>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>This is our natural number system - we've been using this since childhood!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Binary System (Base 2)</span>
+            </h2>
+            <p>The binary system uses only two digits: 0 and 1. It is used by almost all modern computers and computer-based devices.</p>
+            
+            <ul class="list-disc pl-6 mt-4">
+                <li>Also called the base 2 system</li>
+                <li>Uses only digits 0 and 1</li>
+                <li>The positional value is based on powers of 2</li>
+                <li>It's the "native language" of computer systems</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> The binary number 1101</p>
+                <p class="mt-2">1 × 2<sup>3</sup> + 1 × 2<sup>2</sup> + 0 × 2<sup>1</sup> + 1 × 2<sup>0</sup></p>
+                <p class="mt-1">1 × 8 + 1 × 4 + 0 × 2 + 1 × 1 = 13 in decimal</p>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Binary is crucial for computing! Everything in computers is ultimately represented in binary.</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Octal System (Base 8)</span>
+            </h2>
+            <p>The octal number system uses digits from 0 to 7. It is often used as a shorthand for binary numbers.</p>
+            
+            <ul class="list-disc pl-6 mt-4">
+                <li>Also called the base 8 system</li>
+                <li>Uses digits from 0 to 7</li>
+                <li>The positional value is based on powers of 8</li>
+                <li>Each octal digit represents 3 binary digits (bits)</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> The octal number 173</p>
+                <p class="mt-2">1 × 8<sup>2</sup> + 7 × 8<sup>1</sup> + 3 × 8<sup>0</sup></p>
+                <p class="mt-1">1 × 64 + 7 × 8 + 3 × 1 = 64 + 56 + 3 = 123 in decimal</p>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Prof explained that octal gives us higher-level abstractions of binary (3 bits = 1 octal digit)!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Hexadecimal System (Base 16)</span>
+            </h2>
+            <p>The hexadecimal system uses digits from 0 to 9 and letters A to F (representing values 10 to 15). It is widely used in computing.</p>
+            
+            <ul class="list-disc pl-6 mt-4">
+                <li>Also called the base 16 system</li>
+                <li>Uses digits 0-9 and letters A-F (representing values 10-15)</li>
+                <li>The positional value is based on powers of 16</li>
+                <li>Each hexadecimal digit represents 4 binary digits (bits)</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> The hexadecimal number 2F3</p>
+                <p class="mt-2">2 × 16<sup>2</sup> + F × 16<sup>1</sup> + 3 × 16<sup>0</sup></p>
+                <p class="mt-1">2 × 256 + 15 × 16 + 3 × 1 = 512 + 240 + 3 = 755 in decimal</p>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Hexadecimal is great for compact representation of binary data (4 bits = 1 hex digit)!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Base Conversion Overview</span>
+            </h2>
+            <p>Base conversion involves converting a number from one base to another. Understanding these conversions is essential for computer science and programming.</p>
+            
+            <div class="note-box mt-4">
+                <p><strong>Common conversions:</strong></p>
+                <ul class="list-disc pl-6">
+                    <li>Decimal to Binary</li>
+                    <li>Binary to Decimal</li>
+                    <li>Decimal to Octal</li>
+                    <li>Octal to Decimal</li>
+                    <li>Decimal to Hexadecimal</li>
+                    <li>Hexadecimal to Decimal</li>
+                </ul>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Prof emphasized that interconversion skills are crucial for programming and computer science!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Decimal to Binary Conversion</span>
+            </h2>
+            <p>To convert a decimal number to binary, you repeatedly divide the decimal number by 2 and record the remainder for each division. The remainders read from bottom to top form the binary number.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert decimal 25 to binary</p>
+                <div class="mt-2">
+                    <p>25 ÷ 2 = 12 remainder 1</p>
+                    <p>12 ÷ 2 = 6 remainder 0</p>
+                    <p>6 ÷ 2 = 3 remainder 0</p>
+                    <p>3 ÷ 2 = 1 remainder 1</p>
+                    <p>1 ÷ 2 = 0 remainder 1</p>
+                </div>
+                <p class="mt-2">Reading remainders from bottom to top: 11001</p>
+                <p class="mt-1">Therefore, 25 in decimal = 11001 in binary</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for decimal to binary conversion
+def decimal_to_binary(n):
+    binary = ""
+    while n > 0:
+        remainder = n % 2
+        binary = str(remainder) + binary  # Prepend remainder to result
+        n = n // 2  # Integer division
+    return binary
+
+# Example usage
+print(decimal_to_binary(25))  # Output: 11001</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>bin()</code> function to convert decimal to binary. It adds the prefix '0b' to indicate binary representation.</p>
+                <p class="mt-2"><code>bin(25)</code> returns <code>'0b11001'</code></p>
+                <p class="mt-1"><code>bin(25)[2:]</code> returns <code>'11001'</code> (removes the '0b' prefix)</p>
+            </div>
+            
+            <div class="warning-box mt-4">
+                <p><strong>Important:</strong> When implementing the conversion yourself, be sure to use integer division (// in Python) to ensure n eventually becomes 0!</p>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Remember to read remainders from bottom to top (or reverse the string if accumulating from top to bottom)!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Binary to Decimal Conversion</span>
+            </h2>
+            <p>To convert a binary number to decimal, sum the products of each binary digit and its corresponding power of 2.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert binary 101010 to decimal</p>
+                <p class="mt-2">1 × 2<sup>5</sup> + 0 × 2<sup>4</sup> + 1 × 2<sup>3</sup> + 0 × 2<sup>2</sup> + 1 × 2<sup>1</sup> + 0 × 2<sup>0</sup></p>
+                <p class="mt-1">32 + 0 + 8 + 0 + 2 + 0 = 42</p>
+                <p class="mt-1">Therefore, 101010 in binary = 42 in decimal</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for binary to decimal conversion
+def binary_to_decimal(binary):
+    decimal = 0
+    for i in range(len(binary)):
+        digit = int(binary[len(binary)-1-i])  # Get digit from right to left
+        decimal += digit * (2 ** i)  # Multiply by corresponding power of 2
+    return decimal
+
+# Example usage
+print(binary_to_decimal("101010"))  # Output: 42</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>int()</code> function with a base parameter to convert from other bases to decimal.</p>
+                <p class="mt-2"><code>int('101010', 2)</code> returns <code>42</code></p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Decimal to Octal Conversion</span>
+            </h2>
+            <p>To convert a decimal number to octal, repeatedly divide the decimal number by 8 and record the remainder for each division. The remainders read from bottom to top form the octal number.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert decimal 136 to octal</p>
+                <div class="mt-2">
+                    <p>136 ÷ 8 = 17 remainder 0</p>
+                    <p>17 ÷ 8 = 2 remainder 1</p>
+                    <p>2 ÷ 8 = 0 remainder 2</p>
+                </div>
+                <p class="mt-2">Reading remainders from bottom to top: 210</p>
+                <p class="mt-1">Therefore, 136 in decimal = 210 in octal</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for decimal to octal conversion
+def decimal_to_octal(n):
+    octal = ""
+    while n > 0:
+        remainder = n % 8
+        octal = str(remainder) + octal  # Prepend remainder to result
+        n = n // 8  # Integer division
+    return octal
+
+# Example usage
+print(decimal_to_octal(136))  # Output: 210</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>oct()</code> function to convert decimal to octal. It adds the prefix '0o' to indicate octal representation.</p>
+                <p class="mt-2"><code>oct(136)</code> returns <code>'0o210'</code></p>
+                <p class="mt-1"><code>oct(136)[2:]</code> returns <code>'210'</code> (removes the '0o' prefix)</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Octal to Decimal Conversion</span>
+            </h2>
+            <p>To convert an octal number to decimal, sum the products of each octal digit and its corresponding power of 8.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert octal 345 to decimal</p>
+                <p class="mt-2">3 × 8<sup>2</sup> + 4 × 8<sup>1</sup> + 5 × 8<sup>0</sup></p>
+                <p class="mt-1">3 × 64 + 4 × 8 + 5 × 1 = 192 + 32 + 5 = 229</p>
+                <p class="mt-1">Therefore, 345 in octal = 229 in decimal</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for octal to decimal conversion
+def octal_to_decimal(octal):
+    decimal = 0
+    for i in range(len(octal)):
+        digit = int(octal[len(octal)-1-i])  # Get digit from right to left
+        decimal += digit * (8 ** i)  # Multiply by corresponding power of 8
+    return decimal
+
+# Example usage
+print(octal_to_decimal("345"))  # Output: 229</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>int()</code> function with a base parameter to convert from other bases to decimal.</p>
+                <p class="mt-2"><code>int('345', 8)</code> returns <code>229</code></p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Decimal to Hexadecimal Conversion</span>
+            </h2>
+            <p>To convert a decimal number to hexadecimal, repeatedly divide the decimal number by 16 and record the remainder for each division. The remainders read from bottom to top form the hexadecimal number.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert decimal 269 to hexadecimal</p>
+                <div class="mt-2">
+                    <p>269 ÷ 16 = 16 remainder 13 (D)</p>
+                    <p>16 ÷ 16 = 1 remainder 0</p>
+                    <p>1 ÷ 16 = 0 remainder 1</p>
+                </div>
+                <p class="mt-2">Reading remainders from bottom to top: 10D</p>
+                <p class="mt-1">Therefore, 269 in decimal = 10D in hexadecimal</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for decimal to hexadecimal conversion
+def decimal_to_hex(n):
+    hex_chars = "0123456789ABCDEF"
+    hex_result = ""
+    while n > 0:
+        remainder = n % 16
+        hex_result = hex_chars[remainder] + hex_result  # Prepend remainder to result
+        n = n // 16  # Integer division
+    return hex_result
+
+# Example usage
+print(decimal_to_hex(269))  # Output: 10D</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>hex()</code> function to convert decimal to hexadecimal. It adds the prefix '0x' to indicate hexadecimal representation.</p>
+                <p class="mt-2"><code>hex(269)</code> returns <code>'0x10d'</code></p>
+                <p class="mt-1"><code>hex(269)[2:].upper()</code> returns <code>'10D'</code> (removes the '0x' prefix and converts to uppercase)</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Hexadecimal to Decimal Conversion</span>
+            </h2>
+            <p>To convert a hexadecimal number to decimal, sum the products of each hexadecimal digit and its corresponding power of 16.</p>
+            
+            <div class="example-box">
+                <p><strong>Example:</strong> Convert hexadecimal 1AB to decimal</p>
+                <p class="mt-2">1 × 16<sup>2</sup> + A(10) × 16<sup>1</sup> + B(11) × 16<sup>0</sup></p>
+                <p class="mt-1">1 × 256 + 10 × 16 + 11 × 1 = 256 + 160 + 11 = 427</p>
+                <p class="mt-1">Therefore, 1AB in hexadecimal = 427 in decimal</p>
+            </div>
+            
+            <div class="code-block">
+# Python code for hexadecimal to decimal conversion
+def hex_to_decimal(hex_str):
+    hex_str = hex_str.upper()  # Convert to uppercase for consistency
+    hex_chars = "0123456789ABCDEF"
+    decimal = 0
+    for i in range(len(hex_str)):
+        digit = hex_chars.index(hex_str[len(hex_str)-1-i])  # Get value of hex digit
+        decimal += digit * (16 ** i)  # Multiply by corresponding power of 16
+    return decimal
+
+# Example usage
+print(hex_to_decimal("1AB"))  # Output: 427</div>
+            
+            <div class="note-box">
+                <p><strong>Note:</strong> Python provides the built-in <code>int()</code> function with a base parameter to convert from other bases to decimal.</p>
+                <p class="mt-2"><code>int('1AB', 16)</code> returns <code>427</code></p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Python Implementation - Built-in Functions</span>
+            </h2>
+            <p>Python provides built-in functions for number system conversions. Here's a summary of the functions and their usage:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Conversion</th>
+                        <th>Function</th>
+                        <th>Example</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Decimal to Binary</td>
+                        <td><code>bin()</code></td>
+                        <td><code>bin(25)</code></td>
+                        <td><code>'0b11001'</code></td>
+                    </tr>
+                    <tr>
+                        <td>Decimal to Octal</td>
+                        <td><code>oct()</code></td>
+                        <td><code>oct(25)</code></td>
+                        <td><code>'0o31'</code></td>
+                    </tr>
+                    <tr>
+                        <td>Decimal to Hexadecimal</td>
+                        <td><code>hex()</code></td>
+                        <td><code>hex(25)</code></td>
+                        <td><code>'0x19'</code></td>
+                    </tr>
+                    <tr>
+                        <td>Binary to Decimal</td>
+                        <td><code>int(str, 2)</code></td>
+                        <td><code>int('11001', 2)</code></td>
+                        <td><code>25</code></td>
+                    </tr>
+                    <tr>
+                        <td>Octal to Decimal</td>
+                        <td><code>int(str, 8)</code></td>
+                        <td><code>int('31', 8)</code></td>
+                        <td><code>25</code></td>
+                    </tr>
+                    <tr>
+                        <td>Hexadecimal to Decimal</td>
+                        <td><code>int(str, 16)</code></td>
+                        <td><code>int('19', 16)</code></td>
+                        <td><code>25</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note-box mt-4">
+                <p><strong>Prefix notations in Python:</strong></p>
+                <ul class="list-disc pl-6">
+                    <li>Binary: <code>0b</code> or <code>0B</code></li>
+                    <li>Octal: <code>0o</code> or <code>0O</code></li>
+                    <li>Hexadecimal: <code>0x</code> or <code>0X</code></li>
+                </ul>
+            </div>
+            
+            <div class="code-block">
+# Python examples with prefixes
+a = 234  # Decimal number
+
+# Converting to other bases using built-in functions
+print(bin(a))      # Output: '0b11101010'
+print(oct(a))      # Output: '0o352'
+print(hex(a))      # Output: '0xea'
+
+# Removing prefixes
+print(bin(a)[2:])  # Output: '11101010'
+print(oct(a)[2:])  # Output: '352'
+print(hex(a)[2:])  # Output: 'ea'
+
+# Converting from other bases to decimal
+print(int('0b11101010', 2))  # Output: 234
+print(int('0o352', 8))       # Output: 234
+print(int('0xea', 16))       # Output: 234
+
+# Direct conversion without prefix
+print(int('11101010', 2))    # Output: 234
+print(int('352', 8))         # Output: 234
+print(int('ea', 16))         # Output: 234</div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Prof highlighted that these built-in functions make conversion easy, but understanding the underlying process is crucial!</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Custom Implementation - Decimal to Binary</span>
+            </h2>
+            <p>Let's look at a step-by-step implementation of decimal to binary conversion without using built-in functions:</p>
+            
+            <div class="code-block">
+def decimal_to_binary(n):
+    # Initialize an empty string to store binary representation
+    b = ""
+    
+    # Repeat until n becomes 0
+    while n != 0:
+        # Get remainder when n is divided by 2
+        r = n % 2
+        
+        # Prepend remainder to the result
+        b = str(r) + b
+        
+        # Integer division of n by 2
+        n = n // 2
+    
+    return b
+
+# Test with sample numbers
+print(decimal_to_binary(17))  # Output: 10001
+print(decimal_to_binary(25))  # Output: 11001
+print(decimal_to_binary(234)) # Output: 11101010</div>
+            
+            <div class="warning-box mt-4">
+                <p><strong>Important implementation notes:</strong></p>
+                <ol class="list-decimal pl-6">
+                    <li>Use integer division (<code>//</code>) to ensure n eventually becomes 0</li>
+                    <li>Prepend each remainder to the result string to get the correct order</li>
+                    <li>If you accumulate remainders in reverse order, you'll need to reverse the string at the end</li>
+                </ol>
+            </div>
+            
+            <div class="note-box mt-4">
+                <p><strong>Alternative approach (accumulating and then reversing):</strong></p>
+                <div class="code-block">
+def decimal_to_binary_alt(n):
+    # Initialize an empty string to store binary representation
+    b = ""
+    
+    # Repeat until n becomes 0
+    while n != 0:
+        # Get remainder when n is divided by 2
+        r = n % 2
+        
+        # Append remainder to the result (in reverse order)
+        b = b + str(r)
+        
+        # Integer division of n by 2
+        n = n // 2
+    
+    # Reverse the string to get correct binary representation
+    return b[::-1]
+
+# Test
+print(decimal_to_binary_alt(17))  # Output: 10001</div>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Prof mentioned that some numbers like 17 (10001) are palindromes in binary, so it might trick you into thinking your code is correct even when it's not! Always test with multiple examples!</p>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-xl font-bold mb-4">
+                <span class="title-underline">Summary of Base Conversions</span>
+            </h2>
+            <ul class="list-disc pl-6">
+                <li><strong>Decimal to Binary:</strong> Divide by 2, record remainders in reverse order</li>
+                <li><strong>Binary to Decimal:</strong> Sum products of binary digits and powers of 2</li>
+                <li><strong>Decimal to Octal:</strong> Divide by 8, record remainders in reverse order</li>
+                <li><strong>Octal to Decimal:</strong> Sum products of octal digits and powers of 8</li>
+                <li><strong>Decimal to Hexadecimal:</strong> Divide by 16, record remainders in reverse order</li>
+                <li><strong>Hexadecimal to Decimal:</strong> Sum products of hexadecimal digits and powers of 16</li>
+            </ul>
+            
+            <div class="note-box mt-4">
+                <p><strong>Practical applications:</strong></p>
+                <ul class="list-disc pl-6">
+                    <li>Binary is the fundamental language of computers</li>
+                    <li>Octal and hexadecimal provide more compact representations of binary</li>
+                    <li>Hexadecimal is commonly used in programming for representing memory addresses, colors, and binary data</li>
+                    <li>Understanding number systems is crucial for computer science and programming</li>
+                </ul>
+            </div>
+            
+            <div class="hand-drawn mt-4">
+                <p>Important takeaway: Being able to convert between number systems is a fundamental skill in computer science! Practice these conversions to build your algorithmic thinking!</p>
+            </div>
+        </section>
+
+        <footer class="mt-8 pt-6 border-t border-gray-300 text-center text-gray-600">
+            <p>End of Notes - Number System: Base Conversions</p>
+            <p class="text-sm mt-2">Applied AI and Data Science - Algorithmic Thinking and Applications</p>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><base href="/notes/no/">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Numerical Optimization - Lecture 2: Calculus and Linear Algebra Review
+    </title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .math {
+        font-family: "Times New Roman", serif;
+        font-style: italic;
+      }
+      .extra-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 4px solid #4f46e5;
+      }
+      .hinglish-summary {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 5px solid #f59e0b;
+        font-weight: 500;
+      }
+      .diagram-placeholder {
+        background: #f3f4f6;
+        border: 2px dashed #d1d5db;
+        padding: 2rem;
+        text-align: center;
+        margin: 1rem 0;
+        border-radius: 8px;
+        color: #6b7280;
+        font-style: italic;
+      }
+      .key-takeaways {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 5px solid #10b981;
+      }
+      .practice-questions {
+        background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 5px solid #8b5cf6;
+      }
+      .mind-map {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+      }
+      .mind-map-node {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.5rem;
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .mind-map-central {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        margin: 1rem auto;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      th,
+      td {
+        border: 1px solid #d1d5db;
+        padding: 0.75rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+      }
+      .toc-link {
+        color: #4f46e5;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+      .toc-link:hover {
+        color: #7c3aed;
+        text-decoration: underline;
+      }
+      .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        margin: 2rem 0 1rem 0;
+      }
+    </style>
+    <!-- MathJax v3 configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"],
+          ],
+          displayMath: [
+            ["\\[", "\\]"],
+            ["$$", "$$"],
+          ],
+          processEscapes: true,
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+  </head>
+  <body class="bg-gray-50 p-8 max-w-5xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-calculator text-blue-600 mr-3"></i>
+        Numerical Optimization - Lecture 2
+      </h1>
+      <h2 class="text-2xl text-gray-600 mb-4">
+        Calculus and Linear Algebra Review
+      </h2>
+      <div class="bg-blue-100 p-4 rounded-lg">
+        <p class="text-blue-800">
+          <strong>Course:</strong> Data Science & Numerical Methods
+        </p>
+        <p class="text-blue-800">
+          <strong>Topics:</strong> Review of Lecture 1, Calculus Fundamentals,
+          Linear Algebra Basics
+        </p>
+      </div>
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        <i class="fas fa-list text-indigo-600 mr-2"></i>
+        Table of Contents
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <ul class="space-y-2">
+          <li><a href="#overview" class="toc-link">1. Overview</a></li>
+          <li>
+            <a href="#lecture1-review" class="toc-link"
+              >2. Review of Lecture 1</a
+            >
+          </li>
+          <li class="ml-4">
+            <a href="#data-science" class="toc-link"
+              >2.1 What is Data Science</a
+            >
+          </li>
+          <li class="ml-4">
+            <a href="#optimization-basics" class="toc-link"
+              >2.2 Basics of Optimization</a
+            >
+          </li>
+          <li>
+            <a href="#calculus-review" class="toc-link"
+              >3. Revision of Calculus</a
+            >
+          </li>
+          <li class="ml-4">
+            <a href="#derivatives" class="toc-link">3.1 Derivatives</a>
+          </li>
+          <li class="ml-4">
+            <a href="#taylor-theorem" class="toc-link">3.2 Taylor's Theorem</a>
+          </li>
+        </ul>
+        <ul class="space-y-2">
+          <li class="ml-4">
+            <a href="#multivariable" class="toc-link"
+              >3.3 Multivariable Functions</a
+            >
+          </li>
+          <li>
+            <a href="#linear-algebra" class="toc-link"
+              >4. Revision of Linear Algebra</a
+            >
+          </li>
+          <li class="ml-4">
+            <a href="#vectors" class="toc-link">4.1 Vectors</a>
+          </li>
+          <li class="ml-4">
+            <a href="#matrices" class="toc-link">4.2 Matrices</a>
+          </li>
+          <li class="ml-4">
+            <a href="#operations" class="toc-link">4.3 Matrix Operations</a>
+          </li>
+          <li><a href="#mind-map-section" class="toc-link">5. Mind Map</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Overview Section -->
+    <section id="overview" class="mb-8">
+      <div class="section-header">
+        <h2 class="text-3xl font-bold">
+          <i class="fas fa-eye mr-2"></i>
+          1. Overview
+        </h2>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <p class="text-lg mb-4">
+          Welcome to the second lecture on numerical optimization. Today's
+          agenda covers:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-blue-50 p-4 rounded-lg text-center">
+            <i class="fas fa-history text-blue-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-blue-800">Review of Lecture 1</h4>
+          </div>
+          <div class="bg-green-50 p-4 rounded-lg text-center">
+            <i class="fas fa-chart-line text-green-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-green-800">Revision of Calculus</h4>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg text-center">
+            <i class="fas fa-calculator text-purple-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-purple-800">
+              Revision of Linear Algebra
+            </h4>
+          </div>
+        </div>
+
+        <div class="extra-content">
+          <strong>Professor mentioned in class:</strong> We will study the very
+          basics of tools that will be very handy for optimization - calculus
+          and linear algebra. Both are subjects on their own, but we'll briefly
+          review the things we'll frequently use in optimization because not all
+          of you may be aware of these notations.
+        </div>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>Hinglish Summary:</strong> Aaj ke lecture mein hum optimization
+        ke liye important tools review karenge. Pehle lecture 1 ka recap
+        karenge, phir calculus aur linear algebra ke basic concepts dekhenge jo
+        optimization mein frequently use hote hain. Ye sab tools optimization
+        problems solve karne ke liye bahut zaroori hain.
+      </div>
+    </section>
+
+    <!-- Review of Lecture 1 -->
+    <section id="lecture1-review" class="mb-8">
+      <div class="section-header">
+        <h2 class="text-3xl font-bold">
+          <i class="fas fa-history mr-2"></i>
+          2. Review of Lecture 1
+        </h2>
+      </div>
+
+      <!-- Data Science Subsection -->
+      <div id="data-science" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-database text-blue-600 mr-2"></i>
+          2.1 What is Data Science
+        </h3>
+
+        <div class="mb-4">
+          <h4 class="text-xl font-semibold mb-2">
+            Why Mathematics is Important
+          </h4>
+          <p class="mb-4">
+            <strong>Mathematics is the tool</strong> that you use to infer
+            something out of data. Raw data is very difficult to handle, so you
+            convert it to mathematical terms, then perform mathematical
+            operations, statistical operations, or optimization operations.
+          </p>
+
+          <div class="extra-content">
+            <strong>Professor mentioned in class:</strong> Data scientists use
+            machine learning algorithms, and the majority of machine learning
+            problems can be classified into two main types of problems.
+          </div>
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Why Optimization is Important
+        </h4>
+        <p class="mb-4">
+          Most machine learning problems can be classified into:
+        </p>
+
+        <table class="mb-4">
+          <thead>
+            <tr>
+              <th>Problem Type</th>
+              <th>Description</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Model Fitting Problem</strong></td>
+              <td>
+                Finding the best explanation when you want to see one variable
+                as a function of other variables
+              </td>
+              <td>
+                House price prediction based on area (linear/non-linear models)
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Classification Problem</strong></td>
+              <td>
+                Drawing boundaries between different types of data to categorize
+                them
+              </td>
+              <td>Cat vs Dog image recognition, spam email detection</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="extra-content">
+          <strong>Professor explained classification with example:</strong>
+          Suppose you have two types of data points (crosses and dots). The
+          problem is: can you draw a boundary so that one side has one type and
+          the other side has another type? For example, if you give a picture to
+          a machine, it should be able to classify whether it's a dog or cat.
+          The machine uses classifiers with boundaries - if it's within one
+          boundary, it's a dog; if in another, it's a cat.
+        </div>
+
+        <div class="diagram-placeholder">
+          <img
+            src="https://copilot.microsoft.com/th/id/BCO.e95d9f94-36f3-406b-a3a2-09638f4be82b.png?h=384"
+            alt="Classification Boundary Diagram"
+            width="500"
+          />
+        </div>
+
+        <p class="mb-4">
+          The key question becomes:
+          <strong>Which line/boundary should I choose?</strong> The important
+          criteria is which gives the
+          <strong>minimum misclassification</strong>. This leads us to
+          optimization problems.
+        </p>
+      </div>
+
+      <!-- Basics of Optimization -->
+      <div
+        id="optimization-basics"
+        class="bg-white p-6 rounded-lg shadow-md mb-6"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-cogs text-purple-600 mr-2"></i>
+          2.2 Basics of Optimization
+        </h3>
+
+        <div class="mb-4">
+          <h4 class="text-xl font-semibold mb-2">
+            General Form of Optimization Problem
+          </h4>
+          <div class="bg-gray-100 p-4 rounded math text-center text-lg">
+            \[ \text{minimize}\; f(x) \\ ext{subject to}\; x \in S \]
+          </div>
+          <p class="mt-2">Where:</p>
+          <ul class="list-disc pl-6 mb-4">
+            <li><strong>x</strong> is the decision variable</li>
+            <li><strong>f(x)</strong> is the objective function</li>
+            <li><strong>S</strong> represents the constraints</li>
+          </ul>
+        </div>
+
+        <div class="extra-content">
+          <strong>Professor mentioned in class:</strong> We will only talk about
+          minimization problems because every maximization problem can be
+          converted to minimization by taking the negative of the function. For
+          example, in trip planning, f(x) may be the highest utility you can
+          get, and x may be your constraints like time or money constraints.
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Types of Optimization Problems
+        </h4>
+        <table class="mb-4">
+          <thead>
+            <tr>
+              <th>Classification</th>
+              <th>Type 1</th>
+              <th>Type 2</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Constraints</strong></td>
+              <td>Unconstrained</td>
+              <td>Constrained</td>
+              <td>Unconstrained problems are easier to handle</td>
+            </tr>
+            <tr>
+              <td><strong>Function Shape</strong></td>
+              <td>Convex</td>
+              <td>Non-convex</td>
+              <td>Convexity is very important for optimization</td>
+            </tr>
+            <tr>
+              <td><strong>Function Type</strong></td>
+              <td>Linear</td>
+              <td>Non-linear</td>
+              <td>Will be discussed later</td>
+            </tr>
+            <tr>
+              <td><strong>Variable Type</strong></td>
+              <td>Continuous</td>
+              <td>Discrete</td>
+              <td>We focus on continuous optimization</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="extra-content">
+          <strong>Professor explained continuous vs discrete:</strong>
+          Continuous optimization means variables can take any value in the real
+          line or within an interval (like 0 to 1). Discrete variables are like
+          days of the week - Sunday, Monday, Tuesday, etc. - there's no
+          continuity. We won't touch discrete variables here; most of our
+          problems will be continuous.
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Global vs Local Solutions</h4>
+        <p class="mb-4">
+          Understanding the difference between global and local solutions is
+          crucial:
+        </p>
+        <ul class="list-disc pl-6 mb-4">
+          <li>
+            <strong>Global Solution:</strong> The point where the function takes
+            its absolute minimum value
+          </li>
+          <li>
+            <strong>Local Solution:</strong> A point that is minimal in its
+            neighborhood but may not be the global minimum
+          </li>
+        </ul>
+
+        <div class="extra-content">
+          <strong>Professor explained with example:</strong> If you have a
+          function with multiple valleys, the deepest valley gives the global
+          minimum, but other valleys give local minima. The problem is that when
+          we start from a point and move to decrease the function value, we
+          might get stuck in a local minimum depending on our starting point.
+          This is where convexity becomes important - in convex problems, local
+          and global solutions match.
+        </div>
+
+        <div class="diagram-placeholder">
+          [Insert diagram: Function with multiple local minima and one global
+          minimum]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Key Questions in Optimization
+        </h4>
+        <ol class="list-decimal pl-6 mb-4">
+          <li>
+            <strong>Existence:</strong> How do you know such solutions exist?
+          </li>
+          <li>
+            <strong>Characterization:</strong> Can we characterize the solution?
+            How can we verify if a given point is a solution?
+          </li>
+          <li>
+            <strong>Computation:</strong> How to find them? (Numerical schemes)
+          </li>
+        </ol>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>Hinglish Summary:</strong> Lecture 1 mein humne dekha ki data
+        science mein mathematics kitna important hai. Machine learning ke do
+        main problems hain - model fitting aur classification. Dono ultimately
+        optimization problems ban jaate hain. Optimization problem ka basic
+        structure hai: minimize f(x) subject to constraints. Problems
+        unconstrained/constrained, convex/non-convex, continuous/discrete ho
+        sakte hain. Global aur local solutions ka difference samajhna zaroori
+        hai - convex problems mein dono same hote hain.
+      </div>
+
+      <div class="key-takeaways">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-key text-green-600 mr-2"></i>
+          Key Takeaways
+        </h4>
+        <ul class="list-disc pl-6">
+          <li>Mathematics converts raw data into workable form for analysis</li>
+          <li>
+            Machine learning problems are primarily model fitting or
+            classification
+          </li>
+          <li>Both types ultimately lead to optimization problems</li>
+          <li>
+            Optimization problems have decision variables, objective functions,
+            and constraints
+          </li>
+          <li>
+            Convex problems are easier to solve as local = global solutions
+          </li>
+          <li>
+            Understanding existence, characterization, and computation of
+            solutions is crucial
+          </li>
+        </ul>
+      </div>
+
+      <div class="practice-questions">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-question-circle text-purple-600 mr-2"></i>
+          Practice Questions
+        </h4>
+        <ol class="list-decimal pl-6 mb-4">
+          <li>
+            <strong>Q:</strong> Give an example of a model fitting problem from
+            your daily life.
+          </li>
+          <li>
+            <strong>Q:</strong> What is the difference between constrained and
+            unconstrained optimization?
+          </li>
+          <li>
+            <strong>Q:</strong> Why is convexity important in optimization
+            problems?
+          </li>
+        </ol>
+
+        <h5 class="font-semibold mb-2">Answers:</h5>
+        <ol class="list-decimal pl-6">
+          <li>
+            <strong>A:</strong> Predicting electricity bill based on usage, or
+            predicting travel time based on distance and traffic.
+          </li>
+          <li>
+            <strong>A:</strong> Unconstrained has no restrictions on variables;
+            constrained has limitations like budget, time, or physical
+            constraints.
+          </li>
+          <li>
+            <strong>A:</strong> In convex problems, any local minimum is also a
+            global minimum, making them much easier to solve reliably.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Calculus Review -->
+    <section id="calculus-review" class="mb-8">
+      <div class="section-header">
+        <h2 class="text-3xl font-bold">
+          <i class="fas fa-chart-line mr-2"></i>
+          3. Revision of Calculus
+        </h2>
+      </div>
+
+      <!-- Derivatives -->
+      <div id="derivatives" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-function text-blue-600 mr-2"></i>
+          3.1 Derivatives
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">Definition of Derivative</h4>
+        <p class="mb-4">
+          For a function \(f : \mathbb{R} \to \mathbb{R}\), the derivative
+          \(f'(x_0)\) is defined as:
+        </p>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ f'(x_0) = \frac{\mathrm{d}f}{\mathrm{d}x}(x_0) = \lim_{t\to 0}
+          \frac{f(x_0+t)-f(x_0)}{t} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Calculus Rules</h4>
+        <table class="mb-4">
+          <thead>
+            <tr>
+              <th>Rule</th>
+              <th>Formula</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sum/Difference</td>
+              <td class="math">\[ (f\pm g)'(x) = f'(x) \pm g'(x) \]</td>
+            </tr>
+            <tr>
+              <td>Product Rule</td>
+              <td class="math">\[ (fg)'(x) = f'(x)g(x) + g'(x)f(x) \]</td>
+            </tr>
+            <tr>
+              <td>Reciprocal Rule</td>
+              <td class="math">
+                \[ \left(\frac{1}{g}\right)'(x) = -\frac{g'(x)}{(g(x))^{2}} \]
+              </td>
+            </tr>
+            <tr>
+              <td>Second Derivative</td>
+              <td class="math">\[ f''(x) = (f')'(x) \]</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="extra-content">
+          <strong>Professor mentioned examples:</strong> If \(f(x)=\sin x\),
+          then \(f'(x)=\cos x\) and \(f''(x)=-\sin x\). If \(f(x)=x^2\), then
+          \(f'(x)=2x\) and \(f''(x)=2\). These are point-wise concepts - the
+          function may not be differentiable everywhere, so you have to specify
+          which point you're talking about.
+        </div>
+      </div>
+
+      <!-- Taylor's Theorem -->
+      <div id="taylor-theorem" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-expand-arrows-alt text-green-600 mr-2"></i>
+          3.2 Taylor's Theorem
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Taylor Expansion (First Order)
+        </h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ f(x) \approx f(x_0) + f'(x_0)(x - x_0) \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Taylor Expansion (Second Order)
+        </h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ f(x) \approx f(x_0) + f'(x_0)(x - x_0) + \tfrac{1}{2}f''(x_0)(x -
+          x_0)^2 \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Example: \(f(x)=e^{x},\; x_0 = 0\)
+        </h4>
+        <ul class="list-disc pl-6 mb-4">
+          <li><strong>1st order:</strong> \(e^{x} \approx 1 + x\)</li>
+          <li>
+            <strong>2nd order:</strong> \(e^{x} \approx 1 + x +
+            \tfrac{x^{2}}{2}\)
+          </li>
+        </ul>
+
+        <div class="diagram-placeholder">
+          <img
+            src="https://copilot.microsoft.com/th/id/BCO.37942c13-8543-4d36-af70-eea7a71a5aea.png"
+            alt="Taylor approximation of e^x"
+            width="600"
+          />
+        </div>
+
+        <div class="extra-content">
+          <strong>Professor explained the importance:</strong> Taylor series is
+          very important because it says that to know the function in a nearby
+          area, it's enough to know its first-order information. Even if you
+          don't know the entire function, by knowing it at a point, you can
+          infer something about the function in a neighborhood of that point.
+          For example, if you have access to an oracle that gives you f(x),
+          f'(x), or f''(x) at a point, you can infer the function values within
+          a small boundary.
+        </div>
+
+        <p class="mb-4">
+          <strong>Key Insight:</strong> If \(x\) is very close to \(x_0\), then
+          these approximations are very good. The quadratic approximation is
+          better than linear, especially as you move further from \(x_0\).
+        </p>
+      </div>
+
+      <!-- Multivariable Functions -->
+      <div id="multivariable" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-cube text-purple-600 mr-2"></i>
+          3.3 Multivariable Functions
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">Partial Derivatives</h4>
+        <p class="mb-4">
+          For a function f : ℝⁿ → ℝ, the partial derivative with respect to xᵢ
+          is:
+        </p>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ \frac{\partial f}{\partial x_i}(x) := \lim_{t\to 0} \frac{f(x + t
+          e_i) - f(x)}{t} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Example: f(x,y) = x² + xy + y²
+        </h4>
+        <ul class="list-disc pl-6 mb-4">
+          <li><strong>∂f/∂x = 2x + y</strong> (treat y as constant)</li>
+          <li><strong>∂f/∂y = x + 2y</strong> (treat x as constant)</li>
+        </ul>
+
+        <div class="extra-content">
+          <strong>Professor explained partial derivatives:</strong> You fix one
+          direction and calculate derivatives. In ℝ², these directions are
+          x-axis and y-axis directions. In ℝ³, they are x, y, and z-axis
+          directions. To calculate partial derivatives, treat other variables as
+          constants.
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Gradient (First Derivative)</h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ \nabla f(x) = \begin{bmatrix} \dfrac{\partial f}{\partial x_1} \\
+          \dfrac{\partial f}{\partial x_2} \\ \vdots \\ \dfrac{\partial
+          f}{\partial x_n} \end{bmatrix} \]
+        </div>
+        <p class="mb-4">
+          <strong>Important:</strong> The gradient is a <strong>vector</strong>,
+          not a scalar. Each partial derivative is scalar, but their collection
+          forms a vector.
+        </p>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Hessian Matrix (Second Derivative)
+        </h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ Hf(x) = \nabla^2 f(x) = \left[\frac{\partial^2 f}{\partial x_i
+          \partial x_j}\right]_{i,j} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Example: Hessian for f(x,y) = x² + xy + y²
+        </h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ Hf(x,y) = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix} \]
+        </div>
+
+        <div class="extra-content">
+          <strong>Professor noted:</strong> Please verify this calculation. The
+          Hessian is a matrix - a collection of numbers in rectangular form. The
+          second-order partial derivative ∂²f/∂xᵢ² means you take the derivative
+          with respect to xᵢ twice.
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">
+          Taylor's Theorem for Multivariable Functions
+        </h4>
+
+        <p class="mb-2"><strong>First Order:</strong></p>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ f(x + h) = f(x) + \langle \nabla f(x), h \rangle + o(\|h\|) \]
+        </div>
+
+        <p class="mb-2"><strong>Second Order:</strong></p>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ f(x + h) = f(x) + \langle \nabla f(x), h \rangle + \tfrac{1}{2}
+          \langle h, \nabla^2 f(x) h \rangle + o(\|h\|^2) \]
+        </div>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>Hinglish Summary:</strong> Calculus revision mein humne
+        derivative ka definition dekha - ye limit ka concept hai. Taylor
+        expansion bahut important hai kyunki ye batata hai ki function ko nearby
+        area mein samajhne ke liye first-order information kaafi hai.
+        Multivariable functions ke liye partial derivatives hote hain - baaki
+        variables ko constant treat karo. Gradient ek vector hai (collection of
+        partial derivatives) aur Hessian ek matrix hai (second-order partial
+        derivatives ka collection).
+      </div>
+
+      <div class="key-takeaways">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-key text-green-600 mr-2"></i>
+          Key Takeaways
+        </h4>
+        <ul class="list-disc pl-6">
+          <li>Derivatives measure the rate of change of functions</li>
+          <li>Taylor expansion allows local approximation of functions</li>
+          <li>Higher-order Taylor approximations are more accurate</li>
+          <li>
+            Partial derivatives extend differentiation to multivariable
+            functions
+          </li>
+          <li>Gradients are vectors; Hessians are matrices</li>
+          <li>These tools are fundamental for optimization algorithms</li>
+        </ul>
+      </div>
+
+      <div class="practice-questions">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-question-circle text-purple-600 mr-2"></i>
+          Practice Questions
+        </h4>
+        <ol class="list-decimal pl-6 mb-4">
+          <li>
+            <strong>Q:</strong> Find the gradient of f(x,y) = 3x² + 2xy + y²
+          </li>
+          <li>
+            <strong>Q:</strong> What is the second-order Taylor approximation of
+            \(f(x)=\cos x\) around \(x_0 = 0\)?
+          </li>
+          <li>
+            <strong>Q:</strong> Calculate the Hessian matrix for f(x,y) = x³ +
+            y³ + 3xy
+          </li>
+        </ol>
+
+        <h5 class="font-semibold mb-2">Answers:</h5>
+        <ol class="list-decimal pl-6">
+          <li>
+            <strong>A:</strong> \(\nabla f =
+            \begin{bmatrix}6x+2y\\2x+2y\end{bmatrix}\)
+          </li>
+          <li>
+            <strong>A:</strong> \(\cos x \approx 1 - \tfrac{x^2}{2}\) (since
+            \(\cos 0 = 1\), \(\cos'(0)=0\), \(\cos''(0)=-1\))
+          </li>
+          <li>
+            <strong>A:</strong> \(H = \begin{bmatrix}6x & 3\\3 &
+            6y\end{bmatrix}\)
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Linear Algebra Review -->
+    <section id="linear-algebra" class="mb-8">
+      <div class="section-header">
+        <h2 class="text-3xl font-bold">
+          <i class="fas fa-calculator mr-2"></i>
+          4. Revision of Linear Algebra
+        </h2>
+      </div>
+
+      <!-- Vectors -->
+      <div id="vectors" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-arrow-right text-blue-600 mr-2"></i>
+          4.1 Vectors
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">Definition</h4>
+        <p class="mb-4">
+          A vector is an ordered list of numbers (elements). Can represent
+          points, directions, or coefficients.
+        </p>
+
+        <h4 class="text-xl font-semibold mb-2">Example</h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ v = \begin{bmatrix} v_1 \\ v_2 \\ v_3 \end{bmatrix} \in
+          \mathbb{R}^3 \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Vector Norms (Length)</h4>
+        <table class="mb-4">
+          <thead>
+            <tr>
+              <th>Norm Type</th>
+              <th>Formula</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>L₂ Norm (Euclidean)</strong></td>
+              <td class="math">
+                \[ \|v\|_2 = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} \]
+              </td>
+              <td>Standard geometric length</td>
+            </tr>
+            <tr>
+              <td><strong>L₁ Norm (Manhattan)</strong></td>
+              <td class="math">
+                \[ \|v\|_1 = |v_1| + |v_2| + \dots + |v_n| \]
+              </td>
+              <td>Sum of absolute values</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="mb-4">
+          <strong>Important Identity:</strong> \(\|v\|_2^2 = v^{\top} v\) (dot
+          product with itself)
+        </p>
+      </div>
+
+      <!-- Matrices -->
+      <div id="matrices" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-table text-green-600 mr-2"></i>
+          4.2 Matrices
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">Definition</h4>
+        <p class="mb-4">
+          A matrix is a rectangular array of numbers with size m × n (m rows, n
+          columns).
+        </p>
+
+        <h4 class="text-xl font-semibold mb-2">Example</h4>
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ A = \begin{bmatrix} a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} &
+          a_{23} \end{bmatrix} \in \mathbb{R}^{2\times 3} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Matrix Transpose</h4>
+        <p class="mb-4">Flips rows and columns: (Aᵀ)ᵢⱼ = Aⱼᵢ</p>
+        <p class="mb-4">
+          Converts column vectors to row vectors and vice versa.
+        </p>
+
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ A = \begin{bmatrix}1 & 2\\ 3 & 4\end{bmatrix} \longrightarrow
+          A^{\top} = \begin{bmatrix}1 & 3\\ 2 & 4\end{bmatrix} \]
+        </div>
+      </div>
+
+      <!-- Matrix Operations -->
+      <div id="operations" class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          <i class="fas fa-cogs text-purple-600 mr-2"></i>
+          4.3 Matrix Operations
+        </h3>
+
+        <h4 class="text-xl font-semibold mb-2">Matrix-Vector Multiplication</h4>
+        <p class="mb-4">
+          A matrix A ∈ ℝᵐˣⁿ acting on a vector x ∈ ℝⁿ produces a new vector in
+          ℝᵐ.
+        </p>
+        <p class="mb-4">
+          <strong>Interpretation:</strong> Linear combination of columns of A.
+        </p>
+
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ A = \begin{bmatrix}1 & 2\\ 3 & 4\\ 5 & 6\end{bmatrix},\quad x =
+          \begin{bmatrix} x_1 \\ x_2 \end{bmatrix},\quad Ax = \begin{bmatrix}
+          1x_1 + 2x_2 \\ 3x_1 + 4x_2 \\ 5x_1 + 6x_2 \end{bmatrix} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Matrix-Matrix Multiplication</h4>
+        <p class="mb-4">If A ∈ ℝᵐˣⁿ and B ∈ ℝⁿˣᵖ, then AB ∈ ℝᵐˣᵖ.</p>
+        <p class="mb-4">
+          <strong>Rule:</strong> Entry (i,j) of AB is dot product of row i of A
+          with column j of B.
+        </p>
+
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ A = \begin{bmatrix}1 & 2\\ 3 & 4\end{bmatrix},\quad B =
+          \begin{bmatrix}5 & 6\\ 7 & 8\end{bmatrix},\quad AB = \begin{bmatrix}19
+          & 22\\ 43 & 50\end{bmatrix} \]
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Dot Product</h4>
+        <p class="mb-4">For u, v ∈ ℝⁿ: u·v = Σᵢ₌₁ⁿ uᵢvᵢ</p>
+        <p class="mb-4"><strong>Properties:</strong></p>
+        <ul class="list-disc pl-6 mb-4">
+          <li>Produces a scalar</li>
+          <li>Measures alignment of vectors</li>
+          <li>u·v = uᵀv</li>
+        </ul>
+
+        <div class="bg-gray-100 p-4 rounded math text-center text-lg mb-4">
+          \[ u = \begin{bmatrix}1 \\\ 2\end{bmatrix},\quad v=\begin{bmatrix}3
+          \\\ 4\end{bmatrix},\quad u\cdot v = 1\times 3 + 2\times 4 = 11 \]
+        </div>
+      </div>
+
+      <div class="hinglish-summary">
+        <strong>Hinglish Summary:</strong> Linear algebra mein vectors ordered
+        list of numbers hain jo points, directions ya coefficients represent kar
+        sakte hain. Matrices rectangular arrays hain. Matrix-vector
+        multiplication linear combination of columns deta hai. Matrix-matrix
+        multiplication mein entry (i,j) row i aur column j ka dot product hota
+        hai. Dot product scalar value deta hai jo vectors ka alignment batata
+        hai. Transpose rows aur columns ko flip kar deta hai.
+      </div>
+
+      <div class="key-takeaways">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-key text-green-600 mr-2"></i>
+          Key Takeaways
+        </h4>
+        <ul class="list-disc pl-6">
+          <li>
+            Vectors are ordered lists representing points, directions, or
+            coefficients
+          </li>
+          <li>Vector norms measure magnitude (L₁, L₂ are most common)</li>
+          <li>Matrices are rectangular arrays of numbers</li>
+          <li>
+            Matrix-vector multiplication gives linear combinations of columns
+          </li>
+          <li>Matrix-matrix multiplication follows dot product rules</li>
+          <li>Transpose operation flips rows and columns</li>
+          <li>These operations are fundamental for optimization algorithms</li>
+        </ul>
+      </div>
+
+      <div class="practice-questions">
+        <h4 class="text-xl font-semibold mb-2">
+          <i class="fas fa-question-circle text-purple-600 mr-2"></i>
+          Practice Questions
+        </h4>
+        <ol class="list-decimal pl-6 mb-4">
+          <li>
+            <strong>Q:</strong> Calculate \(\|v\|_2\) and \(\|v\|_1\) for \(v =
+            \begin{bmatrix}3\\-4\\5\end{bmatrix}\)
+          </li>
+          <li>
+            <strong>Q:</strong> Find AB where A = [[1,2],[3,4]] and B =
+            [[2,0],[1,3]]
+          </li>
+          <li>
+            <strong>Q:</strong> What is the dot product of u = [1,2,3] and v =
+            [4,5,6]?
+          </li>
+        </ol>
+
+        <h5 class="font-semibold mb-2">Answers:</h5>
+        <ol class="list-decimal pl-6">
+          <li>
+            <strong>A:</strong> \(\|v\|_2 = \sqrt{9+16+25} = \sqrt{50} =
+            5\sqrt{2} \approx 7.07;\; \|v\|_1 = 3+4+5 = 12\)
+          </li>
+          <li>
+            <strong>A:</strong> \(AB = \begin{bmatrix}4 & 6\\ 10 &
+            12\end{bmatrix}\)
+          </li>
+          <li>
+            <strong>A:</strong> \(u\cdot v = 1\times 4 + 2\times 5 + 3\times 6 =
+            4+10+18 = 32\)
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Mind Map -->
+    <section id="mind-map-section" class="mb-8">
+      <div class="section-header">
+        <h2 class="text-3xl font-bold">
+          <i class="fas fa-sitemap mr-2"></i>
+          5. Comprehensive Mind Map
+        </h2>
+      </div>
+
+      <div class="mind-map">
+        <div class="mind-map-central">Numerical Optimization - Lecture 2</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <!-- Review of Lecture 1 -->
+          <div>
+            <h4 class="text-xl font-bold mb-3 text-center">
+              Review of Lecture 1
+            </h4>
+            <div class="space-y-2">
+              <div class="mind-map-node">Data Science</div>
+              <div class="mind-map-node">Mathematics Tool</div>
+              <div class="mind-map-node">Model Fitting</div>
+              <div class="mind-map-node">Classification</div>
+              <div class="mind-map-node">Optimization Problems</div>
+              <div class="mind-map-node">Unconstrained vs Constrained</div>
+              <div class="mind-map-node">Convex vs Non-convex</div>
+              <div class="mind-map-node">Global vs Local Solutions</div>
+              <div class="mind-map-node">Existence & Characterization</div>
+            </div>
+          </div>
+
+          <!-- Calculus Review -->
+          <div>
+            <h4 class="text-xl font-bold mb-3 text-center">Calculus Tools</h4>
+            <div class="space-y-2">
+              <div class="mind-map-node">Derivatives</div>
+              <div class="mind-map-node">Limits</div>
+              <div class="mind-map-node">Product Rule</div>
+              <div class="mind-map-node">Chain Rule</div>
+              <div class="mind-map-node">Taylor Expansion</div>
+              <div class="mind-map-node">Linear Approximation</div>
+              <div class="mind-map-node">Quadratic Approximation</div>
+              <div class="mind-map-node">Partial Derivatives</div>
+              <div class="mind-map-node">Gradient Vector</div>
+              <div class="mind-map-node">Hessian Matrix</div>
+              <div class="mind-map-node">Multivariable Taylor</div>
+            </div>
+          </div>
+
+          <!-- Linear Algebra -->
+          <div>
+            <h4 class="text-xl font-bold mb-3 text-center">Linear Algebra</h4>
+            <div class="space-y-2">
+              <div class="mind-map-node">Vectors</div>
+              <div class="mind-map-node">Vector Norms</div>
+              <div class="mind-map-node">L₁ Norm</div>
+              <div class="mind-map-node">L₂ Norm</div>
+              <div class="mind-map-node">Matrices</div>
+              <div class="mind-map-node">Matrix Transpose</div>
+              <div class="mind-map-node">Matrix-Vector Product</div>
+              <div class="mind-map-node">Matrix-Matrix Product</div>
+              <div class="mind-map-node">Dot Product</div>
+              <div class="mind-map-node">Linear Combinations</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connections -->
+        <div class="mt-8 text-center">
+          <h4 class="text-xl font-bold mb-4">Key Connections</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="mind-map-node">Gradients → Optimization Direction</div>
+            <div class="mind-map-node">Hessians → Curvature Information</div>
+            <div class="mind-map-node">Taylor Series → Local Approximation</div>
+            <div class="mind-map-node">
+              Matrix Operations → Algorithm Implementation
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 border-t border-gray-200">
+      <div
+        class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg"
+      >
+        <h3 class="text-2xl font-bold mb-2">
+          <i class="fas fa-graduation-cap mr-2"></i>
+          Lecture Complete!
+        </h3>
+        <p class="text-lg">
+          You now have the fundamental calculus and linear algebra tools needed
+          for numerical optimization.
+        </p>
+        <p class="mt-2">
+          Next: We'll use these tools to develop optimization algorithms and
+          solve real problems!
+        </p>
+      </div>
+
+      <div class="footer-inner">
+          <p class="footer-text">
+            I created this knowledge during my Second semester of BSc in Applied
+            AI and Data Science.
+          </p>
+          <p class="footer-author">~ Armaan Kachhawa</p>
+        </div>
+    </footer>
+  
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

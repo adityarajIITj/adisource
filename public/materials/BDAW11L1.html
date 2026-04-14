@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/bda/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analytics Basics: Arranging & Exploring Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .hinglish-note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4f86f7;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-style: italic;
+            border-radius: 0 5px 5px 0;
+        }
+        .heading {
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .heading-main {
+            color: #1a3a6e;
+            border-bottom: 2px solid #4f86f7;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        .example-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="text-3xl font-bold heading-main">Data Analytics Basics: Arranging & Exploring Data</h1>
+        <p class="text-gray-600 mb-6">Lecture 4.9 Notes</p>
+    </div>
+
+    <div class="content">
+        <h2 class="text-2xl heading">Introduction to Data Arrangement</h2>
+        <p>In previous lectures, we covered data gathering and cleaning. This lecture focuses on the steps needed after you have your dataset ready:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>Arranging data in formats suitable for analysis</li>
+            <li>Visual inspection of datasets (part of exploratory data analysis)</li>
+            <li>Identifying structures and patterns</li>
+            <li>Grouping data into bins to observe record behavior</li>
+        </ul>
+        <p>These tasks can be performed using various tools:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>Excel (demonstrated in this lecture)</li>
+            <li>Programming languages like R or Python</li>
+            <li>AI tools (to be covered in lab sessions)</li>
+        </ul>
+
+        <div class="hinglish-note">
+            <p>Toh dosto, aaj hum baat karenge data ko arrange karne ke baare mein. Aapne data collect kar liya hai, clean kar liya hai, ab kya? Ab aapko apne data ko aise format mein rakhna hai jisse aap uska analysis kar sake. Visual inspection, patterns dekhna, aur grouping karna - ye sab exploratory data analysis ka hissa hai. Aur ye kaam Excel, Python, R ya AI tools se ho sakta hai!</p>
+        </div>
+
+        <h2 class="text-2xl heading">Sample Dataset Overview</h2>
+        <p>For this lecture, we'll use a small sample dataset containing transaction records:</p>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purchase Date</th>
+                        <th>Transaction ID</th>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2/2/2025</td>
+                        <td>53701</td>
+                        <td>382</td>
+                        <td>Watermelon</td>
+                        <td>75</td>
+                    </tr>
+                    <tr>
+                        <td>2/1/2025</td>
+                        <td>53666</td>
+                        <td>226</td>
+                        <td>Grapes</td>
+                        <td>29</td>
+                    </tr>
+                    <tr>
+                        <td>2/2/2025</td>
+                        <td>53701</td>
+                        <td>984</td>
+                        <td>Potato</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <td>2/1/2025</td>
+                        <td>53666</td>
+                        <td>453</td>
+                        <td>Banana</td>
+                        <td>14</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Important observations about this dataset:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>Purchase dates are not in chronological order</li>
+            <li>Transaction IDs are repeated (one transaction can contain multiple products)</li>
+            <li>Multiple transactions can occur on the same date</li>
+            <li>Each row represents one product purchased within a transaction</li>
+        </ul>
+        <p>This resembles typical supermarket transaction data where:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>Multiple people make purchases (transactions) on a given day</li>
+            <li>One person can purchase multiple products in a single transaction</li>
+        </ul>
+
+        <div class="hinglish-note">
+            <p>Humne ek sample dataset liya hai jisme transaction data hai. Is data mein date, transaction ID, product ID, product name aur amount hai. Ek baar data ko dekhne se hum samajh sakte hain ki ek din mein kai transactions hote hain, aur ek transaction mein kai products ho sakte hain. Bilkul supermarket ke data jaisa! Abhi ye data kisi khaas order mein nahi hai, isliye hume ise arrange karna padega analysis ke liye.</p>
+        </div>
+
+        <h2 class="text-2xl heading">Basic Data Arranging Techniques</h2>
+        
+        <h3 class="text-xl heading">1. Sorting Data</h3>
+        <p>Sorting helps arrange data in a specific order based on the values in a column:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li><strong>Sorting by Amount (Smallest to Largest):</strong> 
+                <ul class="list-circle ml-6">
+                    <li>Select the "Amount" column</li>
+                    <li>Use Sort function (smallest to largest)</li>
+                    <li>Expand selection to include all columns</li>
+                </ul>
+            </li>
+            <li><strong>Benefits:</strong>
+                <ul class="list-circle ml-6">
+                    <li>Easily see minimum and maximum values</li>
+                    <li>Quickly count occurrences (e.g., bananas purchased 4 times)</li>
+                    <li>Identify value distribution patterns</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="example-box">
+            <p class="font-bold">Example of data sorted by Amount (smallest to largest):</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Purchase Date</th>
+                            <th>Transaction ID</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53666</td>
+                            <td>453</td>
+                            <td>Banana</td>
+                            <td>14</td>
+                        </tr>
+                        <tr>
+                            <td>2/2/2025</td>
+                            <td>53701</td>
+                            <td>453</td>
+                            <td>Banana</td>
+                            <td>14</td>
+                        </tr>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53668</td>
+                            <td>453</td>
+                            <td>Banana</td>
+                            <td>14</td>
+                        </tr>
+                        <tr>
+                            <td>2/2/2025</td>
+                            <td>53703</td>
+                            <td>453</td>
+                            <td>Banana</td>
+                            <td>14</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p>You can also sort in descending order (largest to smallest) to see the highest values first.</p>
+
+        <div class="hinglish-note">
+            <p>Sorting yani data ko kisi ek column ke values ke hisaab se arrange karna. Jaise, amount ke hisaab se sort karne par hum dekh sakte hain ki sabse sasta product banana hai (₹14) aur sabse mehnga watermelon (₹75). Sorting se hume ye bhi pata chalta hai ki kitne baar kaun sa product bika - jaise banana 4 baar, potato 5 baar, grapes 4 baar, aur watermelon 3 baar. Large datasets mein sorting bahut useful hoti hai jab aap visually sab data ek saath nahi dekh sakte.</p>
+        </div>
+
+        <h3 class="text-xl heading">2. Filtering Data</h3>
+        <p>Filtering allows you to display only records that meet specific criteria:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li><strong>How to apply a filter:</strong>
+                <ul class="list-circle ml-6">
+                    <li>Select all data</li>
+                    <li>Use the Filter command (adds dropdown arrows to column headers)</li>
+                    <li>Click the dropdown for the column you want to filter</li>
+                    <li>Select/deselect values to show/hide</li>
+                </ul>
+            </li>
+            <li><strong>Example filtering scenarios:</strong>
+                <ul class="list-circle ml-6">
+                    <li>Filter by Purchase Date (e.g., show only 2/1/2025 transactions)</li>
+                    <li>Filter by Transaction ID (show products in one transaction)</li>
+                    <li>Filter by Product Name (show only specific products)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="example-box">
+            <p class="font-bold">Example of data filtered by Purchase Date (2/1/2025):</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Purchase Date</th>
+                            <th>Transaction ID</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53666</td>
+                            <td>226</td>
+                            <td>Grapes</td>
+                            <td>29</td>
+                        </tr>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53666</td>
+                            <td>453</td>
+                            <td>Banana</td>
+                            <td>14</td>
+                        </tr>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53667</td>
+                            <td>984</td>
+                            <td>Potato</td>
+                            <td>22</td>
+                        </tr>
+                        <tr>
+                            <td>2/1/2025</td>
+                            <td>53668</td>
+                            <td>382</td>
+                            <td>Watermelon</td>
+                            <td>75</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="hinglish-note">
+            <p>Filtering matlab data me se specific cheezein dikhana. Jaise agar hum sirf 1 February ke transactions dekhna chahte hain, toh filter laga sakte hain. Filter lagane se hum dekh sakte hain ki us din kitne transactions hue, kaun kaun se products bike, aur kitne amount ke bike. Phir hum Transaction ID ke hisaab se bhi filter laga sakte hain aur dekh sakte hain ki ek particular transaction mein kitne products the. Ye hierarchical data analysis ka ek bahut important part hai!</p>
+        </div>
+
+        <h3 class="text-xl heading">3. Grouping Data at Different Hierarchical Levels</h3>
+        <p>By combining filtering and sorting, you can analyze data at different hierarchical levels:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li><strong>First Level: </strong>Filter by date to see all transactions on a specific day</li>
+            <li><strong>Second Level: </strong>Within a filtered date, sort by Transaction ID to group products by transaction</li>
+            <li><strong>Third Level: </strong>Look at products within each transaction</li>
+        </ul>
+        <p>This approach allows you to answer questions like:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>How many transactions occurred on each date?</li>
+            <li>How many products were purchased in each transaction?</li>
+            <li>Which products were bought together in the same transaction?</li>
+        </ul>
+
+        <div class="example-box">
+            <p class="font-bold">Example of hierarchical grouping:</p>
+            <p><strong>Step 1:</strong> Filter by date (e.g., 2/2/2025)</p>
+            <p><strong>Step 2:</strong> Sort filtered data by Transaction ID</p>
+            <p><strong>Result:</strong> You can now see that on 2/2/2025:</p>
+            <ul class="list-disc ml-6">
+                <li>Transaction 53701 included 3 products (Watermelon, Potato, Banana)</li>
+                <li>Transaction 53702 included 1 product (Potato)</li>
+                <li>Transaction 53703 included 2 products (Watermelon, Banana)</li>
+            </ul>
+        </div>
+
+        <div class="hinglish-note">
+            <p>Data ko hierarchy ke hisaab se analyze karna bahut important hai. Pehle hum date se filter karte hain, phir transaction ID se sort karte hain. Is tarah se hum dekh sakte hain ki ek din mein kitne transactions hue, har transaction mein kitne products the, aur kaun se products ek saath kharide gaye. Bade datasets mein ye technique bahut kaam aati hai jab aap patterns dhoondhna chahte hain. Ye exploratory analysis ka ek zaroori hissa hai!</p>
+        </div>
+
+        <h2 class="text-2xl heading">Summary and Applications</h2>
+        <p>In this lecture, we learned several basic but essential data arrangement techniques:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li><strong>Sorting:</strong> Arranging data in ascending or descending order</li>
+            <li><strong>Filtering:</strong> Showing only data that meets specific criteria</li>
+            <li><strong>Grouping:</strong> Organizing data at different hierarchical levels</li>
+        </ul>
+        <p>These techniques are fundamental to exploratory data analysis and help you:</p>
+        <ul class="list-disc ml-6 mt-2 mb-4">
+            <li>Get a better visual understanding of your dataset</li>
+            <li>Identify patterns and relationships between variables</li>
+            <li>Prepare data for more advanced analysis</li>
+            <li>Generate initial insights before applying statistical methods</li>
+        </ul>
+        <p>While we used Excel for demonstrations, these concepts apply to other tools like Python, R, and various AI platforms you'll explore in lab sessions.</p>
+
+        <div class="hinglish-note">
+            <p>Toh dosto, aaj humne data ko arrange karne ke teen basic techniques seekhe - sorting, filtering, aur grouping. Ye techniques data analysis ki neev hain. Chahe aap Excel use karen, Python use karen, ya R use karen - ye concepts har jagah apply hote hain. In techniques ki madad se aap apne data ko behtar tarike se samajh sakte hain, patterns dhundh sakte hain, aur advanced analysis ke liye taiyar kar sakte hain. Agle lecture mein hum descriptive statistics ke baare mein aur details se baat karenge. Tab tak ke liye, ye concepts practice karte rahiye!</p>
+        </div>
+    </div>
+
+    <footer class="mt-10 pt-4 border-t border-gray-300 text-gray-600 text-center">
+        <p>Data Analytics Course - Lecture 4.9 Notes</p>
+    </footer>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>

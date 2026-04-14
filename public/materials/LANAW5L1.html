@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="/notes/lana/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra: Matrix Transpose - Complete Lecture Notes</title>
+    
+    <!-- MathJax for Mathematical Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .toc li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: #764ba2;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            display: block;
+            padding-left: 20px;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 30px;
+            font-weight: bold;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .key-term {
+            background: linear-gradient(120deg, #ffd89b 0%, #19547b 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        
+        .emphasis {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .professor-note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .professor-note strong {
+            color: #1976D2;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .hinglish-summary {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 2px solid #fdcb6e;
+        }
+        
+        .hinglish-summary h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .hinglish-summary p {
+            color: #2d3436;
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .code-block code {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .python-keyword {
+            color: #c678dd;
+        }
+        
+        .python-string {
+            color: #98c379;
+        }
+        
+        .python-function {
+            color: #61afef;
+        }
+        
+        .python-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+        
+        .example-box {
+            background: #f0f4f8;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .example-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .matrix {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 10px;
+        }
+        
+        .diagram-placeholder {
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            border: 2px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .practice-questions {
+            background: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #ffc107;
+        }
+        
+        .practice-questions h4 {
+            color: #f57c00;
+            margin-bottom: 15px;
+        }
+        
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .answer {
+            background: #e8f5e9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .answer strong {
+            color: #2e7d32;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #00acc1;
+        }
+        
+        .key-takeaways h4 {
+            color: #006064;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .key-takeaways ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+        
+        .key-takeaways li {
+            padding: 8px 0;
+            color: #00838f;
+        }
+        
+        .mind-map {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .mind-map h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .mind-map-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .branch {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s;
+        }
+        
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .branch h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .branch ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+        
+        .branch li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .branch li:before {
+            content: "→ ";
+            color: #764ba2;
+            font-weight: bold;
+        }
+        
+        .formula-box {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .properties-list {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .properties-list li {
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+            border-left: 4px solid #764ba2;
+            border-radius: 5px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>📊 Linear Algebra & Numerical Analysis Notes</h1>
+            <p><strong>By Armaan Kachhawa</strong></p>
+            <p><strong>Week 5 Lecture 1</strong></p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction & Recap</a></li>
+                <li><a href="#learning-objectives">2. Learning Objectives</a></li>
+                <li><a href="#understanding-transpose">3. Understanding Matrix Transpose</a></li>
+                <li><a href="#real-world-applications">4. Real-World Applications</a></li>
+                <li><a href="#transpose-operation">5. Matrix Transpose Operation</a></li>
+                <li><a href="#python-implementation">6. Python Implementation</a></li>
+                <li><a href="#order-operations">7. Order of Operations: LIVE EVIL</a></li>
+                <li><a href="#matrix-multiplication">8. Transpose and Matrix Multiplication</a></li>
+                <li><a href="#advanced-problem">9. Advanced Problem: Matrix Power</a></li>
+                <li><a href="#properties">10. Properties of Transposed Matrices</a></li>
+                <li><a href="#summary">11. Summary & Key Takeaways</a></li>
+                <li><a href="#mind-map">12. Complete Concept Mind Map</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <section id="introduction">
+            <h2>1. Introduction & Recap</h2>
+            
+            <p>Welcome back to our journey through linear algebra and numerical analysis! In our previous lecture, we explored <span class="key-term">matrix multiplication</span>, which is one of the most fundamental numerical operations in linear algebra. Matrix multiplication allows us to solve a vast array of problems with real-life applications across various domains.</p>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "I hope you had a decent understanding about matrix multiplications that we covered in our last video. Matrix multiplication is not just multiplication—it's multiplication combined with addition, which makes it so powerful for solving complex problems."
+            </div>
+            
+            <p>Today, we're going to focus on another crucial matrix operation that is <span class="emphasis">invaluable in machine learning and data science</span>: the <span class="key-term">transpose of a matrix</span>.</p>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Dosto, pichle lecture mein humne matrix multiplication seekha tha jo bahut important hai. Aaj hum ek aur important operation seekhenge jo hai <strong>Matrix Transpose</strong>. Yeh machine learning aur data science mein bahut kaam aata hai. Basically, transpose mein hum matrix ke rows aur columns ko interchange kar dete hain. Jaise agar aapka mobile horizontally hai, use vertical kar diya - same concept hai!</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Learning Objectives -->
+        <section id="learning-objectives">
+            <h2>2. Learning Objectives</h2>
+            
+            <p>By the end of this lecture, you will be able to:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Objective</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Basics Operations with Matrices</strong></td>
+                        <td>Understand the fundamental concept of matrix transpose and how it transforms a matrix</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Everyday Examples</strong></td>
+                        <td>Recognize and apply matrix transpose operations in real-world scenarios, particularly in data science and machine learning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Python Code & Syntax</strong></td>
+                        <td>Write Python code using NumPy to efficiently compute matrix transpose</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hands-On Experience</strong></td>
+                        <td>Gain practical experience in solving simple and complex matrix transpose problems</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Is lecture mein hum char main cheezein seekhenge: pehli - matrix transpose ka basic concept, doosri - real life mein kaha use hota hai yeh, teesri - Python mein kaise code karte hain, aur chauthi - practical problems solve karna. Basically, theory se lekar practical implementation tak sab kuch cover karenge!</p>
+            </div>
+        </section>
+
+        <!-- Section 3: Understanding Matrix Transpose -->
+        <section id="understanding-transpose">
+            <h2>3. Understanding Matrix Transpose</h2>
+            
+            <h3>3.1 What is Matrix Transpose?</h3>
+            
+            <p>A <span class="key-term">matrix transpose</span> is an operation where we <span class="emphasis">interchange the rows and columns</span> of a matrix. When we transpose a matrix, all elements "switch their places" - what was in rows becomes columns, and what was in columns becomes rows.</p>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "Think of transposing a matrix like telling all the elements in the matrix to switch places. It's like when you rotate your phone from landscape to portrait mode—the content remains the same, but the orientation changes!"
+            </div>
+            
+            <h3>3.2 Mathematical Notation</h3>
+            
+            <div class="formula-box">
+                <p>If we have a matrix <strong>A</strong>, its transpose is denoted as:</p>
+                <ul>
+                    <li>\( A^T \) or \( A' \) or \( A^\intercal \)</li>
+                </ul>
+                <p style="margin-top: 15px;">For a matrix with dimensions \( m \times n \) (m rows, n columns):</p>
+                <p style="text-align: center; margin-top: 10px;">
+                    \( A_{m \times n} \rightarrow A^T_{n \times m} \)
+                </p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Matrix transpose ka matlab hai rows aur columns ko swap karna. Jaise agar aapke paas 2×3 matrix hai (2 rows, 3 columns), to transpose karne ke baad 3×2 matrix ban jayega (3 rows, 2 columns). Elements ki jagah change ho jati hai, lekin values same rehti hain. Isko hum \( A^T \) se represent karte hain.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Real-World Applications -->
+        <section id="real-world-applications">
+            <h2>4. Real-World Applications</h2>
+            
+            <h3>4.1 Data Analysis and Machine Learning Scenario</h3>
+            
+            <div class="example-box">
+                <h4>🎯 Problem Scenario:</h4>
+                <p>Imagine you're working with a dataset where:</p>
+                <ul>
+                    <li><strong>Rows</strong> represent samples (e.g., customers)</li>
+                    <li><strong>Columns</strong> represent features (e.g., age, income, purchase history)</li>
+                </ul>
+                
+                <p style="margin-top: 15px;"><strong>The Challenge:</strong></p>
+                <p>Some machine learning algorithms, such as <span class="key-term">Principal Component Analysis (PCA)</span>, which is heavily used for <span class="emphasis">dimension reduction</span>, require features to be rows and samples to be columns.</p>
+                
+                <p style="margin-top: 15px;"><strong>The Solution:</strong></p>
+                <p>Use <span class="key-term">matrix transpose</span> to switch rows and columns! This allows you to reshape your data to meet the algorithm's requirements.</p>
+            </div>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "At the outset, this problem doesn't look like it has anything to do with matrices. But the moment you ask how to reorganize your data for PCA—which requires features to be rows and customers (samples) to be columns—you realize you can solve this problem by taking the transpose of a matrix. This is the beauty of linear algebra—it's everywhere in data science!"
+            </div>
+
+            <h3>4.2 Why Matrix Transpose Matters</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application Area</th>
+                        <th>How Transpose is Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Machine Learning</strong></td>
+                        <td>Reshaping data for algorithms like PCA, neural networks, and regression analysis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Manipulation</strong></td>
+                        <td>Converting between different data representations and formats</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Geometry</strong></td>
+                        <td>Representing reflections and rotations in computer graphics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linear Equations</strong></td>
+                        <td>Solving systems of equations efficiently</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computer Graphics</strong></td>
+                        <td>Transforming coordinates and rendering 3D objects</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Real life mein transpose bahut jagah use hota hai! Jaise machine learning mein jab data ko different format mein chahiye, ya PCA jaise algorithms mein jo dimension reduction ke liye use hote hain. Computer graphics mein bhi transpose use hota hai jab hum 3D objects ko rotate karte hain. Basically, jab bhi rows ko columns ya columns ko rows banana ho, transpose kaam aata hai!</p>
+            </div>
+        </section>
+
+        <!-- Section 5: Matrix Transpose Operation -->
+        <section id="transpose-operation">
+            <h2>5. Matrix Transpose Operation</h2>
+            
+            <h3>5.1 Visual Understanding</h3>
+            
+            <div class="example-box">
+                <h4>Example 1: 3×5 Matrix Transpose</h4>
+                <p>Let's consider a matrix with <strong>3 rows</strong> and <strong>5 columns</strong>:</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p><strong>Original Matrix A (3×5):</strong></p>
+
+                    \[
+                    A = \begin{bmatrix}
+                    1 & 2 & 3 & 4 & 5 \\
+                    6 & 7 & 8 & 9 & 10 \\
+                    11 & 12 & 13 & 14 & 15
+                    \end{bmatrix}
+                    \]
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p><strong>Transposed Matrix A<sup>T</sup> (5×3):</strong></p>
+
+                    \[
+                    A^T = \begin{bmatrix}
+                    1 & 6 & 11 \\
+                    2 & 7 & 12 \\
+                    3 & 8 & 13 \\
+                    4 & 9 & 14 \\
+                    5 & 10 & 15
+                    \end{bmatrix}
+                    \]
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Notice how the first row [1, 2, 3, 4, 5] becomes the first column in the transposed matrix. The second row [6, 7, 8, 9, 10] becomes the second column, and so on. All elements switch their places!"
+                </div>
+            </div>
+
+            <h3>5.2 Step-by-Step Process</h3>
+            
+            <div class="example-box">
+                <h4>Example 2: 2×3 Matrix Transpose</h4>
+                
+                <p><strong>Step 1:</strong> Start with original matrix A</p>
+
+                \[
+                A = A_{2}^{3} = \begin{bmatrix}
+                2 & 4 & 7 \\
+                5 & 3 & 1
+                \end{bmatrix}
+                \]
+                <p style="margin-top: 10px;">This is a <strong>2×3 matrix</strong> (2 rows, 3 columns)</p>
+                
+                <p style="margin-top: 20px;"><strong>Step 2:</strong> Apply transpose operation</p>
+                <ul>
+                    <li>First column [2, 5] → First row</li>
+                    <li>Second column [4, 3] → Second row</li>
+                    <li>Third column [7, 1] → Third row</li>
+                </ul>
+                
+                <p style="margin-top: 20px;"><strong>Step 3:</strong> Result after transpose</p>
+
+                \[
+                A^T = A_{3}^{2} = \begin{bmatrix}
+                2 & 5 \\
+                4 & 3 \\
+                7 & 1
+                \end{bmatrix}
+                \]
+                <p style="margin-top: 10px;">This is now a <strong>3×2 matrix</strong> (3 rows, 2 columns)</p>
+            </div>
+
+            <h3>5.3 Dimension Change Rule</h3>
+            
+            <div class="formula-box">
+                <p><strong>Key Rule:</strong></p>
+                <p style="text-align: center; font-size: 1.2em; margin: 15px 0;">
+                    If \( A \) is \( m \times n \), then \( A^T \) is \( n \times m \)
+                </p>
+                <p style="margin-top: 15px;"><strong>Important Note:</strong> The order of the matrix always changes when you take the transpose, <span class="emphasis">unless it's a square matrix</span> (where m = n).</p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Transpose operation bahut simple hai - bas rows ko columns aur columns ko rows bana do. Jaise 2×3 matrix (2 rows, 3 columns) ka transpose karne se 3×2 matrix (3 rows, 2 columns) ban jata hai. Pehli row pehla column ban jati hai, doosri row doosra column ban jati hai. Bas itna hi! Agar square matrix hai (jaise 3×3), to size same hi rehta hai transpose ke baad bhi.</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Matrix Transpose Operation:</h4>
+                <ul>
+                    <li>Transpose switches rows and columns</li>
+                    <li>First row becomes first column, second row becomes second column, etc.</li>
+                    <li>Dimensions reverse: m×n becomes n×m</li>
+                    <li>Square matrices (n×n) remain n×n after transpose</li>
+                    <li>All elements "switch places" but values remain the same</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 6: Python Implementation -->
+        <section id="python-implementation">
+            <h2>6. Python Implementation</h2>
+            
+            <h3>6.1 Using NumPy for Matrix Transpose</h3>
+            
+            <p>Python's <span class="key-term">NumPy library</span> provides easy and efficient methods to transpose matrices. Let's explore two different approaches:</p>
+
+            <h4>Method 1: Using .transpose() Method</h4>
+            
+            <div class="code-block">
+                <code><span class="python-keyword">import</span> numpy <span class="python-keyword">as</span> np</br>
+
+<span class="python-comment"># Define a matrix</span></br>
+matrix = np.<span class="python-function">array</span>([[<span class="python-string">3</span>, <span class="python-string">4</span>, <span class="python-string">5</span>],</br>
+                   [<span class="python-string">1</span>, <span class="python-string">2</span>, <span class="python-string">3</span>]])</br>
+
+<span class="python-comment"># Method 1: Using .transpose() method</span></br>
+transpose_matrix_1 = matrix.<span class="python-function">transpose</span>()</br>
+
+<span class="python-comment"># Display results</span></br>
+<span class="python-keyword">print</span>(<span class="python-string">"Original Matrix:"</span>)</br>
+<span class="python-keyword">print</span>(matrix)</br>
+<span class="python-keyword">print</span>(<span class="python-string">"\nTranspose of the Matrix (Method 1):"</span>)</br>
+<span class="python-keyword">print</span>(transpose_matrix_1)</code>
+            </div>
+
+            <h4>Method 2: Using np.transpose() Function</h4>
+            
+            <div class="code-block">
+                <code><span class="python-keyword">import</span> numpy <span class="python-keyword">as</span> np</br>
+
+<span class="python-comment"># Define a matrix</span></br>
+matrix = np.<span class="python-function">array</span>([[<span class="python-string">3</span>, <span class="python-string">4</span>, <span class="python-string">5</span>],</br>
+                   [<span class="python-string">1</span>, <span class="python-string">2</span>, <span class="python-string">3</span>]])</br>
+
+<span class="python-comment"># Method 2: Using np.transpose() function</span></br>
+transpose_matrix_2 = np.<span class="python-function">transpose</span>(matrix)</br>
+
+<span class="python-comment"># Display results</span></br>
+<span class="python-keyword">print</span>(<span class="python-string">"Original Matrix:"</span>)</br>
+<span class="python-keyword">print</span>(matrix)</br>
+<span class="python-keyword">print</span>(<span class="python-string">"\nTranspose of the Matrix (Method 2):"</span>)</br>
+<span class="python-keyword">print</span>(transpose_matrix_2)</code>
+            </div>
+
+            <h4>Method 3: Using .T Attribute (Shorthand)</h4>
+            
+            <div class="code-block">
+                <code><span class="python-keyword">import</span> numpy <span class="python-keyword">as</span> np</br>
+
+<span class="python-comment"># Define a matrix</span></br>
+matrix = np.<span class="python-function">array</span>([[<span class="python-string">3</span>, <span class="python-string">4</span>, <span class="python-string">5</span>],</br>
+                   [<span class="python-string">1</span>, <span class="python-string">2</span>, <span class="python-string">3</span>]])</br>
+
+<span class="python-comment"># Method 3: Using .T attribute (shorthand notation)</span></br>
+transpose_matrix_3 = matrix.T</br>
+
+<span class="python-comment"># Display results</span></br>
+<span class="python-keyword">print</span>(<span class="python-string">"Original Matrix:"</span>)</br>
+<span class="python-keyword">print</span>(matrix)</br>
+<span class="python-keyword">print</span>(<span class="python-string">"\nTranspose of the Matrix (Method 3 - Shorthand):"</span>)</br>
+<span class="python-keyword">print</span>(transpose_matrix_3)</code>
+            </div>
+
+            <h3>6.2 Expected Output</h3>
+            
+            <div class="example-box">
+                <h4>Console Output:</h4>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
+Original Matrix:
+[[3 4 5]
+ [1 2 3]]
+
+Transpose of the Matrix:
+[[3 1]
+ [4 2]
+ [5 3]]
+                </pre>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "You can use both methods—either as a method (matrix.transpose()) or as a function (np.transpose(matrix)). Both will give you the same result. The .T attribute is the quickest way and most commonly used by data scientists!"
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Python mein NumPy library use karke transpose karna bahut easy hai. Teen tarike hain: pehla - .transpose() method, doosra - np.transpose() function, aur teesra (sabse chhota aur popular) - .T attribute. Teeno ka result same hi aata hai. Data scientists usually .T use karte hain kyunki yeh sabse fast aur short hai. Bas import numpy karo, matrix banao, aur .T laga do!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🏋️ Practice Questions:</h4>
+                
+                <div class="question">
+                    <p><strong>Question 1:</strong> Create a 4×2 matrix with elements [10, 20], [30, 40], [50, 60], [70, 80] and find its transpose using NumPy.</p>
+                </div>
+                
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <div class="code-block" style="margin-top: 10px;">
+                        <code><span class="python-keyword">import</span> numpy <span class="python-keyword">as</span> np</br>
+</br>
+A = np.<span class="python-function">array</span>([[<span class="python-string">10</span>, <span class="python-string">20</span>],</br>
+               [<span class="python-string">30</span>, <span class="python-string">40</span>],</br>
+               [<span class="python-string">50</span>, <span class="python-string">60</span>],</br>
+               [<span class="python-string">70</span>, <span class="python-string">80</span>]])</br>
+</br>
+A_T = A.T</br>
+<span class="python-keyword">print</span>(<span class="python-string">"Original Matrix (4×2):"</span>)</br>
+<span class="python-keyword">print</span>(A)</br>
+<span class="python-keyword">print</span>(<span class="python-string">"\nTranspose (2×4):"</span>)</br>
+<span class="python-keyword">print</span>(A_T)</br>
+</br>
+<span class="python-comment"># Output:</span></br>
+<span class="python-comment"># Original Matrix: [[10 20] [30 40] [50 60] [70 80]]</span></br>
+<span class="python-comment"># Transpose: [[10 30 50 70] [20 40 60 80]]</span></code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Python Implementation:</h4>
+                <ul>
+                    <li>NumPy provides three methods: .transpose(), np.transpose(), and .T</li>
+                    <li>All three methods produce identical results</li>
+                    <li>.T attribute is the most concise and commonly used</li>
+                    <li>Always import NumPy before working with matrices</li>
+                    <li>Python makes matrix operations much easier than manual calculations</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 7: Order of Operations -->
+        <section id="order-operations">
+            <h2>7. Order of Operations: LIVE EVIL</h2>
+            
+            <h3>7.1 The Palindrome Concept</h3>
+            
+            <p>To remember how transpose affects the order of matrix operations, we can use a clever <span class="key-term">palindrome analogy</span> called <span class="emphasis">"LIVE EVIL"</span>.</p>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "Palindromes are sequences of letters that can be written in opposite order. If there is a word called 'LIVE' which has 4 letters, and if we start writing this word in the reverse order, the word will simply become 'EVIL'. This is similar to what happens with transpose operations!"
+            </div>
+
+            <h3>7.2 Understanding the Rule</h3>
+            
+            <div class="example-box">
+                <h4>The LIVE EVIL Rule:</h4>
+                <p>If we have a product of matrices and we take the transpose:</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p style="font-size: 1.3em; color: #667eea;">
+                        <strong>LIVE</strong> → When transposed becomes → <strong>EVIL</strong>
+                    </p>
+                </div>
+                
+                <p style="margin-top: 20px;">Mathematically, if each letter represents a matrix:</p>
+                
+                <div class="formula-box">
+                    <p style="text-align: center; font-size: 1.2em;">
+
+                        \[ (L \cdot I \cdot V \cdot E)^T = E^T \cdot V^T \cdot I^T \cdot L^T \]
+                    </p>
+                    <p style="text-align: center; margin-top: 15px;">
+                        The order reverses when we take the transpose!
+                    </p>
+                </div>
+            </div>
+
+            <h3>7.3 Practical Example</h3>
+            
+            <div class="example-box">
+                <h4>Example: Matrix A with LIVE EVIL</h4>
+                
+                <p>Consider a matrix A:</p>
+
+                \[
+                A = \begin{bmatrix}
+                0 & -1 & 8 & -7 \\
+                -4 & 6 & -10 & 9 \\
+                9 & 5 & 22 & -3 \\
+                8 & 8 & 4 & 7
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px;">If we think of A as composed of four matrices L, I, V, E (each representing a column), then:</p>
+                
+                <ul style="margin-top: 15px;">
+                    <li><strong>L</strong> (1st column): [0, -4, 9, 8]</li>
+                    <li><strong>I</strong> (2nd column): [-1, 6, -10, 9]</li>
+                    <li><strong>V</strong> (3rd column): [8, 5, 22, -3]</li>
+                    <li><strong>E</strong> (4th column): [-7, 9, -3, 7]</li>
+                </ul>
+                
+                <p style="margin-top: 20px;">When we transpose A (making LIVE → EVIL):</p>
+
+                
+                \[
+                A^T = \begin{bmatrix}
+                0 & -4 & 9 & 8 \\
+                -1 & 6 & -10 & 9 \\
+                8 & 5 & 22 & -3 \\
+                -7 & 9 & -3 & 7
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 15px;">Now the columns have become rows in <strong>reverse order</strong>:</p>
+                <ul>
+                    <li><strong>E</strong> becomes 4th row</li>
+                    <li><strong>V</strong> becomes 3rd row</li>
+                    <li><strong>I</strong> becomes 2nd row</li>
+                    <li><strong>L</strong> becomes 1st row</li>
+                </ul>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "This LIVE EVIL concept is very interesting because we can actually use it to remember how to carry out the order of operations. When you transpose a product of matrices, you reverse the order and transpose each individual matrix. It's like reading 'LIVE' backwards to get 'EVIL'!"
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>LIVE EVIL concept ek smart tarika hai transpose ke order ko yaad rakhne ka. Jaise LIVE ko ulta padhe to EVIL ban jata hai, waise hi matrices ke product ka transpose lete waqt order reverse ho jata hai. Agar (A×B×C)^T hai, to yeh ban jayega C^T × B^T × A^T. Order palat jata hai aur har matrix ka individual transpose ho jata hai. Bahut useful trick hai complex problems solve karne ke liye!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Order of Operations:</h4>
+                <ul>
+                    <li>Transpose reverses the order of matrix multiplication</li>
+                    <li>(AB)^T = B^T A^T (not A^T B^T)</li>
+                    <li>LIVE EVIL is a memory trick to remember order reversal</li>
+                    <li>Each matrix in the product gets transposed individually</li>
+                    <li>This rule applies to any number of matrices being multiplied</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 8: Transpose and Matrix Multiplication -->
+        <section id="matrix-multiplication">
+            <h2>8. Transpose and Matrix Multiplication</h2>
+            
+            <h3>8.1 Important Question</h3>
+            
+            <div class="example-box">
+                <h4>Problem Statement:</h4>
+                <p>Compute the following and verify if they are equal:</p>
+                <ul>
+                    <li>\( (AB)^T \) - Transpose of the product</li>
+                    <li>\( B^T A^T \) - Product of the transposes in reverse order</li>
+                </ul>
+                
+                <p style="margin-top: 15px;">Given matrices:</p>
+
+                \[
+                A = \begin{bmatrix}
+                -2 & 1 & 0 \\
+                3 & -1 & 3
+                \end{bmatrix}
+                \quad \text{and} \quad
+                B = \begin{bmatrix}
+                -2 & 1 & 2 \\
+                -1 & 2 & 0 \\
+                0 & 0 & -1
+                \end{bmatrix}
+                \]
+            </div>
+
+            <h3>8.2 Solution: Part 1 - Computing (AB)^T</h3>
+            
+            <div class="example-box">
+                <h4>Step 1: Analyze Dimensions</h4>
+                <ul>
+                    <li>Matrix A is <strong>2×3</strong> (2 rows, 3 columns)</li>
+                    <li>Matrix B is <strong>3×3</strong> (3 rows, 3 columns)</li>
+                    <li>Multiplication is possible because: columns of A = rows of B = 3</li>
+                    <li>Result AB will be <strong>2×3</strong></li>
+                </ul>
+                
+                <h4 style="margin-top: 20px;">Step 2: Compute AB</h4>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Remember, matrix multiplication is not just multiplication—it's multiplication AND addition. You take the first row, multiply it element-wise with the first column, and then sum up all those products."
+                </div>
+                
+                <p><strong>First element (row 1, column 1):</strong></p>
+                <p>\( (-2)(-2) + (1)(-1) + (0)(0) = 4 - 1 + 0 = 3 \)</p>
+                
+                <p><strong>Second element (row 1, column 2):</strong></p>
+                <p>\( (-2)(1) + (1)(2) + (0)(0) = -2 + 2 + 0 = 0 \)</p>
+                
+                <p><strong>Continuing this process for all elements:</strong></p>
+
+                
+                \[
+                AB = \begin{bmatrix}
+                3 & -5 & -4 \\
+                -5 & 1 & 3
+                \end{bmatrix}
+                \]
+                
+                <h4 style="margin-top: 20px;">Step 3: Take Transpose of AB</h4>
+                
+                <p>Interchange rows and columns:</p>
+
+                
+                \[
+                (AB)^T = \begin{bmatrix}
+                3 & -5 \\
+                -5 & 1 \\
+                -4 & 3
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 10px;">Result is now <strong>3×2</strong> (columns become rows)</p>
+            </div>
+
+            <h3>8.3 Solution: Part 2 - Computing B^T A^T</h3>
+            
+            <div class="example-box">
+                <h4>Step 1: Compute B^T</h4>
+                
+                <p>Original B (3×3):</p>
+
+                \[
+                B = \begin{bmatrix}
+                -2 & 1 & 2 \\
+                -1 & 2 & 0 \\
+                0 & 0 & -1
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 15px;">After transpose (still 3×3, but rows ↔ columns):</p>
+
+                \[
+                B^T = \begin{bmatrix}
+                -2 & -1 & 0 \\
+                1 & 2 & 0 \\
+                2 & 0 & -1
+                \end{bmatrix}
+                \]
+                
+                <h4 style="margin-top: 20px;">Step 2: Compute A^T</h4>
+                
+                <p>Original A (2×3):</p>
+
+                \[
+                A = \begin{bmatrix}
+                -2 & 1 & 0 \\
+                3 & -1 & 3
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 15px;">After transpose (3×2):</p>
+
+                \[
+                A^T = \begin{bmatrix}
+                -2 & 3 \\
+                1 & -1 \\
+                0 & 3
+                \end{bmatrix}
+                \]
+                
+                <h4 style="margin-top: 20px;">Step 3: Multiply B^T × A^T</h4>
+                
+                <ul>
+                    <li>B^T is <strong>3×3</strong></li>
+                    <li>A^T is <strong>3×2</strong></li>
+                    <li>Result will be <strong>3×2</strong></li>
+                </ul>
+                
+                <p style="margin-top: 15px;">Performing the multiplication:</p>
+
+                
+                \[
+                B^T A^T = \begin{bmatrix}
+                3 & -5 \\
+                -5 & 1 \\
+                -4 & 3
+                \end{bmatrix}
+                \]
+            </div>
+
+            <h3>8.4 Verification</h3>
+            
+            <div class="formula-box" style="background: #e8f5e9;">
+                <h4 style="color: #2e7d32;">✓ Result Verified!</h4>
+                
+                <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">
+
+                    \[ (AB)^T = B^T A^T = \begin{bmatrix}
+                    3 & -5 \\
+                    -5 & 1 \\
+                    -4 & 3
+                    \end{bmatrix} \]
+                </p>
+                
+                <p style="text-align: center; color: #2e7d32; font-weight: bold;">
+                    Both methods produce the exact same result!
+                </p>
+            </div>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "This is very beautiful, right? We can solve the entire problem just by taking the transpose of these matrices and doing a matrix multiplication that we learned before. B^T A^T is the same as (AB)^T. This property is extremely useful in machine learning and data science!"
+            </div>
+
+            <h3>8.5 Another Example</h3>
+            
+            <div class="example-box">
+                <h4>Verification Example:</h4>
+                
+                <p><strong>Given:</strong></p>
+
+                \[
+                A = \begin{bmatrix}
+                1 & 2 \\
+                3 & 4
+                \end{bmatrix}
+                \quad
+                B = \begin{bmatrix}
+                5 & 6 \\
+                7 & 8
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px;"><strong>Step 1: Calculate AB</strong></p>
+
+                \[
+                AB = \begin{bmatrix}
+                (1)(5)+(2)(7) & (1)(6)+(2)(8) \\
+                (3)(5)+(4)(7) & (3)(6)+(4)(8)
+                \end{bmatrix}
+                = \begin{bmatrix}
+                19 & 22 \\
+                43 & 50
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px;"><strong>Step 2: Transpose of AB</strong></p>
+
+                \[
+                (AB)^T = \begin{bmatrix}
+                19 & 43 \\
+                22 & 50
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px;"><strong>Step 3: Calculate B^T and A^T</strong></p>
+
+                \[
+                B^T = \begin{bmatrix}
+                5 & 7 \\
+                6 & 8
+                \end{bmatrix}
+                \quad
+                A^T = \begin{bmatrix}
+                1 & 3 \\
+                2 & 4
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px;"><strong>Step 4: Multiply B^T A^T</strong></p>
+
+                \[
+                B^T A^T = \begin{bmatrix}
+                (5)(1)+(7)(2) & (5)(3)+(7)(4) \\
+                (6)(1)+(8)(2) & (6)(3)+(8)(4)
+                \end{bmatrix}
+                = \begin{bmatrix}
+                19 & 43 \\
+                22 & 50
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 20px; text-align: center; color: #2e7d32; font-weight: bold;">
+                    ✓ Verified: (AB)^T = B^T A^T
+                </p>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Yeh ek bahut important property hai: jab hum do matrices ka product lete hain aur phir transpose karte hain, toh result same aata hai jaise agar hum pehle dono matrices ko individually transpose karein aur phir REVERSE order mein multiply karein. Matlab (AB)^T = B^T × A^T. Yeh property machine learning aur data science mein bahut jagah use hoti hai, especially neural networks mein!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🏋️ Practice Questions:</h4>
+                
+                <div class="question">
+                    <p><strong>Question 2:</strong> Given \( C = \begin{bmatrix} 1 & 0 \\ 2 & 3 \end{bmatrix} \) and \( D = \begin{bmatrix} 4 & 1 \\ 0 & 2 \end{bmatrix} \), verify that \( (CD)^T = D^T C^T \)</p>
+                </div>
+                
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p style="margin-top: 10px;">
+                        <strong>CD = </strong>\( \begin{bmatrix} 4 & 1 \\ 8 & 8 \end{bmatrix} \)
+                    </p>
+                    <p>
+                        <strong>(CD)^T = </strong>\( \begin{bmatrix} 4 & 8 \\ 1 & 8 \end{bmatrix} \)
+                    </p>
+                    <p style="margin-top: 15px;">
+                        <strong>D^T = </strong>\( \begin{bmatrix} 4 & 0 \\ 1 & 2 \end{bmatrix} \), 
+                        <strong>C^T = </strong>\( \begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix} \)
+                    </p>
+                    <p>
+                        <strong>D^T C^T = </strong>\( \begin{bmatrix} 4 & 8 \\ 1 & 8 \end{bmatrix} \)
+                    </p>
+                    <p style="color: #2e7d32; font-weight: bold; margin-top: 10px;">✓ Verified!</p>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Transpose and Multiplication:</h4>
+                <ul>
+                    <li>The fundamental property: (AB)^T = B^T A^T</li>
+                    <li>Order reverses when taking transpose of a product</li>
+                    <li>This property extends to multiple matrices: (ABC)^T = C^T B^T A^T</li>
+                    <li>Always verify dimensions to ensure multiplication is valid</li>
+                    <li>This property is extensively used in machine learning algorithms</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 9: Advanced Problem -->
+        <section id="advanced-problem">
+            <h2>9. Advanced Problem: Matrix Power & Stochastic Matrices</h2>
+            
+            <h3>9.1 Problem Statement: Land Usage Prediction</h3>
+            
+            <div class="example-box">
+                <h4>Real-World Scenario:</h4>
+                <p>In 2004, the state of land used in a city was <strong>60 square miles</strong>, divided into:</p>
+                <ul>
+                    <li><strong>Commercial (C):</strong> 25% (15 square miles)</li>
+                    <li><strong>Industrial (I):</strong> 20% (12 square miles)</li>
+                    <li><strong>Residential (R):</strong> 55% (33 square miles)</li>
+                </ul>
+                
+                <p style="margin-top: 20px;"><strong>Question:</strong> Find the land usage state in years 2009, 2014, and 2019, assuming transitions occur every 5 years according to a given transition matrix.</p>
+                
+                <p style="margin-top: 20px;"><strong>Transition Matrix A (probability of transition in 5 years):</strong></p>
+
+                
+                \[
+                A = \begin{bmatrix}
+                0.7 & 0.1 & 0 \\
+                0.2 & 0.9 & 0.2 \\
+                0.1 & 0 & 0.8
+                \end{bmatrix}
+                \]
+                
+                <p style="margin-top: 15px;">Where:</p>
+                <ul>
+                    <li>Columns represent: C (Commercial), I (Industrial), R (Residential)</li>
+                    <li>Each entry shows probability of transition from one type to another</li>
+                    <li>Example: 0.7 in position (1,1) means 70% of commercial land remains commercial</li>
+                    <li>0.1 in position (1,2) means 10% of industrial land becomes commercial</li>
+                </ul>
+            </div>
+
+            <h3>9.2 Understanding Stochastic Matrices</h3>
+            
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "This gives us a very interesting matrix which is called a stochastic matrix. A stochastic matrix has all entries non-negative, and all the columns sum to 1. This connects with probability theory because in probability, the sum of all probabilities cannot exceed the value of 1."
+            </div>
+            
+            <div class="formula-box">
+                <h4>Definition: Stochastic Matrix</h4>
+                <p>A matrix is <span class="key-term">stochastic</span> if:</p>
+                <ol style="padding-left: 30px; margin-top: 10px;">
+                    <li>All entries are <strong>non-negative</strong> (≥ 0)</li>
+                    <li>All <strong>column sums equal 1</strong></li>
+                </ol>
+                
+                <p style="margin-top: 15px;"><strong>Verification for our matrix A:</strong></p>
+                <ul style="margin-top: 10px;">
+                    <li>Column 1: 0.7 + 0.2 + 0.1 = 1.0 ✓</li>
+                    <li>Column 2: 0.1 + 0.9 + 0.0 = 1.0 ✓</li>
+                    <li>Column 3: 0.0 + 0.2 + 0.8 = 1.0 ✓</li>
+                </ul>
+            </div>
+
+            <h3>9.3 Markov Process</h3>
+            
+            <div class="example-box">
+                <h4>Understanding Markov Processes:</h4>
+                
+                <p>This is a <span class="key-term">Markov process</span> where the probability of entering a certain state depends <strong>only on the last state occupied</strong>, not on any earlier states.</p>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "If we want to know what is happening at year 2009, we need to know the state at 2004. From the matrix A and the 2004 state, we can compute the 2009 state of affairs. Data science makes predictions—we are making new predictions given this information!"
+                </div>
+                
+                <p style="margin-top: 15px;"><strong>Key Property:</strong></p>
+                <p style="text-align: center; font-size: 1.1em; margin: 15px 0;">
+                    Future State = Transition Matrix × Current State
+                </p>
+            </div>
+
+            <h3>9.4 Solution: Predicting 2009</h3>
+            
+            <div class="example-box">
+                <h4>Step 1: Set up initial state vector (2004)</h4>
+
+                
+                \[
+                x_{2004} = \begin{bmatrix}
+                25 \\
+                20 \\
+                55
+                \end{bmatrix}
+                \text{ (in percentages)}
+                \]
+                
+                <h4 style="margin-top: 20px;">Step 2: Apply transition matrix</h4>
+
+                
+                \[
+                x_{2009} = A \cdot x_{2004}
+                \]
+                
+                <h4 style="margin-top: 20px;">Step 3: Calculate each component</h4>
+                
+                <p><strong>Commercial land in 2009:</strong></p>
+                <p>\( C_{2009} = (0.7)(25) + (0.1)(20) + (0)(55) \)</p>
+                <p>\( C_{2009} = 17.5 + 2 + 0 = 19.5\% \)</p>
+                
+                <p style="margin-top: 15px;"><strong>Industrial land in 2009:</strong></p>
+                <p>\( I_{2009} = (0.2)(25) + (0.9)(20) + (0.2)(55) \)</p>
+                <p>\( I_{2009} = 5 + 18 + 11 = 34\% \)</p>
+                
+                <p style="margin-top: 15px;"><strong>Residential land in 2009:</strong></p>
+                <p>\( R_{2009} = (0.1)(25) + (0)(20) + (0.8)(55) \)</p>
+                <p>\( R_{2009} = 2.5 + 0 + 44 = 46.5\% \)</p>
+                
+                <h4 style="margin-top: 20px;">Result for 2009:</h4>
+
+                
+                \[
+                x_{2009} = \begin{bmatrix}
+                19.5 \\
+                34 \\
+                46.5
+                \end{bmatrix}
+                \]
+            </div>
+
+            <h3>9.5 Continuing the Prediction</h3>
+            
+            <div class="example-box">
+                <h4>Predicting Further into the Future:</h4>
+                
+                <p><strong>For 2014:</strong></p>
+                <p>\( x_{2014} = A \cdot x_{2009} = A^2 \cdot x_{2004} \)</p>
+                
+                <p style="margin-top: 15px;"><strong>For 2019:</strong></p>
+                <p>\( x_{2019} = A \cdot x_{2014} = A^3 \cdot x_{2004} \)</p>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "We can calculate further ahead, not just estimating from 2004 to 2009, but we can also predict what happens between 2004 and 2019 using matrix operations and transpose. This is the power of matrix algebra in data science!"
+                </div>
+                
+                <p style="margin-top: 20px;"><strong>General Formula:</strong></p>
+                <p style="text-align: center; font-size: 1.1em; margin: 15px 0;">
+                    State after \( n \) periods = \( A^n \times \) Initial State
+                </p>
+            </div>
+
+            <h3>9.6 Python Implementation</h3>
+            
+            <div class="code-block">
+                <code><span class="python-keyword">import</span> numpy <span class="python-keyword">as</span> np</br>
+</br>
+<span class="python-comment"># Define transition matrix</span></br>
+A = np.<span class="python-function">array</span>([[<span class="python-string">0.7</span>, <span class="python-string">0.1</span>, <span class="python-string">0</span>],</br>
+               [<span class="python-string">0.2</span>, <span class="python-string">0.9</span>, <span class="python-string">0.2</span>],</br>
+               [<span class="python-string">0.1</span>, <span class="python-string">0</span>, <span class="python-string">0.8</span>]])</br>
+</br>
+<span class="python-comment"># Initial state (2004)</span></br>
+x_2004 = np.<span class="python-function">array</span>([[<span class="python-string">25</span>], [<span class="python-string">20</span>], [<span class="python-string">55</span>]])</br>
+</br>
+<span class="python-comment"># Predict 2009</span></br>
+x_2009 = np.<span class="python-function">dot</span>(A, x_2004)</br>
+</br>
+<span class="python-comment"># Predict 2014</span></br>
+x_2014 = np.<span class="python-function">dot</span>(A, x_2009)</br>
+</br>
+<span class="python-comment"># Predict 2019</span></br>
+x_2019 = np.<span class="python-function">dot</span>(A, x_2014)</br>
+</br>
+<span class="python-keyword">print</span>(<span class="python-string">"Land Usage Prediction:"</span>)</br>
+<span class="python-keyword">print</span>(<span class="python-string">f"2004: C={x_2004[0][0]}%, I={x_2004[1][0]}%, R={x_2004[2][0]}%"</span>)</br>
+<span class="python-keyword">print</span>(<span class="python-string">f"2009: C={x_2009[0][0]}%, I={x_2009[1][0]}%, R={x_2009[2][0]}%"</span>)</br>
+<span class="python-keyword">print</span>(<span class="python-string">f"2014: C={x_2014[0][0]}%, I={x_2014[1][0]}%, R={x_2014[2][0]}%"</span>)</br>
+<span class="python-keyword">print</span>(<span class="python-string">f"2019: C={x_2019[0][0]}%, I={x_2019[1][0]}%, R={x_2019[2][0]}%"</span>)</code>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Yeh ek advanced problem hai jo real-world prediction mein use hota hai. Stochastic matrix woh matrix hai jisme sab entries positive hain aur har column ka sum 1 hai (probability ki tarah). Markov process mein future state sirf last state pe depend karta hai, purane states pe nahi. Hum transition matrix use karke predict kar sakte hain ki 5 saal, 10 saal, 15 saal baad land ka distribution kaisa hoga. Yeh approach city planning, finance, weather prediction jaise areas mein bahut useful hai!</p>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Matrix Power & Applications:</h4>
+                <ul>
+                    <li>Stochastic matrices have non-negative entries with column sums equal to 1</li>
+                    <li>Markov processes depend only on the immediate previous state</li>
+                    <li>Matrix multiplication can predict future states in sequential processes</li>
+                    <li>Matrix powers (A², A³, etc.) allow long-term predictions</li>
+                    <li>This technique is used in urban planning, finance, weather forecasting, and more</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 10: Properties -->
+        <section id="properties">
+            <h2>10. Properties of Transposed Matrices</h2>
+            
+            <h3>10.1 Four Fundamental Properties</h3>
+            
+            <p>There are four essential properties of matrix transpose that you must remember and understand:</p>
+
+            <div class="properties-list">
+                <h4>Property 1: Transpose of a Sum</h4>
+                <div class="formula-box">
+
+                    \[ (A + B)^T = A^T + B^T \]
+                    <p style="margin-top: 10px;"><strong>Explanation:</strong> The transpose operation is <span class="key-term">distributive</span> over addition. You can transpose matrices individually and then add them, or add them first and then transpose—the result is the same.</p>
+                </div>
+                
+                <div class="example-box" style="margin-top: 15px;">
+                    <strong>Example:</strong>
+                    <p>If \( A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \) and \( B = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix} \)</p>
+                    
+                    <p style="margin-top: 10px;">Then: \( A + B = \begin{bmatrix} 6 & 8 \\ 10 & 12 \end{bmatrix} \)</p>
+                    
+                    <p>\( (A+B)^T = \begin{bmatrix} 6 & 10 \\ 8 & 12 \end{bmatrix} \)</p>
+                    
+                    <p style="margin-top: 10px;">And: \( A^T + B^T = \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} + \begin{bmatrix} 5 & 7 \\ 6 & 8 \end{bmatrix} = \begin{bmatrix} 6 & 10 \\ 8 & 12 \end{bmatrix} \) ✓</p>
+                </div>
+            </div>
+
+            <div class="properties-list">
+                <h4>Property 2: Transpose of a Product (LIVE EVIL)</h4>
+                <div class="formula-box">
+
+                    \[ (AB)^T = B^T A^T \]
+                    <p style="margin-top: 10px;"><strong>Explanation:</strong> When transposing a product of matrices, the <span class="key-term">order reverses</span> and each matrix is transposed individually. This is the LIVE EVIL property we discussed earlier!</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "This is extremely important! The order reverses—it's not (AB)^T = A^T B^T. We already solved a detailed problem about this property earlier in the lecture."
+                </div>
+            </div>
+
+            <div class="properties-list">
+                <h4>Property 3: Transpose of a Scalar Multiple</h4>
+                <div class="formula-box">
+
+                    \[ (kA)^T = k A^T \]
+                    <p style="margin-top: 10px;"><strong>Explanation:</strong> When you multiply a matrix by a scalar (constant) and then transpose, it's the same as transposing first and then multiplying by the scalar. The scalar <span class="emphasis">factors out</span> because scalars don't have a transpose.</p>
+                </div>
+                
+                <div class="example-box" style="margin-top: 15px;">
+                    <strong>Example:</strong>
+                    <p>If \( A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \) and \( k = 3 \)</p>
+                    
+                    <p style="margin-top: 10px;">\( kA = 3\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} = \begin{bmatrix} 3 & 6 \\ 9 & 12 \end{bmatrix} \)</p>
+                    
+                    <p>\( (kA)^T = \begin{bmatrix} 3 & 9 \\ 6 & 12 \end{bmatrix} \)</p>
+                    
+                    <p style="margin-top: 10px;">\( kA^T = 3\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} 3 & 9 \\ 6 & 12 \end{bmatrix} \) ✓</p>
+                </div>
+                
+                <div class="professor-note">
+                    <strong>Professor mentioned in class:</strong>
+                    "Since a scalar doesn't have a transpose (it's just a number), the scalar is factored outside. All you take is the transpose of the matrix."
+                </div>
+            </div>
+
+            <div class="properties-list">
+                <h4>Property 4: Transpose of a Transpose</h4>
+                <div class="formula-box">
+
+                    \[ (A^T)^T = A \]
+                    <p style="margin-top: 10px;"><strong>Explanation:</strong> If you transpose a matrix twice, you get back the <span class="key-term">original matrix</span>. Transposing is a reversible operation.</p>
+                </div>
+                
+                <div class="example-box" style="margin-top: 15px;">
+                    <strong>Example:</strong>
+                    <p>If \( A = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix} \)</p>
+                    
+                    <p style="margin-top: 10px;">\( A^T = \begin{bmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{bmatrix} \)</p>
+                    
+                    <p>\( (A^T)^T = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix} = A \) ✓</p>
+                </div>
+            </div>
+
+            <h3>10.2 Summary Table of Properties</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Formula</th>
+                        <th>Key Point</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Transpose of Sum</strong></td>
+                        <td>\( (A + B)^T = A^T + B^T \)</td>
+                        <td>Distributive over addition</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transpose of Product</strong></td>
+                        <td>\( (AB)^T = B^T A^T \)</td>
+                        <td>Order reverses</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transpose of Scalar Multiple</strong></td>
+                        <td>\( (kA)^T = k A^T \)</td>
+                        <td>Scalar factors out</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Double Transpose</strong></td>
+                        <td>\( (A^T)^T = A \)</td>
+                        <td>Returns original matrix</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="professor-note">
+                <strong>Professor mentioned in class:</strong>
+                "These rules of transpose matrix will be used in future videos, so it would be very handy if you remember some of these rules. They're fundamental to linear algebra and will appear everywhere in machine learning!"
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Hinglish Summary:</h4>
+                <p>Transpose ke char main properties hain: (1) Addition distributive hai - pehle add karo ya baad mein, result same hai; (2) Multiplication mein order reverse ho jata hai - yeh LIVE EVIL wala rule hai; (3) Scalar ko bahar nikal sakte ho - number ka transpose nahi hota; (4) Do baar transpose karne se original matrix wapas aa jati hai. Yeh char properties bahut important hain aur machine learning ke har algorithm mein kaam aati hain!</p>
+            </div>
+
+            <div class="practice-questions">
+                <h4>🏋️ Practice Questions:</h4>
+                
+                <div class="question">
+                    <p><strong>Question 3:</strong> If \( A = \begin{bmatrix} 2 & 3 \\ 1 & 4 \end{bmatrix} \) and \( B = \begin{bmatrix} 1 & 0 \\ 2 & 1 \end{bmatrix} \), verify all four properties of transpose.</p>
+                </div>
+                
+                <div class="answer">
+                    <strong>Answer:</strong>
+                    <p><strong>Property 1:</strong> \( (A+B)^T = \begin{bmatrix} 3 & 3 \\ 3 & 5 \end{bmatrix} \) and \( A^T + B^T = \begin{bmatrix} 3 & 3 \\ 3 & 5 \end{bmatrix} \) ✓</p>
+                    <p><strong>Property 2:</strong> \( (AB)^T = \begin{bmatrix} 8 & 7 \\ 3 & 4 \end{bmatrix} \) and \( B^T A^T = \begin{bmatrix} 8 & 7 \\ 3 & 4 \end{bmatrix} \) ✓</p>
+                    <p><strong>Property 3:</strong> \( (3A)^T = \begin{bmatrix} 6 & 3 \\ 9 & 12 \end{bmatrix} \) and \( 3A^T = \begin{bmatrix} 6 & 3 \\ 9 & 12 \end{bmatrix} \) ✓</p>
+                    <p><strong>Property 4:</strong> \( (A^T)^T = A = \begin{bmatrix} 2 & 3 \\ 1 & 4 \end{bmatrix} \) ✓</p>
+                </div>
+            </div>
+
+            <div class="key-takeaways">
+                <h4>🎯 Key Takeaways - Properties of Transpose:</h4>
+                <ul>
+                    <li>Four fundamental properties govern transpose operations</li>
+                    <li>Transpose is distributive over addition but reverses order in multiplication</li>
+                    <li>Scalars can be factored out of transpose operations</li>
+                    <li>Double transpose always returns the original matrix</li>
+                    <li>These properties simplify complex matrix calculations in practice</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 11: Summary -->
+        <section id="summary">
+            <h2>11. Summary & Key Takeaways</h2>
+            
+            <h3>11.1 Complete Recap</h3>
+            
+            <div class="key-takeaways" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-color: #f5576c;">
+                <h4 style="color: white;">🎓 Complete Learning Summary:</h4>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <h4 style="color: #f5576c;">1. Definition & Concept</h4>
+                    <p>The <strong>transpose of a matrix</strong> is created by interchanging its rows and columns. Think of it as "flipping" the matrix over its main diagonal (the diagonal from the top-left to the bottom-right corner).</p>
+                    
+                    <h4 style="color: #f5576c; margin-top: 20px;">2. Applications</h4>
+                    <p>Matrix transpose is a <strong>fundamental operation</strong> in linear algebra with applications in:</p>
+                    <ul>
+                        <li>Data manipulation and reshaping data (especially in machine learning)</li>
+                        <li>Principal Component Analysis (PCA) for dimension reduction</li>
+                        <li>Geometry: Representing reflections and rotations</li>
+                        <li>Solving systems of equations</li>
+                        <li>Computer graphics and 3D transformations</li>
+                        <li>Neural networks and deep learning algorithms</li>
+                    </ul>
+                    
+                    <h4 style="color: #f5576c; margin-top: 20px;">3. Dimension Change</h4>
+                    <p>The order of the matrix <strong>changes when you take the transpose</strong> (unless it's a square matrix). An m×n matrix becomes an n×m matrix after transposing.</p>
+                    
+                    <h4 style="color: #f5576c; margin-top: 20px;">4. Python Implementation</h4>
+                    <p>NumPy provides three methods: <code>.transpose()</code>, <code>np.transpose()</code>, and <code>.T</code> (most commonly used)</p>
+                    
+                    <h4 style="color: #f5576c; margin-top: 20px;">5. Key Properties</h4>
+                    <ul>
+                        <li>(A + B)^T = A^T + B^T</li>
+                        <li>(AB)^T = B^T A^T (order reverses!)</li>
+                        <li>(kA)^T = k A^T</li>
+                        <li>(A^T)^T = A</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>11.2 What's Coming Next?</h3>
+            
+            <div class="example-box" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-color: #fed6e3;">
+                <h4 style="color: #d63031;">📚 Coming Up Next: Matrix Algebra</h4>
+                <p style="font-size: 1.1em;">In our next lecture, we will explore:</p>
+                <ul style="font-size: 1.05em; line-height: 2;">
+                    <li><strong>Symmetric Matrices</strong> - Special matrices where A = A^T</li>
+                    <li><strong>Square Matrices</strong> - Properties and operations</li>
+                    <li><strong>Inverse of a Matrix</strong> - How to "undo" matrix operations</li>
+                    <li><strong>Determinants</strong> - Scalar values that encode important matrix properties</li>
+                </ul>
+            </div>
+
+            <div class="hinglish-summary">
+                <h4>🇮🇳 Final Hinglish Summary:</h4>
+                <p>Aaj ke lecture mein humne matrix transpose seekha - ek bahut important operation jo data science aur machine learning mein har jagah use hota hai. Transpose mein rows aur columns swap ho jate hain. Python mein NumPy library se yeh bahut easy hai - bas .T laga do! Hume char important properties yaad rakhni hain, especially yeh ki product ka transpose lete waqt order reverse ho jata hai. Agle lecture mein hum symmetric matrices, inverse, aur determinants seekhenge jo aur bhi powerful concepts hain. Keep practicing!</p>
+            </div>
+        </section>
+
+        <!-- Section 12: Mind Map -->
+        <section id="mind-map">
+            <div class="mind-map">
+                <h2>12. 🧠 Complete Concept Mind Map</h2>
+                
+                <div class="mind-map-content">
+                    <div class="central-node">
+                        MATRIX TRANSPOSE
+                    </div>
+                    
+                    <div class="branches">
+                        <div class="branch">
+                            <h4>📖 Basic Concept</h4>
+                            <ul>
+                                <li>Interchange rows & columns</li>
+                                <li>Notation: A^T, A', A^⊺</li>
+                                <li>Dimensions reverse: m×n → n×m</li>
+                                <li>Elements switch places</li>
+                                <li>Flipping over main diagonal</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🌍 Real-World Applications</h4>
+                            <ul>
+                                <li>Machine Learning (PCA)</li>
+                                <li>Data manipulation</li>
+                                <li>Neural networks</li>
+                                <li>Computer graphics</li>
+                                <li>Image processing</li>
+                                <li>Urban planning</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🐍 Python Implementation</h4>
+                            <ul>
+                                <li>NumPy library</li>
+                                <li>Method: .transpose()</li>
+                                <li>Function: np.transpose()</li>
+                                <li>Shorthand: .T (most popular)</li>
+                                <li>All produce same result</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🔄 Properties</h4>
+                            <ul>
+                                <li>(A+B)^T = A^T + B^T</li>
+                                <li>(AB)^T = B^T A^T</li>
+                                <li>(kA)^T = k A^T</li>
+                                <li>(A^T)^T = A</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>💡 LIVE EVIL Rule</h4>
+                            <ul>
+                                <li>Order reversal in products</li>
+                                <li>Palindrome memory trick</li>
+                                <li>Reverse & transpose each</li>
+                                <li>Applies to multiple matrices</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>📊 Matrix Multiplication</h4>
+                            <ul>
+                                <li>(AB)^T = B^T A^T verified</li>
+                                <li>Order matters!</li>
+                                <li>Dimension compatibility</li>
+                                <li>Used in ML algorithms</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🎲 Stochastic Matrices</h4>
+                            <ul>
+                                <li>All entries ≥ 0</li>
+                                <li>Column sums = 1</li>
+                                <li>Probability interpretation</li>
+                                <li>Markov processes</li>
+                                <li>Prediction models</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🔮 Advanced Applications</h4>
+                            <ul>
+                                <li>Matrix power (A², A³)</li>
+                                <li>Long-term predictions</li>
+                                <li>State transitions</li>
+                                <li>Urban development</li>
+                                <li>Financial modeling</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>✅ Key Rules</h4>
+                            <ul>
+                                <li>Square matrices: n×n → n×n</li>
+                                <li>Always check dimensions</li>
+                                <li>Reversible operation</li>
+                                <li>Preserves element values</li>
+                                <li>Changes structure only</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="branch">
+                            <h4>🎯 Next Topics</h4>
+                            <ul>
+                                <li>Symmetric matrices</li>
+                                <li>Square matrices</li>
+                                <li>Matrix inverse</li>
+                                <li>Determinants</li>
+                                <li>Eigenvalues & eigenvectors</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+       <footer style="margin-top: 50px; padding: 20px; background-color: #2c3e50; color: white; border-radius: 10px; text-align: center;">
+            <h3 style= "color:#f8f9fa ">I created this knowledge during my first semester of BSc in Applied AI and Data Science.</h3>
+            <h3 style= "color:#f8f9fa ">~ Armaan Kachhawa </h3>
+        </footer>
+    </div>
+
+      <script>
+        document.addEventListener('click', function(e) {
+          var anchor = e.target;
+          while (anchor && anchor.tagName !== 'A') {
+            anchor = anchor.parentElement;
+          }
+          if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').charAt(0) === '#') {
+            e.preventDefault();
+            e.stopPropagation();
+            var targetId = anchor.getAttribute('href').slice(1);
+            var targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, true);
+      </script>
+    </body>
+</html>
