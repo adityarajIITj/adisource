@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SubjectsSection from "@/components/SubjectsSection";
