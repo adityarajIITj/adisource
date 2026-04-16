@@ -1,34 +1,57 @@
-import { getSemester, getSubject, getWeek } from "@/data/courses";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
+import Link from "next/link";
 import LearningEnvironment from "@/components/LearningEnvironment";
+import { useCourseData } from "@/context/CourseDataContext";
 
-export default async function ViewMaterialPage(
-  props: { params: Promise<{ semId: string; subjectCode: string; weekId: string; materialId: string }> }
+export default function ViewMaterialPage(
+  { params }: { params: Promise<{ semId: string; subjectCode: string; weekId: string; materialId: string }> }
 ) {
-  const params = await props.params;
-  const semId = parseInt(params.semId, 10);
-  const weekId = parseInt(params.weekId, 10);
-  const subjectCode = params.subjectCode;
-  const materialId = params.materialId;
+  const { semId: semIdStr, subjectCode, weekId: weekIdStr, materialId } = use(params);
+  const semId = parseInt(semIdStr, 10);
+  const weekId = parseInt(weekIdStr, 10);
+  
+  const { semesters, loading } = useCourseData();
 
-  const semester = getSemester(semId);
-  const subject = getSubject(semId, subjectCode);
-  const week = getWeek(semId, subjectCode, weekId);
+  if (loading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-surface-primary">
+        <div className="w-8 h-8 rounded-full border-4 border-brand-blue border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const semester = semesters.find(s => s.id === semId);
+  const subject = semester?.subjects.find(s => s.code.toLowerCase() === subjectCode.toLowerCase());
+  const week = subject?.weeks.find(w => w.id === weekId);
 
   if (!semester || !subject || !week) {
-    notFound();
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Course Not Found</h2>
+          <p className="text-text-secondary mb-6">We couldn't find this material.</p>
+          <Link href="/#subjects" className="btn-primary">Return Home</Link>
+        </div>
+      </div>
+    );
   }
 
   // Get all materials for this subject to drive the sidebar navigation
-  // We will collect all materials across all weeks for hopping, or just this week.
-  // The sidebar in LearningEnvironment is designed to show lectures. Let's send all materials in the week,
-  // or if we want to show all materials in the entire subject, we can do that. Let's send ALL materials in the subject.
   const allMaterials = subject.weeks.reduce((acc, w) => [...acc, ...w.materials], [] as any[]);
-
   const material = allMaterials.find(m => m.id === materialId);
 
   if (!material) {
-    notFound();
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Material Not Found</h2>
+          <p className="text-text-secondary mb-6">This document could not be found.</p>
+          <Link href={`/semester/${semId}/${subject.code.toLowerCase()}`} className="btn-primary">Return to Subject</Link>
+        </div>
+      </div>
+    );
   }
 
   return (

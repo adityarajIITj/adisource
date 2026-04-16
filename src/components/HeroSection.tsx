@@ -2,18 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ArrowDown, Sparkles } from "lucide-react";
+import { ArrowDown, Sparkles, Hand } from "lucide-react";
 import FloatingBooks from "./FloatingBooks";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const greetRef = useRef<HTMLDivElement>(null);
   const [showScrollPrompt, setShowScrollPrompt] = useState(false);
+  const { user, userProfile } = useAuth();
 
   useEffect(() => {
     const tl = gsap.timeline({ delay: 0.5 });
+
+    if (greetRef.current) {
+      tl.from(greetRef.current, {
+        y: -20,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+      });
+    }
 
     if (titleRef.current) {
       const words = titleRef.current.querySelectorAll(".hero-word");
@@ -23,7 +35,7 @@ export default function HeroSection() {
         duration: 0.9,
         stagger: 0.08,
         ease: "power3.out",
-      });
+      }, greetRef.current ? "-=0.3" : "+=0");
     }
 
     if (subtitleRef.current) {
@@ -51,12 +63,11 @@ export default function HeroSection() {
         "-=0.2"
       );
     }
-  }, []);
+  }, [userProfile]);
 
   const handleGetStarted = () => {
     setShowScrollPrompt(true);
 
-    // Auto-dismiss and scroll after a short moment or on user scroll
     setTimeout(() => {
       setShowScrollPrompt(false);
       const target = document.getElementById("subjects");
@@ -65,6 +76,8 @@ export default function HeroSection() {
       }
     }, 2200);
   };
+
+  const firstName = userProfile?.displayName?.split(" ")[0];
 
   return (
     <section
@@ -76,6 +89,16 @@ export default function HeroSection() {
 
       {/* Content wrapper with z-index to stay above floating elements */}
       <div className="relative z-10 flex flex-col items-center">
+        {/* Personalized Greeting (logged in users) */}
+        {userProfile && firstName && (
+          <div ref={greetRef} className="mb-6">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass-card text-base font-semibold text-text-primary greeting-glow">
+              <Hand className="w-5 h-5 text-amber-400" />
+              Hi, {firstName} — What do you want to learn today?
+            </div>
+          </div>
+        )}
+
         {/* Decorative badge */}
         <div className="reveal-up mb-8">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-medium text-text-secondary">

@@ -3,14 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Image from "next/image";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import UserMenu from "@/components/UserMenu";
 
 export default function Navbar() {
   const navRef = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { user, userProfile, loading } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -47,7 +51,7 @@ export default function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-6 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <Image
             src="/logo.svg"
             alt="adisource logo"
@@ -60,7 +64,7 @@ export default function Navbar() {
           >
             adi<span className="gradient-text">source</span>
           </span>
-        </a>
+        </Link>
 
         {/* Nav Links */}
         <div className="hidden md:flex items-center gap-6">
@@ -98,9 +102,18 @@ export default function Navbar() {
             </button>
           )}
 
-          <a href="#subjects" className="btn-primary text-sm !py-2.5 !px-5 ml-2">
-            <span>Get Started</span>
-          </a>
+          {/* Auth-aware CTA */}
+          {!loading && (
+            <>
+              {user && userProfile ? (
+                <UserMenu />
+              ) : (
+                <Link href="/login" className="btn-primary text-sm !py-2.5 !px-5 ml-2">
+                  <span>Get Started</span>
+                </Link>
+              )}
+            </>
+          )}
         </div>
       </div>
     </nav>

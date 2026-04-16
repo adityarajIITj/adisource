@@ -1,44 +1,68 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { BookOpen, ChevronRight, Lock } from "lucide-react";
 import Link from "next/link";
-import { semesters } from "@/data/courses";
+import { useRouter } from "next/navigation";
+import { useCourseData } from "@/context/CourseDataContext";
+import { useAuth } from "@/hooks/useAuth";
 
-// Add dummy upcoming semesters for UI completeness
-const allSemesters = [
-  ...semesters,
-  {
-    id: 3,
-    label: "Semester 3",
-    status: "upcoming" as const,
-    subjects: [],
-  },
-  {
-    id: 4,
-    label: "Semester 4",
-    status: "upcoming" as const,
-    subjects: [],
-  },
+// Dummy upcoming semesters for UI
+const upcomingSemesters = [
+  { id: 3, label: "Semester 3", status: "upcoming" as const, subjects: [] },
+  { id: 4, label: "Semester 4", status: "upcoming" as const, subjects: [] },
 ];
 
 export default function SubjectsSection() {
-  const [activeSem, setActiveSem] = useState(1);
-  const currentSem = allSemesters.find((s) => s.id === activeSem)!;
+  const { semesters: firestoreSemesters, loading: dataLoading } = useCourseData();
+  const { user, userProfile } = useAuth();
+  const router = useRouter();
+
+  // Merge firestore data with upcoming placeholders
+  const allSemesters = [
+    ...firestoreSemesters,
+    ...upcomingSemesters.filter(
+      (up) => !firestoreSemesters.some((fs) => fs.id === up.id)
+    ),
+  ].sort((a, b) => a.id - b.id);
+
+  const [activeSem, setActiveSem] = useState(
+    firestoreSemesters.length > 0 ? firestoreSemesters[0]?.id || 1 : 1
+  );
+  const currentSem = allSemesters.find((s) => s.id === activeSem) || allSemesters[0];
   const cardsRef = useRef<HTMLDivElement>(null);
 
+  // Update activeSem when data loads
   useEffect(() => {
-    // Dynamically import GSAP to avoid SSR mismatch if not already handling it, but we can just use normal gsap
-    import("gsap").then((gsap) => {
-      if (cardsRef.current) {
-        gsap.default.fromTo(
-          cardsRef.current.children,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }
-        );
-      }
-    });
-  }, [activeSem]);
+    if (firestoreSemesters.length > 0 && !firestoreSemesters.some(s => s.id === activeSem)) {
+      setActiveSem(firestoreSemesters[0].id);
+    }
+  }, [firestoreSemesters, activeSem]);
+
+  useEffect(() => {
+    if (!dataLoading && cardsRef.current) {
+      import("gsap").then((gsap) => {
+        if (cardsRef.current && cardsRef.current.children.length > 0) {
+          gsap.default.fromTo(
+            cardsRef.current.children,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }
+          );
+        }
+      });
+    }
+  }, [activeSem, dataLoading]);
+
+  const handleSubjectClick = (
+    e: React.MouseEvent,
+    semId: number,
+    subjectCode: string
+  ) => {
+    if (!user || !userProfile) {
+      e.preventDefault();
+      router.push(`/login?redirect=/semester/${semId}/${subjectCode.toLowerCase()}`);
+    }
+  };
 
   return (
     <section id="subjects" className="relative py-28 px-6">
@@ -86,17 +110,32 @@ export default function SubjectsSection() {
           </div>
         </div>
 
-        {/* Subject Cards */}
-        {currentSem.subjects.length > 0 ? (
+        {/* Loading Skeleton */}
+        {dataLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="glass-card rounded-2xl p-7 animate-pulse">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                  <div className="w-16 h-6 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                </div>
+                <div className="w-3/4 h-5 rounded bg-gray-200 dark:bg-gray-700 mb-3" />
+                <div className="w-1/3 h-4 rounded bg-gray-200 dark:bg-gray-700" />
+              </div>
+            ))}
+          </div>
+        ) : currentSem && currentSem.subjects.length > 0 ? (
           <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentSem.subjects.map((subject) => (
               <div
                 key={subject.code}
-                className="glass-card rounded-2xl p-7 group hover:shadow-xl transition-all duration-400 hover:-translate-y-1 cursor-pointer"
+                onClick={(e) =>
+                  handleSubjectClick(e, currentSem.id, subject.code)
+                }
+                className="glass-card rounded-2xl p-7 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer will-change-transform"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    {/* Subject icon & code */}
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-2xl">{subject.icon}</span>
                       <span
@@ -105,27 +144,29 @@ export default function SubjectsSection() {
                         {subject.code}
                       </span>
                     </div>
-
-                    {/* Subject name */}
                     <h3 className="text-lg font-bold text-text-primary leading-snug group-hover:text-brand-blue transition-colors duration-200">
                       {subject.name}
                     </h3>
-
-                    {/* Metadata */}
                     <p className="text-sm text-text-muted mt-2">
                       {subject.weeks?.length || 0} weeks of content
                     </p>
                   </div>
 
-                  {/* Action button */}
-                  <Link
-                    href={`/semester/${currentSem.id}/${subject.code.toLowerCase()}`}
-                    className="flex-shrink-0 mt-2 flex items-center gap-1.5 text-sm font-semibold text-brand-blue opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    Open
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
+                  {user && userProfile ? (
+                    <Link
+                      href={`/semester/${currentSem.id}/${subject.code.toLowerCase()}`}
+                      className="flex-shrink-0 mt-2 flex items-center gap-1.5 text-sm font-semibold text-brand-blue opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      Open
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <div className="flex-shrink-0 mt-2 flex items-center gap-1.5 text-sm font-semibold text-text-muted opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                      <Lock className="w-4 h-4" />
+                      Sign in
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

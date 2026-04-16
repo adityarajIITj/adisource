@@ -9,6 +9,8 @@ const inter = Inter({
 });
 
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
+import { CourseDataProvider } from "@/context/CourseDataContext";
 
 export const metadata: Metadata = {
   title: "adisource — BS Applied AI & Data Science Resources",
@@ -26,7 +28,11 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="antialiased text-text-primary bg-surface-primary transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
+          <AuthProvider>
+            <CourseDataProvider>
+              {children}
+            </CourseDataProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

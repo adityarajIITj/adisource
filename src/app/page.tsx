@@ -7,6 +7,7 @@ import Lenis from "@studio-freight/lenis";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SubjectsSection from "@/components/SubjectsSection";
+import MindMapsQuizSection from "@/components/MindMapsQuizSection";
 import WhyUsSection from "@/components/WhyUsSection";
 import WhatWeSolveSection from "@/components/WhatWeSolveSection";
 import ContactSection from "@/components/ContactSection";
@@ -35,68 +36,71 @@ export default function Home() {
     });
     gsap.ticker.lagSmoothing(0);
 
-    // Scroll-triggered reveal animations with stagger
-    const revealElements = gsap.utils.toArray<HTMLElement>(".reveal-up");
-    revealElements.forEach((el) => {
-      gsap.to(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: "top 95%",
-          toggleActions: "play none none none",
-        },
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
+    // Delay reveal animations slightly to let content load
+    const initTimeout = setTimeout(() => {
+      const revealElements = gsap.utils.toArray<HTMLElement>(".reveal-up");
+      revealElements.forEach((el) => {
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 95%",
+            toggleActions: "play none none none",
+          },
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+        });
       });
-    });
 
-    const revealLeft = gsap.utils.toArray<HTMLElement>(".reveal-left");
-    revealLeft.forEach((el) => {
-      gsap.to(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: "top 95%",
-          toggleActions: "play none none none",
-        },
-        x: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
+      const revealLeft = gsap.utils.toArray<HTMLElement>(".reveal-left");
+      revealLeft.forEach((el) => {
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 95%",
+            toggleActions: "play none none none",
+          },
+          x: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+        });
       });
-    });
 
-    const revealRight = gsap.utils.toArray<HTMLElement>(".reveal-right");
-    revealRight.forEach((el) => {
-      gsap.to(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: "top 95%",
-          toggleActions: "play none none none",
-        },
-        x: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
+      const revealRight = gsap.utils.toArray<HTMLElement>(".reveal-right");
+      revealRight.forEach((el) => {
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 95%",
+            toggleActions: "play none none none",
+          },
+          x: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+        });
       });
-    });
 
-    const revealScale = gsap.utils.toArray<HTMLElement>(".reveal-scale");
-    revealScale.forEach((el) => {
-      gsap.to(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: "top 95%",
-          toggleActions: "play none none none",
-        },
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
+      const revealScale = gsap.utils.toArray<HTMLElement>(".reveal-scale");
+      revealScale.forEach((el) => {
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 95%",
+            toggleActions: "play none none none",
+          },
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+        });
       });
-    });
+    }, 300);
 
     return () => {
+      clearTimeout(initTimeout);
       lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
       gsap.ticker.remove(() => {});
@@ -111,6 +115,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <SubjectsSection />
+        <MindMapsQuizSection />
         <WhyUsSection />
         <WhatWeSolveSection />
         <AboutUsSection />

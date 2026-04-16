@@ -1,22 +1,44 @@
-import { getSemester, getSubject, getWeek, getMaterialIcon, getMaterialLabel, formatMinutes } from "@/data/courses";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Play, Download, ExternalLink, Calendar } from "lucide-react";
+import { ArrowLeft, Play, Download, Calendar } from "lucide-react";
+import { useCourseData } from "@/context/CourseDataContext";
+import { formatMinutes } from "@/data/courses";
+// We need to keep getMaterialIcon and getMaterialLabel for helpers, let's copy them or import them
+// For now, importing from courses.ts static works as they are just simple functions
+import { getMaterialIcon, getMaterialLabel } from "@/data/courses";
 
-export default async function WeekPage(props: { params: Promise<{ semId: string; subjectCode: string; weekId: string }> }) {
-  const params = await props.params;
-  const semId = parseInt(params.semId, 10);
-  const weekId = parseInt(params.weekId, 10);
-  const subjectCode = params.subjectCode;
+export default function WeekPage({ params }: { params: Promise<{ semId: string; subjectCode: string; weekId: string }> }) {
+  const { semId: semIdStr, subjectCode, weekId: weekIdStr } = use(params);
+  const semId = parseInt(semIdStr, 10);
+  const weekId = parseInt(weekIdStr, 10);
+  const { semesters, loading } = useCourseData();
 
-  const subject = getSubject(semId, subjectCode);
-  const semester = getSemester(semId);
-  const week = getWeek(semId, subjectCode, weekId);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary">
+        <div className="w-8 h-8 rounded-full border-4 border-brand-blue border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const semester = semesters.find(s => s.id === semId);
+  const subject = semester?.subjects.find(s => s.code.toLowerCase() === subjectCode.toLowerCase());
+  const week = subject?.weeks.find(w => w.id === weekId);
 
   if (!subject || !semester || !week) {
-    notFound();
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Week Not Found</h2>
+          <p className="text-text-secondary mb-6">This week could not be found or has been removed.</p>
+          <Link href="/#subjects" className="btn-primary">Return Home</Link>
+        </div>
+      </div>
+    );
   }
 
   const weekMins = week.materials.reduce((t, m) => t + m.estimatedMinutes, 0);
@@ -33,7 +55,7 @@ export default async function WeekPage(props: { params: Promise<{ semId: string;
             <span>/</span>
             <Link href={`/`} className="hover:text-brand-blue transition-colors">{semester.label}</Link>
             <span>/</span>
-            <Link href={`/semester/${semId}/${subjectCode.toLowerCase()}`} className="hover:text-brand-blue transition-colors font-medium text-text-primary">
+            <Link href={`/semester/${semId}/${subject.code.toLowerCase()}`} className="hover:text-brand-blue transition-colors font-medium text-text-primary">
               {subject.code}
             </Link>
             <span>/</span>
@@ -58,7 +80,7 @@ export default async function WeekPage(props: { params: Promise<{ semId: string;
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-text-primary mb-6">Learning Materials</h2>
             
-            {week.materials.map((material, index) => (
+            {week.materials.map((material) => (
               <div 
                 key={material.id} 
                 className="glass-card rounded-2xl p-6 group hover:shadow-md transition-all duration-300"
@@ -90,7 +112,7 @@ export default async function WeekPage(props: { params: Promise<{ semId: string;
                       <Download className="w-5 h-5" />
                     </button>
                     <Link 
-                      href={`/semester/${semId}/${subjectCode.toLowerCase()}/${week.id}/view/${material.id}`}
+                      href={`/semester/${semId}/${subject.code.toLowerCase()}/${week.id}/view/${material.id}`}
                       className="btn-primary !py-2.5 !px-5 flex items-center gap-2"
                     >
                       <Play className="w-4 h-4 fill-white" />
@@ -100,6 +122,11 @@ export default async function WeekPage(props: { params: Promise<{ semId: string;
                 </div>
               </div>
             ))}
+            {week.materials.length === 0 && (
+              <div className="text-center py-12 glass-card rounded-2xl">
+                 <p className="text-text-muted">No materials have been added for this week yet.</p>
+              </div>
+            )}
           </div>
         </div>
       </main>

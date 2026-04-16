@@ -1,24 +1,45 @@
-import { getSemester, getSubject, getTotalMaterials, getTotalMinutes, formatMinutes } from "@/data/courses";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use, useEffect, useState } from "react";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ArrowLeft, Clock, FileText, Lock } from "lucide-react";
+import { useCourseData } from "@/context/CourseDataContext";
+import { formatMinutes } from "@/data/courses";
 
-export default async function SubjectPage(props: { params: Promise<{ semId: string; subjectCode: string }> }) {
-  const params = await props.params;
-  const semId = parseInt(params.semId, 10);
-  const subjectCode = params.subjectCode;
+export default function SubjectPage({ params }: { params: Promise<{ semId: string; subjectCode: string }> }) {
+  const { semId: semIdStr, subjectCode } = use(params);
+  const semId = parseInt(semIdStr, 10);
+  const { semesters, loading } = useCourseData();
+  const router = useRouter();
 
-  const subject = getSubject(semId, subjectCode);
-  const semester = getSemester(semId);
-
-  if (!subject || !semester) {
-    notFound();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary">
+        <div className="w-8 h-8 rounded-full border-4 border-brand-blue border-t-transparent animate-spin" />
+      </div>
+    );
   }
 
-  const totalMaterials = getTotalMaterials(subject.weeks);
-  const totalMinutes = getTotalMinutes(subject.weeks);
+  const semester = semesters.find(s => s.id === semId);
+  const subject = semester?.subjects.find(s => s.code.toLowerCase() === subjectCode.toLowerCase());
+
+  if (!subject || !semester) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-primary p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Subject Not Found</h2>
+          <p className="text-text-secondary mb-6">This subject could not be found or has been removed.</p>
+          <Link href="/#subjects" className="btn-primary">Return Home</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const totalMaterials = subject.weeks.reduce((sum, w) => sum + w.materials.length, 0);
+  const totalMinutes = subject.weeks.reduce((sum, w) => sum + w.materials.reduce((t, m) => t + m.estimatedMinutes, 0), 0);
 
   return (
     <div className="relative min-h-screen flex flex-col pt-24">
@@ -37,7 +58,7 @@ export default async function SubjectPage(props: { params: Promise<{ semId: stri
           </div>
 
           {/* Subject Header */}
-          <div className="glass-card rounded-3xl p-8 md:p-12 mb-12 relative overflow-hidden">
+          <div className="glass-card rounded-3xl p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col">
             <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${subject.color} opacity-20 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none`} />
             
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -72,7 +93,7 @@ export default async function SubjectPage(props: { params: Promise<{ semId: stri
             <h2 className="text-2xl font-bold text-text-primary mb-6">Course Material</h2>
             
             {subject.weeks.length > 0 ? (
-              subject.weeks.map((week) => {
+              [...subject.weeks].sort((a, b) => a.id - b.id).map((week) => {
                 const weekMaterials = week.materials.length;
                 const weekMins = week.materials.reduce((t, m) => t + m.estimatedMinutes, 0);
 

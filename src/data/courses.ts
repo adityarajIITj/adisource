@@ -35,7 +35,7 @@ export const semesters: Semester[] = [
   {
     id: 1,
     label: "Semester 1",
-    status: "ongoing",
+    status: "completed",
     subjects: [
   {
     "name": "Algorithmic Thinking and Its Application",
