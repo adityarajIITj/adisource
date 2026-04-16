@@ -6,7 +6,7 @@ import { updateSemester } from "@/lib/courseData";
 import { Settings, Loader2, Check } from "lucide-react";
 
 export default function PlatformSettings() {
-  const { semesters, refresh } = useCourseData();
+  const { semesters, refreshData } = useCourseData();
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
 
@@ -17,7 +17,7 @@ export default function PlatformSettings() {
     setSaving(String(semId));
     try {
       await updateSemester(semId, { status: newStatus });
-      await refresh();
+      await refreshData();
       setSaved(String(semId));
       setTimeout(() => setSaved(null), 2000);
     } catch (err) {

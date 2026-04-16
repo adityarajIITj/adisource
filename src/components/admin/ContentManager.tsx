@@ -56,7 +56,7 @@ function Modal({
 }
 
 export default function ContentManager() {
-  const { semesters, refresh } = useCourseData();
+  const { semesters, refreshData } = useCourseData();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -130,7 +130,7 @@ export default function ContentManager() {
           }
           break;
       }
-      await refresh();
+      await refreshData();
       closeModal();
     } catch (err) {
       console.error("Add error:", err);
@@ -142,7 +142,7 @@ export default function ContentManager() {
     if (!confirm(`Delete Semester ${semId} and ALL its content?`)) return;
     setActionLoading(true);
     await deleteSemester(semId);
-    await refresh();
+    await refreshData();
     setActionLoading(false);
   };
 
@@ -150,7 +150,7 @@ export default function ContentManager() {
     if (!confirm(`Delete subject ${code} and all its content?`)) return;
     setActionLoading(true);
     await deleteSubject(semId, code);
-    await refresh();
+    await refreshData();
     setActionLoading(false);
   };
 
@@ -158,7 +158,7 @@ export default function ContentManager() {
     if (!confirm(`Delete Week ${weekId} and all its materials?`)) return;
     setActionLoading(true);
     await deleteWeek(semId, code, weekId);
-    await refresh();
+    await refreshData();
     setActionLoading(false);
   };
 
@@ -171,7 +171,7 @@ export default function ContentManager() {
     if (!confirm("Delete this material?")) return;
     setActionLoading(true);
     await deleteMaterial(semId, code, weekId, matId);
-    await refresh();
+    await refreshData();
     setActionLoading(false);
   };
 
