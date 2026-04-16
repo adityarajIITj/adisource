@@ -105,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Google sign-in error:", error);
+      throw error; // re-throw so login page can show the error
     }
   };
 
