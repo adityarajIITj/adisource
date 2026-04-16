@@ -76,19 +76,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Listen to auth state changes
   useEffect(() => {
-    setUser({ uid: "bypass", email: "bypass@test.com" } as any);
-    setUserProfile({
-      uid: "bypass",
-      email: "bypass@test.com",
-      displayName: "Creator",
-      photoURL: "",
-      username: "creator",
-      role: "superadmin",
-      createdAt: "",
-    } as any);
-    setLoading(false);
-    return () => {};
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        const profile = await fetchProfile(firebaseUser.uid);
+        setUserProfile(profile);
+      } else {
+        setUserProfile(null);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
+
 
   // Sign in with Google
   const signInWithGoogle = async () => {
