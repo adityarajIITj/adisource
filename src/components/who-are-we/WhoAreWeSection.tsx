@@ -152,7 +152,7 @@ export default function WhoAreWeSection() {
           {LAYERS.map((layer, i) => (
             <div
               key={i}
-              ref={(el) => (layerRefs.current[i] = el)}
+              ref={(el) => { layerRefs.current[i] = el; }}
               className="who-3d-layer"
             >
               {layer.type === "hero" ? (
