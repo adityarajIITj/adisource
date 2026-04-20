@@ -15,12 +15,18 @@ export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [hasApiKey, setHasApiKey] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success">("idle");
+  const [savedKey, setSavedKey] = useState("");
+
+  const isChanged = apiKey.trim() !== savedKey;
 
   useEffect(() => {
-    const savedKey = localStorage.getItem("gemini_api_key");
-    if (savedKey) {
-      setApiKey(savedKey);
-      setHasApiKey(true);
+    if (typeof window !== "undefined") {
+      const currentKey = localStorage.getItem("gemini_api_key") || "";
+      setSavedKey(currentKey);
+      if (currentKey) {
+        setApiKey(currentKey);
+        setHasApiKey(true);
+      }
     }
   }, []);
 
@@ -31,6 +37,7 @@ export default function SettingsPage() {
     // Simulate a brief save for UX feedback, then update
     setTimeout(() => {
       localStorage.setItem("gemini_api_key", apiKey.trim());
+      setSavedKey(apiKey.trim());
       setHasApiKey(true);
       setSaveStatus("success");
       setTimeout(() => setSaveStatus("idle"), 2000);
@@ -40,12 +47,11 @@ export default function SettingsPage() {
   const handleDeleteKey = () => {
     if (confirm("Are you sure you want to remove your API key? Gemini features will be disabled.")) {
       localStorage.removeItem("gemini_api_key");
+      setSavedKey("");
       setApiKey("");
       setHasApiKey(false);
     }
   };
-
-  const isChanged = apiKey.trim() !== (localStorage.getItem("gemini_api_key") || "");
 
   if (loading) {
     return (

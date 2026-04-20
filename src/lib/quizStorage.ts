@@ -5,6 +5,7 @@ import type { QuizAttempt } from "@/data/quizTypes";
 const QUIZ_ATTEMPTS_KEY = "adisource_quiz_attempts";
 
 function getAllAttempts(): QuizAttempt[] {
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(QUIZ_ATTEMPTS_KEY);
     if (!raw) return [];
@@ -15,6 +16,7 @@ function getAllAttempts(): QuizAttempt[] {
 }
 
 function saveAllAttempts(attempts: QuizAttempt[]) {
+  if (typeof window === "undefined") return;
   try {
     localStorage.setItem(QUIZ_ATTEMPTS_KEY, JSON.stringify(attempts));
   } catch {
