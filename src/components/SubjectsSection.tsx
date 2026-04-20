@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCourseData } from "@/context/CourseDataContext";
 import { useAuth } from "@/hooks/useAuth";
+import { getSubjectProgress, getSemesterProgress } from "@/lib/progressStorage";
 
 // Dummy upcoming semesters for UI
 const upcomingSemesters = [
@@ -17,6 +18,7 @@ export default function SubjectsSection() {
   const { semesters: firestoreSemesters, loading: dataLoading } = useCourseData();
   const { user, userProfile } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   // Merge firestore data with upcoming placeholders
   const allSemesters = [
@@ -31,6 +33,10 @@ export default function SubjectsSection() {
   );
   const currentSem = allSemesters.find((s) => s.id === activeSem) || allSemesters[0];
   const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Update activeSem when data loads
   useEffect(() => {
@@ -64,6 +70,11 @@ export default function SubjectsSection() {
     }
   };
 
+  // Calculate semester progress
+  const semProgress = mounted && currentSem
+    ? getSemesterProgress(currentSem.status as any, currentSem.subjects)
+    : 0;
+
   return (
     <section id="subjects" className="relative py-28 px-6">
       <div className="mx-auto max-w-6xl">
@@ -78,7 +89,7 @@ export default function SubjectsSection() {
         </div>
 
         {/* Semester Switcher Bar */}
-        <div className="reveal-up flex items-center justify-center gap-2 mb-14">
+        <div className="reveal-up flex items-center justify-center gap-2 mb-8">
           <div className="glass-card rounded-2xl p-1.5 inline-flex flex-wrap justify-center gap-1">
             {allSemesters.map((sem) => (
               <button
@@ -110,6 +121,28 @@ export default function SubjectsSection() {
           </div>
         </div>
 
+        {/* Semester Progress Bar */}
+        {mounted && currentSem && currentSem.subjects.length > 0 && (
+          <div className="reveal-up mb-10 glass-card rounded-2xl p-5 max-w-2xl mx-auto">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-sm font-bold text-text-primary flex items-center gap-2">
+                {currentSem.status === "completed" ? (
+                  <><span className="inline-block w-2 h-2 rounded-full bg-green-500" /> Completed</>
+                ) : (
+                  <><span className="inline-block w-2 h-2 rounded-full bg-brand-blue animate-pulse" /> In Progress</>
+                )}
+              </span>
+              <span className="text-sm font-bold text-brand-blue">{semProgress}%</span>
+            </div>
+            <div className="h-2.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+              <div
+                className="h-full rounded-full quiz-progress-bar transition-all duration-1000 ease-out"
+                style={{ width: `${semProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Loading Skeleton */}
         {dataLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -126,14 +159,21 @@ export default function SubjectsSection() {
           </div>
         ) : currentSem && currentSem.subjects.length > 0 ? (
           <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {currentSem.subjects.map((subject) => (
-              <div
-                key={subject.code}
-                onClick={(e) =>
-                  handleSubjectClick(e, currentSem.id, subject.code)
-                }
-                className="glass-card rounded-2xl p-7 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer will-change-transform"
-              >
+            {currentSem.subjects.map((subject) => {
+              const totalMaterials = subject.weeks.reduce((sum, w) => sum + w.materials.length, 0);
+              const totalWeeks = subject.weeks.length;
+              const subjectProg = mounted
+                ? currentSem.status === "completed" ? 100 : getSubjectProgress(subject.code, totalMaterials, totalWeeks)
+                : 0;
+
+              return (
+                <div
+                  key={subject.code}
+                  onClick={(e) =>
+                    handleSubjectClick(e, currentSem.id, subject.code)
+                  }
+                  className="glass-card rounded-2xl p-7 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer will-change-transform"
+                >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -150,6 +190,22 @@ export default function SubjectsSection() {
                     <p className="text-sm text-text-muted mt-2">
                       {subject.weeks?.length || 0} weeks of content
                     </p>
+
+                    {/* Per-Subject Progress Bar */}
+                    {mounted && (
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-text-muted">Progress</span>
+                          <span className="text-xs font-bold text-text-muted">{subjectProg}%</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                          <div
+                            className="h-full rounded-full quiz-progress-bar transition-all duration-700"
+                            style={{ width: `${subjectProg}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {user && userProfile ? (
@@ -169,7 +225,8 @@ export default function SubjectsSection() {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 glass-card rounded-2xl">

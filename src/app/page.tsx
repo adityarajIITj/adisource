@@ -12,6 +12,7 @@ import WhyUsSection from "@/components/WhyUsSection";
 import WhatWeSolveSection from "@/components/WhatWeSolveSection";
 import ContactSection from "@/components/ContactSection";
 import AboutUsSection from "@/components/AboutUsSection";
+import WhoAreWeSection from "@/components/who-are-we/WhoAreWeSection";
 import Footer from "@/components/Footer";
 import ParallaxOrbs from "@/components/ParallaxOrbs";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -118,7 +119,7 @@ export default function Home() {
         <MindMapsQuizSection />
         <WhyUsSection />
         <WhatWeSolveSection />
-        <AboutUsSection />
+        <WhoAreWeSection />
         <ContactSection />
       </main>
       <Footer />

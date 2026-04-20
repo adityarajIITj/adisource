@@ -1,6 +1,7 @@
 "use client";
 
-import { Map, PenTool, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Map, PenTool, Sparkles, ChevronRight } from "lucide-react";
 
 export default function MindMapsQuizSection() {
   return (
@@ -43,8 +44,8 @@ export default function MindMapsQuizSection() {
             </div>
           </div>
 
-          {/* Quizzes Card */}
-          <div className="group relative glass-card rounded-3xl p-8 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-400">
+          {/* Quizzes Card — NOW ACTIVE */}
+          <Link href="/quiz" className="group relative glass-card rounded-3xl p-8 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-400 block">
             {/* Background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/5 via-transparent to-brand-magenta/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -60,13 +61,14 @@ export default function MindMapsQuizSection() {
                 Test your knowledge with AI-generated quizzes for every chapter. Track your scores and identify weak areas.
               </p>
 
-              {/* Coming Soon Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-purple/10 border border-brand-purple/20 text-brand-purple text-xs font-bold uppercase tracking-wider coming-soon-pulse">
+              {/* Active CTA */}
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-brand-purple to-brand-magenta text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-purple-500/20 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-all">
                 <Sparkles className="w-3.5 h-3.5" />
-                Coming Soon
+                Start Quizzing
+                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </section>

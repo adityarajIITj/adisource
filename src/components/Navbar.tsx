@@ -80,6 +80,12 @@ export default function Navbar() {
           >
             Why Us
           </a>
+          <Link
+            href="/quiz"
+            className="text-sm font-medium text-text-secondary hover:text-brand-purple transition-colors duration-200"
+          >
+            Quizzes
+          </Link>
           <a
             href="#contact"
             className="text-sm font-medium text-text-secondary hover:text-brand-blue transition-colors duration-200"

@@ -9,7 +9,7 @@ import { Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const { user, userProfile, loading, signInWithGoogle } = useAuth();
+  const { user, userProfile, loading, signInWithGoogle, loginAsGuest } = useAuth();
   const router = useRouter();
   const [authError, setAuthError] = useState("");
   const [signingIn, setSigningIn] = useState(false);
@@ -117,6 +117,25 @@ export default function LoginPage() {
             )}
             <span>{signingIn ? "Opening Google…" : "Continue with Google"}</span>
           </button>
+
+          {/* Permanent Guest Mode */}
+          <div className="mt-8">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+              <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Or</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+            </div>
+            <button
+              onClick={loginAsGuest}
+              className="w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 bg-surface-secondary border border-gray-200 dark:border-white/10 text-text-secondary hover:bg-white dark:hover:bg-white/5 hover:border-brand-purple/50 hover:text-brand-purple flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-4 h-4 text-brand-purple" />
+              Continue as Guest
+            </button>
+            <p className="mt-3 text-[10px] text-text-muted">
+              Guest progress is saved locally but won&apos;t sync across devices.
+            </p>
+          </div>
 
           {/* Auth error */}
           {authError && (

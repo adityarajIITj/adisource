@@ -5,15 +5,21 @@ import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Clock, FileText, Lock } from "lucide-react";
+import { ArrowLeft, Clock, FileText, Lock, PenTool } from "lucide-react";
 import { useCourseData } from "@/context/CourseDataContext";
 import { formatMinutes } from "@/data/courses";
+import { getSubjectProgress } from "@/lib/progressStorage";
 
 export default function SubjectPage({ params }: { params: Promise<{ semId: string; subjectCode: string }> }) {
   const { semId: semIdStr, subjectCode } = use(params);
   const semId = parseInt(semIdStr, 10);
   const { semesters, loading } = useCourseData();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (loading) {
     return (
@@ -40,6 +46,10 @@ export default function SubjectPage({ params }: { params: Promise<{ semId: strin
 
   const totalMaterials = subject.weeks.reduce((sum, w) => sum + w.materials.length, 0);
   const totalMinutes = subject.weeks.reduce((sum, w) => sum + w.materials.reduce((t, m) => t + m.estimatedMinutes, 0), 0);
+  const totalWeeks = subject.weeks.length;
+  const subjectProg = mounted
+    ? semester.status === "completed" ? 100 : getSubjectProgress(subject.code, totalMaterials, totalWeeks)
+    : 0;
 
   return (
     <div className="relative min-h-screen flex flex-col pt-24">
@@ -75,7 +85,7 @@ export default function SubjectPage({ params }: { params: Promise<{ semId: strin
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-6 mt-4 md:mt-0 text-sm font-medium text-text-secondary">
+              <div className="flex items-center gap-4 mt-4 md:mt-0 text-sm font-medium text-text-secondary flex-wrap">
                 <div className="flex items-center gap-2 bg-white/50 dark:bg-black/20 px-4 py-2 rounded-xl">
                   <FileText className="w-4 h-4 text-brand-blue" />
                   <span>{totalMaterials} Files</span>
@@ -84,8 +94,33 @@ export default function SubjectPage({ params }: { params: Promise<{ semId: strin
                   <Clock className="w-4 h-4 text-brand-purple" />
                   <span>{formatMinutes(totalMinutes)}</span>
                 </div>
+                <Link
+                  href={`/quiz/${subject.code.toLowerCase()}/${subject.weeks[0]?.id || 1}`}
+                  className="flex items-center gap-2 bg-white/50 dark:bg-black/20 px-4 py-2 rounded-xl hover:bg-brand-purple/10 hover:text-brand-purple transition-colors"
+                >
+                  <PenTool className="w-4 h-4 text-brand-purple" />
+                  <span>Quizzes</span>
+                </Link>
               </div>
             </div>
+
+            {/* Progress Bar */}
+            {mounted && (
+              <div className="relative z-10 mt-8">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-text-secondary">
+                    {semester.status === "completed" ? "✅ Completed" : "Your Progress"}
+                  </span>
+                  <span className="text-xs font-bold text-brand-blue">{subjectProg}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-gray-200/60 dark:bg-gray-800/60 overflow-hidden">
+                  <div
+                    className="h-full rounded-full quiz-progress-bar transition-all duration-1000 ease-out"
+                    style={{ width: `${subjectProg}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Weeks List */}
@@ -143,3 +178,4 @@ export default function SubjectPage({ params }: { params: Promise<{ semId: strin
     </div>
   );
 }
+

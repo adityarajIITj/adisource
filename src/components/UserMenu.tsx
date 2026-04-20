@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
-import { User, LogOut, Shield, ChevronDown } from "lucide-react";
+import { User, LogOut, Shield, ChevronDown, Settings } from "lucide-react";
 
 export default function UserMenu() {
   const { user, userProfile, logout } = useAuth();
@@ -68,6 +68,15 @@ export default function UserMenu() {
             >
               <User className="w-4 h-4" />
               My Profile
+            </Link>
+
+            <Link
+              href="/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-5 py-3 text-sm text-text-secondary hover:text-text-primary hover:bg-white/30 dark:hover:bg-white/5 transition-all"
+            >
+              <Settings className="w-4 h-4" />
+              Settings
             </Link>
 
             {userProfile.role === "superadmin" && (

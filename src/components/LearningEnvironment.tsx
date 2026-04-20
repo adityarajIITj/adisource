@@ -5,9 +5,10 @@ import Link from "next/link";
 import { Material, Subject, Week } from "@/data/courses";
 import {
   ArrowLeft, ZoomIn, ZoomOut, Download, ChevronLeft, ChevronRight,
-  BookOpen, Save, Sparkles, X, Menu, Bot, Send, Loader2, RotateCcw, Key
+  BookOpen, Save, Sparkles, X, Menu, Bot, Send, Loader2, RotateCcw, Key, Settings, Zap
 } from "lucide-react";
 import { askGemini } from "@/lib/gemini";
+import { markMaterialViewed } from "@/lib/progressStorage";
 
 interface LearningEnvironmentProps {
   subject: Subject;
@@ -32,7 +33,6 @@ export default function LearningEnvironment({ subject, week, material, allMateri
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [userApiKey, setUserApiKey] = useState("");
-  const [showApiKeySettings, setShowApiKeySettings] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,10 @@ export default function LearningEnvironment({ subject, week, material, allMateri
     }
     setIsSaved(true);
     setChatMessages([]);
-  }, [material.id]);
+
+    // Track material view for progress
+    markMaterialViewed(subject.code, week.id, material.id);
+  }, [material.id, subject.code, week.id]);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -328,43 +331,25 @@ export default function LearningEnvironment({ subject, week, material, allMateri
                       <RotateCcw className="w-4 h-4" />
                     </button>
                   )}
-                  <button
-                    onClick={() => setShowApiKeySettings(!showApiKeySettings)}
+                  <Link
+                    href="/settings"
                     className={`${chatMessages.length === 0 ? "ml-auto " : ""}p-1.5 rounded-lg hover:bg-purple-500/10 text-text-muted hover:text-purple-500 transition-colors`}
-                    title="API Key Settings"
+                    title="AI Settings"
                   >
-                    <Key className="w-4 h-4" />
-                  </button>
+                    <Settings className="w-4 h-4" />
+                  </Link>
                 </div>
 
-                {/* API Key settings panel */}
-                {showApiKeySettings && (
-                  <div className="mt-3 flex flex-col gap-2 p-4 bg-surface-secondary/50 border shadow-sm border-purple-500/30 rounded-xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-500 to-fuchsia-500"></div>
-                    <p className="text-xs text-text-secondary">
-                      Our default API key is shared among all users. Add your own Gemini API key for unlimited personal use.
+                {/* API Setup Reminder if key is missing */}
+                {!userApiKey && (
+                  <div className="mt-3 p-4 rounded-xl bg-purple-500/5 border border-purple-500/20">
+                    <p className="text-xs text-text-secondary mb-3 leading-relaxed">
+                      Add your Gemini API key in settings to unlock AI summaries, explanations, and chat.
                     </p>
-                    <div className="flex gap-2">
-                       <input 
-                         type="password" 
-                         value={userApiKey} 
-                         onChange={(e) => setUserApiKey(e.target.value)}
-                         placeholder="Paste your Gemini API Key..."
-                         className="flex-1 min-w-0 px-3 py-2 text-sm bg-surface-primary border border-gray-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all font-mono"
-                       />
-                       <button 
-                         onClick={() => {
-                           localStorage.setItem('gemini_api_key', userApiKey);
-                           setShowApiKeySettings(false);
-                         }}
-                         className="px-4 py-2 shrink-0 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all"
-                       >
-                         Save
-                       </button>
-                    </div>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-xs text-purple-500 hover:text-purple-600 dark:hover:text-purple-400 font-medium inline-flex items-center gap-1 w-fit">
-                      Get your free API key <span>&rarr;</span>
-                    </a>
+                    <Link href="/settings" className="btn-secondary !py-2 !px-4 text-xs flex items-center justify-center gap-2">
+                      <Zap className="w-3.5 h-3.5" />
+                      Configure API Key
+                    </Link>
                   </div>
                 )}
 

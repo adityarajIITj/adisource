@@ -34,6 +34,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  loginAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -43,6 +44,7 @@ const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   logout: async () => {},
   refreshProfile: async () => {},
+  loginAsGuest: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -77,14 +79,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Listen to auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
       if (firebaseUser) {
+        setUser(firebaseUser);
         const profile = await fetchProfile(firebaseUser.uid);
         setUserProfile(profile);
+        setLoading(false);
       } else {
-        setUserProfile(null);
+        // Check if we are in guest mode
+        const isGuest = typeof window !== "undefined" && localStorage.getItem("is_guest") === "true";
+        if (isGuest) {
+          loginAsGuest();
+        } else {
+          setUser(null);
+          setUserProfile(null);
+          setLoading(false);
+        }
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -113,12 +123,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await signOut(auth);
+      localStorage.removeItem("is_guest");
       setUser(null);
       setUserProfile(null);
       router.push("/");
     } catch (error) {
       console.error("Sign-out error:", error);
     }
+  };
+
+  // Login as Guest
+  const loginAsGuest = () => {
+    const mockUser = {
+      uid: "guest-user-123",
+      email: "guest@adisource.test",
+      displayName: "Guest Tester",
+      photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest",
+    } as User;
+
+    const mockProfile: UserProfile = {
+      uid: "guest-user-123",
+      email: "guest@adisource.test",
+      displayName: "Guest Tester",
+      photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest",
+      username: "guest_tester",
+      role: "user",
+      createdAt: new Date().toISOString(),
+    };
+
+    setUser(mockUser);
+    setUserProfile(mockProfile);
+    localStorage.setItem("is_guest", "true");
+    setLoading(false);
   };
 
   return (
@@ -130,6 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         logout,
         refreshProfile,
+        loginAsGuest,
       }}
     >
       {children}
