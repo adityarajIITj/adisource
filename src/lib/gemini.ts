@@ -2,17 +2,17 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenAI({
-  apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || "",
-});
-
 export async function askGemini(
   prompt: string,
   lectureContent?: string,
   userApiKey?: string
 ): Promise<string> {
+  if (!userApiKey || !userApiKey.trim()) {
+    return "⚠️ No API key set. Please add your Gemini API key in Settings to use the AI tutor.";
+  }
+
   try {
-    const ai = userApiKey ? new GoogleGenAI({ apiKey: userApiKey }) : genAI;
+    const ai = new GoogleGenAI({ apiKey: userApiKey });
     const systemContext = lectureContent
       ? `You are an AI tutor for the adisource learning platform. You are helping a student understand lecture content. Here is the lecture content for context:\n\n---\n${lectureContent.slice(0, 15000)}\n---\n\nAnswer the student's question based on this content. Be concise, clear, and helpful. Use bullet points and formatting where appropriate.`
       : `You are an AI tutor for the adisource learning platform. Help the student with their question. Be concise, clear, and helpful.`;
