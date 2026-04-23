@@ -8,14 +8,12 @@ import WhyUsSection from "@/components/WhyUsSection";
 import WhatWeSolveSection from "@/components/WhatWeSolveSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import ParallaxOrbs from "@/components/ParallaxOrbs";
 import ScrollProgress from "@/components/ScrollProgress";
 
 export default function Home() {
   return (
     <div className="relative overflow-hidden bg-surface-primary min-h-screen">
       <ScrollProgress />
-      <ParallaxOrbs />
       <Navbar />
       
       <main>

@@ -107,7 +107,7 @@ export default function SubjectsSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="reveal-up text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-            Your <span className="gradient-text">Subjects</span>
+            Your <span className="accent-underline">Subjects</span>
           </h2>
           <p className="reveal-up mt-4 text-text-secondary text-lg max-w-xl mx-auto">
             Jump into any semester, explore subjects, and access week-by-week materials and notes.
@@ -116,7 +116,7 @@ export default function SubjectsSection() {
 
         {/* Semester Switcher Bar */}
         <div className="reveal-up flex items-center justify-center gap-2 mb-8">
-          <div className="glass-card rounded-2xl p-1.5 inline-flex flex-wrap justify-center gap-1">
+          <div className="bg-surface-secondary rounded-2xl p-1.5 inline-flex flex-wrap justify-center gap-1 border border-border">
             {allSemesters.map((sem) => (
               <button
                 key={sem.id}
@@ -126,10 +126,10 @@ export default function SubjectsSection() {
                 disabled={sem.status === "upcoming"}
                 className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
                   activeSem === sem.id
-                    ? "gradient-brand text-white shadow-lg"
+                    ? "btn-primary shadow-lg scale-105"
                     : sem.status === "upcoming"
                     ? "text-text-muted cursor-not-allowed opacity-50"
-                    : "text-text-secondary hover:text-text-primary hover:bg-white/50"
+                    : "text-text-secondary hover:text-text-primary hover:bg-white"
                 }`}
               >
                 {sem.label}
@@ -149,7 +149,7 @@ export default function SubjectsSection() {
 
         {/* Semester Progress Bar */}
         {mounted && currentSem && currentSem.subjects.length > 0 && (
-          <div className="reveal-up mb-10 glass-card rounded-2xl p-5 max-w-2xl mx-auto">
+          <div className="reveal-up mb-10 card-elevated rounded-2xl p-5 max-w-2xl mx-auto border border-border">
             <div className="flex items-center justify-between mb-2.5">
               <span className="text-sm font-bold text-text-primary flex items-center gap-2">
                 {currentSem.status === "completed" ? (
@@ -193,19 +193,19 @@ export default function SubjectsSection() {
                 : 0;
 
               return (
-                <div
-                  key={subject.code}
-                  onClick={(e) =>
-                    handleSubjectClick(e, currentSem.id, subject.code)
-                  }
-                  className="glass-card rounded-2xl p-7 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer will-change-transform"
-                >
+                  <div
+                    key={subject.code}
+                    onClick={(e) =>
+                      handleSubjectClick(e, currentSem.id, subject.code)
+                    }
+                    className="card-elevated rounded-2xl p-7 group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-border bg-white"
+                  >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-2xl">{subject.icon}</span>
                       <span
-                        className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-gradient-to-r ${subject.color} text-white`}
+                        className="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-surface-secondary border border-border text-text-primary"
                       >
                         {subject.code}
                       </span>

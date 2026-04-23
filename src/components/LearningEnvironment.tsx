@@ -143,7 +143,7 @@ export default function LearningEnvironment({ subject, week, material, allMateri
 
       {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden absolute top-4 left-4 z-50">
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 glass rounded-lg">
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 border border-border bg-white rounded-lg shadow-sm">
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -159,7 +159,7 @@ export default function LearningEnvironment({ subject, week, material, allMateri
             <ArrowLeft className="w-4 h-4" />
             Back to {subject.code}
           </Link>
-          <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+          <h2 className="text-xl font-extrabold text-text-primary">
             {subject.name}
           </h2>
           <p className="text-sm text-text-secondary mt-1">Week {week.id}</p>
@@ -174,12 +174,12 @@ export default function LearningEnvironment({ subject, week, material, allMateri
               onClick={() => setSidebarOpen(false)}
               className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 m.id === material.id
-                  ? "bg-brand-blue/10 text-brand-blue shadow-sm border border-brand-blue/20"
-                  : "text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"
+                  ? "bg-accent/10 text-accent shadow-sm border border-accent/20"
+                  : "text-text-secondary hover:bg-black/5 border border-transparent"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${m.id === material.id ? 'bg-brand-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>
+                <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${m.id === material.id ? 'bg-accent text-white' : 'bg-surface-secondary text-text-muted'}`}>
                   {idx + 1}
                 </span>
                 <span className="truncate">{m.title}</span>
@@ -201,7 +201,7 @@ export default function LearningEnvironment({ subject, week, material, allMateri
       <div className="flex-1 flex flex-col relative z-0 min-w-0">
 
         {/* Top Viewer Toolbar */}
-        <div className="h-16 glass border-b border-gray-200/50 dark:border-white/10 flex items-center justify-between px-4 lg:px-6">
+        <div className="h-16 bg-white border-b border-border flex items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-4 lg:ml-0 ml-12 truncate">
             <h1 className="font-bold text-text-primary truncate">{material.title}</h1>
             <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-text-muted border border-gray-200 dark:border-gray-700">
@@ -250,7 +250,7 @@ export default function LearningEnvironment({ subject, week, material, allMateri
         </div>
 
         {/* Bottom Nav Bar */}
-        <div className="h-16 glass border-t border-gray-200/50 dark:border-white/10 flex items-center justify-between px-6 shrink-0">
+        <div className="h-16 bg-white border-t border-border flex items-center justify-between px-6 shrink-0">
           {prevMaterial ? (
             <Link href={`${basePath}/view/${prevMaterial.id}`} className="flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-brand-blue transition-colors">
               <ChevronLeft className="w-4 h-4" /> Prev Lecture
@@ -266,19 +266,19 @@ export default function LearningEnvironment({ subject, week, material, allMateri
       </div>
 
       {/* RIGHT PANEL: Notes & AI */}
-      <div className="hidden xl:flex w-96 glass-card border-l border-gray-200/50 dark:border-white/10 flex-col relative z-10 shadow-2xl">
+      <div className="hidden xl:flex w-96 bg-white border-l border-border flex-col relative z-10 shadow-lg">
 
         {/* Tabs */}
         <div className="flex p-2 gap-2 border-b border-gray-200/50 dark:border-white/10">
           <button
             onClick={() => setActiveTab("notes")}
-            className={`flex-1 flex justify-center py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "notes" ? "bg-brand-blue text-white shadow-md" : "text-text-secondary hover:bg-black/5 dark:hover:bg-white/5"}`}
+            className={`flex-1 flex justify-center py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "notes" ? "bg-accent text-white shadow-md" : "text-text-secondary hover:bg-black/5"}`}
           >
             <BookOpen className="w-4 h-4 mr-2" /> Notes
           </button>
           <button
             onClick={() => setActiveTab("ai")}
-            className={`flex-1 flex justify-center py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "ai" ? "bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white shadow-md" : "text-text-secondary hover:bg-black/5 dark:hover:bg-white/5"}`}
+            className={`flex-1 flex justify-center py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === "ai" ? "bg-accent text-white shadow-md" : "text-text-secondary hover:bg-black/5"}`}
           >
             <Sparkles className="w-4 h-4 mr-2" /> AI Chat
           </button>
@@ -314,8 +314,8 @@ export default function LearningEnvironment({ subject, week, material, allMateri
             <div className="flex flex-col h-full">
               {/* AI Header */}
               <div className="p-4">
-                <div className="flex items-center gap-3 bg-purple-500/10 p-3 rounded-xl border border-purple-500/20">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-fuchsia-500 rounded-lg text-white shadow-lg shadow-purple-500/30">
+              <div className="flex items-center gap-3 bg-accent/5 p-3 rounded-xl border border-accent/10">
+                  <div className="p-2 bg-accent rounded-lg text-white">
                     <Bot className="w-5 h-5" />
                   </div>
                   <div>
@@ -418,7 +418,7 @@ export default function LearningEnvironment({ subject, week, material, allMateri
                   <button
                     onClick={handleSendChat}
                     disabled={!chatInput.trim() || isAiLoading}
-                    className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-lg transition-all"
+                    className="p-3 rounded-xl bg-accent text-white disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-lg transition-all"
                   >
                     <Send className="w-4 h-4" />
                   </button>

@@ -82,7 +82,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden gradient-hero-mesh"
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden hero-bg"
     >
       {/* 3D Floating Parallax Books Layer */}
       <FloatingBooks />
@@ -136,7 +136,7 @@ export default function HeroSection() {
         <div ref={ctaRef} className="mt-10">
           <button
             onClick={handleGetStarted}
-            className="btn-primary glow-pulse text-lg !py-4 !px-10"
+            className="btn-primary text-lg !py-4 !px-10"
           >
             <span>Get Started</span>
           </button>

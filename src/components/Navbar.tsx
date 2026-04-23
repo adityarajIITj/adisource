@@ -45,7 +45,7 @@ export default function Navbar() {
       ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "glass py-3 shadow-sm"
+          ? "bg-surface-primary/80 backdrop-blur-md border-b border-border py-2.5"
           : "bg-transparent py-5"
       }`}
     >
@@ -60,9 +60,9 @@ export default function Navbar() {
             className="transition-transform duration-300 group-hover:scale-110"
           />
           <span
-            className={`text-xl font-bold tracking-tight transition-colors duration-300 text-text-primary`}
+            className="text-xl font-bold tracking-tight text-text-primary"
           >
-            adi<span className="gradient-text">source</span>
+            adisource
           </span>
         </Link>
 

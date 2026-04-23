@@ -25,7 +25,7 @@ export default function WhatWeSolveSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="reveal-up text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-            What are we <span className="gradient-text">solving</span>?
+            What are we <span className="accent-underline">solving</span>?
           </h2>
           <p className="reveal-up mt-4 text-text-secondary text-lg max-w-xl mx-auto">
             We took the most frustrating parts of studying in this program and fixed them.
@@ -36,7 +36,7 @@ export default function WhatWeSolveSection() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,auto,1fr] gap-8 items-start">
           {/* Problems */}
           <div className="reveal-left">
-            <div className="glass-card rounded-2xl p-8">
+            <div className="card-elevated rounded-2xl p-8 border border-border">
               <h3 className="text-lg font-bold text-red-500/80 mb-6 flex items-center gap-2">
                 <X className="w-5 h-5" />
                 The Problem
@@ -66,7 +66,7 @@ export default function WhatWeSolveSection() {
 
           {/* Solutions */}
           <div className="reveal-right">
-            <div className="glass-card rounded-2xl p-8 ring-1 ring-green-200/50">
+            <div className="card-elevated rounded-2xl p-8 border border-border shadow-sm shadow-green-500/10">
               <h3 className="text-lg font-bold text-green-600 mb-6 flex items-center gap-2">
                 <Check className="w-5 h-5" />
                 Our Solution

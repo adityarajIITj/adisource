@@ -16,17 +16,17 @@ export default function Footer() {
               height={28}
             />
             <span className="text-lg font-bold tracking-tight text-text-primary">
-              adi<span className="gradient-text">source</span>
+              adisource
             </span>
           </div>
 
           {/* Tagline & About */}
           <div className="flex flex-col items-center">
-            <p className="text-sm text-text-muted text-center mb-1">
+            <p className="text-sm text-text-muted text-center mb-1 italic">
               BS Applied AI & Data Science — Notes & Materials
             </p>
-            <p className="text-xs font-semibold text-brand-purple">
-              Designed & Developed natively by a single developer.
+            <p className="text-xs font-bold text-accent">
+              An original portal for the DS community.
             </p>
           </div>
 

@@ -40,7 +40,7 @@ export default function WhyUsSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="reveal-up text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-            Why <span className="gradient-text">adisource</span>?
+            Why <span className="accent-underline">adisource</span>?
           </h2>
           <p className="reveal-up mt-4 text-text-secondary text-lg max-w-xl mx-auto">
             Built by students, for students. We know what it takes to make studying less painful.
@@ -54,12 +54,12 @@ export default function WhyUsSection() {
             return (
               <div
                 key={feature.title}
-                className="reveal-up glass-card rounded-2xl p-8 group hover:shadow-xl transition-all duration-400 hover:-translate-y-1"
+                className="reveal-up card-elevated rounded-2xl p-8 group transition-all duration-400 border border-border"
                 style={{ transitionDelay: `${index * 80}ms` }}
               >
                 {/* Icon */}
                 <div
-                  className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} text-white mb-5 group-hover:scale-110 transition-transform duration-300`}
+                  className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-subtle text-accent mb-5 group-hover:scale-110 transition-transform duration-300 border border-accent-border"
                 >
                   <Icon className="w-6 h-6" />
                 </div>
