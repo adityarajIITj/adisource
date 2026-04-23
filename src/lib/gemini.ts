@@ -4,7 +4,6 @@ import { GoogleGenAI } from "@google/genai";
 
 const genAI = new GoogleGenAI({
   apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || "",
-  apiVersion: "v1",
 });
 
 export async function askGemini(
@@ -13,13 +12,13 @@ export async function askGemini(
   userApiKey?: string
 ): Promise<string> {
   try {
-    const ai = userApiKey ? new GoogleGenAI({ apiKey: userApiKey, apiVersion: "v1" }) : genAI;
+    const ai = userApiKey ? new GoogleGenAI({ apiKey: userApiKey }) : genAI;
     const systemContext = lectureContent
       ? `You are an AI tutor for the adisource learning platform. You are helping a student understand lecture content. Here is the lecture content for context:\n\n---\n${lectureContent.slice(0, 15000)}\n---\n\nAnswer the student's question based on this content. Be concise, clear, and helpful. Use bullet points and formatting where appropriate.`
       : `You are an AI tutor for the adisource learning platform. Help the student with their question. Be concise, clear, and helpful.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: [
         {
           role: "user",
@@ -63,7 +62,7 @@ export async function generateQuiz(
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: userApiKey, apiVersion: "v1" });
+    const ai = new GoogleGenAI({ apiKey: userApiKey });
 
     const prompt = `You are a quiz generator for a university course. Based ONLY on the following lecture content, generate exactly 10 multiple-choice questions.
 
