@@ -82,7 +82,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden gradient-hero-mesh"
     >
       {/* 3D Floating Parallax Books Layer */}
       <FloatingBooks />
@@ -101,17 +101,17 @@ export default function HeroSection() {
 
         {/* Decorative badge */}
         <div className="reveal-up mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-medium text-text-secondary">
-          <Sparkles className="w-4 h-4 text-brand-cyan" />
-          BS Applied AI & Data Science
+          <div className="label-indigo">
+            <Sparkles className="w-3.5 h-3.5" />
+            BS Applied AI &amp; Data Science
+          </div>
         </div>
-      </div>
 
       {/* Hero Title */}
       <h1
         ref={titleRef}
-        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-5xl leading-[1.1]"
-        style={{ overflow: "hidden" }}
+        className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl leading-[1.08] mt-6"
+        style={{ overflow: "hidden", fontFamily: "var(--font-display)" }}
       >
         <span className="hero-word inline-block">Notes</span>{" "}
         <span className="hero-word inline-block">and</span>{" "}
@@ -120,7 +120,7 @@ export default function HeroSection() {
         <span className="hero-word inline-block gradient-text">All</span>{" "}
         <span className="hero-word inline-block gradient-text">at</span>{" "}
         <span className="hero-word inline-block gradient-text">One</span>{" "}
-        <span className="hero-word inline-block gradient-text">Place</span>
+        <span className="hero-word inline-block gradient-text">Place.</span>
       </h1>
 
       {/* Subtitle */}

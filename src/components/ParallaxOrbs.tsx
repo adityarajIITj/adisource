@@ -27,56 +27,32 @@ export default function ParallaxOrbs() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-      {/* Cyan orb — top left */}
-      <div
-        className="orb orb-cyan"
-        style={{
-          width: "600px",
-          height: "600px",
-          top: "-10%",
-          left: "-5%",
-        }}
-      />
-      {/* Purple orb — top right */}
-      <div
-        className="orb orb-purple"
-        style={{
-          width: "500px",
-          height: "500px",
-          top: "20%",
-          right: "-8%",
-        }}
-      />
-      {/* Blue orb — middle left */}
+      {/* Indigo orb — top left */}
       <div
         className="orb orb-blue"
-        style={{
-          width: "450px",
-          height: "450px",
-          top: "55%",
-          left: "10%",
-        }}
+        style={{ width: "700px", height: "700px", top: "-15%", left: "-10%" }}
       />
-      {/* Cyan orb — bottom right */}
+      {/* Amber orb — top right */}
+      <div
+        className="orb orb-amber"
+        style={{ width: "500px", height: "500px", top: "5%", right: "-10%" }}
+      />
+      {/* Teal orb — middle */}
       <div
         className="orb orb-cyan"
-        style={{
-          width: "550px",
-          height: "550px",
-          top: "80%",
-          right: "5%",
-        }}
+        style={{ width: "450px", height: "450px", top: "50%", left: "45%" }}
       />
-      {/* Purple orb — very bottom */}
+      {/* Violet orb — bottom left */}
       <div
         className="orb orb-purple"
-        style={{
-          width: "400px",
-          height: "400px",
-          top: "130%",
-          left: "30%",
-        }}
+        style={{ width: "500px", height: "500px", top: "75%", left: "-5%" }}
+      />
+      {/* Amber orb — bottom right */}
+      <div
+        className="orb orb-amber"
+        style={{ width: "400px", height: "400px", top: "100%", right: "10%" }}
       />
     </div>
   );
 }
+

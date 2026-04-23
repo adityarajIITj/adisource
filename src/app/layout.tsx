@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+/* ─── Display / Heading Font ───────────────────────────────────────────────── */
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-display",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+/* ─── Body / UI Font ────────────────────────────────────────────────────────── */
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -25,7 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${plusJakartaSans.variable}`}
+      suppressHydrationWarning
+    >
       <body className="antialiased text-text-primary bg-surface-primary transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AuthProvider>
