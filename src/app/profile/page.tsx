@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Navbar from "@/components/Navbar";
-import ParallaxOrbs from "@/components/ParallaxOrbs";
+
 import {
   ArrowLeft,
   AtSign,
@@ -155,7 +155,7 @@ export default function ProfilePage() {
 
   return (
     <div className="relative min-h-screen bg-surface-primary overflow-hidden">
-      <ParallaxOrbs />
+
       <Navbar />
 
       <main className="relative z-10 pt-28 pb-20 px-6">

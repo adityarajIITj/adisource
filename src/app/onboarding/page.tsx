@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import ParallaxOrbs from "@/components/ParallaxOrbs";
+
 import { Check, X, Loader2, AtSign, ArrowRight, Sparkles } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -117,7 +117,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-surface-primary">
-      <ParallaxOrbs />
+
 
       <div className="relative z-10 w-full max-w-lg">
         <div className="glass-card rounded-3xl p-10 login-card-enter">

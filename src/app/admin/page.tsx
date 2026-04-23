@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
-import ParallaxOrbs from "@/components/ParallaxOrbs";
+
 import UserManager from "@/components/admin/UserManager";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import PlatformSettings from "@/components/admin/PlatformSettings";
@@ -57,7 +57,7 @@ export default function AdminPage() {
 
   return (
     <div className="relative min-h-screen bg-surface-primary overflow-hidden">
-      <ParallaxOrbs />
+
       <Navbar />
 
       <main className="relative z-10 pt-28 pb-20 px-6">
