@@ -388,6 +388,10 @@ export async function updateUserRole(uid: string, role: "user" | "superadmin") {
   await updateDoc(doc(db, "users", uid), { role });
 }
 
+export async function updateUserBanned(uid: string, banned: boolean) {
+  await updateDoc(doc(db, "users", uid), { banned });
+}
+
 export async function deleteUser(uid: string) {
   // Get username to clean up
   const userDoc = await getDoc(doc(db, "users", uid));
@@ -399,3 +403,4 @@ export async function deleteUser(uid: string) {
   }
   await deleteDoc(doc(db, "users", uid));
 }
+

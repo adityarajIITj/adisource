@@ -46,18 +46,44 @@ export default function SubjectsSection() {
   }, [firestoreSemesters, activeSem]);
 
   useEffect(() => {
-    if (!dataLoading && cardsRef.current) {
-      import("gsap").then((gsap) => {
-        if (cardsRef.current && cardsRef.current.children.length > 0) {
-          gsap.default.fromTo(
-            cardsRef.current.children,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }
-          );
+    if (!dataLoading && cardsRef.current && mounted) {
+      import("gsap").then(({ default: gsap }) => {
+        if (cardsRef.current) {
+          const cards = Array.from(cardsRef.current.children);
+          
+          cards.forEach((card, i) => {
+            // Initial 3D hidden state
+            gsap.set(card, {
+              opacity: 0,
+              scale: 0.4,
+              rotationY: 180,
+              rotateX: 45,
+              z: -500,
+              transformOrigin: "center center",
+            });
+
+            // Spin Appear ScrollTrigger
+            gsap.to(card, {
+              scrollTrigger: {
+                trigger: card,
+                start: "top 98%",
+                end: "top 80%", // Finish much earlier to ensure readability
+                scrub: 1, // Faster scrub for snappier feel
+              },
+              opacity: 1,
+              scale: 1,
+              rotationY: 0,
+              rotateX: 0,
+              z: 0,
+              duration: 1,
+              ease: "back.out(1.7)",
+              delay: i * 0.1,
+            });
+          });
         }
       });
     }
-  }, [activeSem, dataLoading]);
+  }, [activeSem, dataLoading, mounted]);
 
   const handleSubjectClick = (
     e: React.MouseEvent,
