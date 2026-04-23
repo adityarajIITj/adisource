@@ -82,90 +82,122 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden hero-bg"
+      className="relative min-h-screen w-full flex flex-col lg:flex-row bg-surface-primary overflow-hidden"
     >
-      {/* 3D Floating Parallax Books Layer */}
-      <FloatingBooks />
-
-      {/* Content wrapper with z-index to stay above floating elements */}
-      <div className="relative z-10 flex flex-col items-center">
-        {/* Personalized Greeting (logged in users) */}
-        {userProfile && firstName && (
-          <div ref={greetRef} className="mb-6">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass-card text-base font-semibold text-text-primary greeting-glow">
-              <Hand className="w-5 h-5 text-amber-400" />
-              Hi, {firstName} — What do you want to learn today?
-            </div>
-          </div>
-        )}
-
-        {/* Decorative badge */}
-        <div className="reveal-up mb-8">
-          <div className="label-indigo">
-            <Sparkles className="w-3.5 h-3.5" />
-            BS Applied AI &amp; Data Science
-          </div>
+      {/* LEFT SIDE: Typography & CTA */}
+      <div className="w-full lg:w-5/12 min-h-[60vh] lg:min-h-screen flex flex-col justify-center px-8 lg:px-20 border-b lg:border-b-0 lg:border-r border-border relative z-20 bg-surface-primary">
+        
+        {/* Subtle Index/Label */}
+        <div className="absolute top-32 left-8 lg:left-20 flex items-center gap-4">
+          <div className="w-8 h-[1px] bg-border-strong"></div>
+          <span className="text-[10px] font-bold tracking-[0.2em] text-text-muted uppercase">01 / Welcome</span>
         </div>
 
-      {/* Hero Title */}
-      <h1
-        ref={titleRef}
-        className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl leading-[1.08] mt-6"
-        style={{ overflow: "hidden", fontFamily: "var(--font-display)" }}
-      >
-        <span className="hero-word inline-block">Notes</span>{" "}
-        <span className="hero-word inline-block">and</span>{" "}
-        <span className="hero-word inline-block">Material,</span>
-        <br />
-        <span className="hero-word inline-block gradient-text">All</span>{" "}
-        <span className="hero-word inline-block gradient-text">at</span>{" "}
-        <span className="hero-word inline-block gradient-text">One</span>{" "}
-        <span className="hero-word inline-block gradient-text">Place.</span>
-      </h1>
+        <div className="mt-20 lg:mt-0">
+          {/* Decorative badge */}
+          <div className="reveal-up mb-8">
+            <div className="chip !bg-transparent !border-border-strong !text-text-primary">
+              BS Applied AI & Data Science
+            </div>
+          </div>
 
-      {/* Subtitle */}
-      <p
-        ref={subtitleRef}
-        className="mt-6 text-lg md:text-xl text-text-secondary max-w-2xl leading-relaxed"
-      >
-        Your comprehensive resource hub for the BS Applied AI & Data Science program.
-        Organized by semester, subject, and week — so you never miss a beat.
-      </p>
-
-        {/* CTA Button */}
-        <div ref={ctaRef} className="mt-10">
-          <button
-            onClick={handleGetStarted}
-            className="btn-primary text-lg !py-4 !px-10"
+          {/* Hero Title */}
+          <h1
+            ref={titleRef}
+            className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold tracking-tight text-text-primary leading-[1.05]"
+            style={{ overflow: "hidden" }}
           >
-            <span>Get Started</span>
-          </button>
+            <span className="hero-word block">Notes and</span>
+            <span className="hero-word block">Material,</span>
+            <span className="hero-word block text-accent">All at</span>
+            <span className="hero-word block text-accent">One Place.</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p
+            ref={subtitleRef}
+            className="mt-8 text-base lg:text-lg text-text-secondary max-w-sm leading-relaxed"
+          >
+            Your comprehensive resource hub for the program. Organized by semester, subject, and week — so you never miss a beat.
+          </p>
+
+          {/* CTA Button */}
+          <div ref={ctaRef} className="mt-12 flex items-center gap-6">
+            <button
+              onClick={handleGetStarted}
+              className="btn-primary !px-8 !py-4"
+            >
+              <span>Explore Materials</span>
+            </button>
+            <a href="#about" className="text-sm font-bold text-text-primary hover:text-accent transition-colors underline decoration-border-strong underline-offset-4">
+              See details
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE: Visuals & Glass Panel */}
+      <div className="w-full lg:w-7/12 min-h-[50vh] lg:min-h-screen relative bg-surface-secondary flex items-center justify-center overflow-hidden">
+        
+        {/* The beautiful 3D books serving as the stark focal point */}
+        <div className="absolute inset-0 scale-[0.8] lg:scale-100 flex items-center justify-center">
+          <FloatingBooks />
+        </div>
+
+        {/* Minimalist Grid Lines overlaying the right side */}
+        <div className="absolute inset-0 pointer-events-none flex justify-evenly">
+          <div className="w-[1px] h-full bg-border/40"></div>
+          <div className="w-[1px] h-full bg-border/40"></div>
+        </div>
+
+        {/* Frosted Glass Overlay - intersecting the visual */}
+        <div className="absolute bottom-8 left-8 right-8 lg:bottom-16 lg:left-16 lg:right-16 z-30">
+          <div className="glass-frost p-6 lg:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              {userProfile && firstName ? (
+                <div ref={greetRef}>
+                  <p className="text-xs font-bold tracking-widest text-text-muted uppercase mb-1">Authenticated</p>
+                  <div className="flex items-center gap-3 text-lg font-bold text-text-primary">
+                    <Hand className="w-5 h-5 text-text-primary" />
+                    Welcome back, {firstName}.
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-xs font-bold tracking-widest text-text-muted uppercase mb-1">Public Access</p>
+                  <p className="text-lg font-bold text-text-primary">Ready to dive in?</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-12 text-sm">
+              <div>
+                <p className="text-xs text-text-muted mb-1 font-bold uppercase tracking-widest">Resources</p>
+                <p className="text-text-primary font-medium border-b border-text-primary pb-0.5 inline-block">Curated effectively</p>
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-xs text-text-muted mb-1 font-bold uppercase tracking-widest">Platform</p>
+                <p className="text-text-primary font-medium border-b border-text-primary pb-0.5 inline-block">Fast & Accessible</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scroll Prompt Overlay */}
       {showScrollPrompt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="flex flex-col items-center gap-4 glass-card rounded-3xl px-12 py-10 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-primary/80 backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="flex flex-col items-center gap-6 p-12 bg-white border border-border shadow-2xl">
             <div className="scroll-indicator">
-              <ArrowDown className="w-8 h-8 text-brand-blue" />
+              <ArrowDown className="w-8 h-8 text-accent" />
             </div>
-            <p className="text-lg font-semibold text-text-primary">
-              Scroll to explore
-            </p>
-            <p className="text-sm text-text-muted">
-              Dive into your course materials
-            </p>
+            <div className="text-center">
+              <p className="text-sm font-bold tracking-widest text-text-muted uppercase mb-2">Navigating</p>
+              <p className="text-2xl font-bold text-text-primary">Scroll to explore</p>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Bottom scroll hint */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
-        <div className="scroll-indicator">
-          <ArrowDown className="w-5 h-5 text-text-muted" />
-        </div>
-      </div>
     </section>
   );
 }
