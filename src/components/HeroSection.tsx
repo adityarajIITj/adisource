@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ArrowDown, Sparkles, Hand } from "lucide-react";
-import FloatingBooks from "./FloatingBooks";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function HeroSection() {
@@ -139,9 +139,21 @@ export default function HeroSection() {
       {/* RIGHT SIDE: Visuals & Glass Panel */}
       <div className="w-full lg:w-7/12 min-h-[50vh] lg:min-h-screen relative bg-surface-secondary flex items-center justify-center overflow-hidden">
         
-        {/* The beautiful 3D books serving as the stark focal point */}
-        <div className="absolute inset-0 scale-[0.8] lg:scale-100 flex items-center justify-center">
-          <FloatingBooks />
+        {/* Massive Ultra-Modern Data Image */}
+        <div className="relative w-full h-full lg:absolute lg:inset-0 flex items-center justify-center p-8 lg:p-24">
+          <div className="relative w-full h-[50vh] lg:h-full max-w-[800px] bg-white border border-border shadow-2xl transition-transform duration-700 hover:scale-[1.01] overflow-hidden">
+            <Image
+              src="/hero-ai.png"
+              alt="Conceptual Data Architecture"
+              fill
+              className="object-cover object-center mix-blend-multiply"
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            
+            {/* Subtle inner shadow for depth */}
+            <div className="absolute inset-0 border border-black/5 ring-1 ring-inset ring-white/50 pointer-events-none"></div>
+          </div>
         </div>
 
         {/* Minimalist Grid Lines overlaying the right side */}
