@@ -1,4 +1,4 @@
-# 🚀 Adisource - BS Applied AI & Data Science Resources
+# 🚀 Adisource - Applied AI & Data Science Resources
 
 > A premium, ultra-fluid learning platform built exclusively for BS Applied AI & Data Science students to seamlessly access course transcripts, notes, and AI overviews all in one place.
 
